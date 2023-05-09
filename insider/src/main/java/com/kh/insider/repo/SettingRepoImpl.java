@@ -12,8 +12,8 @@ public class SettingRepoImpl implements SettingRepo{
 	@Autowired
 	private SqlSession sqlSession;
 	@Override
-	public void basicInsert(SettingDto settingDto) {
-		sqlSession.insert("setting.basicInsert", settingDto);
+	public void basicInsert(int memberNo) {
+		sqlSession.insert("setting.basicInsert", memberNo);
 	}
 	
 }
