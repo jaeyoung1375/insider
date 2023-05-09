@@ -31,7 +31,7 @@ public class MemberController {
 	@PostMapping("/join")
 	public String join(@ModelAttribute MemberDto dto) {
 		memberRepo.join(dto);
-		//기본 환경 설정값 생성
+		//기본 회원설정값 생성(추후 수정 필요)
 		settingRepo.basicInsert(dto.getMemberNo());
 		return "redirect:join";
 	}
