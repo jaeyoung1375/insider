@@ -3,7 +3,7 @@
 
 <h2>다중파일업로드</h2>
 
-<form action = "" method = "post" enctype="multipart/form-data">
+<form action = "upload" method = "post" enctype="multipart/form-data">
 	<input type="file" name="attaches" multiple accept="image/*">
 	<button>전송</button>
 </form>
