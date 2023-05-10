@@ -40,5 +40,11 @@ public class MemberController {
 	public String login() {
 		return "member/login";
 	}
+	
+//	환경설정 페이지
+	@GetMapping("/setting")
+	public String setting() {
+		return"member/setting";
+	}
 
 }
