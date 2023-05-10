@@ -24,12 +24,8 @@ public class MemberRepoImpl implements MemberRepo{
 	@Override
 	// 추후 수정 - 05/10 재영
 	public void socialJoin(MemberDto dto) {
-		boolean useSequence = false;
-		Map<String,Object> param = new HashMap<>();
-		param.put("useSequence",useSequence);
-		param.put("dto", dto);
 		
-		sqlSession.insert("member.join",param);
+		sqlSession.insert("member.socialJoin",dto);
 	}
 	
 

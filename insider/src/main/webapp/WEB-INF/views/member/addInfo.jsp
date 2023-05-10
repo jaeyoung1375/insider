@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <!-- jquery cdn -->
 <link rel="stylesheet" href="/static/css/commons.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <!-- 다음 우편 API 사용을 위한 CDN -->
 <script src="https://cdn.jsdelivr.net/gh/hiphop5782/daum-post-api@latest/find-address.min.js"></script>
@@ -37,7 +38,7 @@
     background-color: #333;
     color: #fff;
         </style>  
-        <div class="container-800 center">
+        <div class="container">
 <h1>추가정보 입력</h1>
 <form action="addInfo" method="post">
 <input type="hidden" name="memberNo" value="${socialUser.memberNo}">
@@ -52,25 +53,25 @@
     			 <input type="radio" id="select2" name="memberGender" value="1"><label for="select2">여성</label>
             </div>
 
-  <div class="row">
+  <div class="form-floating mb-3">
                 <input class="form-input w-60" type="text" name="memberTel" placeholder="전화번호">
             </div>
-            <div class="row">
+            <div class="form-floating mb-3">
                 <input class="form-input w-60" type="date" name="memberBirth" placeholder="생년월일">
             </div>
- <div class="row">
+ <div class="form-floating mb-3">
                 <input type="text" name="memberPost" class="form-input w-30" placeholder="우편번호" readonly>
                 <button type="button" class="form-btn neutral find-address-btn w-30">우편번호 찾기</button>
              </div>
-             <div class="row">
+             <div class="form-floating mb-3">
                 <input type="text" name="memberBasicAddr" class="form-input w-60" placeholder="기본주소" readonly>
              </div>
-             <div class="row">
+             <div class="form-floating mb-3">
                 <input type="text" name="memberDetailAddr" class="form-input w-60" placeholder="상세주소">
     
              </div>
-             <div class="row">
-                <button type="submit" class="form-btn w-60 positive">가입하기</button>
+             <div class="form-floating mb-3">
+                <button type="submit" class="btn btn-primary">가입하기</button>
              </div>
 </form>
 </div>
