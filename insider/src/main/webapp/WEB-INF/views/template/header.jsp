@@ -18,13 +18,60 @@
 	<!-- jquery cdn -->
 	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
+<style>
+	main{
+		width:1000px;
+		margin: 0 auto;
+	}
+
+	.logo{
+		font-size: 50px;
+		color: black;
+	}
+
+	.nav-item > a {
+		font-size: 51px;
+		
+	}
+
+	.navbar-light .navbar-nav .nav-link {
+		color: black;
+	}
+
+</style>
 <body>
 	<main>
-		<header>
-			<h1>헤더</h1>
+			
+		<header>	
+			<nav class="navbar navbar-expand-lg navbar-light mt-3">
+				<div class="container-fluid">
+					<a class="navbar-brand" href="/"><img src="/static/image/logo.png" width="50px" height="50px"></a>
+<!-- 					<a class="navbar-brand" href="/"><img src="./image/insta.png" width="50px" height="50px"></a> -->
+					<a href="/" class="logo">insider</a>
+    
+					<div class="collapse navbar-collapse justify-content-end" id="navbarColor03">
+						<ul class="navbar-nav">
+							<li class="nav-item mt-2">
+								<a class="nav-link" href="#"><i class="fa-regular fa-solid fa-magnifying-glass" style="font-size: 45px;"></i></a>
+							</li>
+							<li class="nav-item mt-2">
+								<a class="nav-link" href="#"><i class="fa-regular fa-heart"></i></a>
+							</li>
+							<li class="nav-item mt-2">
+								<a class="nav-link" href="#"><i class="fa-regular fa-message mt-1" style="font-size: 45px;"></i></a>
+							</li>
+							<li class="nav-item mt-2">
+								<a class="nav-link" href="#"><i class="fa-regular fa-square-plus"></i></a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="#"><img src="/static/image/user.jpg" width="70px" height="70px"></a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</nav>
 		</header>
-		<nav>
-			<h1>메뉴바</h1>
-		</nav>
-		<section>
+		
+		
+	<section>
 
