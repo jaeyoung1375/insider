@@ -18,8 +18,11 @@
                 </div>
                 <div class="row">
                     <button class="form-btn w-50 positive" type="submit">로그인</button>
-                </div>
+                </div>             
             </form>
+            	<div class="row">
+            		<a class="form-btn w-50 negative" href="join">회원가입</a>
+            	</div>
             <a href="https://kauth.kakao.com/oauth/authorize?client_id=1b308937b1aec37f7b4bc57faeb4931b&redirect_uri=	
 http://localhost:8080/member/auth/kakao/callback&response_type=code&scope=account_email,gender,age_range&prompt=login">
             	 <img src="/static/image/social/kakao_login.png" width="300" height="60">

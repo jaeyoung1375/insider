@@ -2,6 +2,8 @@ package com.kh.insider.service;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -16,6 +18,9 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kh.insider.configuration.KakaoLoginProperties;
+import com.kh.insider.vo.GoogleInfoResponse;
+import com.kh.insider.vo.GoogleOauthRequest;
+import com.kh.insider.vo.GoogleResponse;
 import com.kh.insider.vo.KakaoProfile;
 import com.kh.insider.vo.OAuthToken;
 
@@ -26,7 +31,7 @@ public class SocialLoginServiceImpl implements SocialLoginService {
 	private KakaoLoginProperties properties;
 
 	@Override
-	public OAuthToken tokenCreate(String code) throws URISyntaxException {
+	public OAuthToken kakaoTokenCreate(String code) throws URISyntaxException {
 		
 		URI uri = new URI("https://kauth.kakao.com/oauth/token");
 		
@@ -93,6 +98,46 @@ public class SocialLoginServiceImpl implements SocialLoginService {
 	
 		
 		return profile;
+	}
+
+	@Override
+	public GoogleResponse googleTokenCreate(String code) throws URISyntaxException {
+		
+		RestTemplate rt = new RestTemplate();
+		
+		// HttpBody 오브젝트 생성
+		GoogleOauthRequest googleOAuthRequestParam = GoogleOauthRequest
+			                .builder()
+			                .clientId("197694978566-bljc0eo7lnf071parv36ntrenp3g69eb.apps.googleusercontent.com")
+			                .clientSecret("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")
+			                .code(code)
+			                .redirectUri("http://localhost:8080/member/login/oauth_google_check")
+			                .grantType("authorization_code").build();
+				 
+				
+				 
+				
+	ResponseEntity<GoogleResponse> resultEntity = 
+			rt.postForEntity("https://oauth2.googleapis.com/token",
+			     googleOAuthRequestParam, GoogleResponse.class);
+		
+	
+	
+	return resultEntity.getBody();
+	}
+
+	@Override
+	public GoogleInfoResponse googleLogin(String code, GoogleResponse response) throws URISyntaxException {
+		
+		RestTemplate rt = new RestTemplate();
+		 String jwtToken=response.getId_token();
+	        Map<String, String> map=new HashMap<>();
+	        map.put("id_token",jwtToken);
+	        ResponseEntity<GoogleInfoResponse> resultEntity = rt.postForEntity("https://oauth2.googleapis.com/tokeninfo",
+	                map, GoogleInfoResponse.class);
+		
+		
+		return resultEntity.getBody();
 	}
 	
 	

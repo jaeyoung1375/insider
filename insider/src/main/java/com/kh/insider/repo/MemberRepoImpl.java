@@ -17,8 +17,21 @@ public class MemberRepoImpl implements MemberRepo{
 
 	@Override
 	public void join(MemberDto dto) {
+	
 		sqlSession.insert("member.join",dto);
 	}
+	
+	@Override
+	// 추후 수정 - 05/10 재영
+	public void socialJoin(MemberDto dto) {
+		boolean useSequence = false;
+		Map<String,Object> param = new HashMap<>();
+		param.put("useSequence",useSequence);
+		param.put("dto", dto);
+		
+		sqlSession.insert("member.join",param);
+	}
+	
 
 	@Override
 	public MemberDto findByEmail(String memberEmail) {
@@ -33,5 +46,12 @@ public class MemberRepoImpl implements MemberRepo{
 		
 		return sqlSession.selectOne("member.login",param);
 	}
+
+	@Override
+	public void updateLoginTime(long memberNo) {
+		sqlSession.update("member.updateLoginTime",memberNo);
+	}
+
+	
 	
 }

@@ -1,20 +1,27 @@
 package com.kh.insider.controller;
 
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.service.SocialLoginService;
+import com.kh.insider.vo.GoogleInfoResponse;
+import com.kh.insider.vo.GoogleResponse;
 import com.kh.insider.vo.KakaoProfile;
 import com.kh.insider.vo.OAuthToken;
 import com.kh.insider.repo.SettingRepo;
@@ -64,6 +71,7 @@ public class MemberController {
 	if(findMember == null) {
 		return "redirect:login";
 	}
+	memberRepo.updateLoginTime(findMember.getMemberNo());
 	session.setAttribute("memberEmail",findMember.getMemberEmail());
 		
 	return "redirect:/";
@@ -72,9 +80,9 @@ public class MemberController {
 	// 카카오 로그인
 	@GetMapping("/auth/kakao/callback")
 	public String kakaoCallback(String code,
-			HttpSession session, OAuthToken token) throws URISyntaxException { // Data를 리턴해주는 컨트롤러 함수
+			HttpSession session, OAuthToken token, Model model) throws URISyntaxException { // Data를 리턴해주는 컨트롤러 함수
 				
-		token = socialLoginService.tokenCreate(code);
+		token = socialLoginService.kakaoTokenCreate(code);
 		MemberDto kakaoUser = new MemberDto();
 		KakaoProfile profile = socialLoginService.kakaoLogin(code,token);
 		long memberNo = profile.getId();
@@ -82,8 +90,6 @@ public class MemberController {
 		String memberPw = cosKey;
 		String memberName = profile.properties.getNickname();
 		String memberNickName = profile.properties.getNickname();
-		String memberTel = profile.kakao_account.getPhone_number();
-		String memberGender = profile.getKakao_account().getGender();
 		MemberDto originalMember = memberRepo.findByEmail(profile.kakao_account.getEmail());
 		
 		
@@ -95,22 +101,16 @@ public class MemberController {
 			kakaoUser.setMemberName(memberName);
 			kakaoUser.setMemberNick(memberNickName);
 			kakaoUser.setMemberPassword(memberPw);
-			kakaoUser.setMemberTel("010-1234");
-			
-			// 생년월일 - 추후 수정
-			kakaoUser.setMemberBirth("1997-01-28");
-			kakaoUser.setMemberGender(memberGender);
-			// 주소 - 추후 수정
-			kakaoUser.setMemberPost("12345");
-			kakaoUser.setMemberBasicAddr("영등포구");
-			kakaoUser.setMemberDetailAddr("당산이레빌딩");
+
 			
 			
-			memberRepo.join(kakaoUser);
+//			memberRepo.join(kakaoUser);
 		}else {
 			System.out.println("기존회원이므로 로그인을 진행합니다.");
+			memberRepo.updateLoginTime(memberNo);
+			return "redirect:/";
 		}
-		
+		session.setAttribute("socialUser",kakaoUser);
 		session.setAttribute("member",token.getAccess_token());
 		session.setAttribute("refresh_token",token.getRefresh_token());
 		
@@ -119,9 +119,63 @@ public class MemberController {
 		System.out.println(accessToken);
 		System.out.println(profile);
 		
-		System.out.println(profile.getKakao_account().getBirthyear());
-		System.out.println(profile.getKakao_account().getBirthday());
+		return "redirect:/member/addInfo";
+	}
+	
+	@GetMapping("/addInfo")
+	public String addInfo(Model model, HttpSession session) {
+
+		MemberDto socialUser = (MemberDto)session.getAttribute("socialUser");
+		model.addAttribute("socialUser",socialUser);
+		
+		return "member/addInfo";
+	}
+	
+	@PostMapping("/addInfo")
+	public String addInfo(@ModelAttribute MemberDto dto) {
+	
+		memberRepo.join(dto);
+		
 		return "redirect:/";
+	}
+	
+	@GetMapping("/login/oauth_google_check")
+	public String googleCallback(String code, GoogleResponse response, HttpSession session) throws URISyntaxException {
+		response =  socialLoginService.googleTokenCreate(code);
+		MemberDto googleUser = new MemberDto();
+		GoogleInfoResponse profile = socialLoginService.googleLogin(code,response);
+		MemberDto originalMember = memberRepo.findByEmail(profile.getEmail());
+		String memberNoReplace = profile.getAzp().replaceAll("[^0-9]","");
+		memberNoReplace = memberNoReplace.substring(0, 10);
+		profile.setAzp(memberNoReplace);
+		System.out.println(profile.getAzp());
+		
+		long memberNo = Long.parseLong(profile.getAzp());
+		String memberEmail = profile.getEmail();
+		String memberPw = cosKey;
+		String memberName = profile.getName();
+		String memberNickName = profile.getName();
+		
+		
+		if(originalMember == null) {
+			System.out.println("회원가입을 진행합니다");
+			googleUser.setMemberNo(memberNo);
+			googleUser.setMemberEmail(memberEmail);
+			googleUser.setMemberName(memberName);
+			googleUser.setMemberNick(memberNickName);
+			googleUser.setMemberPassword(memberPw);
+
+			
+		}else {
+			System.out.println("기존회원이므로 로그인을 진행합니다.");
+			return "redirect:/";
+		}
+		session.setAttribute("socialUser",googleUser);
+		session.setAttribute("member",response.getAccess_token());
+		session.setAttribute("refresh_token",response.getRefresh_token());
+		
+
+		return "redirect:/member/addInfo";
 	}
 
 }
