@@ -8,9 +8,9 @@ import lombok.Data;
 public class ReplyDto {
 
 	private int replyNo;
-	private int boardNo;
-	private int memberNo;
-	private int replyContent;
+	private int replyOrigin;
+	private int replyMemberNo;
+	private String replyContent;
 	private int replyParent;
 	private int replyLike;
 	private Date replyTime;
