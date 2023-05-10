@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
-@RequestMapping("/board")
+@RequestMapping("/attachment")
 public class AttachmentController {
 	
 	@Autowired
@@ -39,19 +39,19 @@ public class AttachmentController {
 	
 	@GetMapping("/upload")
 	public String upload() {
-		return "board/upload";
+		return "attachment/upload";
 	}
 	
 	@PostMapping("/upload")
 	public String upload(@RequestParam List<MultipartFile> attaches) {
 		log.debug("전송갯수 = " + attaches.size());
-		return "redirect:/list";
+		return "redirect:attachment/list";
 	}
 	
 	@GetMapping("/list")
 	public String list(Model model){
 		model.addAttribute("list", attachmentRepo.selectList());
-		return "board/list";
+		return "attachment/list";
 	}
 	
 }
