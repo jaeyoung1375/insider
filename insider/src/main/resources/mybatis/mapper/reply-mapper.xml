@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="reply">
+  	
+  	<insert id="insert" parameterType="ReplyDto">
+  		insert into reply(reply_no, reply_content, reply_origin, reply_member_no, reply_time)
+  		values
+  		(reply_seq.nextval, #{replyContent}, #{replyOrigin}, #{replyMemberNo}, sysdate)
+  	</insert>
+  	
+  	<delete id="delete">
+  		delete reply where reply_no = #{replyNo}
+  	</delete>
+  
+  </mapper>

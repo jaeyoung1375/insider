@@ -14,14 +14,14 @@ public class BoardRepoImpl implements BoardRepo {
 	
 	@Autowired
 	private SqlSession sqlSession;
-	
+
 
 	@Override
-	public List<BoardDto> selectList(int page) {
+	public List<BoardDto> selectListPaging(int page) {
 		int end = page*10;
 		int begin = end-9;
 		Map<String, Object> param = Map.of("begin", begin, "end", end);
-		return sqlSession.selectList("board.selectList",param);
+		return sqlSession.selectList("board.selectListPaging",param);
 	}
 
 }
