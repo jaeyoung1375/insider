@@ -55,7 +55,7 @@ public class MemberController {
 		memberRepo.join(dto);
 		//기본 회원설정값 생성(추후 수정 필요)
 		settingRepo.basicInsert(dto.getMemberNo());
-		return "redirect:join";
+		return "redirect:/";
 	}
 	
 	@GetMapping("/login")

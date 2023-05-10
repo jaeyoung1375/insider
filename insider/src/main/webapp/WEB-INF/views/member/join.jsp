@@ -6,12 +6,15 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <link rel="stylesheet" href="/static/css/commons.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+ 
  <!-- jquery cdn -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+ 
  <!-- 다음 우편 API 사용을 위한 CDN -->
 <script src="https://cdn.jsdelivr.net/gh/hiphop5782/daum-post-api@latest/find-address.min.js"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
- <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+
     <style>
         .map {
             width:100%;
@@ -90,7 +93,7 @@
             </div>
             <div class="mb-3">
                 <input type="text" name="memberPost" class="form-control" placeholder="우편번호" readonly>
-                <button type="button" class="btn btn-secondary">우편번호 찾기</button>
+                <button type="button" class="btn btn-secondary find-address-btn">우편번호 찾기</button>
              </div>
              <div class="mb-3">
                 <input type="text" name="memberBasicAddr" class="form-control" placeholder="기본주소" readonly>
