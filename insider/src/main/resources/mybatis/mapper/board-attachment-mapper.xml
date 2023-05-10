@@ -27,7 +27,7 @@
    
    <mapper namespace="board_attachment">
    
-	   <insert id="insert" parameterType="BoardAttachDto">
+	   <insert id="insert" parameterType="BoardAttachmentDto">
 			insert into board_attachment (board_no, attachment_no) 
 			values ( #{boardNo}, #{attachmentNo})
 		</insert>
