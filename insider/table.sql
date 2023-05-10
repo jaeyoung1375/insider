@@ -34,9 +34,13 @@ create sequence reply_seq;
 
 
 create table board_attachment (
+board_attachment_no number primary key,
 board_no REFERENCES board(board_no) on delete cascade,
 attachment_no REFERENCES attachment(attachment_no) on delete cascade
 );
+create sequence board_attachment_seq;
+
+drop table board_attachment;
 
 
 create table attachment (
