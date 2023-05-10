@@ -5,5 +5,5 @@
 
 <form action = "upload" method = "post" enctype="multipart/form-data">
 	<input type="file" name="attaches" multiple accept="image/*">
-	<button>전송</button>
+	<input type="submit" value="업로드">
 </form>

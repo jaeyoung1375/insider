@@ -10,7 +10,7 @@
 		select attachment_seq.nextval from dual
 	</select>
 
-	<insert id="upload" parameterType="AttachmentDto">
+	<insert id="insert" parameterType="AttachmentDto">
 		insert into attachment(
 			attachment_no, attachment_name, attachment_type, attachment_size
 		)
@@ -19,8 +19,16 @@
 		)
 	</insert>
 	
-	<select id="selectList" resultType="AttachmentDto">
-		select*from attachment where attachment_no=#{attachmentNo}
+	<select id="selectOne" resultType="AttachmentDto">
+		select*from attachment where attachment_no=#{attachmentNo} order by attachment_no asc
 	</select>
+	
+	<select id="selectList" resultType="AttachmentDto">
+		select*from attachment order by attachment_name asc
+	</select>
+	
+	<update id="delete">
+		delete attachment where attachment_no=#{attachmentNo}
+	</update>
    
 </mapper>
