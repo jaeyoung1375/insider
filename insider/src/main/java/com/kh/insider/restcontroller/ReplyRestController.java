@@ -38,7 +38,7 @@ public class ReplyRestController {
 	@PostMapping("/")
 	public void write(HttpSession session,@ModelAttribute ReplyDto replyDto) {
 		//작성자 설정
-		int memberNo = (Integer) session.getAttribute("memberId");
+		long memberNo = (long) session.getAttribute("member");
 //		MemberDto memberDto = memberRepo.find(memberNo);
 //		String memberNick = memberDto.getMemberNick();
 //		
