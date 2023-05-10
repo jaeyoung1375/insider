@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.repo.MemberRepo;
+import com.kh.insider.repo.SettingRepo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,6 +20,8 @@ public class MemberController {
 	
 	@Autowired
 	private MemberRepo memberRepo;
+	@Autowired
+	private SettingRepo settingRepo;
 	
 	@GetMapping("/join")
 	public String join() {
@@ -28,6 +31,8 @@ public class MemberController {
 	@PostMapping("/join")
 	public String join(@ModelAttribute MemberDto dto) {
 		memberRepo.join(dto);
+		//기본 회원설정값 생성(추후 수정 필요)
+		settingRepo.basicInsert(dto.getMemberNo());
 		return "redirect:join";
 	}
 	

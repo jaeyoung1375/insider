@@ -625,3 +625,23 @@ input.form-input.form-input-bg {
     left: auto;
     right:100%;
 }
+/* bootstrap override */
+.btn.btn-primary{
+	background-color: #0095F6;
+	border-color:#0095F6;
+	font-weight:500;
+}
+.btn.btn-primary:hover{
+	background-color: #1877F2;
+	border-color: #1877F2;
+}
+.btn.btn-secondary{
+	background-color: #EFEFEF;
+	border-color:#EFEFEF;
+	font-weight:500;
+	color:black
+}
+.btn.btn-secondary:hover{
+	background-color: #DBDBDB;
+	border-color: #DBDBDB;
+}
