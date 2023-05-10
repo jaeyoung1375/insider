@@ -24,4 +24,11 @@ public class BoardRepoImpl implements BoardRepo {
 		return sqlSession.selectList("board.selectListPaging",param);
 	}
 
+
+	@Override
+	public void insert(BoardDto boardDto) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

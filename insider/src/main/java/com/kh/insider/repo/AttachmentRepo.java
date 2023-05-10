@@ -1,15 +1,13 @@
 package com.kh.insider.repo;
 
-import java.util.List;
+import java.io.IOException;
 
-import com.kh.insider.dto.AttachmentDto;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface AttachmentRepo {
 
-	public int sequence();
-	public void insert(AttachmentDto attachmentDto);
-	public AttachmentDto selectOne(int attachmentNo);
-	public List<AttachmentDto> selecList();
-	public boolean delete(int attachmentNo);
+	int save(MultipartFile attachment) throws IllegalStateException, IOException;
+
+	void delete(int profileIsNull);
 
 }

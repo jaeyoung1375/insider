@@ -44,82 +44,57 @@ public class AttachmentController {
 	
 
 	
-//	@GetMapping("/download/{fileName}")
-//	@ResponseBody//여기서 반환되는 데이터는 뷰가 아닙니다
-//	public ResponseEntity<ByteArrayResource> download(
-//														@PathVariable int fileName) throws IOException	{
-//	
-//		File dir = new File("D:/upload");
-//		File target = new File(dir, String.valueOf(fileName));
-//		if(!target.exists()) return ResponseEntity.notFound().build();
-//		
-//		// 2. 응답 객체를 만들어서 반환
-//		byte[] data = FileUtils.readFileToByteArray(dir);
-//		ByteArrayResource resource = new ByteArrayResource(data);
-//		
-//		return ResponseEntity.ok()
-//				.contentType(MediaType.APPLICATION_OCTET_STREAM)
-//				.contentLength(dir.length())
-//				.header(HttpHeaders.CONTENT_ENCODING, StandardCharsets.UTF_8.name())
-//				//.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=reply.png")
-//				.header(HttpHeaders.CONTENT_DISPOSITION, 
-//						ContentDisposition.attachment()
-//						.filename("reply.png", StandardCharsets.UTF_8)
-//						.build()
-//						.toString()
-//				)
-//				.body(resource);
-//	}
+	@GetMapping("/download/{fileName}")
+	@ResponseBody//여기서 반환되는 데이터는 뷰가 아닙니다
+	public ResponseEntity<ByteArrayResource> download(
+														@PathVariable int fileName) throws IOException	{
 	
-	@GetMapping("/upload")
-	public String upload() {
-		return "attachment/upload";
-	}
-	
-	@PostMapping("/upload")
-	public String upload(@RequestParam List<MultipartFile> attaches) {
-		log.debug("전송갯수 = " + attaches.size());
-		return "redirect:/list";
-	}
-
-	
-	@GetMapping("/list")
-	public String list(){
-		return "attachment/list";
-	}
-	
-	private File dir;
-	@PostConstruct
-	public void init() {
-		// 파일경로 - D:/upload 폴더
-		dir = new File(fileUploadProperties.getPath()); 
-	}
-	
-	// 이미지 불러오기
-	@GetMapping("/download")
-	public ResponseEntity<ByteArrayResource> download(@RequestParam int attachmentNo) throws IOException {
-		// 헤더
-		AttachmentDto attachmentDto = attachmentRepo.selectOne(attachmentNo);
-		// 파일이 없으면 notFound
-		if(attachmentDto == null) {
-			return ResponseEntity.notFound().build();
-		}
-		// 파일이 있으면 파일 찾기
-		File target = new File(dir, String.valueOf(attachmentNo));
-		// 보낼 데이터 생성
-		// 바디
-		byte[] data = FileUtils.readFileToByteArray(target);
+		File dir = new File("D:/upload");
+		File target = new File(dir, String.valueOf(fileName));
+		if(!target.exists()) return ResponseEntity.notFound().build();
+		
+		// 2. 응답 객체를 만들어서 반환
+		byte[] data = FileUtils.readFileToByteArray(dir);
 		ByteArrayResource resource = new ByteArrayResource(data);
-		// 헤더와 바디 설정하면서 responseEntity 만들어 반환
+		
 		return ResponseEntity.ok()
-					.contentType(MediaType.APPLICATION_OCTET_STREAM)
-					.contentLength(attachmentDto.getAttachmentSize())
-					.header(HttpHeaders.CONTENT_ENCODING, StandardCharsets.UTF_8.name())
-					.header(HttpHeaders.CONTENT_DISPOSITION, 
-							ContentDisposition.attachment()
-								.filename(attachmentDto.getAttachmentName(), StandardCharsets.UTF_8)
-								.build().toString())
+				.contentType(MediaType.APPLICATION_OCTET_STREAM)
+				.contentLength(dir.length())
+				.header(HttpHeaders.CONTENT_ENCODING, StandardCharsets.UTF_8.name())
+				//.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=reply.png")
+				.header(HttpHeaders.CONTENT_DISPOSITION, 
+						ContentDisposition.attachment()
+						.filename("reply.png", StandardCharsets.UTF_8)
+						.build()
+						.toString()
+				)
 				.body(resource);
 	}
+	
+//	@GetMapping("/upload")
+//	public String upload() {
+//		return "attachment/upload";
+//	}
+//	
+//	@PostMapping("/upload")
+//	public String upload(@RequestParam List<MultipartFile> attaches) {
+//		log.debug("전송갯수 = " + attaches.size());
+//		return "redirect:/list";
+//	}
+//
+//	
+//	@GetMapping("/list")
+//	public String list(){
+//		return "attachment/list";
+//	}
+	
+//	private File dir;
+//	@PostConstruct
+//	public void init() {
+//		// 파일경로 - D:/upload 폴더
+//		dir = new File(fileUploadProperties.getPath()); 
+//	}
+	
+
 	
 }

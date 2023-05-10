@@ -19,16 +19,8 @@
 		)
 	</insert>
 	
-	<select id="selectOne" resultType="AttachmentDto">
-		select*from attachment where attachment_no=#{attachmentNo} order by attachment_no asc
-	</select>
-	
-	<select id="selectList" resultType="AttachmentDto">
-		select*from attachment order by attachment_name asc
-	</select>
-	
-	<update id="delete">
-		delete attachment where attachment_no=#{attachmentNo}
+	<update id="delete" parameterType="int">
+		delete from attachment where attachment_no=#{attachmentNo}
 	</update>
    
 </mapper>
