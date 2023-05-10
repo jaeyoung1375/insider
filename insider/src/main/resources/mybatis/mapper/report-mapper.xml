@@ -10,10 +10,10 @@
 	<update id="update">
 		update report set report_check=#{reportCheck} where report_no=#{reportNo}
 	</update>
-	<select id="selectOne" resultType="reportDto">
+	<select id="selectOne" resultType="ReportDto">
 		select * from report where report_no=#{reportNo}
 	</select>
-	<select id="selectList" resultType="reportDto">
+	<select id="selectList" resultType="ReportDto">
 	SELECT * FROM (
 		SELECT tmp.*, rownum rn FROM (
 			select * from report

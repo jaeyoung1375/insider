@@ -51,18 +51,23 @@
     
 					<div class="collapse navbar-collapse justify-content-end" id="navbarColor03">
 						<ul class="navbar-nav">
+						<!-- 검색 -->
 							<li class="nav-item mt-2">
-								<a class="nav-link" href="#"><i class="fa-regular fa-solid fa-magnifying-glass" style="font-size: 45px;"></i></a>
+								<a class="nav-link" href="search"><i class="fa-regular fa-solid fa-magnifying-glass" style="font-size: 45px;"></i></a>
 							</li>
+						<!-- 알림 -->
 							<li class="nav-item mt-2">
 								<a class="nav-link" href="#"><i class="fa-regular fa-heart"></i></a>
 							</li>
+						<!-- dm -->
 							<li class="nav-item mt-2">
 								<a class="nav-link" href="#"><i class="fa-regular fa-message mt-1" style="font-size: 45px;"></i></a>
 							</li>
+						<!-- 게시물작성 -->
 							<li class="nav-item mt-2">
 								<a class="nav-link" href="#"><i class="fa-regular fa-square-plus"></i></a>
 							</li>
+						<!-- 프로필 -->
 							<li class="nav-item">
 								<a class="nav-link" href="#"><img src="/static/image/user.jpg" width="70px" height="70px"></a>
 							</li>
