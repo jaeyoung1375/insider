@@ -5,10 +5,9 @@ import java.sql.Date;
 import lombok.Data;
 
 @Data
-public class MemberDto {
+public class MemberWithProfileDto {
 	private long memberNo;
 	private String memberName;
-	private String memberNick;
 	private String memberPassword;
 	private String memberEmail;
 	private Date memberLogin;
@@ -22,5 +21,6 @@ public class MemberDto {
 	private String memberTel;
 	private String memberGender;
 	private int memberReport;
-	private String memberBirth;
+	private Date memberBirth;
+	private int attachmentNo;
 }
