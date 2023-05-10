@@ -17,6 +17,7 @@ import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.service.SocialLoginService;
 import com.kh.insider.vo.KakaoProfile;
 import com.kh.insider.vo.OAuthToken;
+import com.kh.insider.repo.SettingRepo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,6 +32,8 @@ public class MemberController {
 	
 	@Autowired
 	private MemberRepo memberRepo;
+	@Autowired
+	private SettingRepo settingRepo;
 	
 	@Autowired
 	private SocialLoginService socialLoginService;
@@ -43,6 +46,8 @@ public class MemberController {
 	@PostMapping("/join")
 	public String join(@ModelAttribute MemberDto dto) {
 		memberRepo.join(dto);
+		//기본 회원설정값 생성(추후 수정 필요)
+		settingRepo.basicInsert(dto.getMemberNo());
 		return "redirect:join";
 	}
 	
