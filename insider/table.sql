@@ -9,7 +9,7 @@ setting_follow_alert NUMBER(1) DEFAULT 1 NOT NULL CHECK (setting_follow_alert IN
 setting_video_auto NUMBER(1) DEFAULT 1 NOT NULL CHECK (setting_video_auto IN (0, 1)),
 setting_reply_like_alert NUMBER(1) DEFAULT 1 NOT NULL CHECK (setting_reply_alert IN (0, 1, 2)),
 setting_message NUMBER(1) DEFAULT 1 NOT NULL CHECK (setting_reply_alert IN (0, 1, 2)),
-setting_allow_reply NUMBER(1) DEFAULT 1 NOT NULL CHECK (setting_reply_alert IN (0, 1, 2)),
+setting_allow_reply NUMBER(1) DEFAULT 1 NOT NULL CHECK (setting_reply_alert IN (0, 1, 2, 3)),
 setting_watch_like NUMBER(1) DEFAULT 1 NOT NULL CHECK (setting_reply_alert IN (0, 1, 2))
 );
 --신고 report 테이블
@@ -23,3 +23,15 @@ report_time date default sysdate not null,
 report_check number(1) DEFAULT 0 NOT NULL CHECK (report_check IN (0, 1, 2))
 );
 create sequence report_seq;
+
+--프로필 테이블
+CREATE TABLE member_profile(
+member_profile_no NUMBER PRIMARY KEY,
+member_no REFERENCES member(member_no) ON DELETE CASCADE NOT NULL,
+attachment_no REFERENCES attachment(attachment_no) NOT null
+);
+CREATE SEQUENCE member_profile_seq;
+--멤버, 프로필 뷰
+CREATE VIEW member_with_profile as
+SELECT M.*, P.attachment_no FROM MEMBER M 
+LEFT OUTER JOIN member_profile P ON M.member_no=P.member_no;
