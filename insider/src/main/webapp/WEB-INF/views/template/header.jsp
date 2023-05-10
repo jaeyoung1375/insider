@@ -8,7 +8,7 @@
 	<!-- BootStrap CDN -->
 	<link href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/litera/bootstrap.min.css" rel="stylesheet" type="text/css">
 	<!-- commons.css -->
-	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/commons.css" />
+	<link rel="stylesheet" type="text/css" href="/static/css/commons.css" />
 	<!-- font-awesome cdn -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
 	<!-- vue, axios, lodash cdn -->
