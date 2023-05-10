@@ -8,11 +8,11 @@
 		insert into member(
 			member_no, member_name, member_email, member_password,
 			member_post, member_basic_addr, member_detail_addr,
-			member_tel, member_gender, member_birth
+			member_tel, member_gender, member_birth, member_nick
 			)values(
-			member_seq.nextval, #{memberName}, #{memberEmail}, #{memberPassword},
+			${memberNo}, #{memberName}, #{memberEmail}, #{memberPassword},
 			#{memberPost}, #{memberBasicAddr}, #{memberDetailAddr}, #{memberTel},
-			#{memberGender}, #{memberBirth}	
+			#{memberGender}, #{memberBirth},#{memberNick}
 			)
 	</insert>
 	
@@ -22,7 +22,13 @@
 	</select>
 	
 	<select id="findByEmail" resultType="MemberDto">
-		select * from member where member_no = #{memberEmail}
+		select * from member where member_email = #{memberEmail}
+	</select>
+	
+	<select id="login" resultType="MemberDto">
+		select * from member where 
+		member_email = #{memberEmail} and 
+		member_password = #{memberPassword}
 	</select>
 	
 </mapper>
