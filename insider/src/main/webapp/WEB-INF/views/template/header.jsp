@@ -5,6 +5,10 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Insider</title>
+	<!-- 전역변수 contextPath 설정 -->
+	<script>
+		const contextPath = "${pageContext.request.contextPath}";
+	</script>
 	<!-- BootStrap CDN -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 	<!-- commons.css -->
