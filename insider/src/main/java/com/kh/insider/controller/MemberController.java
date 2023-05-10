@@ -177,5 +177,10 @@ public class MemberController {
 
 		return "redirect:/member/addInfo";
 	}
+//	환경설정 페이지
+	@GetMapping("/setting")
+	public String setting() {
+		return"member/setting";
+	}
 
 }
