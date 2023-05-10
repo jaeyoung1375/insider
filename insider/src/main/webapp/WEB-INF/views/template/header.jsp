@@ -6,7 +6,7 @@
 	<meta charset="UTF-8">
 	<title>Insider</title>
 	<!-- BootStrap CDN -->
-	<link href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/litera/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 	<!-- commons.css -->
 	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/commons.css" />
 	<!-- font-awesome cdn -->
@@ -51,18 +51,23 @@
     
 					<div class="collapse navbar-collapse justify-content-end" id="navbarColor03">
 						<ul class="navbar-nav">
+						<!-- 검색 -->
 							<li class="nav-item mt-2">
-								<a class="nav-link" href="#"><i class="fa-regular fa-solid fa-magnifying-glass" style="font-size: 45px;"></i></a>
+								<a class="nav-link" href="search"><i class="fa-regular fa-solid fa-magnifying-glass" style="font-size: 45px;"></i></a>
 							</li>
+						<!-- 알림 -->
 							<li class="nav-item mt-2">
 								<a class="nav-link" href="#"><i class="fa-regular fa-heart"></i></a>
 							</li>
+						<!-- dm -->
 							<li class="nav-item mt-2">
 								<a class="nav-link" href="#"><i class="fa-regular fa-message mt-1" style="font-size: 45px;"></i></a>
 							</li>
+						<!-- 게시물작성 -->
 							<li class="nav-item mt-2">
 								<a class="nav-link" href="#"><i class="fa-regular fa-square-plus"></i></a>
 							</li>
+						<!-- 프로필 -->
 							<li class="nav-item">
 								<a class="nav-link" href="#"><img src="/static/image/user.jpg" width="70px" height="70px"></a>
 							</li>

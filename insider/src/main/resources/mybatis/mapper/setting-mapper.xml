@@ -8,4 +8,15 @@
 	<insert id="basicInsert">
 		insert into setting(member_no) values(#{memberNo})
 	</insert>
+	<!-- 수정 -->
+	<update id="update">
+		update setting setting_hide=#{settingHide}, setting_distance=#{settingDistance},
+		setting_alert=#{settingAlert}, setting_like_alert=#{settingLikeAlert}, 
+		setting_reply_alert=#{settingReplyAlert}, setting_followAlert=#{settingFollowAlert},
+		setting_video_auto=#{settingVideoAuto} where member_no=#{memberNo}
+	</update>
+	<!-- 읽기 -->
+	<select id="selectOne" resultType="settingDto">
+		select * from setting where member_no=#{memberNo}
+	</select>
 </mapper>
