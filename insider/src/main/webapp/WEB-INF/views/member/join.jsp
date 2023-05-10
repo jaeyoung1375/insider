@@ -11,6 +11,32 @@
             width:100%;
             min-height: 300px;/* 50vh */
         }
+       
+        .select {
+    padding: 15px 10px;
+}
+.select input[type=radio]{
+    display: none;
+}
+.select input[type=radio]+label{
+    display: inline-block;
+    cursor: pointer;
+    height: 24px;
+    width: 90px;
+    border: 1px solid #333;
+    line-height: 24px;
+    text-align: center;
+    font-weight:bold;
+    font-size:13px;
+}
+.select input[type=radio]+label{
+    background-color: #fff;
+    color: #333;
+}
+.select input[type=radio]:checked+label{
+    background-color: #333;
+    color: #fff;
+}
     </style>
  <!-- jquery cdn -->
  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -45,8 +71,9 @@
             <div class="row">
                 <input class="form-input w-60" type="date" name="memberBirth" placeholder="생년월일">
             </div>
-            <div class="row">
-                <input class="form-input w-60" type="text" name="memberGender" placeholder="성별">
+            <div class="row select">
+                 <input type="radio" id="select" name="memberGender"><label for="select">남성</label>
+    			 <input type="radio" id="select2" name="memberGender"><label for="select2">여성</label>
             </div>
             <div class="row">
                 <input type="text" name="memberPost" class="form-input w-30" placeholder="우편번호" readonly>
