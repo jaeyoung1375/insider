@@ -12,23 +12,22 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(of= {"session"})
 public class DmUserVO {
-
+	
 	private WebSocketSession session;
 	private int memberNo;
-	private String memberName, memberLevel;
+	private String memberName;
 	
 	//생성자 생성
 	public DmUserVO(WebSocketSession webSocketSession) {
 		this.session = webSocketSession;
 		Map<String, Object> attr = session.getAttributes();
-		this.memberNo = (int)attr.get("membetNo");
+		this.memberNo = (int)attr.get("memberNo");
 		this.memberName = (String)attr.get("memberName");
-		this.memberLevel = (String)attr.get("memberLevel");
 	}
 	
 	//회원이 아닐 경우, 차단
 	public boolean isMember() {
-		return this.memberName != null && this.memberLevel != null;
+		return this.memberName != null;
 	}
 	
 	//user의 sesstion 메세지를 가지고 jsonMessage를 보내라.

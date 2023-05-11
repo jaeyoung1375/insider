@@ -7,10 +7,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@JsonIgnoreProperties
+@JsonIgnoreProperties //항목이 없어도 이해 해주는 어노테이션
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class JsonMessageVO {
-
+	
 	private String content;
 	private long time;
 	

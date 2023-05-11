@@ -12,6 +12,6 @@ public interface DmRoomRepo {
     
     DmRoomDto find(int roomNo);
     
-    List<DmRoomDto> dmRoomList();
+    List<DmRoomDto> list();
     
 }
