@@ -89,7 +89,7 @@ public class AttachmentRestController {
 	public int uploadProfile(@RequestParam MultipartFile attach,
 			HttpSession session) throws IllegalStateException, IOException {
 		int attachmentNo=0;
-		int memberNo = (Integer)session.getAttribute("memberNo");
+		long memberNo = (Long)session.getAttribute("memberNo");
 		if(!attach.isEmpty()) {	//파일이 있을 경우
 			attachmentNo = attachmentRepo.save(attach);
 			

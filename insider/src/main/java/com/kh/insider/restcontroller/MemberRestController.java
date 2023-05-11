@@ -1,12 +1,10 @@
 package com.kh.insider.restcontroller;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,9 +32,7 @@ public class MemberRestController {
 	}
 	//멤버정보 수정
 	@PutMapping("/")
-	public void putMember(@ModelAttribute MemberDto memberDto, HttpSession session) {
-		int memberNo = (Integer)session.getAttribute("memberNo");
-		memberDto.setMemberNo(memberNo);
+	public void putMember(@RequestBody MemberDto memberDto) {
 		memberRepo.update(memberDto);
 	}
 	
@@ -47,8 +43,8 @@ public class MemberRestController {
 	}
 	
 	//환경설정 수정
-	@PutMapping("/setting")
-	public void update(@ModelAttribute SettingDto settingDto) {
+	@PutMapping("/setting/")
+	public void update(@RequestBody SettingDto settingDto) {
 		settingRepo.update(settingDto);
 	}
 }

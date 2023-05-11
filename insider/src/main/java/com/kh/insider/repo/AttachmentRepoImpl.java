@@ -48,13 +48,13 @@ public class AttachmentRepoImpl implements AttachmentRepo{
 
 	@Override
 	public void delete(int profileIsNull) {
-		sqlSession.delete("attach.delete", profileIsNull);
+		sqlSession.delete("attachment.delete", profileIsNull);
 	}
 
 
 	@Override
 	public AttachmentDto selectOne(int attachmentNo) {
-		return sqlSession.selectOne("attach.selectOne", attachmentNo);
+		return sqlSession.selectOne("attachment.selectOne", attachmentNo);
 	}
 
 	}
