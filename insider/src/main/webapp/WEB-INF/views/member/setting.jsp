@@ -1,38 +1,101 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
+<style>
+.selected{
+	border:1px solid black
+}
+</style>
 <div class="container-fluid mt-4" id="app">
 	<div class="row">
 	<!-- 좌측 사이드 메뉴바 -->
 		<div class="col-md-4">
-			<div class="row setting-menu" v-on:click="page=1">
+			<div class="row setting-menu" v-on:click="page=0" :class="{'selected':page==0}">
+				<div class="col">
+					<h2>개인정보 변경</h2>
+				</div>
+			</div>
+			<div class="row setting-menu" v-on:click="page=1" :class="{'selected':page==1}">
 				<div class="col">
 					<h2>프로필 편집</h2>
 				</div>
 			</div>
-			<div class="row setting-menu" v-on:click="page=2">
+			<div class="row setting-menu" v-on:click="page=2" :class="{'selected':page==2}">
 				<div class="col">
 					<h2>푸시 알림</h2>
 				</div>
 			</div>
-			<div class="row setting-menu" v-on:click="page=3">
+			<div class="row setting-menu" v-on:click="page=3" :class="{'selected':page==3}">
 				<div class="col">
 					<h2>내가 볼 수 있는 내용</h2>
 				</div>
 			</div>
-			<div class="row setting-menu" v-on:click="page=4">
+			<div class="row setting-menu" v-on:click="page=4" :class="{'selected':page==4}">
 				<div class="col">
 					<h2>공개 범위</h2>
 				</div>
 			</div>
-			<div class="row setting-menu" v-on:click="page=5">
+			<div class="row setting-menu" v-on:click="page=5" :class="{'selected':page==5}">
 				<div class="col">
 					<h2>소통 방법</h2>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">
-					<h2>변경사항 저장</h2>
+					<button class="btn btn-primary">변경사항 저장</button>
+				</div>
+			</div>
+		</div>
+	<!-- 개인정보 변경 -->
+		<div class="col-md-8" v-show="page==0">
+			<div class="row">
+				<div class="col">
+					<h1>개인정보 변경</h1>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<span>연락처 정보</span>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<input class="form-control" v-model="member.memberEmail">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<span>생일</span>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<input class="form-control" v-model="member.memberBirth">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<span>주소</span>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<input class="form-control" v-model="member.memberPost" readonly>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<input class="form-control" v-model="member.memberBasicAddr" readonly>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<input class="form-control" v-model="member.memberDetailAddr">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<h3>비밀번호 변경</h3>
 				</div>
 			</div>
 		</div>
@@ -45,15 +108,25 @@
 			</div>
 			<div class="row">
 				<div class="col-3">
-					프사위치
+					<img src="https://via.placeholder.com/100x100?text=profile">
 				</div>
 				<div class="col-9">
-					{{member.memberName}}
+					<div class="row">
+						<div class="col">
+							<span>{{member.memberName}}</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<span @click="openFileInput">프로필 사진 변경</span>
+							<input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*" style="display: none;">
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-3">
-					소개
+					<span>소개</span>
 				</div>
 				<div class="col-9">
 					<input class="form-control" v-model="member.memberMsg">
@@ -61,7 +134,7 @@
 			</div>
 			<div class="row">
 				<div class="col-3">
-					성별
+					<span>성별</span>
 				</div>
 				<div class="col-9">
 					<input class="form-control" v-model="member.memberGender">
@@ -80,11 +153,11 @@
 					<h2>좋아요 알림</h2>
 				</div>
 				<div class="col">
-					받음
+					<span>받음</span>
 					<input type="radio" value="1" v-model="setting.settingLikeAlert" v-bind:checked="setting.settingLikeAlert==1">
 				</div>
 				<div class="col">
-					안받음
+					<span>안받음</span>
 					<input type="radio" value="0" v-model="setting.settingLikeAlert" v-bind:checked="setting.settingLikeAlert==0">
 				</div>
 			</div>
@@ -93,11 +166,11 @@
 					<h2>댓글 알림</h2>
 				</div>
 				<div class="col">
-					받음
+					<span>받음</span>
 					<input type="radio" value="1" v-model="setting.settingReplyAlert" v-bind:checked="setting.settingReplyAlert==1">
 				</div>
 				<div class="col">
-					안받음
+					<span>안받음</span>
 					<input type="radio" value="0" v-model="setting.settingReplyAlert" v-bind:checked="setting.settingReplyAlert==0">
 				</div>
 			</div>
@@ -106,11 +179,11 @@
 					<h2>팔로우 알림</h2>
 				</div>
 				<div class="col">
-					받음
+					<span>받음</span>
 					<input type="radio" value="1" v-model="setting.settingFollowAlert" v-bind:checked="setting.settingFollowAlert==1">
 				</div>
 				<div class="col">
-					안받음
+					<span>안받음</span>
 					<input type="radio" value="0" v-model="setting.settingFollowAlert" v-bind:checked="setting.settingFollowAlert==0">
 				</div>
 			</div>
@@ -119,11 +192,11 @@
 					<h2>댓글에 좋아요 알림</h2>
 				</div>
 				<div class="col">
-					받음
+					<span>받음</span>
 					<input type="radio" value="1" v-model="setting.settingReplyLikeAlert" v-bind:checked="setting.settingReplyLikeAlert==1">
 				</div>
 				<div class="col">
-					안받음
+					<span>안받음</span>
 					<input type="radio" value="0" v-model="setting.settingReplyLikeAlert" v-bind:checked="setting.settingReplyLikeAlert==0">
 				</div>
 			</div>
@@ -155,13 +228,13 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<label>반경</label>
+					<span>반경</span>
 				</div>
 				<div class="col">
 					<input type="text" v-model="setting.settingDistance">
 				</div>
 				<div class="col">
-					<label>km 이내 게시물을 탐색합니다</label>
+					<span>km 이내 게시물을 탐색합니다</span>
 				</div>
 			</div>
 			<div class="row">
@@ -169,11 +242,11 @@
 					<h2>동영상 자동재생</h2>
 				</div>
 				<div class="col">
-					자동재생
+					<span>자동재생</span>
 					<input type="radio" value="1" v-model="setting.settingVideoAuto" v-bind:checked="setting.settingVideoAuto==1">
 				</div>
 				<div class="col">
-					수동재생
+					<span>수동재생</span>
 					<input type="radio" value="0" v-model="setting.settingVideoAuto" v-bind:checked="setting.settingVideoAuto==0">
 				</div>
 			</div>
@@ -193,7 +266,7 @@
 			<div class="row">
 				<div class="col">
 					<input type="radio" value="0" v-model="setting.settingHide" v-bind:checked="setting.settingHide==0">
-					<label>전체 공개</label>
+					<span>전체 공개</span>
 				</div>
 			</div>
 			<div class="row">
@@ -203,7 +276,7 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<input type="radio" value="1" v-model="setting.settingHide" v-bind:checked="setting.settingHide==1"><label>친구추천 불가</label>
+					<input type="radio" value="1" v-model="setting.settingHide" v-bind:checked="setting.settingHide==1"><span>친구추천 불가</span>
 				</div>
 			</div>
 			<div class="row">
@@ -213,7 +286,7 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<input type="radio" value="2" v-model="setting.settingHide" v-bind:checked="setting.settingHide==2"><label>친구에게만 공개</label>
+					<input type="radio" value="2" v-model="setting.settingHide" v-bind:checked="setting.settingHide==2"><span>친구에게만 공개</span>
 				</div>
 			</div>
 			<div class="row">
@@ -223,7 +296,7 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<input type="radio" value="3" v-model="setting.settingHide" v-bind:checked="setting.settingHide==3"><label>비공개 계정</label>
+					<input type="radio" value="3" v-model="setting.settingHide" v-bind:checked="setting.settingHide==3"><span>비공개 계정</span>
 				</div>
 			</div>
 			<div class="row">
@@ -239,7 +312,7 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<label>차단한 계정 확인하고 관리하기</label>
+					<span>차단한 계정 확인하고 관리하기</span>
 				</div>
 			</div>
 		</div>
@@ -262,22 +335,26 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<input type="radio" value="0" v-model="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==0"> 모든 사람
+					<input type="radio" value="0" v-model="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==0">
+					<span>모든 사람</span>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">
-					<input type="radio" value="1" v-model="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==1"> 내가 팔로우 하는 사람
+					<input type="radio" value="1" v-model="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==1"> 
+					<span>내가 팔로우 하는 사람</span>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">
-					<input type="radio" value="2" v-model="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==2"> 내 팔로워
+					<input type="radio" value="2" v-model="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==2"> 
+					<span>내 팔로워</span>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">
-					<input type="radio" value="3" v-model="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==3"> 내가 팔로우 하는 사람 및 내 팔로워
+					<input type="radio" value="3" v-model="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==3"> 
+					<span>내가 팔로우 하는 사람 및 내 팔로워</span>
 				</div>
 			</div>
 		</div>
@@ -291,6 +368,7 @@
 				member:{
 					memberNo:"",
 					memberName:"",
+					memberEmail:"",
 					memberLat:"",
 					memberLon:"",
 					memberPost:"",
@@ -336,12 +414,26 @@
 			async loadSetting(){
 				const resp = await axios.get(contextPath+"/rest/member/setting/"+memberNo);
 				Object.assign(this.setting, resp.data);
+			},
+			async loadMember(){
+				const resp = await axios.get(contextPath+"/rest/member/"+memberNo);
+				Object.assign(this.member, resp.data);
+			},
+		    openFileInput() {
+				this.$refs.fileInput.click();
+			},
+			handleFileUpload(event) {
+				const file = event.target.files[0];
+				// 파일 업로드 로직 처리
+				if (file) {
+				};
 			}
 		},
 		created(){
 			//쿼리에서 memberNo 반환
 			//this.setting.memberNo = this.$route.query.memberNo;
 			//세팅데이터 로드
+			//this.loadMember();
 			//this.loadSetting();
 		},
 		watch:{

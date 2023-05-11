@@ -23,6 +23,6 @@ public class BoardRestController {
 	//무한스크롤
 	@GetMapping("/page/{page}")
 	public List<BoardDto> paging(@PathVariable int page) {
-		return boardRepo.selectList(page);
+		return boardRepo.selectListPaging(page);
 	}
 }

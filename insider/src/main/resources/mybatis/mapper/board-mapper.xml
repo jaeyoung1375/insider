@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
@@ -25,4 +26,23 @@
 	<delete id="delete">
 		delete board where board_no=#{boardNo}
 	</delete>
+	
+	 <!-- SQL 구문 조각 생성 -->
+	 <sql id="topNheader">
+	 	select * from (
+	 		select rownum rn, TMP.*from(
+	 		</sql>
+	 <sql id="topNfooter">
+	 		)TMP
+	 	)where rn between #{begin} and #{end}
+	 </sql>
+	
+	 <select id="selectListPaging" resultType="BoardDto">
+	 	select * from (
+	 		select rownum rn, TMP.*from(
+	 		select * from board order by no asc
+	 	)TMP
+	 	)where rn between #{begin} and #{end}
+	 </select>
+	
 </mapper>

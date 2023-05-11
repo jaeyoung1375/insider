@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.dto.SettingDto;
+import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.SettingRepo;
 
 @RestController
@@ -16,6 +18,14 @@ import com.kh.insider.repo.SettingRepo;
 public class MemberRestController {
 	@Autowired
 	private SettingRepo settingRepo;
+	@Autowired
+	private MemberWithProfileRepo memberWithProfileRepo;
+	
+	//멤버정보 불러오기
+	@GetMapping("/{memberNo}")
+	public MemberWithProfileDto getMember(@PathVariable int memberNo) {
+		return memberWithProfileRepo.selectOne(memberNo);
+	}
 	
 	//환경설정 불러오기
 	@GetMapping("/setting/{memberNo}")
