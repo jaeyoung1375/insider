@@ -21,5 +21,10 @@ public class MemberRepoImpl implements MemberRepo{
 	public MemberDto findByEmail(String memberEmail) {
 		return sqlSession.selectOne("member.findByEmail",memberEmail);
 	}
+
+	@Override
+	public void update(MemberDto memberDto) {
+		sqlSession.update("member.update", memberDto);
+	}
 	
 }

@@ -40,11 +40,6 @@
 					<h2>소통 방법</h2>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col">
-					<button class="btn btn-primary">변경사항 저장</button>
-				</div>
-			</div>
 		</div>
 	<!-- 개인정보 변경 -->
 		<div class="col-md-8" v-show="page==0">
@@ -108,7 +103,7 @@
 			</div>
 			<div class="row">
 				<div class="col-3">
-					<img src="https://via.placeholder.com/100x100?text=profile">
+					<img :src="profileUrl">
 				</div>
 				<div class="col-9">
 					<div class="row">
@@ -393,11 +388,19 @@
 					settingAllowReply:"",
 					settingWatchLike:"",
 					isWatchLike:this.settingWatchLike==1,
-				}
+				},
 			};
 		},
 		computed: {
 			//계산영역
+			profileUrl(){
+				if(this.member.attachmentNo>0){
+					return contextPath+"/rest/attachment/download"+this.member.attachmentNo;
+				}
+				else{
+					return "https://via.placeholder.com/100x100?text=profile";
+				}
+			}
 		},
 		methods: {
 			//watchLike 체크에 따른 값 변화
@@ -415,18 +418,39 @@
 				const resp = await axios.get(contextPath+"/rest/member/setting/"+memberNo);
 				Object.assign(this.setting, resp.data);
 			},
+			//멤버 정보 불러오기
 			async loadMember(){
 				const resp = await axios.get(contextPath+"/rest/member/"+memberNo);
 				Object.assign(this.member, resp.data);
 			},
+			
+			//프로필 사진 변경 누르면 실행
 		    openFileInput() {
 				this.$refs.fileInput.click();
 			},
+			//파일이 추가되면 실행
 			handleFileUpload(event) {
 				const file = event.target.files[0];
 				// 파일 업로드 로직 처리
 				if (file) {
+					let fd = new FormData();
+					fd.append("attach", file);
+					this.member.attachmentNo= this.uploadProfile(fd);
 				};
+			},
+			//파일 저장 비동기 처리
+			async uploadProfile(formData){
+				const resp = await axios.post(contextPath+"/rest/attachment/upload/profile", formData);
+				
+				return resp;
+			},
+			//비동기 회원 데이터 수정
+			async saveMember(){
+				const resp = await axios.put(contextPath+"/rest/member/"+this.member.memberNo, this.member);
+			},
+			//비동기 세팅 데이터 수정
+			async saveSetting(){
+				const resp = await axios.put(contextPath+"/rest/member/setting/"+this.member.memberNo, this.setting);
 			}
 		},
 		created(){
@@ -438,6 +462,18 @@
 		},
 		watch:{
 			//감시영역
+			member:{
+				deep:true,
+				handler(){
+					this.saveMember();
+				},
+			},
+			setting:{
+				deep:true,
+				handler(){
+					this.saveSetting();
+				},
+			}
 		}
 	}).mount("#app");
 </script>

@@ -6,5 +6,5 @@ public interface MemberRepo {
 	
 	public void join(MemberDto dto);
 	public MemberDto findByEmail(String memberEmail);
-
+	public void update(MemberDto memberDto);
 }

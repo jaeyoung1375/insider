@@ -25,4 +25,12 @@
 		select * from member where member_no = #{memberEmail}
 	</select>
 	
+	<!-- 회원정보 수정(패스워드 x)-->
+	<update id="update">
+		update member set member_name=#{memberName}, member_email=#{memberEmail}, 
+		member_post=#{memberPost}, member_basic_addr=#{memberBasicAddr}, 
+		member_detail_addr=#{memberDetailAddr}, member_tel=#{memberTel}, member_gender=#{memberGender}
+		, member_birth=#{memberBirth} where member_no=#{memberNo} 
+	</update>
+	
 </mapper>

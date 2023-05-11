@@ -22,5 +22,9 @@
 	<update id="delete" parameterType="int">
 		delete from attachment where attachment_no=#{attachmentNo}
 	</update>
+	
+	<select id="selectOne" resultType="AttachmentDto">
+		select * from attachment where attachment_no=#{attachmentNo}
+	</select>
    
 </mapper>
