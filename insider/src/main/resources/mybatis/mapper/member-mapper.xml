@@ -6,8 +6,19 @@
 
 	<!-- 회원가입 -->
 	<insert id="join">
-  
-    
+    INSERT INTO member(
+        member_no, member_name, member_email, member_password,
+        member_post, member_basic_addr, member_detail_addr,
+        member_tel, member_gender, member_birth, member_nick
+    ) VALUES (
+        member_seq.nextval, #{memberName}, #{memberEmail}, #{memberPassword},
+        #{memberPost}, #{memberBasicAddr}, #{memberDetailAddr}, #{memberTel},
+        #{memberGender}, #{memberBirth}, #{memberNick}
+    )
+	</insert>
+	
+		<!-- 일반 회원가입 -->
+	<insert id="socialJoin">
     INSERT INTO member(
         member_no, member_name, member_email, member_password,
         member_post, member_basic_addr, member_detail_addr,
@@ -18,6 +29,7 @@
         #{memberGender}, #{memberBirth}, #{memberNick}
     )
 	</insert>
+	
 	
 	<!-- 로그인 -->
 	<select id="login" resultType="MemberDto">
