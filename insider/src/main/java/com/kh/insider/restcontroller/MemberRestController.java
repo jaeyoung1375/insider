@@ -1,11 +1,15 @@
 package com.kh.insider.restcontroller;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.MemberDto;
@@ -46,5 +50,20 @@ public class MemberRestController {
 	@PutMapping("/setting/")
 	public void update(@RequestBody SettingDto settingDto) {
 		settingRepo.update(settingDto);
+	}
+	//비밀번호 확인
+	@PostMapping("/setting/password")
+	public boolean checkPassword(@RequestParam String password, HttpSession session) {
+		int memberNo = (Integer)session.getAttribute("memberNo");
+		MemberDto memberDto = memberRepo.findByNo(memberNo);
+		return password.equals(memberDto.getMemberPassword());
+	}
+	//비밀번호 변경
+	@PutMapping("/setting/password")
+	public void changePassword(@RequestParam String newPassword, HttpSession session) {
+		int memberNo = (Integer)session.getAttribute("memberNo");
+		MemberDto memberDto = memberRepo.findByNo(memberNo);
+		memberDto.setMemberPassword(newPassword);
+		memberRepo.changePassword(memberDto);
 	}
 }

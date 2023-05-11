@@ -54,7 +54,10 @@
 		member_detail_addr=#{memberDetailAddr}, member_tel=#{memberTel}, member_gender=#{memberGender}
 		, member_birth=#{memberBirth} where member_no=#{memberNo} 
 	</update>
-	
+	<!-- 회원정보 수정(패스워드)-->
+	<update id="changePassword">
+		update member set member_password=#{memberPassword} where member_no=#{memberNo}
+	</update>
 	<!-- 로그인 시각 갱신 -->
 	<update id="updateLoginTime">
 		update member set member_login = sysdate where member_no = #{memberNo}

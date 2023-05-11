@@ -358,34 +358,82 @@
 		</div>
 	</div>
 
-<!-- ---------------------------------비밀번호 변경 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="passwordModal" data-bs-backdrop="static" ref="passwordModal">
+<!-- ---------------------------------비밀번호 확인 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="passwordModal" data-bs-backdrop="static" ref="passwordCheckModal">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title">제목4</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+					<h5 class="modal-title">비밀번호 변경</h5>
+					<button type="button" class="btn-close" @click="hidePasswordCheckModal()" aria-label="Close">
 					<span aria-hidden="true"></span>
 					</button>
 				</div>
 				<div class="modal-body">
 				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
-					<p>본문 내용</p>
+					<div class="row">
+						<div class="col">
+							<span>비밀번호 확인</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<input class="form-control rounded" placeholder="비밀번호 입력" type="password" v-model="password">
+						</div>
+					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-primary">Save changes</button>
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" @click="checkPassword">확인</button>
+					<button type="button" class="btn btn-secondary" @click="hidePasswordCheckModal()">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- ---------------------------------비밀번호 변경 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="changePasswordModal" data-bs-backdrop="static" ref="passwordChangeModal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">비밀번호 변경</h5>
+					<button type="button" class="btn-close" @click="hidePasswordChangeModal()" aria-label="Close">
+					<span aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="modal-body">
+				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
+					<div class="row">
+						<div class="col">
+							<span>바꿀 비밀번호 입력</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<input class="form-control rounded" placeholder="비밀번호 입력" type="password" v-model="password">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<input class="form-control rounded" placeholder="비밀번호 확인" type="password" v-model="password">
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" @click="changePassword">변경</button>
+					<button type="button" class="btn btn-secondary" @click="hidePasswordChangeModal()">취소</button>
 				</div>
 			</div>
 		</div>
 	</div>
 	
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+
 <script>
 	Vue.createApp({
 		data() {
 			return {
-				modal:null,
+				passwordCheckModal:null,
+				passwordChangeModal:null,
 				page:1,
 				member:{
 					memberNo:"",
@@ -416,6 +464,10 @@
 					settingWatchLike:"",
 					isWatchLike:this.settingWatchLike==1,
 				},
+				password:"",
+				passwordCheck:false,
+				newPassword:"",
+				newPasswordCheck:"",
 			};
 		},
 		computed: {
@@ -480,14 +532,36 @@
 				const resp = await axios.put(contextPath+"/rest/member/setting/", this.setting);
 			},
 			//비밀번호 변경 모달창 열기
-			showModal(){
-				if(this.modal==null) return;
-				this.modal.show();
+			showPasswordCheckModal(){
+				if(this.passwordCheckmodal==null) return;
+				this.passwordCheckModal.show();
 			},
-			hideModal(){
-				if(this.modal==null) return;
-				this.modal.hide();
+			hidePasswordCheckModal(){
+				if(this.passwordCheckModal==null) return;
+				this.passwordCheckModal.hide();
+				this.password="";
 			},
+			showPasswordChangeModal(){
+				if(this.passwordChangeModal==null) return;
+				this.passwordChangeModal.show();
+			},
+			hidePasswordChangeModal(){
+				if(this.passwordChangeModal==null) return;
+				this.passwordChangeModal.hide();
+				this.newPassword="";
+				this.newPasswordCheck="";
+			},
+			//비밀번호 확인 통신
+			async checkPassword(){
+				const resp = await axios.post(contextPath+"/rest/member/setting/password", this.password)
+				this.passwordCheck = resp.data;
+				this.password="";
+			},
+			//비밀번호 변경 통신
+			async changePassword(){
+				const resp = await axios.put(contextPath+"/rest/member/setting/password", this.newPassword)
+				this.hidePasswordChangeModal();
+			}
 		},
 		created(){
 			//세팅데이터 로드
@@ -495,9 +569,9 @@
 			this.loadSetting();
 		},
 		mounted(){
-				
-		//	this.modal = new bootstrap.Modal(this.$refs.passwordModal);
 			//모달 선언
+			this.passwordCheckModal = new bootstrap.Modal(this.$refs.passwordCheckModal);
+			this.passwordChangeModal = new bootstrap.Modal(this.$refs.passwordChangeModal);
 		},
 		watch:{
 			//감시영역
@@ -514,6 +588,13 @@
 					this.saveSetting();
 				},
 			},
+			passwordCheck:{
+				if(passwordCheck){
+					this.hidePasswordCheckModal();
+					this.showPasswordChangeModal();
+				}
+				else return;
+			}
 		},
 	}).mount("#app");
 </script>
