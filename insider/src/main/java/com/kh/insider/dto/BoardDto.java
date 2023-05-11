@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class BoardDto {
+
 	public int boardNo;
 	public int memberNo;
 	public String boardContent;

@@ -35,6 +35,11 @@ public class MemberRepoImpl implements MemberRepo{
 	}
 
 	@Override
+	public void update(MemberDto memberDto) {
+		sqlSession.update("member.update", memberDto);
+	}
+	
+	@Override
 	public MemberDto login(String memberEmail, String memberPassword) {
 		Map<String,String> param = new HashMap<>();
 		param.put("memberEmail", memberEmail);
@@ -48,6 +53,5 @@ public class MemberRepoImpl implements MemberRepo{
 		sqlSession.update("member.updateLoginTime",memberNo);
 	}
 
-	
 	
 }
