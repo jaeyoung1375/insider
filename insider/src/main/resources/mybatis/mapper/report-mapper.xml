@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="report">
+	<insert id="insert">
+		insert into report(report_no, member_no, report_content, report_table_no, report_table)
+		 values(report_seq.nextval, #{memberNo}, #{reportContent}, #{reportTableNo}, #{reportTable})
+	</insert>
+	<update id="update">
+		update report set report_check=#{reportCheck} where report_no=#{reportNo}
+	</update>
+	<select id="selectOne" resultType="ReportDto">
+		select * from report where report_no=#{reportNo}
+	</select>
+	<select id="selectList" resultType="ReportDto">
+	SELECT * FROM (
+		SELECT tmp.*, rownum rn FROM (
+			select * from report
+			<if test="column!=null and keyword!=null"> 
+				where instr(${column}, #{keyword})>0
+			</if>
+			order by report_no asc
+		) tmp
+	) WHERE rn BETWEEN #{begin} AND #{end}
+	</select>
+</mapper>

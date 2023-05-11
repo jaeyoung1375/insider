@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="setting">
+	<!-- 기본 설정 생성 -->
+	<insert id="basicInsert">
+		insert into setting(member_no) values(#{memberNo})
+	</insert>
+	<!-- 수정 -->
+	<update id="update">
+		update setting 
+			setting_hide=#{settingHide}, setting_distance=#{settingDistance},
+			setting_alert=#{settingAlert}, setting_like_alert=#{settingLikeAlert}, 
+			setting_reply_alert=#{settingReplyAlert}, setting_followAlert=#{settingFollowAlert},
+			setting_video_auto=#{settingVideoAuto}, setting_reply_like_alert=#{settingReplyLikeAlert},
+			setting_message=#{settingMessage}, setting_allow_reply=#{settingAllowReply},
+			setting_watch_like=#{settingWatchLike}
+		 where member_no=#{memberNo}
+	</update>
+	<!-- 읽기 -->
+	<select id="selectOne" resultType="settingDto">
+		select * from setting where member_no=#{memberNo}
+	</select>
+</mapper>
