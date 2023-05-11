@@ -1,5 +1,8 @@
 package com.kh.insider.repo;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -14,8 +17,21 @@ public class MemberRepoImpl implements MemberRepo{
 
 	@Override
 	public void join(MemberDto dto) {
+	
 		sqlSession.insert("member.join",dto);
 	}
+	
+	@Override
+	// 추후 수정 - 05/10 재영
+	public void socialJoin(MemberDto dto) {
+		boolean useSequence = false;
+		Map<String,Object> param = new HashMap<>();
+		param.put("useSequence",useSequence);
+		param.put("dto", dto);
+		
+		sqlSession.insert("member.join",param);
+	}
+	
 
 	@Override
 	public MemberDto findByEmail(String memberEmail) {
@@ -26,5 +42,20 @@ public class MemberRepoImpl implements MemberRepo{
 	public void update(MemberDto memberDto) {
 		sqlSession.update("member.update", memberDto);
 	}
+	
+	@Override
+	public MemberDto login(String memberEmail, String memberPassword) {
+		Map<String,String> param = new HashMap<>();
+		param.put("memberEmail", memberEmail);
+		param.put("memberPassword", memberPassword);
+		
+		return sqlSession.selectOne("member.login",param);
+	}
+
+	@Override
+	public void updateLoginTime(long memberNo) {
+		sqlSession.update("member.updateLoginTime",memberNo);
+	}
+
 	
 }
