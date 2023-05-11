@@ -55,7 +55,7 @@ public class MemberController {
 		memberRepo.join(dto);
 		//기본 회원설정값 생성(추후 수정 필요)
 		settingRepo.basicInsert(dto.getMemberNo());
-		return "redirect:join";
+		return "redirect:/";
 	}
 	
 	@GetMapping("/login")
@@ -73,9 +73,19 @@ public class MemberController {
 	}
 	memberRepo.updateLoginTime(findMember.getMemberNo());
 	session.setAttribute("memberEmail",findMember.getMemberEmail());
+	session.setAttribute("memberNo",findMember.getMemberNo());
 		
 	return "redirect:/";
 	}
+	
+	@GetMapping("/logout")
+	public String logout(HttpSession session) {
+		session.removeAttribute("memberNo");
+		session.removeAttribute("memberEmail");
+		
+		return "redirect:/";
+	}
+	
 	
 	// 카카오 로그인
 	@GetMapping("/auth/kakao/callback")
@@ -101,10 +111,7 @@ public class MemberController {
 			kakaoUser.setMemberName(memberName);
 			kakaoUser.setMemberNick(memberNickName);
 			kakaoUser.setMemberPassword(memberPw);
-
-			
-			
-//			memberRepo.join(kakaoUser);
+				
 		}else {
 			System.out.println("기존회원이므로 로그인을 진행합니다.");
 			memberRepo.updateLoginTime(memberNo);
@@ -125,7 +132,8 @@ public class MemberController {
 	@GetMapping("/addInfo")
 	public String addInfo(Model model, HttpSession session) {
 
-		MemberDto socialUser = (MemberDto)session.getAttribute("socialUser");
+		MemberDto socialUser =(MemberDto) session.getAttribute("socialUser");
+
 		model.addAttribute("socialUser",socialUser);
 		
 		return "member/addInfo";
@@ -134,7 +142,7 @@ public class MemberController {
 	@PostMapping("/addInfo")
 	public String addInfo(@ModelAttribute MemberDto dto) {
 	
-		memberRepo.join(dto);
+		memberRepo.socialJoin(dto);
 		
 		return "redirect:/";
 	}
@@ -171,7 +179,7 @@ public class MemberController {
 			return "redirect:/";
 		}
 		session.setAttribute("socialUser",googleUser);
-		session.setAttribute("member",response.getAccess_token());
+		session.setAttribute("memberNo",response.getAccess_token());
 		session.setAttribute("refresh_token",response.getRefresh_token());
 		
 
