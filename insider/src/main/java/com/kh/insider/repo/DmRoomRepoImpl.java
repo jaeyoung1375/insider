@@ -30,9 +30,8 @@ public class DmRoomRepoImpl implements DmRoomRepo {
 	}
 
 	@Override
-	public List<DmRoomDto> dmRoomList() {
-		return sqlSession.selectList("dmRoom.dmRoomlist");
+	public List<DmRoomDto> list() {
+		return sqlSession.selectList("dmRoom.list");
 	}
-
 
 }
