@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="dmRoom">
+	
+	<select id="sequence">
+		select dm_room_seq.nextval from dual
+	</select>
+	
+	<insert id="create">
+		insert into dm_room(room_no, room_name, room_created)
+		values(#{roomNo}, #{roomName}, sysdate)
+	</insert>
+	
+	<select id="find" resultType="DmRoomDto">
+		select * from dm_room where room_no = #{roomNo}	
+	</select>
+	
+	<select id="list" resultType="DmRoomDto">
+		select * from dm_room order by room_no desc
+	</select>
+
+</mapper>
