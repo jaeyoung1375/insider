@@ -28,27 +28,34 @@ public class AttachmentRepoImpl implements AttachmentRepo{
 	}
 	
 	
-	@Override
-	public int save(MultipartFile attachment) throws IllegalStateException, IOException {
-		int attachmentNo = sqlSession.selectOne("attachment.sequence");
-		
-		String fileName = String.valueOf(attachmentNo);
-		File dir = new File(directory, fileName);
-		attachment.transferTo(dir);
-		
-		sqlSession.insert("attachment.insert", AttachmentDto.builder()
-				.attachmentNo(attachmentNo)
-				.attachmentName(attachment.getOriginalFilename())
-				.attachmentType(attachment.getContentType())
-				.attachmentSize(attachment.getSize())
-				.build());
-		return attachmentNo;
-	}
+//	@Override
+//	public int save(MultipartFile attachment) throws IllegalStateException, IOException {
+//		int attachmentNo = sqlSession.selectOne("attachment.sequence");
+//		
+//		String fileName = String.valueOf(attachmentNo);
+//		File dir = new File(directory, fileName);
+//		attachment.transferTo(dir);
+//		
+//		sqlSession.insert("attachment.insert", AttachmentDto.builder()
+//				.attachmentNo(attachmentNo)
+//				.attachmentName(attachment.getOriginalFilename())
+//				.attachmentType(attachment.getContentType())
+//				.attachmentSize(attachment.getSize())
+//				.build());
+//		return attachmentNo;
+//	}
+	 @Override
+	    public int sequence() {
+	        return sqlSession.selectOne("attachment.sequence");
+	    }
 
+	    @Override
+	    public void insert(AttachmentDto attachmentDto) {
+	        sqlSession.insert("attachment.insert", attachmentDto);
+	    }
 
-	@Override
-	public void delete(int profileIsNull) {
-		sqlSession.delete("attach.delete", profileIsNull);
-	}
-
+	    @Override
+	    public AttachmentDto selectOne(int attachmentNo) {
+	        return sqlSession.selectOne("attachment.selectOne", attachmentNo);
+	    }
 	}
