@@ -105,8 +105,6 @@ public class MemberController {
 		long memberNo = profile.getId();
 		String memberEmail = profile.kakao_account.getEmail();
 		String memberPw = cosKey;
-		String memberName = profile.properties.getNickname();
-		String memberNickName = profile.properties.getNickname();
 		MemberDto originalMember = memberRepo.findByEmail(profile.kakao_account.getEmail());
 		
 		
@@ -115,8 +113,6 @@ public class MemberController {
 			System.out.println("회원가입을 진행합니다..");
 			kakaoUser.setMemberNo(memberNo);
 			kakaoUser.setMemberEmail(memberEmail);
-			kakaoUser.setMemberName(memberName);
-			kakaoUser.setMemberNick(memberNickName);
 			kakaoUser.setMemberPassword(memberPw);
 				
 		}else {
@@ -132,14 +128,10 @@ public class MemberController {
 			return "redirect:/";
 		}
 		// addInfo로 넘길 정보
-		session.setAttribute("socialUser",kakaoUser);
+		session.setAttribute("loginUser",kakaoUser);
 		session.setAttribute("member",token.getAccess_token());
 		session.setAttribute("refresh_token",token.getRefresh_token());
 		
-		
-		String accessToken = token.getAccess_token();
-		System.out.println(accessToken);
-		System.out.println(profile);
 		
 		return "redirect:/member/addInfo";
 	}
@@ -147,9 +139,9 @@ public class MemberController {
 	@GetMapping("/addInfo")
 	public String addInfo(Model model, HttpSession session) {
 
-		MemberDto socialUser =(MemberDto) session.getAttribute("socialUser");
+		MemberDto loginUser =(MemberDto) session.getAttribute("loginUser");
 
-		model.addAttribute("socialUser",socialUser);
+		model.addAttribute("loginUser",loginUser);
 		
 		return "member/addInfo";
 	}
@@ -180,7 +172,7 @@ public class MemberController {
 		String memberEmail = profile.getEmail();
 		String memberPw = cosKey;
 		String memberName = profile.getName();
-		String memberNickName = profile.getName();
+		
 		
 		
 		if(originalMember == null) {
@@ -188,7 +180,6 @@ public class MemberController {
 			googleUser.setMemberNo(memberNo);
 			googleUser.setMemberEmail(memberEmail);
 			googleUser.setMemberName(memberName);
-			googleUser.setMemberNick(memberNickName);
 			googleUser.setMemberPassword(memberPw);
 
 			

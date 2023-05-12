@@ -41,12 +41,16 @@
         <div class="container col-lg-3 card p-5 mt-5">
 <h1 class="text-center">추가정보 입력</h1>
 <form action="addInfo" method="post">
-<input type="hidden" name="memberNo" value="${socialUser.memberNo}">
-<input type="hidden" name="memberName" value="${socialUser.memberName}">
-<input type="hidden" name="memberNick" value="${socialUser.memberNick}">
-<input type="hidden" name="memberPassword" value="${socialUser.memberPassword}">
-<input type="hidden" name="memberEmail" value="${socialUser.memberEmail}">
+<input type="hidden" name="memberNo" value="${loginUser.memberNo}">
+<input type="hidden" name="memberPassword" value="${loginUser.memberPassword}">
+<input type="hidden" name="memberEmail" value="${loginUser.memberEmail}">
 
+ <div class="mb-3 row">
+                <input class="form-control" type="text" name="memberName" placeholder="성명">
+            </div>
+            <div class="mb-3 row">
+                <input class="form-control" type="text" name="memberNick" placeholder="닉네임">
+            </div>
 
  <div class="text-center mb-3">
                  <input type="radio" id="select1" name="memberGender" value="0" class="btn-check">
