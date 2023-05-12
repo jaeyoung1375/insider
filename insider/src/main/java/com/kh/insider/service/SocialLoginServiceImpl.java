@@ -96,7 +96,7 @@ public class SocialLoginServiceImpl implements SocialLoginService {
 			e.printStackTrace();
 		}
 		
-		if(profile.getKakao_account().getGender().equals("male")) {
+		if(profile.kakao_account.getGender().equals("male")) {
 			profile.getKakao_account().setGender("0");
 		}else {
 			profile.getKakao_account().setGender("1");
