@@ -9,7 +9,7 @@ import com.kh.insider.dto.BoardDto;
 
 public interface BoardService {
 	
-//	void insert(BoardDto boardDto, List<MultipartFile> boardAttach) throws IllegalStateException, IOException;
-//	
-//	void delete(int boardNo);
+	void insert(BoardDto boardDto, List<MultipartFile> boardAttach) throws IllegalStateException, IOException;
+	
+	void delete(int boardNo);
 }

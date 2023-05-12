@@ -1,8 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%> <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 
 <script type="text/javascript">
   $(function () {
@@ -71,16 +69,6 @@
   <c:if test="${parentBoardNo!=null}">
         <input type="hidden" name="parentBoardNo" value="${parentBoardNo}">
   </c:if>
-<!--   <label for="boardTitle">제목: </label> -->
-<%--   <c:choose> --%>
-<%--     <c:when test="${parentBoardNo==null}"> --%>
-<!--         <input id="boardTitle" type="text" name="boardTitle" required> -->
-<%--     </c:when> --%>
-<%--     <c:otherwise> --%>
-<!--         <input id="boardTitle" type="text" name="boardTitle" value="RE: " required> -->
-<%--     </c:otherwise> --%>
-<%--   </c:choose> --%>
-  <br /><br />
 
   <label for="boardContent">내용: </label>
   <!-- <textarea id="boardContent" rows="10" cols="60" name="boardContent" required></textarea> -->
@@ -97,6 +85,9 @@
 <!--     <option>유머</option> -->
 <!--     <option>정보</option> -->
 <!--   </select> -->
+
+
+
   <br /><br />
   <button>작성</button>
   <br /><br />

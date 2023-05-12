@@ -27,17 +27,5 @@ public class DmController {
 		return "dm/home";
 	}
 	
-	//테스트
-	@GetMapping("/json")
-	public String json() {
-		return "dm/json";
-	}
-	
-	//테스트
-	@GetMapping("/channel6")
-	public String channel6() {
-		return "dm/channel6";
-	}
-	
 
 }
