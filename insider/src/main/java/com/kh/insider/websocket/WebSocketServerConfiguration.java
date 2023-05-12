@@ -20,6 +20,7 @@ public class WebSocketServerConfiguration implements WebSocketConfigurer {
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 
+
 //		//테스트
 //		registry.addHandler(jsonWebSocketServer, "/ws/json")
 //				.withSockJS();
@@ -27,6 +28,11 @@ public class WebSocketServerConfiguration implements WebSocketConfigurer {
 //		registry.addHandler(channelWebSocketServer, "/ws/channel6")
 //				.addInterceptors(new HttpSessionHandshakeInterceptor())
 //				.withSockJS();
+		
+		registry.addHandler(channelWebSocketServer, "/ws/channel")
+				.addInterceptors(new HttpSessionHandshakeInterceptor())
+				.withSockJS();
+		
 	}
 
 }

@@ -8,7 +8,7 @@ public interface DmUserRepo {
 
 	void enter(DmUserDto dmUserDto);
 	
-	List<DmUserDto> find(String memberNo);
+	List<DmUserDto> find(long memberNo);
 	
 	boolean check(DmUserDto dmUserDto);
 	

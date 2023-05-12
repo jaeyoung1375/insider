@@ -12,7 +12,7 @@ import lombok.Data;
 public class DmRoomVO {
 	
 	private int roomNo;
-	private String roomName;
+	//private String roomName;
 	
     //채팅방의 사용자를 저장할 저장소
     private Set<DmUserVO> users = new CopyOnWriteArraySet<>();
@@ -38,11 +38,9 @@ public class DmRoomVO {
     }
 
     //해당 방에 속한 사용자들에게 메세지를 전송하는 기능
-    public void broadcast(TextMessage message, DmUserVO sender) throws IOException {
+    public void broadcast(TextMessage jsonMessage) throws IOException {
         for (DmUserVO user : users) {
-            if (!user.equals(sender)) {
-                user.send(message);
-            }
+        	user.send(jsonMessage);
         }
     }
 
