@@ -36,25 +36,26 @@
             	<div style="display:flex; justify-content: space-between; flex-direction: column; align-items: center;" >
             	 <div class="row mb-3">
             <a href="https://kauth.kakao.com/oauth/authorize?client_id=1b308937b1aec37f7b4bc57faeb4931b&redirect_uri=	
-http://localhost:8080/member/auth/kakao/callback&response_type=code&scope=account_email,gender,age_range&prompt=login">
+			http://localhost:8080/member/auth/kakao/callback&
+			response_type=code&scope=account_email,gender,age_range&prompt=login">
             	 <img src="/static/image/social/kakao_login.png">
             </a>
             </div>
              <div class="row mb-3">
              <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=197694978566-bljc0eo7lnf071parv36ntrenp3g69eb.apps.googleusercontent.com&
 				redirect_uri=http://localhost:8080/member/login/oauth_google_check&response_type=code
-&scope=email%20profile%20openid
-&access_type=offline&prompt=login">
+				&scope=email%20profile%20openid
+				&access_type=offline&prompt=login">
             	 <img src="/static/image/social/google_login.png">
             </a>
             </div>
-            <!--  
+         <!--  
             <div class="row mb-3">
             <a href="https://www.facebook.com/v2.11/dialog/oauth?
-client_id=2144292115764306&
-redirect_uri=http://localhost:8080/member/facebook/auth&scope=public_profile,email"><img src="/static/image/social/facebook_login.png" width="183" height="45" ></a>
+client_id=1721778684918582&
+redirect_uri=https://localhost:8080/member/facebook/auth&scope=public_profile,email&prompt=login"><img src="/static/image/social/facebook_login.png" width="183" height="45" ></a>
             </div>
-             -->
+            -->
             </div>
            </div>
         </div>

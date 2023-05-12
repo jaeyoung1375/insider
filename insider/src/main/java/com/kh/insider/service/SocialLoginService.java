@@ -2,22 +2,30 @@ package com.kh.insider.service;
 
 import java.net.URISyntaxException;
 
-import com.kh.insider.vo.GoogleInfoResponse;
-import com.kh.insider.vo.GoogleResponse;
-import com.kh.insider.vo.KakaoProfile;
-import com.kh.insider.vo.OAuthToken;
+import com.kh.insider.vo.FacebookProfileVO;
+import com.kh.insider.vo.FacebookResponseVO;
+import com.kh.insider.vo.GoogleProfileVO;
+import com.kh.insider.vo.GoogleResponseVO;
+import com.kh.insider.vo.KakaoProfileVO;
+import com.kh.insider.vo.KakaoResponseVO;
 
 public interface SocialLoginService {
 	
 	// 카카오 토큰 발급
-	public OAuthToken kakaoTokenCreate(String code) throws URISyntaxException;
+	public KakaoResponseVO kakaoTokenCreate(String code) throws URISyntaxException;
 	
 	// 카카오 로그인
-	public KakaoProfile kakaoLogin(String code, OAuthToken oAuthToken) throws URISyntaxException;
+	public KakaoProfileVO kakaoLogin(String code, KakaoResponseVO oAuthToken) throws URISyntaxException;
 	
 	// 구글 토큰 발급
-	public GoogleResponse googleTokenCreate(String code) throws URISyntaxException;
+	public GoogleResponseVO googleTokenCreate(String code) throws URISyntaxException;
 	
 	// 구글 로그인
-	public GoogleInfoResponse googleLogin(String code, GoogleResponse response) throws URISyntaxException;
+	public GoogleProfileVO googleLogin(String code, GoogleResponseVO response) throws URISyntaxException;
+	
+	// 페이스북 토큰 발급
+	public FacebookResponseVO facebookTokenCreate(String code) throws URISyntaxException;
+	
+	// 페이스북 로그인
+	public FacebookProfileVO facebookLogin(String code, FacebookResponseVO response) throws URISyntaxException;
 }
