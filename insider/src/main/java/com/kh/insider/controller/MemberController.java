@@ -3,6 +3,7 @@ package com.kh.insider.controller;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
@@ -155,12 +156,15 @@ public class MemberController {
 		MemberDto googleUser = new MemberDto();
 		GoogleProfileVO profile = socialLoginService.googleLogin(code,response);
 		MemberDto originalMember = memberRepo.findByEmail(profile.getEmail());
-		String memberNoReplace = profile.getAzp().replaceAll("[^0-9]","");
-		memberNoReplace = memberNoReplace.substring(0, 10);
-		profile.setAzp(memberNoReplace);
-		System.out.println(profile.getAzp());
+		UUID uuid = UUID.randomUUID();
+		String uuidString = uuid.toString();
+		  // 하이픈(-) 제거
+        String uuidWithoutHyphens = uuidString.replaceAll("-", "");
+        // 숫자 부분 추출
+        String numbersOnly = uuidWithoutHyphens.replaceAll("\\D", "");
 		
-		long memberNo = Long.parseLong(profile.getAzp());
+		
+		long memberNo = Long.parseLong(numbersOnly);
 		String memberEmail = profile.getEmail();
 		String memberPw = cosKey;
 		String memberName = profile.getName();
