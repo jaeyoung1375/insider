@@ -90,3 +90,22 @@ CREATE SEQUENCE member_profile_seq;
 CREATE VIEW member_with_profile as
 SELECT M.*, P.attachment_no FROM MEMBER M 
 LEFT OUTER JOIN member_profile P ON M.member_no=P.member_no;
+
+--태그 관련 테이블 생성
+CREATE TABLE tag(
+tag_name varchar2(60) PRIMARY KEY,
+tag_follow NUMBER DEFAULT 0 NOT NULL check(tag_follow>=0)
+);
+
+CREATE TABLE board_tag(
+board_tag_no NUMBER PRIMARY KEY,
+tag_name references tag(tag_name),
+board_no REFERENCES board(board_no)
+);
+CREATE SEQUENCE board_tag_seq;
+
+CREATE TABLE tag_follow(
+tag_name REFERENCES tag(tag_name),
+member_no REFERENCES member(MEMBER_no),
+PRIMARY key(tag_name, member_no)
+);

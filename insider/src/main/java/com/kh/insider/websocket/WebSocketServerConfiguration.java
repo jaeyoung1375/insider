@@ -14,15 +14,15 @@ public class WebSocketServerConfiguration implements WebSocketConfigurer {
 	@Autowired
 	private ChannelWebSocketServer channelWebSocketServer;
 	
-	@Autowired
-	private JsonWebSocketServer jsonWebSocketServer;
+//	@Autowired
+//	private JsonWebSocketServer jsonWebSocketServer;
 	
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 
 		//테스트
-		registry.addHandler(jsonWebSocketServer, "/ws/json")
-				.withSockJS();
+//		registry.addHandler(jsonWebSocketServer, "/ws/json")
+//				.withSockJS();
 		
 		registry.addHandler(channelWebSocketServer, "/ws/channel6")
 				.addInterceptors(new HttpSessionHandshakeInterceptor())
