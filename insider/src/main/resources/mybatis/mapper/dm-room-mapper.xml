@@ -12,13 +12,15 @@
 	
 	<insert id="create">
 		insert into dm_room(room_no, room_name, room_created)
-		values(#{roomNo}, #{roomName}, sysdate)
+		values(dm_room_seq.nextval, null, sysdate)
 	</insert>
 	
+	<!--  채팅방 유무  -->
 	<select id="find" resultType="DmRoomDto">
 		select * from dm_room where room_no = #{roomNo}	
 	</select>
 	
+	<!-- 채팅방 목록 -->
 	<select id="list" resultType="DmRoomDto">
 		select * from dm_room order by room_no desc
 	</select>

@@ -13,7 +13,7 @@
 	<insert id="create">
 		insert into dm_message(message_no, room_no, member_sender, message_content, 
 			message_send_time, message_read_time)
-		values(#{messageNo}, #{roomNo}, #{memberSender}, #{messageContent}, sysdate, sysdate)
+		values(dm_message_seq.nextval, #{roomNo}, #{memberSender}, #{messageContent}, sysdate, sysdate)
 	</insert>
 	
 	<select id="detail" resultType="DmMessageDto">
