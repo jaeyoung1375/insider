@@ -1,0 +1,31 @@
+@charset "UTF-8";
+.email-warning-message{
+    color:red;
+    margin-top: 5px;
+    font-size: 12px;
+}
+.name-warning-message{
+    color:red;
+    margin-top: 5px;
+    font-size: 12px;
+}
+.nick-warning-message{
+    color:red;
+    margin-top: 5px;
+    font-size: 12px;
+}
+.password-warning-message{
+    color:red;
+    margin-top: 5px;
+    font-size: 12px;
+}
+.passwordCk-warning-message{
+    color:red;
+    margin-top: 5px;
+    font-size: 12px;
+}
+.tel-warning-message{
+    color:red;
+    margin-top: 5px;
+    font-size: 12px;
+}

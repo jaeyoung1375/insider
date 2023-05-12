@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class KakaoProfile {
+public class KakaoProfileVO {
 
 	public Long id;
 	public String connected_at;

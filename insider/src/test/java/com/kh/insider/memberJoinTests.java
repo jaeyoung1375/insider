@@ -31,7 +31,6 @@ public class memberJoinTests {
 		dto.setMemberName("testName");
 		dto.setMemberNick("testNickName");
 		dto.setMemberPassword("testPassword");
-		dto.setMemberBirth("1997-01-28");
 		dto.setMemberEmail("testEmail");
 		dto.setMemberGender("0");
 		dto.setMemberPost("12345");

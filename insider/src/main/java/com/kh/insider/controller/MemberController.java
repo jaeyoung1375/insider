@@ -20,10 +20,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.service.SocialLoginService;
-import com.kh.insider.vo.GoogleInfoResponse;
-import com.kh.insider.vo.GoogleResponse;
-import com.kh.insider.vo.KakaoProfile;
-import com.kh.insider.vo.OAuthToken;
+import com.kh.insider.vo.FacebookProfileVO;
+import com.kh.insider.vo.FacebookResponseVO;
+import com.kh.insider.vo.GoogleProfileVO;
+import com.kh.insider.vo.GoogleResponseVO;
+import com.kh.insider.vo.KakaoProfileVO;
+import com.kh.insider.vo.KakaoResponseVO;
 import com.kh.insider.repo.SettingRepo;
 
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +56,7 @@ public class MemberController {
 	public String join(@ModelAttribute MemberDto dto) {
 		memberRepo.join(dto);
 		//기본 회원설정값 생성(추후 수정 필요)
-		settingRepo.basicInsert(dto.getMemberNo());
+//		settingRepo.basicInsert(dto.getMemberNo());
 		return "redirect:/";
 	}
 	
@@ -90,11 +92,11 @@ public class MemberController {
 	// 카카오 로그인
 	@GetMapping("/auth/kakao/callback")
 	public String kakaoCallback(String code,
-			HttpSession session, OAuthToken token, Model model) throws URISyntaxException { // Data를 리턴해주는 컨트롤러 함수
+			HttpSession session, KakaoResponseVO token, Model model) throws URISyntaxException { // Data를 리턴해주는 컨트롤러 함수
 				
 		token = socialLoginService.kakaoTokenCreate(code);
 		MemberDto kakaoUser = new MemberDto();
-		KakaoProfile profile = socialLoginService.kakaoLogin(code,token);
+		KakaoProfileVO profile = socialLoginService.kakaoLogin(code,token);
 		long memberNo = profile.getId();
 		String memberEmail = profile.kakao_account.getEmail();
 		String memberPw = cosKey;
@@ -148,10 +150,10 @@ public class MemberController {
 	}
 	
 	@GetMapping("/login/oauth_google_check")
-	public String googleCallback(String code, GoogleResponse response, HttpSession session) throws URISyntaxException {
+	public String googleCallback(String code, GoogleResponseVO response, HttpSession session) throws URISyntaxException {
 		response =  socialLoginService.googleTokenCreate(code);
 		MemberDto googleUser = new MemberDto();
-		GoogleInfoResponse profile = socialLoginService.googleLogin(code,response);
+		GoogleProfileVO profile = socialLoginService.googleLogin(code,response);
 		MemberDto originalMember = memberRepo.findByEmail(profile.getEmail());
 		String memberNoReplace = profile.getAzp().replaceAll("[^0-9]","");
 		memberNoReplace = memberNoReplace.substring(0, 10);
@@ -185,6 +187,20 @@ public class MemberController {
 
 		return "redirect:/member/addInfo";
 	}
+	
+	@GetMapping("/facebook/auth")
+	@ResponseBody
+	public String facebookLogin(String code, FacebookResponseVO response) throws URISyntaxException{
+		
+		response = socialLoginService.facebookTokenCreate(code);
+		FacebookProfileVO profile = socialLoginService.facebookLogin(code, response);
+		System.out.println(profile);
+		
+		return profile.toString();
+	}
+	
+	
+	
 //	환경설정 페이지
 	@GetMapping("/setting")
 	public String setting() {
