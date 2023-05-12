@@ -20,4 +20,5 @@ public class BoardDto {
 	public int boardHide;
 	public int boardKid;
 	public int boardSize;
+	public String boardMemberNick;
 }
