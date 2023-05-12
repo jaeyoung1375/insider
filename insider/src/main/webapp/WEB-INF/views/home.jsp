@@ -4,6 +4,7 @@
 <div id="app">
 	<h1>메인</h1>
 </div>
+  소셜유저 : ${sessionScope.socialUser}		
 
 <script>
 	Vue.createApp({

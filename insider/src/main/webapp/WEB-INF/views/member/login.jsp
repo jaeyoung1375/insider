@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,6 +30,7 @@
                 <div class="mb-3 row">
                     <input class="form-control" type="password" name="memberPassword" placeholder="비밀번호 입력">
                 </div>
+          
                 <div class="row mb-3">
                     <button class="btn btn-primary" type="submit">로그인</button>
                 </div>             
@@ -65,6 +67,8 @@ redirect_uri=https://localhost:8080/member/facebook/auth&scope=public_profile,em
         		<a href="join">가입하기</a>
         	</div>
         </div>
-			
+        <div>
+	        소셜유저 : ${sessionScope.socialUser}, 멤버 : ${sessionScope.member}			
+        </div>
 </body>
 </html>
