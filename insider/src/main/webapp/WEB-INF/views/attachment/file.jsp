@@ -4,9 +4,6 @@
 
 <div class="container">
     <div class="row">
-        <aside class="col">
-            <h1>인사이더</h1>
-        </aside>
         <article class="col">
             <div class="row">
                 <div class="col">
