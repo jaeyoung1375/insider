@@ -9,7 +9,7 @@ public class DmMessageDto {
 
 	private long messageNo;
 	private int roomNo;
-	private int messageSender;
+	private long memberNo;
 	private String messageContent;
 	private Date messageSendTime;
 	private Date messageReadTime;

@@ -123,7 +123,7 @@ public class DmServiceImpl implements DmService {
 		//- 사용자 아이디, 방 이름, 메세지 내용
 		DmMessageDto dmMessageDto = new DmMessageDto();
 		dmMessageDto.setRoomNo(roomNo);
-		dmMessageDto.setMemberName(user.getMemberName());
+		dmMessageDto.setMemberNo(user.getMemberNo());
 		dmMessageDto.setMessageContent(jsonMessage.getPayload());
 		dmMessageRepo.create(dmMessageDto);
 	}
@@ -168,7 +168,7 @@ public class DmServiceImpl implements DmService {
 		DmUserVO user = new DmUserVO(session);
 		
 		//비회원 차단
-//		if(user.isMember() == false) return;
+		if(user.isMember() == false) return;
 		
 		//메세지 수신
 		ChannelReceiveVO receiveVO = mapper.readValue(message.getPayload(), ChannelReceiveVO.class);
@@ -187,7 +187,7 @@ public class DmServiceImpl implements DmService {
 			MemberMessageVO msg = new MemberMessageVO();
 			msg.setContent(receiveVO.getContent());
 			msg.setTime(System.currentTimeMillis());
-			msg.setMemberName(user.getMemberName());
+			msg.setMemberNo(user.getMemberNo());
 			
 			//JSON 변환
 			String json = mapper.writeValueAsString(msg);
@@ -198,8 +198,8 @@ public class DmServiceImpl implements DmService {
 		//입장메세지인 경우
 		else if (receiveVO.getType() == WebSocketConstant.JOIN) {
 			int roomNo = receiveVO.getRoom();
-			//this.moveUser(user, roomNo);
-			this.join(user, roomNo);
+			this.moveUser(user, roomNo);
+			//this.join(user, roomNo);
 			
 		}
 	}

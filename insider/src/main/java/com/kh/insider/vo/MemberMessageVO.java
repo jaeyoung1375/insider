@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data @Builder @NoArgsConstructor @AllArgsConstructor
 public class MemberMessageVO {
 	
-	private int memberNo;
+	private long memberNo;
 	private String memberName, content;
 	private long time;
 
