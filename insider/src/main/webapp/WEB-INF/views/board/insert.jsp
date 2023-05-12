@@ -66,20 +66,20 @@
   </c:otherwise>
 </c:choose>
 
-<form action="write" method="post">
+<form action="insert" method="post">
   <%-- 이미지를 첨부하면 첨부한 이미지의 번호를 hidden으로 추가 --%>
   <c:if test="${parentBoardNo!=null}">
         <input type="hidden" name="parentBoardNo" value="${parentBoardNo}">
   </c:if>
-  <label for="boardTitle">제목: </label>
-  <c:choose>
-    <c:when test="${parentBoardNo==null}">
-        <input id="boardTitle" type="text" name="boardTitle" required>
-    </c:when>
-    <c:otherwise>
-        <input id="boardTitle" type="text" name="boardTitle" value="RE: " required>
-    </c:otherwise>
-  </c:choose>
+<!--   <label for="boardTitle">제목: </label> -->
+<%--   <c:choose> --%>
+<%--     <c:when test="${parentBoardNo==null}"> --%>
+<!--         <input id="boardTitle" type="text" name="boardTitle" required> -->
+<%--     </c:when> --%>
+<%--     <c:otherwise> --%>
+<!--         <input id="boardTitle" type="text" name="boardTitle" value="RE: " required> -->
+<%--     </c:otherwise> --%>
+<%--   </c:choose> --%>
   <br /><br />
 
   <label for="boardContent">내용: </label>
@@ -87,20 +87,20 @@
   <textarea id="boardContent" rows="10" cols="60" name="boardContent" required></textarea>
   <br /><br />
 
-  <label for="boardHead">말머리: </label>
-  <select name="boardHead">
-    <!-- 없음을 선택하면 값이 비어서 전송되므로 DB에 null로 들어감 -->
-    <option value="">없음</option>
-    <c:if test="${userLevel == '관리자'}">
-      <option>공지</option>
-    </c:if>
-    <option>유머</option>
-    <option>정보</option>
-  </select>
+<!--   <label for="boardHead">말머리: </label> -->
+<!--   <select name="boardHead"> -->
+<!--     없음을 선택하면 값이 비어서 전송되므로 DB에 null로 들어감 -->
+<!--     <option value="">없음</option> -->
+<%--     <c:if test="${userLevel == '관리자'}"> --%>
+<!--       <option>공지</option> -->
+<%--     </c:if> --%>
+<!--     <option>유머</option> -->
+<!--     <option>정보</option> -->
+<!--   </select> -->
   <br /><br />
   <button>작성</button>
   <br /><br />
-  <a href="list">목록</a>
+  <a href="/">취소</a>
 </form>
 
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>

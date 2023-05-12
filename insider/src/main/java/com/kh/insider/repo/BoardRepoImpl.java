@@ -27,8 +27,13 @@ public class BoardRepoImpl implements BoardRepo {
 
 	@Override
 	public void insert(BoardDto boardDto) {
-		// TODO Auto-generated method stub
-		
+		 sqlSession.insert("board.insert", boardDto);		
+	}
+
+
+	@Override
+	public boolean update(BoardDto boardDto) {
+		 return sqlSession.update("board.update", boardDto) > 0;
 	}
 
 }

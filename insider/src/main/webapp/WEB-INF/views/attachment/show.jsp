@@ -51,7 +51,7 @@
 				</c:if>
 				<!--  이미지면 보여주기 -->
 				<c:if test="${isVideo eq 'N'}">
-					<img width="500" height="500" src="/download?attachmentNo=${attachmentNo}">
+					<img width="500" height="500" src="contextPath/attachment/download?attachmentNo=${attachmentNo}">
 				</c:if>
 				<h1>콘텐츠 타입은 ${contentType} 입니다.</h1>
 				<!------------------------------------------------------------>

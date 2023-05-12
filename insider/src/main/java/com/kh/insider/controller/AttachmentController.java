@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +34,7 @@ import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 
 @Controller
+@RequestMapping("/attachment")
 public class AttachmentController {
     
 	// 파일 경로 받아오기 
@@ -47,6 +49,18 @@ public class AttachmentController {
 	
 	@Autowired
 	private AttachmentRepo attachmentRepo;
+	
+	// 임시 파일 업로드 주소
+    @GetMapping("/file")
+    public String file(){
+        return "attachment/file";
+    }
+
+    // 임시 서머노트 & 파일 업로드 연계
+    @GetMapping("/insert")
+    public String write(){
+        return "attachment/insert";
+    }
 	
 	// 파일업로드 글 쓸때 사용, 
 	@PostMapping("/upload")

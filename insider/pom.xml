@@ -93,13 +93,12 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<!--FFMPEG 코덱-->
+		<!--ffmpeg-->
 		<dependency>
-	        <groupId>net.bramp.ffmpeg</groupId>
-	        <artifactId>ffmpeg</artifactId>
-	        <version>0.7.0</version>
+	     	<groupId>net.bramp.ffmpeg</groupId>
+	     	<artifactId>ffmpeg</artifactId>
+	     	<version>0.7.0</version>
       	</dependency>
-      	
 	</dependencies>
 
 	<build>

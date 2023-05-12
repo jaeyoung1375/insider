@@ -2,8 +2,6 @@
     pageEncoding="UTF-8"%>
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 
-<h2>다중파일업로드</h2>
-
 <div class="container">
     <div class="row">
         <aside class="col">
@@ -22,6 +20,8 @@
                         <input type="file" name="attach" max-size="100000000">
                         <br><br>
                         <button>업로드</button>
+                        <br><br>
+                        <a href="/">취소</a>
                     </form>
                 </div>
             </div>            

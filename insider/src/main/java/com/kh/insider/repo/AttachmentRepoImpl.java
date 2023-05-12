@@ -1,15 +1,10 @@
 package com.kh.insider.repo;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.kh.insider.configuration.FileUploadProperties;
 import com.kh.insider.dto.AttachmentDto;
 
 @Repository
