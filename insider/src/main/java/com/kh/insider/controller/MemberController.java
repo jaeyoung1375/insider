@@ -197,6 +197,7 @@ public class MemberController {
 			// 회원정보
 			session.setAttribute("socialUser",originalMember);
 			// 토큰정보
+			session.setAttribute("memberEmail", memberEmail);
 			session.setAttribute("member",response.getAccess_token());
 			session.setAttribute("refresh_token",response.getRefresh_token());
 			return "redirect:/";

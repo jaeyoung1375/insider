@@ -66,7 +66,7 @@ redirect_uri=https://localhost:8080/member/facebook/auth&scope=public_profile,em
         	</div>
         </div>
         <div>
-	        소셜유저 : ${sessionScope.socialUser}, 멤버 : ${sessionScope.member}			
+	        소셜유저 : ${sessionScope.socialUser}, 멤버 : ${sessionScope.member} , 세션이메일 : ${sessionScope.memberEmail}			
         </div>
 </body>
 </html>

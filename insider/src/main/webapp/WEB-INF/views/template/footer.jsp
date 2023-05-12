@@ -3,6 +3,7 @@
 		</section>
 		<footer>
 			<h1>푸터</h1>
+			<h2>${sessionScope.memberEmail}
 		</footer>
 	</main>
 </body>
