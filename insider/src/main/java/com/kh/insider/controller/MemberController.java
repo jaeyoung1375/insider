@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.repo.MemberRepo;
@@ -67,11 +68,13 @@ public class MemberController {
 	}
 	
 	@PostMapping("/login")
-	public String login(HttpSession session, @ModelAttribute MemberDto dto) {
+	public String login(HttpSession session, @ModelAttribute MemberDto dto, RedirectAttributes attr) {
 		
 	MemberDto findMember = memberRepo.login(dto.getMemberEmail(), dto.getMemberPassword());
 	
 	if(findMember == null) {
+		int result = 0;
+		attr.addFlashAttribute("result",result);
 		return "redirect:login";
 	}
 	memberRepo.updateLoginTime(findMember.getMemberNo());
@@ -83,7 +86,8 @@ public class MemberController {
 	
 	@GetMapping("/logout")
 	public String logout(HttpSession session) {
-		session.removeAttribute("memberNo");
+		session.removeAttribute("member");
+		session.removeAttribute("socialUser");
 		session.removeAttribute("memberEmail");
 		
 		return "redirect:/";
@@ -108,7 +112,7 @@ public class MemberController {
 		
 		
 		if(originalMember == null) {
-			System.out.println("회원가입을 진행합니다");
+			System.out.println("회원가입을 진행합니다..");
 			kakaoUser.setMemberNo(memberNo);
 			kakaoUser.setMemberEmail(memberEmail);
 			kakaoUser.setMemberName(memberName);
@@ -117,9 +121,17 @@ public class MemberController {
 				
 		}else {
 			System.out.println("기존회원이므로 로그인을 진행합니다.");
+			// 로그인 시각 갱신
 			memberRepo.updateLoginTime(memberNo);
+			// 회원정보
+			session.setAttribute("socialUser",originalMember);
+			// 토큰정보
+			session.setAttribute("member",token.getAccess_token());
+			// 리프레시 토큰 정보
+			session.setAttribute("refresh_token",token.getRefresh_token());
 			return "redirect:/";
 		}
+		// addInfo로 넘길 정보
 		session.setAttribute("socialUser",kakaoUser);
 		session.setAttribute("member",token.getAccess_token());
 		session.setAttribute("refresh_token",token.getRefresh_token());
@@ -162,7 +174,7 @@ public class MemberController {
         String uuidWithoutHyphens = uuidString.replaceAll("-", "");
         // 숫자 부분 추출
         String numbersOnly = uuidWithoutHyphens.replaceAll("\\D", "");
-		
+        numbersOnly = numbersOnly.substring(0,10);
 		
 		long memberNo = Long.parseLong(numbersOnly);
 		String memberEmail = profile.getEmail();
@@ -182,10 +194,16 @@ public class MemberController {
 			
 		}else {
 			System.out.println("기존회원이므로 로그인을 진행합니다.");
+			// 회원정보
+			session.setAttribute("socialUser",originalMember);
+			// 토큰정보
+			session.setAttribute("member",response.getAccess_token());
+			session.setAttribute("refresh_token",response.getRefresh_token());
 			return "redirect:/";
 		}
+		// addInfo로 넘길 정보
 		session.setAttribute("socialUser",googleUser);
-		session.setAttribute("memberNo",response.getAccess_token());
+		session.setAttribute("member",response.getAccess_token());
 		session.setAttribute("refresh_token",response.getRefresh_token());
 		
 
