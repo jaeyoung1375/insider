@@ -65,6 +65,8 @@ redirect_uri=https://localhost:8080/member/facebook/auth&scope=public_profile,em
         		<a href="join">가입하기</a>
         	</div>
         </div>
-			
+        <div>
+	        소셜유저 : ${sessionScope.socialUser}, 멤버 : ${sessionScope.member}			
+        </div>
 </body>
 </html>
