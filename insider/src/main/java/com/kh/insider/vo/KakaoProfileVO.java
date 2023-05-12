@@ -6,20 +6,13 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class KakaoProfile {
+public class KakaoProfileVO {
 
 	public Long id;
-	public String connected_at;
-	public Properties properties;
 	public KakaoAccount kakao_account;
+	public String connected_at;
 
-	@Data
-	@JsonIgnoreProperties(ignoreUnknown=true)
-	public class Properties {
 
-		public String nickname;
-
-	}
 
 
 @Data
@@ -35,6 +28,8 @@ public class KakaoAccount {
 	public String email;
 	public String age_range;
 	private String gender;
+	private String name;
+	private boolean name_needs_agreement;
 	private String phone_number;
 	private String birthyear;
 	private String birthday;

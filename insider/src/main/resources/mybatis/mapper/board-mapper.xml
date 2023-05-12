@@ -5,7 +5,7 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
 <mapper namespace="board">
-	<insert id="insert">
+	<insert id="insert" parameterType="BoardDto">
 		insert into board(
 			board_no, member_no, board_content, board_lat, board_lon,
 			board_reply_valid, board_like_valid,
@@ -23,6 +23,11 @@
 	<select id="selectList" resultType="BoardDto">
 		select * from board order by board_no asc
 	</select>
+	<update id="edit" parameterType="BoardDto">
+		update board set 
+		board_content=#{boardContent}, board_reply_valid=#{boardReplyValid}, board_like_valid=#{boardLikeValid},
+		board_hide=#{boardHide}, board_kid=#{boardKid}, board_size=#{boardSize} where board_no=#{boardNo}
+	</update>
 	<delete id="delete">
 		delete board where board_no=#{boardNo}
 	</delete>
@@ -38,11 +43,9 @@
 	 </sql>
 	
 	 <select id="selectListPaging" resultType="BoardDto">
-	 	select * from (
-	 		select rownum rn, TMP.*from(
-	 		select * from board order by no asc
-	 	)TMP
-	 	)where rn between #{begin} and #{end}
+	 	<include refid="topNheader"></include>
+	 		select * from board order by board_no asc
+	 	<include refid="topNfooter"></include>	
 	 </select>
 	
 </mapper>

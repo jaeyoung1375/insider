@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="dmMessage">
+
+	<select id="sequence">
+		select dm_message_seq.nextval from dual
+	</select>
+	
+	<insert id="create">
+		insert into dm_message(message_no, room_no, member_sender, message_content, 
+			message_send_time, message_read_time)
+		values(#{messageNo}, #{roomNo}, #{memberSender}, #{messageContent}, sysdate, sysdate)
+	</insert>
+	
+	<select id="detail" resultType="DmMessageDto">
+		select * from dm_message where message_no = #{messageNo}	
+	</select>
+	
+	<select id="roomMessageList" resultType="DmMessageDto" parameterType="int">
+		select message_no, room_no, member_sender, message_content, message_send_time
+        from dm_message
+        where room_no = #{roomNo}
+        order by message_send_time desc
+    </select>
+    
+    <delete id="delete" parameterType="int">
+        delete from dm_message
+        where message_no = #{messageNo}
+    </delete>
+	
+</mapper>

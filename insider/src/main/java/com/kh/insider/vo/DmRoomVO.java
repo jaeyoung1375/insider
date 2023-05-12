@@ -6,9 +6,13 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.springframework.web.socket.TextMessage;
 
+import lombok.Data;
+
+@Data
 public class DmRoomVO {
 	
 	private int roomNo;
+	private String roomName;
 	
     //채팅방의 사용자를 저장할 저장소
     private Set<DmUserVO> users = new CopyOnWriteArraySet<>();
