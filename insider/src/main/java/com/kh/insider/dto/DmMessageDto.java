@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class DmMessageDto {
 
-	private int messageNo;
+	private long messageNo;
 	private int roomNo;
 	private int messageSender;
 	private String messageContent;
