@@ -4,7 +4,15 @@ import com.kh.insider.dto.MemberDto;
 
 public interface MemberRepo {
 	
+	// 회원가입 
 	public void join(MemberDto dto);
+	public void socialJoin(MemberDto dto);
+	// 이메일 조회
 	public MemberDto findByEmail(String memberEmail);
+	public void update(MemberDto memberDto);
+	public MemberDto login(String memberEmail, String memberPassword);
+	
+	// 로그인 시각 갱신
+	public void updateLoginTime(long memberNo);
 
 }

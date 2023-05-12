@@ -12,7 +12,7 @@ public class SettingRepoImpl implements SettingRepo{
 	private SqlSession sqlSession;
 	
 	@Override
-	public void basicInsert(int memberNo) {
+	public void basicInsert(long memberNo) {
 		sqlSession.insert("setting.basicInsert", memberNo);
 	}
 	@Override

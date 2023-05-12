@@ -12,8 +12,10 @@ public class SettingDto {
 	private int settingReplyAlert;
 	private int settingFollowAlert;
 	private int settingVideoAuto;
-	
-	
+	private int settingReplyLikeAlert;
+	private int settingMessage;
+	private int settingAllowReply;
+	private int settingWatchLike;
 	
 	
 //	설정 값에 따른 설정 여부 boolean 반환

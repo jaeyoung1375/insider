@@ -43,11 +43,9 @@
 	 </sql>
 	
 	 <select id="selectListPaging" resultType="BoardDto">
-	 	select * from (
-	 		select rownum rn, TMP.*from(
-	 		select * from board order by no asc
-	 	)TMP
-	 	)where rn between #{begin} and #{end}
+	 	<include refid="topNheader"></include>
+	 		select * from board order by board_no asc
+	 	<include refid="topNfooter"></include>	
 	 </select>
 	
 </mapper>
