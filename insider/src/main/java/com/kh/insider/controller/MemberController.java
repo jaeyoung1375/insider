@@ -111,7 +111,7 @@ public class MemberController {
 		
 		
 		if(originalMember == null) {
-			System.out.println("회원가입을 진행합니다");
+			System.out.println("회원가입을 진행합니다.");
 			kakaoUser.setMemberNo(memberNo);
 			kakaoUser.setMemberEmail(memberEmail);
 			kakaoUser.setMemberName(memberName);
