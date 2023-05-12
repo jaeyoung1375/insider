@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.insider.configuration.FileUploadProperties;
 import com.kh.insider.dto.AttachmentDto;
+import com.kh.insider.dto.MemberProfileDto;
 import com.kh.insider.repo.AttachmentRepo;
+import com.kh.insider.repo.MemberProfileRepo;
 
 @CrossOrigin
 @RestController
@@ -36,6 +39,9 @@ public class AttachmentRestController {
 	
 	@Autowired
 	private FileUploadProperties fileUploadProperties;
+	
+	@Autowired
+	private MemberProfileRepo memberProfileRepo;
 	
 	private File dir;
 	
@@ -103,5 +109,39 @@ public class AttachmentRestController {
 									).build().toString()
 					)
 					.body(resource);
+	}
+	
+	//프로필 업로드
+	@PostMapping("/upload/profile")
+	public int uploadProfile(@RequestParam MultipartFile attach,
+			HttpSession session) throws IllegalStateException, IOException {
+		int attachmentNo=0;
+		long memberNo = (Long)session.getAttribute("memberNo");
+		if(!attach.isEmpty()) {	//파일이 있을 경우
+			attachmentNo = attachmentRepo.sequence();
+			
+			//파일 저장(저장 위치는 임시로 생성)
+			File target = new File(dir, String.valueOf(attachmentNo));//파일명=시퀀스
+			attach.transferTo(target);
+			
+			//DB 저장
+			attachmentRepo.insert(AttachmentDto.builder()
+							.attachmentNo(attachmentNo)
+							.attachmentName(attach.getOriginalFilename())
+							.attachmentType(attach.getContentType())
+							.attachmentSize(attach.getSize())
+						.build());
+			
+			//기존 프로필 정보 삭제
+			memberProfileRepo.delete(memberNo);
+			
+			//프로필 사진 DB 입력
+			MemberProfileDto memberProfileDto = new MemberProfileDto();
+			memberProfileDto.setMemberNo(memberNo);
+			memberProfileDto.setAttachmentNo(attachmentNo);
+			
+			memberProfileRepo.insert(memberProfileDto);
+		}
+		return attachmentNo;
 	}
 }

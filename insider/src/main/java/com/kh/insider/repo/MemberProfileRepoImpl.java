@@ -18,7 +18,7 @@ public class MemberProfileRepoImpl implements MemberProfileRepo{
 	}
 
 	@Override
-	public void delete(int memberNo) {
+	public void delete(long memberNo) {
 		sqlSession.delete("memberProfile.delete", memberNo);
 	}
 
