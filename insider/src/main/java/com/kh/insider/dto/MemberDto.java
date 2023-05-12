@@ -22,5 +22,5 @@ public class MemberDto {
 	private String memberTel;
 	private String memberGender;
 	private int memberReport;
-	private String memberBirth;
+	private Date memberBirth;
 }

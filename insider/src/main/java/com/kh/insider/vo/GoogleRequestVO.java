@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class GoogleOauthRequest {
+public class GoogleRequestVO {
 	private String redirectUri;
     private String clientId;
     private String clientSecret;

@@ -38,8 +38,8 @@
     background-color: #333;
     color: #fff;
         </style>  
-        <div class="container">
-<h1>추가정보 입력</h1>
+        <div class="container col-lg-3 card p-5 mt-5">
+<h1 class="text-center">추가정보 입력</h1>
 <form action="addInfo" method="post">
 <input type="hidden" name="memberNo" value="${socialUser.memberNo}">
 <input type="hidden" name="memberName" value="${socialUser.memberName}">
@@ -48,29 +48,31 @@
 <input type="hidden" name="memberEmail" value="${socialUser.memberEmail}">
 
 
- <div class="row select">
-                 <input type="radio" id="select" name="memberGender" value="0"><label for="select">남성</label>
-    			 <input type="radio" id="select2" name="memberGender" value="1"><label for="select2">여성</label>
+ <div class="text-center mb-3">
+                 <input type="radio" id="select1" name="memberGender" value="0" class="btn-check">
+                 <label class="btn btn-outline-danger" for="select1">남성</label>
+    			 <input type="radio" id="select2" name="memberGender" value="1" class="btn-check">
+    			 <label class="btn btn-outline-danger" for="select2">여성</label>
             </div>
 
-  <div class="form-floating mb-3">
-                <input class="form-input w-60" type="text" name="memberTel" placeholder="전화번호">
+  <div class="mb-3 row">
+                <input class="form-control" type="text" name="memberTel" placeholder="전화번호">
             </div>
             <div class="form-floating mb-3">
-                <input class="form-input w-60" type="date" name="memberBirth" placeholder="생년월일">
+                <input class="form-control" type="date" name="memberBirth" placeholder="생년월일">
             </div>
- <div class="form-floating mb-3">
-                <input type="text" name="memberPost" class="form-input w-30" placeholder="우편번호" readonly>
+ <div class="mb-3 row">
+                <input type="text" name="memberPost" class="form-control" placeholder="우편번호" readonly>
                 <button type="button" class="form-btn neutral find-address-btn w-30">우편번호 찾기</button>
              </div>
-             <div class="form-floating mb-3">
-                <input type="text" name="memberBasicAddr" class="form-input w-60" placeholder="기본주소" readonly>
+             <div class="mb-3 row">
+                <input type="text" name="memberBasicAddr" class="form-control" placeholder="기본주소" readonly>
              </div>
-             <div class="form-floating mb-3">
-                <input type="text" name="memberDetailAddr" class="form-input w-60" placeholder="상세주소">
+             <div class="mb-3 row">
+                <input type="text" name="memberDetailAddr" class="form-control" placeholder="상세주소">
     
              </div>
-             <div class="form-floating mb-3">
+             <div class="mb-3 row">
                 <button type="submit" class="btn btn-primary">가입하기</button>
              </div>
 </form>
