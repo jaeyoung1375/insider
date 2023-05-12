@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,21 +24,21 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.insider.configuration.FileUploadProperties;
 import com.kh.insider.dto.AttachmentDto;
-import com.kh.insider.dto.MemberProfileDto;
 import com.kh.insider.repo.AttachmentRepo;
-import com.kh.insider.repo.MemberProfileRepo;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/rest/attachment")
 public class AttachmentRestController {
+    //준비물
 	@Autowired
 	private AttachmentRepo attachmentRepo;
+	
 	@Autowired
 	private FileUploadProperties fileUploadProperties;
-	@Autowired
-	private MemberProfileRepo memberProfileRepo;
 	
 	private File dir;
+	
 	@PostConstruct
 	public void init() {
 		dir = new File(fileUploadProperties.getPath());
@@ -47,62 +47,61 @@ public class AttachmentRestController {
 	
 	//업로드
 	@PostMapping("/upload")
-	public int upload(@RequestParam MultipartFile attach) throws IllegalStateException, IOException {
-		int attachmentNo=0;
-		if(!attach.isEmpty()) {	//파일이 있을 경우
-			attachmentNo = attachmentRepo.save(attach);
+	public AttachmentDto upload(@RequestParam MultipartFile attach) throws IllegalStateException, IOException {
+		if(!attach.isEmpty()) {//파일이 있을 경우
+			//번호 생성
+			int attachmentNo = attachmentRepo.sequence();
+			
+			//파일 저장(저장 위치는 임시로 생성)
+			File target = new File(dir, String.valueOf(attachmentNo));//파일명=시퀀스
+			attach.transferTo(target);
+			
+			//DB 저장
+			attachmentRepo.insert(AttachmentDto.builder()
+							.attachmentNo(attachmentNo)
+							.attachmentName(attach.getOriginalFilename())
+							.attachmentType(attach.getContentType())
+							.attachmentSize(attach.getSize())
+						.build());
+			
+			return attachmentRepo.selectOne(attachmentNo);//DTO를 반환
 		}
-		return attachmentNo;
+		
+		return null;//또는 예외 발생
 	}
-	//다운로드
 	
+	//다운로드
 	@GetMapping("/download/{attachmentNo}")
-	public ResponseEntity<ByteArrayResource> download(	//byte 배열을 포장한 클래스(이거 쓰라고 정해져있음)
-			@PathVariable int attachmentNo) throws IOException {
+	public ResponseEntity<ByteArrayResource> download(
+									@PathVariable int attachmentNo) throws IOException {
 		//DB 조회
 		AttachmentDto attachmentDto = attachmentRepo.selectOne(attachmentNo);
-		if(attachmentDto==null) return ResponseEntity.notFound().build();
+		if(attachmentDto == null) {//없으면 404
+			return ResponseEntity.notFound().build();
+		}
 		
-		//파일찾기
+		//파일 찾기
 		File target = new File(dir, String.valueOf(attachmentNo));
 		
 		//보낼 데이터 생성
-		byte[] data = FileUtils.readFileToByteArray(target);	//ByteArrayResource 형태로 포장해줘야됨
+		byte[] data = FileUtils.readFileToByteArray(target);
 		ByteArrayResource resource = new ByteArrayResource(data);
 		
-		//헤더와 바디를 설정하며 ResponseEntity를 만들어 반환
+//		제공되는 모든 상수와 명령을 동원해서 최대한 오류 없이 편하게 작성
 		return ResponseEntity.ok()
-				.contentType(MediaType.APPLICATION_OCTET_STREAM)
-				.contentLength(attachmentDto.getAttachmentSize())	//제공되는 메소드로 헤더를 설정
-				.header(HttpHeaders.CONTENT_ENCODING, StandardCharsets.UTF_8.name())	//제공되는 메소드 없음. 상수로 쓰는 방법
-				.header(
-					HttpHeaders.CONTENT_DISPOSITION, 
-					ContentDisposition.attachment().
-						filename(attachmentDto.getAttachmentName(), StandardCharsets.UTF_8)
-						.build().toString()
-				)
-				.body(resource);
-	}
-	
-	//프로필 업로드
-	@PostMapping("/upload/profile")
-	public int uploadProfile(@RequestParam MultipartFile attach,
-			HttpSession session) throws IllegalStateException, IOException {
-		int attachmentNo=0;
-		int memberNo = (Integer)session.getAttribute("memberNo");
-		if(!attach.isEmpty()) {	//파일이 있을 경우
-			attachmentNo = attachmentRepo.save(attach);
-			
-			//기존 프로필 정보 삭제
-			memberProfileRepo.delete(memberNo);
-			
-			//프로필 사진 DB 입력
-			MemberProfileDto memberProfileDto = new MemberProfileDto();
-			memberProfileDto.setMemberNo(memberNo);
-			memberProfileDto.setAttachmentNo(attachmentNo);
-			
-			memberProfileRepo.insert(memberProfileDto);
-		}
-		return attachmentNo;
+//					.header(HttpHeaders.CONTENT_TYPE, 
+//							MediaType.APPLICATION_OCTET_STREAM_VALUE)
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.contentLength(attachmentDto.getAttachmentSize())
+					.header(HttpHeaders.CONTENT_ENCODING, 
+												StandardCharsets.UTF_8.name())
+					.header(HttpHeaders.CONTENT_DISPOSITION,
+						ContentDisposition.attachment()
+									.filename(
+											attachmentDto.getAttachmentName(), 
+											StandardCharsets.UTF_8
+									).build().toString()
+					)
+					.body(resource);
 	}
 }
