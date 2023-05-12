@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.print.attribute.standard.Chromaticity;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -123,7 +121,7 @@ public class DmServiceImpl implements DmService {
 		//- 사용자 아이디, 방 이름, 메세지 내용
 		DmMessageDto dmMessageDto = new DmMessageDto();
 		dmMessageDto.setRoomNo(roomNo);
-		dmMessageDto.setMemberNo(user.getMemberNo());
+		dmMessageDto.setMessageSender(user.getMemberNo());
 		dmMessageDto.setMessageContent(jsonMessage.getPayload());
 		dmMessageRepo.create(dmMessageDto);
 	}
@@ -198,8 +196,8 @@ public class DmServiceImpl implements DmService {
 		//입장메세지인 경우
 		else if (receiveVO.getType() == WebSocketConstant.JOIN) {
 			int roomNo = receiveVO.getRoom();
-			this.moveUser(user, roomNo);
-			//this.join(user, roomNo);
+			//this.moveUser(user, roomNo);
+			this.join(user, roomNo);
 			
 		}
 	}
