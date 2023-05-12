@@ -169,7 +169,7 @@
             		  const month = $("#month").val();
             		  const day = $("#day").val();
 
-            		  this.memberBirth = year + '-' + month + '-' + day;
+            		  this.memberBirth = year + '/' + month + '/' + day;
             		  $("#memberBirth").val(this.memberBirth);
             		},
               
