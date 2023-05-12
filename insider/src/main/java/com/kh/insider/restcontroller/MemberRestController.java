@@ -53,17 +53,16 @@ public class MemberRestController {
 	}
 	//비밀번호 확인
 	@PostMapping("/setting/password")
-	public boolean checkPassword(@RequestParam String password, HttpSession session) {
-		int memberNo = (Integer)session.getAttribute("memberNo");
+	public boolean checkPassword(@RequestBody MemberDto checkPasswordDto, HttpSession session) {
+		long memberNo = (Long)session.getAttribute("memberNo");
 		MemberDto memberDto = memberRepo.findByNo(memberNo);
-		return password.equals(memberDto.getMemberPassword());
+		return checkPasswordDto.getMemberPassword().equals(memberDto.getMemberPassword());
 	}
 	//비밀번호 변경
 	@PutMapping("/setting/password")
-	public void changePassword(@RequestParam String newPassword, HttpSession session) {
-		int memberNo = (Integer)session.getAttribute("memberNo");
-		MemberDto memberDto = memberRepo.findByNo(memberNo);
-		memberDto.setMemberPassword(newPassword);
+	public void changePassword(@RequestBody MemberDto memberDto, HttpSession session) {
+		long memberNo = (Long)session.getAttribute("memberNo");
+		memberDto.setMemberNo(memberNo);
 		memberRepo.changePassword(memberDto);
 	}
 }

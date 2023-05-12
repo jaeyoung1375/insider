@@ -48,18 +48,17 @@
 <body>
 	<main>
 			
-		<header>	
+		<header id="aside">	
 			<nav class="navbar navbar-expand-lg navbar-light mt-3">
 				<div class="container-fluid">
-					<a class="navbar-brand" href="/"><img src="/static/image/logo.png" width="50px" height="50px"></a>
-<!-- 					<a class="navbar-brand" href="/"><img src="./image/insta.png" width="50px" height="50px"></a> -->
-					<a href="/" class="logo">insider</a>
+					<a class="navbar-brand" href="${pageContext.request.contextPath}/"><img src="${pageContext.request.contextPath}/static/image/logo.png" width="50" height="50"></a>
+					<a href="${pageContext.request.contextPath}/" class="logo">insider</a>
     
 					<div class="collapse navbar-collapse justify-content-end" id="navbarColor03">
 						<ul class="navbar-nav">
 						<!-- 검색 -->
 							<li class="nav-item mt-2">
-								<a class="nav-link" href="search"><i class="fa-regular fa-solid fa-magnifying-glass" style="font-size: 45px;"></i></a>
+								<a class="nav-link" href="${pageContext.request.contextPath}/search"><i class="fa-regular fa-solid fa-magnifying-glass" style="font-size: 45px;"></i></a>
 							</li>
 						<!-- 알림 -->
 							<li class="nav-item mt-2">
@@ -75,14 +74,53 @@
 							</li>
 						<!-- 프로필 -->
 							<li class="nav-item">
-								<a class="nav-link" href="#"><img src="/static/image/user.jpg" width="70px" height="70px"></a>
+								<a class="nav-link" href="#"><img src="${pageContext.request.contextPath}/static/image/user.jpg" width="70" height="70"></a>
 							</li>
 						</ul>
 					</div>
 				</div>
 			</nav>
+			<aside style="position:fixed; left:0" >
+				<div class="dropdown" :class="{'show':sideMenu}">
+					<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @click="showSideMenu()">
+						<i class="fa-solid fa-bars"></i>
+					</button>
+					<div class="dropdown-menu" aria-labelledby="dropdownMenuButton" v-show="sideMenu" :class="{'show' : sideMenu}">
+						<a class="dropdown-item" href="${pageContext.request.contextPath}/member/setting">환경설정</a>
+						<a class="dropdown-item" href="#">Another action</a>
+						<a class="dropdown-item" href="#">Something else here</a>
+					</div>
+				</div>
+			</aside>
 		</header>
-		
-		
+<script>
+	Vue.createApp({
+		data() {
+			return {
+				sideMenu:false,
+			};
+		},
+		computed: {
+			//계산영역
+		},
+		methods: {
+			//메소드영역
+			showSideMenu(){
+				if(this.sideMenu){
+					this.sideMenu=false;
+				}
+				else{
+					this.sideMenu=true;
+				}
+			}
+		},
+		created(){
+			//데이터 불러오는 영역
+		},
+		watch:{
+			//감시영역
+		}
+	}).mount("#aside");
+</script>
 	<section>
 

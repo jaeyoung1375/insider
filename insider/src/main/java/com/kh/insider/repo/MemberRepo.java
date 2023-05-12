@@ -15,6 +15,6 @@ public interface MemberRepo {
 	// 로그인 시각 갱신
 	public void updateLoginTime(long memberNo);
 	//단일 번호조회
-	public MemberDto findByNo(int memberNo);
+	public MemberDto findByNo(long memberNo);
 	public void changePassword(MemberDto memberDto);
 }

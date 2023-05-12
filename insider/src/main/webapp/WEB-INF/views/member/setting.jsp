@@ -41,7 +41,7 @@
 				</div>
 			</div>
 		</div>
-	<!-- 개인정보 변경 -->
+	<!------------------------------------------- 개인정보 변경 ------------------------------------------->
 		<div class="col-md-8" v-show="page==0">
 			<div class="row">
 				<div class="col">
@@ -75,6 +75,9 @@
 			</div>
 			<div class="row">
 				<div class="col">
+					<input type="button" @click="findAddress()" value="우편번호 찾기" /><br />
+				</div>
+				<div class="col">
 					<input class="form-control" v-model="member.memberPost" readonly>
 				</div>
 			</div>
@@ -90,11 +93,11 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<h3 @click="showModal()">비밀번호 변경</h3>
+					<h3 @click="showPasswordCheckModal">비밀번호 변경</h3>
 				</div>
 			</div>
 		</div>
-	<!-- 프로필 편집 -->
+	<!------------------------------------------- 프로필 편집 ------------------------------------------->
 		<div class="col-md-8" v-show="page==1">
 			<div class="row">
 				<div class="col">
@@ -139,7 +142,7 @@
 				</div>
 			</div>
 		</div>
-	<!-- 푸시 알림 -->
+	<!------------------------------------------- 푸시 알림 ------------------------------------------->
 		<div class="col-md-8" v-show="page==2">
 			<div class="row">
 				<div class="col">
@@ -199,7 +202,7 @@
 				</div>
 			</div>
 		</div>
-	<!-- 내가볼수있는내용 -->
+	<!------------------------------------------- 내가볼수있는내용 ------------------------------------------->
 		<div class="col-md-8" v-show="page==3">
 			<div class="row">
 				<div class="col">
@@ -249,7 +252,7 @@
 				</div>
 			</div>
 		</div>
-	<!-- 내 콘텐츠를 볼수 있는 사람 -->
+	<!------------------------------------------- 내 콘텐츠를 볼수 있는 사람 ------------------------------------------->
 		<div class="col-md-8" v-show="page==4">
 			<div class="row">
 				<div class="col">
@@ -314,7 +317,7 @@
 				</div>
 			</div>
 		</div>
-	<!-- 다른 사람이 나와 소통할 수 있는 방법 -->
+	<!------------------------------------------- 다른 사람이 나와 소통할 수 있는 방법 ------------------------------------------->
 		<div class="col-md-8" v-show="page==5">
 			<div class="row">
 				<div class="col">
@@ -364,7 +367,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title">비밀번호 변경</h5>
-					<button type="button" class="btn-close" @click="hidePasswordCheckModal()" aria-label="Close">
+					<button type="button" class="btn-close" @click="hidePasswordCheckModal" aria-label="Close">
 					<span aria-hidden="true"></span>
 					</button>
 				</div>
@@ -382,8 +385,8 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" @click="checkPassword">확인</button>
-					<button type="button" class="btn btn-secondary" @click="hidePasswordCheckModal()">취소</button>
+					<button type="button" class="btn btn-primary" @click="clickCheckPassword">확인</button>
+					<button type="button" class="btn btn-secondary" @click="hidePasswordCheckModal">취소</button>
 				</div>
 			</div>
 		</div>
@@ -395,7 +398,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title">비밀번호 변경</h5>
-					<button type="button" class="btn-close" @click="hidePasswordChangeModal()" aria-label="Close">
+					<button type="button" class="btn-close" @click="hidePasswordChangeModal" aria-label="Close">
 					<span aria-hidden="true"></span>
 					</button>
 				</div>
@@ -408,18 +411,18 @@
 					</div>
 					<div class="row">
 						<div class="col">
-							<input class="form-control rounded" placeholder="비밀번호 입력" type="password" v-model="password">
+							<input class="form-control rounded" placeholder="비밀번호 입력" type="password" v-model="newPassword">
 						</div>
 					</div>
 					<div class="row">
 						<div class="col">
-							<input class="form-control rounded" placeholder="비밀번호 확인" type="password" v-model="password">
+							<input class="form-control rounded" placeholder="비밀번호 확인" type="password" v-model="newPasswordCheck">
 						</div>
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" @click="changePassword">변경</button>
-					<button type="button" class="btn btn-secondary" @click="hidePasswordChangeModal()">취소</button>
+					<button type="button" class="btn btn-primary" @click="changePassword" :disabled="!isValid">변경</button>
+					<button type="button" class="btn btn-secondary" @click="hidePasswordChangeModal">취소</button>
 				</div>
 			</div>
 		</div>
@@ -427,7 +430,8 @@
 	
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-
+<!-- 우편번호 찾기 CDN -->
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script>
 	Vue.createApp({
 		data() {
@@ -465,7 +469,6 @@
 					isWatchLike:this.settingWatchLike==1,
 				},
 				password:"",
-				passwordCheck:false,
 				newPassword:"",
 				newPasswordCheck:"",
 			};
@@ -480,6 +483,9 @@
 					return "https://via.placeholder.com/100x100?text=profile";
 				}
 			},
+			isValid(){
+				return this.newPassword.length>0 && this.newPassword==this.newPasswordCheck;
+			}
 		},
 		methods: {
 			//watchLike 체크에 따른 값 변화
@@ -501,7 +507,6 @@
 			async loadMember(){
 				const resp = await axios.get(contextPath+"/rest/member/"+memberNo);
 				Object.assign(this.member, resp.data);
-				console.log(resp.data);
 			},
 			
 			//프로필 사진 변경 누르면 실행
@@ -533,7 +538,7 @@
 			},
 			//비밀번호 변경 모달창 열기
 			showPasswordCheckModal(){
-				if(this.passwordCheckmodal==null) return;
+				if(this.passwordCheckModal==null) return;
 				this.passwordCheckModal.show();
 			},
 			hidePasswordCheckModal(){
@@ -541,7 +546,7 @@
 				this.passwordCheckModal.hide();
 				this.password="";
 			},
-			showPasswordChangeModal(){
+ 			showPasswordChangeModal(){
 				if(this.passwordChangeModal==null) return;
 				this.passwordChangeModal.show();
 			},
@@ -551,16 +556,57 @@
 				this.newPassword="";
 				this.newPasswordCheck="";
 			},
+			//비밀번호 확인
+			clickCheckPassword(){
+				this.checkPassword();
+				if(this.passwordCheck){
+					this.hidePasswordCheckModal;
+				}
+			},
 			//비밀번호 확인 통신
 			async checkPassword(){
-				const resp = await axios.post(contextPath+"/rest/member/setting/password", this.password)
-				this.passwordCheck = resp.data;
-				this.password="";
+				let sendPassword = {memberPassword:this.password}
+				const resp = await axios.post(contextPath+"/rest/member/setting/password", sendPassword);
+				if(resp.data){
+					this.hidePasswordCheckModal();
+					this.showPasswordChangeModal();
+				}
+				else{
+					alert("비밀번호를 다시 입력하세요");
+					this.password="";
+				}
 			},
 			//비밀번호 변경 통신
 			async changePassword(){
-				const resp = await axios.put(contextPath+"/rest/member/setting/password", this.newPassword)
+				let sendNewPassword = {memberPassword:this.newPassword}
+				const resp = await axios.put(contextPath+"/rest/member/setting/password", sendNewPassword)
 				this.hidePasswordChangeModal();
+			},
+			//우편번호 찾기
+			findAddress(){
+				new daum.Postcode({
+					oncomplete: (data)=> {
+						// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+						
+						// 각 주소의 노출 규칙에 따라 주소를 조합한다.
+						// 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+						let addr = ""; // 주소 변수
+						let extraAddr = ""; // 참고항목 변수
+						
+						//사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+						if (data.userSelectedType === "R") {
+							// 사용자가 도로명 주소를 선택했을 경우
+							addr = data.roadAddress;
+						} else {
+							// 사용자가 지번 주소를 선택했을 경우(J)
+							addr = data.jibunAddress;
+						}
+						
+						// 우편번호와 주소 정보를 해당 필드에 넣는다.
+						this.member.memberPost = data.zonecode;
+						this.member.memberBasicAddr = addr;
+					},
+				}).open();
 			}
 		},
 		created(){
@@ -588,13 +634,6 @@
 					this.saveSetting();
 				},
 			},
-			passwordCheck:{
-				if(passwordCheck){
-					this.hidePasswordCheckModal();
-					this.showPasswordChangeModal();
-				}
-				else return;
-			}
 		},
 	}).mount("#app");
 </script>

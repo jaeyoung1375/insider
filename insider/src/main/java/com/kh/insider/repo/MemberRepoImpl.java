@@ -54,7 +54,7 @@ public class MemberRepoImpl implements MemberRepo{
 	}
 	//단일조회
 	@Override
-	public MemberDto findByNo(int memberNo) {
+	public MemberDto findByNo(long memberNo) {
 		return sqlSession.selectOne("member.findByNo", memberNo);
 	}
 
