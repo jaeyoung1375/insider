@@ -11,9 +11,9 @@
 	</select>
 	
 	<insert id="create">
-		insert into dm_message(message_no, room_no, member_sender, message_content, 
+		insert into dm_message(message_no, room_no, member_no, message_content, 
 			message_send_time, message_read_time)
-		values(#{messageNo}, #{roomNo}, #{memberSender}, #{messageContent}, sysdate, sysdate)
+		values(dm_message_seq.nextval, #{roomNo}, #{memberNo}, #{messageContent}, sysdate, sysdate)
 	</insert>
 	
 	<select id="detail" resultType="DmMessageDto">
@@ -21,7 +21,7 @@
 	</select>
 	
 	<select id="roomMessageList" resultType="DmMessageDto" parameterType="int">
-		select message_no, room_no, member_sender, message_content, message_send_time
+		select message_no, room_no, member_no, message_content, message_send_time
         from dm_message
         where room_no = #{roomNo}
         order by message_send_time desc

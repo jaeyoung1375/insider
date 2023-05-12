@@ -7,8 +7,8 @@
 <mapper namespace="dmUser">
 
 	<insert id="enter">
-		insert into dm_user(member_no, room_no, join_time, inviter_no)
-		values(#{memberNo}, #{roomNo}, sysdate, #{inviterNo})	
+		insert into dm_user(member_no, room_no, join_time)
+		values(#{memberNo}, #{roomNo}, sysdate)	
 	</insert>
 	
 	<select id="find" resultType="DmUserDto">

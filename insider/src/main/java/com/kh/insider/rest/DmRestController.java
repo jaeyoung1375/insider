@@ -19,7 +19,7 @@ public class DmRestController {
 	private DmMessageRepo dmMessageRepo;
 	
 	@GetMapping("/message/{roomNo}")
-	public List<DmMessageDto> roomMessage(
+	public List<DmMessageDto> roomMessage (
 			@PathVariable int roomNo) {
 		return dmMessageRepo.roomMessageList(roomNo);
 	}
