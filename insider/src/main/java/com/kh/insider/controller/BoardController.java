@@ -20,15 +20,16 @@ public class BoardController {
 		return "board/list";
 	}
 	
-	@GetMapping("/insert")
-	public String write(@RequestParam(required = false)Integer boardNo,
-			Model model, HttpSession session) {
-		String memberId = (String) session.getAttribute("memberId");
-		if (memberId == null) {
-//		throw new RequirePermissionException("로그인을 해주세요.");
-		}
-		model.addAttribute("boardNo",boardNo);
-		
-		return "board/insert";
-	}
+	  // 임시 파일 업로드 주소
+    @GetMapping("/file")
+    public String file(){
+        return "temp_file";
+    }
+
+    // 임시 서머노트 & 파일 업로드 연계
+    @GetMapping("/write")
+    public String write(){
+        return "temp_write";
+    }
+
 }

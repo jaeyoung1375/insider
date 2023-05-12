@@ -1,4 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<h1>게시물 목록</h1>
-<a href="insert">글 작성</a>
+
+<jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
+
+<div class="container">
+    <div class="row">
+        <aside class="col">
+            <h1>Insider</h1>
+        </aside>
+        <article class="col">
+            <h1>아티클</h1>
+        </article>
+    </div>
+</div>
+
+<jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>

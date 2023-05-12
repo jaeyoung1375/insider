@@ -27,13 +27,11 @@ import com.kh.insider.configuration.FileUploadProperties;
 import com.kh.insider.dto.AttachmentDto;
 import com.kh.insider.repo.AttachmentRepo;
 
-import lombok.extern.slf4j.Slf4j;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
 import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 
-@Slf4j
 @Controller
 public class AttachmentController {
     

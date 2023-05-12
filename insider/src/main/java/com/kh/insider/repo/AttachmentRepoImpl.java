@@ -14,37 +14,11 @@ import com.kh.insider.dto.AttachmentDto;
 
 @Repository
 public class AttachmentRepoImpl implements AttachmentRepo{
+	
+	 @Autowired
+	    private SqlSession sqlSession;
 
-	@Autowired
-	private SqlSession sqlSession;
-	
-	@Autowired
-	private FileUploadProperties fileUploadProperties;
-	
-	//저장 위치
-	private File directory = new File("D:/upload");
-	public AttachmentRepoImpl() {
-		directory.mkdirs();
-	}
-	
-	
-//	@Override
-//	public int save(MultipartFile attachment) throws IllegalStateException, IOException {
-//		int attachmentNo = sqlSession.selectOne("attachment.sequence");
-//		
-//		String fileName = String.valueOf(attachmentNo);
-//		File dir = new File(directory, fileName);
-//		attachment.transferTo(dir);
-//		
-//		sqlSession.insert("attachment.insert", AttachmentDto.builder()
-//				.attachmentNo(attachmentNo)
-//				.attachmentName(attachment.getOriginalFilename())
-//				.attachmentType(attachment.getContentType())
-//				.attachmentSize(attachment.getSize())
-//				.build());
-//		return attachmentNo;
-//	}
-	 @Override
+	    @Override
 	    public int sequence() {
 	        return sqlSession.selectOne("attachment.sequence");
 	    }
