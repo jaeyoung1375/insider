@@ -187,7 +187,7 @@ public class AttachmentController {
 		model.addAttribute("attachmentNo",attachmentNo);
 		// ContentType에 따라 비디오를 재생하기 위한 model.addAttribute
 		model.addAttribute("contentType",contentType); 
-		return "show";
+		return "attachment/show";
 	}
 	
 
