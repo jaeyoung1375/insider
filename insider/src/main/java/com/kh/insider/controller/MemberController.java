@@ -78,17 +78,17 @@ public class MemberController {
 		return "redirect:login";
 	}
 	memberRepo.updateLoginTime(findMember.getMemberNo());
-	session.setAttribute("memberEmail",findMember.getMemberEmail());
 	session.setAttribute("memberNo",findMember.getMemberNo());
+	session.setAttribute("socialUser", findMember);
 		
 	return "redirect:/";
 	}
 	
 	@GetMapping("/logout")
 	public String logout(HttpSession session) {
-		session.removeAttribute("member");
+		session.removeAttribute("memberNo");
 		session.removeAttribute("socialUser");
-		session.removeAttribute("memberEmail");
+		session.removeAttribute("member");
 		
 		return "redirect:/";
 	}
@@ -102,7 +102,7 @@ public class MemberController {
 		token = socialLoginService.kakaoTokenCreate(code);
 		MemberDto kakaoUser = new MemberDto();
 		KakaoProfileVO profile = socialLoginService.kakaoLogin(code,token);
-		long memberNo = profile.getId();
+		Long memberNo = profile.getId();
 		String memberEmail = profile.kakao_account.getEmail();
 		String memberPw = cosKey;
 		MemberDto originalMember = memberRepo.findByEmail(profile.kakao_account.getEmail());
@@ -121,6 +121,7 @@ public class MemberController {
 			memberRepo.updateLoginTime(memberNo);
 			// 회원정보
 			session.setAttribute("socialUser",originalMember);
+			session.setAttribute("memberNo", originalMember.getMemberNo());
 			// 토큰정보
 			session.setAttribute("member",token.getAccess_token());
 			// 리프레시 토큰 정보
@@ -168,7 +169,7 @@ public class MemberController {
         String numbersOnly = uuidWithoutHyphens.replaceAll("\\D", "");
         numbersOnly = numbersOnly.substring(0,10);
 		
-		long memberNo = Long.parseLong(numbersOnly);
+		Long memberNo = Long.parseLong(numbersOnly);
 		String memberEmail = profile.getEmail();
 		String memberPw = cosKey;
 		String memberName = profile.getName();
@@ -187,8 +188,8 @@ public class MemberController {
 			System.out.println("기존회원이므로 로그인을 진행합니다.");
 			// 회원정보
 			session.setAttribute("socialUser",originalMember);
+			session.setAttribute("memberNo", originalMember.getMemberNo());
 			// 토큰정보
-			session.setAttribute("memberEmail", memberEmail);
 			session.setAttribute("member",response.getAccess_token());
 			session.setAttribute("refresh_token",response.getRefresh_token());
 			return "redirect:/";

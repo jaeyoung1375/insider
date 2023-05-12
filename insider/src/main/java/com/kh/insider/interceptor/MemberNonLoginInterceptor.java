@@ -14,10 +14,12 @@ public class MemberNonLoginInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		String memberEmail = (String) request.getSession().getAttribute("memberEmail");
+		Long memberNo = (Long) request.getSession().getAttribute("memberNo");
 		MemberDto dto = (MemberDto) request.getSession().getAttribute("socialUser");
+		System.out.println("memberNo : "+memberNo);
+		System.out.println("dto : " + dto);
 		
-		if(memberEmail == null || dto == null) {
+		if(memberNo == null || dto == null) {
 			response.sendRedirect(request.getContextPath()+"/member/login");
 			return false;
 		}
