@@ -5,6 +5,8 @@
 	<h1>메인</h1>
 </div>
   소셜유저 : ${sessionScope.socialUser}		
+  회원번호 : ${sessionScope.memberNo}		
+  멤버토큰 : ${sessionScope.member}		
 
 <script>
 	Vue.createApp({

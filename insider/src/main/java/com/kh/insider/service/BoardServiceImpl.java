@@ -25,26 +25,26 @@ public class BoardServiceImpl implements BoardService{
 	private BoardAttachmentRepo boardAttachmentRepo; 
 	
 	
-//	@Override
-//	public void insert(BoardDto boardDto, List<MultipartFile> boardAttach) throws IllegalStateException, IOException {
+	@Override
+	public void insert(BoardDto boardDto, List<MultipartFile> boardAttach) throws IllegalStateException, IOException {
 //		boardRepo.insert(boardDto);
 //				
 //				for(MultipartFile file : boardAttach) {
-//					int attachmentNo = attachmentRepo.save(file);
+//					int attachmentNo = attachmentRepo.insert(file);
 //					
 //					boardAttachmentRepo.insert(BoardAttachmentDto.builder()
 //																		.boardNo(boardDto.getBoardNo())
 //																		.attachmentNo(attachmentNo)
 //																	.build());
 //				}
-//		
-//	}
-//
-//	@Override
-//	public void delete(int boardNo) {
+		
+	}
+
+	@Override
+	public void delete(int boardNo) {
 ////		boardRepo.delete(boardNo);
 //		boardAttachmentRepo.delete(boardNo);
-//		
-//	}
+		
+	}
 
 }
