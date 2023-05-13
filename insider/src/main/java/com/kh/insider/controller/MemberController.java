@@ -187,6 +187,8 @@ public class MemberController {
 		}else {
 			System.out.println("기존회원이므로 로그인을 진행합니다.");
 			// 회원정보
+			// 로그인 시각 갱신
+			memberRepo.updateLoginTime(memberNo);
 			session.setAttribute("socialUser",originalMember);
 			session.setAttribute("memberNo", originalMember.getMemberNo());
 			// 토큰정보
