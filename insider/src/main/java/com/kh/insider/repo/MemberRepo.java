@@ -9,6 +9,9 @@ public interface MemberRepo {
 	public void socialJoin(MemberDto dto);
 	// 이메일 조회
 	public MemberDto findByEmail(String memberEmail);
+	// 이메일 중복확인
+	public int isEmailDuplicated(String memberEmail) throws Exception;
+	
 	public void update(MemberDto memberDto);
 	public MemberDto login(String memberEmail, String memberPassword);
 	
