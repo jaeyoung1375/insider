@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.kh.insider.repo.DmRoomRepo;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Controller
 @RequestMapping("/dm")
 public class DmController {
@@ -27,5 +30,5 @@ public class DmController {
 		return "dm/home";
 	}
 	
-
+	
 }
