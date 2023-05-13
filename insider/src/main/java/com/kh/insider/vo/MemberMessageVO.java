@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class MemberMessageVO {
 	
 	private long memberNo;
-	private String memberName, content;
+	private String memberNick, content;
 	private long time;
 
 }
