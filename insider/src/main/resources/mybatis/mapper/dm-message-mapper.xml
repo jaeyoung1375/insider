@@ -24,7 +24,7 @@
 		select message_no, room_no, message_sender, message_content, message_send_time
         from dm_message
         where room_no = #{roomNo}
-        order by message_send_time desc
+        order by message_send_time asc
     </select>
     
     <delete id="delete" parameterType="int">

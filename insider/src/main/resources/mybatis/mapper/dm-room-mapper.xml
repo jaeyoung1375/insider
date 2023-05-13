@@ -12,7 +12,7 @@
 	
 	<insert id="create">
 		insert into dm_room(room_no, room_name, room_created)
-		values(dm_room_seq.nextval, null, sysdate)
+		values(dm_room_seq.nextval, #{roomName}, sysdate)
 	</insert>
 	
 	<!--  채팅방 유무  -->
