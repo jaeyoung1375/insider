@@ -33,6 +33,11 @@ public class MemberRepoImpl implements MemberRepo{
 	public MemberDto findByEmail(String memberEmail) {
 		return sqlSession.selectOne("member.findByEmail",memberEmail);
 	}
+	
+	@Override
+	public int isEmailDuplicated(String memberEmail) throws Exception{		
+		return sqlSession.selectOne("member.isEmailDuplicated",memberEmail);
+	}
 
 	@Override
 	public void update(MemberDto memberDto) {
@@ -62,6 +67,8 @@ public class MemberRepoImpl implements MemberRepo{
 	public void changePassword(MemberDto memberDto) {
 		sqlSession.update("member.changePassword", memberDto);
 	}
+
+	
 
 	
 }

@@ -14,14 +14,14 @@ import lombok.EqualsAndHashCode;
 public class DmUserVO {
 	
 	private WebSocketSession session;
-	private int memberNo;
+	private long memberNo;
 	private String memberName;
 	
 	//생성자 생성
 	public DmUserVO(WebSocketSession webSocketSession) {
 		this.session = webSocketSession;
 		Map<String, Object> attr = session.getAttributes();
-		this.memberNo = (int)attr.get("memberNo");
+		this.memberNo = (long)attr.get("memberNo");
 		this.memberName = (String)attr.get("memberName");
 	}
 	
