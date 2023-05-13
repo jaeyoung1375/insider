@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -89,6 +90,10 @@
 						<a class="dropdown-item" href="${pageContext.request.contextPath}/member/setting">환경설정</a>
 						<a class="dropdown-item" href="#">Another action</a>
 						<a class="dropdown-item" href="#">Something else here</a>
+						<c:if test="${socialUser != null}">
+						<a class="dropdown-item" href="${pageContext.request.contextPath}/member/logout">로그아웃</a>
+						</c:if>
+						
 					</div>
 				</div>
 			</aside>
