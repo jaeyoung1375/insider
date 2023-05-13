@@ -12,7 +12,6 @@ public class DmMessageDto {
 	private long messageSender;
 	private String messageContent;
 	private Date messageSendTime;
-	private Date messageReadTime;
 	private String memberNick;
 	
 }
