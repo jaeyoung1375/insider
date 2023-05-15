@@ -25,6 +25,7 @@ public class MemberDto {
 	private String memberGender;
 	private int memberReport;
 	private String memberBirth;
+	private int memberFollow;
 	
 //	 public String getMemberBirth() {
 //	        return memberBirth;

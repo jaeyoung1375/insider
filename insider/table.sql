@@ -75,7 +75,7 @@ report_content varchar2(300) not null,
 report_table_no number not null,
 report_table varchar2(30) check(report_table IN ('member', 'reply', 'board', 'dm_message', 'etc')) not null,
 report_time date default sysdate not null,
-report_check number(1) DEFAULT 0 NOT NULL CHECK (report_check IN (0, 1, 2))
+report_check number(1) DEFAULT 0 NOT NULL CHECK (report_check IN (0, 1, 2, 3))
 );
 create sequence report_seq;
 
@@ -90,3 +90,22 @@ CREATE SEQUENCE member_profile_seq;
 CREATE VIEW member_with_profile as
 SELECT M.*, P.attachment_no FROM MEMBER M 
 LEFT OUTER JOIN member_profile P ON M.member_no=P.member_no;
+
+--태그 관련 테이블 생성
+CREATE TABLE tag(
+tag_name varchar2(60) PRIMARY KEY,
+tag_follow NUMBER DEFAULT 0 NOT NULL check(tag_follow>=0)
+);
+
+CREATE TABLE board_tag(
+board_tag_no NUMBER PRIMARY KEY,
+tag_name references tag(tag_name),
+board_no REFERENCES board(board_no)
+);
+CREATE SEQUENCE board_tag_seq;
+
+CREATE TABLE tag_follow(
+tag_name REFERENCES tag(tag_name),
+member_no REFERENCES member(MEMBER_no),
+PRIMARY key(tag_name, member_no)
+);
