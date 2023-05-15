@@ -38,6 +38,7 @@ public class DmServiceImpl implements DmService {
 	@Autowired
 	private DmMessageRepo dmMessageRepo;
 
+
 	//여러 개의 방을 관리할 저장소
 	Map<Integer, DmRoomVO> rooms = Collections.synchronizedMap(new HashMap<>());
 	
@@ -92,6 +93,7 @@ public class DmServiceImpl implements DmService {
 		userDto.setRoomNo(roomNo);
 		userDto.setMemberNo(user.getMemberNo());
 		dmUserRepo.enter(userDto);
+		
 		
 		log.debug("{}님이 {}방으로 참여하였습니다.", user.getMemberNo(), roomNo);
 	}
@@ -186,7 +188,6 @@ public class DmServiceImpl implements DmService {
 			MemberMessageVO msg = new MemberMessageVO();
 			msg.setContent(receiveVO.getContent());
 			msg.setTime(System.currentTimeMillis());
-			msg.setMemberNo(user.getMemberNo());
 			msg.setMemberNick(user.getMemberNick());
 			
 			//JSON 변환
@@ -203,5 +204,7 @@ public class DmServiceImpl implements DmService {
 			
 		}
 	}
+	
+
 	
 }
