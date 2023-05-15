@@ -26,6 +26,7 @@ public class InterceptorConfiguration implements WebMvcConfigurer {
 						"/member/join/**",
 						"/member/addInfo",
 						"/member/auth/**",
+						"/member/emailCheck",
 						"/static/**"
 						);
 	
