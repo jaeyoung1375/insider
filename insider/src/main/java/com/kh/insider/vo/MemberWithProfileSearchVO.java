@@ -24,11 +24,14 @@ public class MemberWithProfileSearchVO {
 	private Integer memberMinFollow;
 	private Integer memberMaxFollow;
 	
+	private String orderListString;
 	private List<String> orderList;
+	
 	public void refreshOrderList() {
-		if(this.orderList==null)return;
+		if(this.orderListString==null || this.orderListString.length()==0)return;
+		String[] temp = orderListString.split(",");
 		List<String> list = new ArrayList<>();
-		for(String str:orderList) {
+		for(String str:temp) {
 			if(str.length()>0) {
 				list.add(str);
 			}
