@@ -11,6 +11,8 @@ public interface MemberRepo {
 	public MemberDto findByEmail(String memberEmail);
 	// 이메일 중복확인
 	public int isEmailDuplicated(String memberEmail) throws Exception;
+	// 닉네임 중복확인
+	public int isNickDuplicated(String memberNick) throws Exception;
 	
 	public void update(MemberDto memberDto);
 	public MemberDto login(String memberEmail, String memberPassword);

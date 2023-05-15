@@ -26,6 +26,9 @@
 	            .hide{
        		 display:none;
     			}
+    			.nonHide{
+    			display:block;
+    			}
    
 	       
 	
@@ -50,22 +53,25 @@
 			
 	        <form action="join" method="post"  ref="joinForm" id="app">
 	    <div class="container col-lg-3 card p-5 mt-5">
+	    
+	   		<!-- 1단계 -->
 	        <div :class="{hide:stepOneHidden}">
 	            <div class="text-center mb-3">         	
 			         	<a href="/" class="logo"><img src="/static/image/logo.png" width="50px" height="50px" class="me-3">insider</a>
 	                </div>
 	            <div class="mb-3 row"> 
-	                <input class="form-control" type="text" name="memberEmail" placeholder="이메일" v-model="email" @blur="validateEmail" @keyup="isEmailDuplicated(email)">
+	                <input class="form-control" type="text" name="memberEmail" placeholder="이메일" v-model="email" @blur="validateEmail" @keyup="isEmailDuplicatedCheck(email)">
 	                <p v-if="showEmailWarning" class="email-warning-message">유효하지 않은 이메일입니다</p>
-	                <p v-if="isDuplicated" class="email-warning-message">중복된 이메일 입니다</p>
+	                <p v-if="isEmailDuplicated" class="email-warning-message">중복된 이메일 입니다</p>
 	            </div>
 	            <div class="mb-3 row">
 	                <input class="form-control" type="text" name="memberName" placeholder="성명" v-model="name" @blur="validateName">
 	                <p v-if="showNameWarning" class="name-warning-message">2~10자 한글, 영문 대소문자, 숫자, 특수문자를 사용하세요.</p>
 	            </div>
 	            <div class="mb-3 row">
-	                <input class="form-control" type="text" name="memberNick" placeholder="닉네임" v-model="nickname" @blur="validateNick">
+	                <input class="form-control" type="text" name="memberNick" placeholder="닉네임" v-model="nickname" @blur="validateNick" @keyup="isNickDuplicatedCheck(nickname)" @input="nickname = $event.target.value">
 	                <p v-if="showNickWarning" class="nick-warning-message">2~10자 한글, 영문 대소문자, 숫자, 특수문자를 사용하세요.</p>
+	                <p v-if="isNickDuplicated" class="email-warning-message">중복된 닉네임 입니다</p>
 	            </div>
 	            <div class="mb-3 row">
 	                <input class="form-control" type="password" name="memberPassword" placeholder="비밀번호" v-model="password" @blur="validatePassword">
@@ -80,9 +86,16 @@
 	                <input class="form-control" type="text" name="memberTel" placeholder="전화번호" v-model="tel" @blur="validateTel">
 	                <p v-if="showTelWarning" class="tel-warning-message">유효한 휴대폰번호를 입력해주세요. (예: 010-1234-5678)</p>
 	            </div>
+	            	<div class="row mb-3">
+	            		 <button type="button" class="btn btn-primary" @click="StepOneSubmit">가입하기</button>
+	            	 </div>
 	            </div>
+	            <!-- 1단계 끝 -->
 	            
-	            <div class ="bir_wrap mb-3  ">
+	            <!-- 2단계 -->
+	            <div :class="{hide: !stepOneHidden || stepTwoHidden}">
+	            
+	            <div class ="bir_wrap mb-3">
 	                <label class="form-label mt-4">생년월일</label>
 	                <div class="bir_yy">
 	                    <span class="ps_box">
@@ -129,15 +142,52 @@
 	                <input type="text" name="memberBasicAddr" class="form-control" placeholder="기본주소" readonly v-model="basicAddr">
 	             </div>
 	             <div class="mb-3">
-	                <input type="text" name="memberDetailAddr" class="form-control" placeholder="상세주소" v-model="detailAddr">
-	    
+	                <input type="text" name="memberDetailAddr" class="form-control" placeholder="상세주소" v-model="detailAddr">	    
 	             </div>
+	             <div class="row mb-3">
+	            		 <button type="button" class="btn btn-primary" @click="StepTwoSubmit">가입하기</button>	 
+	            </div>
+	            
+	            <!-- 
+	           	<div class="row mb-3">
+	            		 <button type="button" class="btn btn-primary" @click="goBackStepOne">돌아가기</button>	 
+	            </div>
+	             -->
+	             </div>
+	             <!-- 2단계 끝 -->
+	             
+	             <!-- 3단계 -->
+	             <div :class="{hide :!stepThreeHidden}">
+	              <div class="text-center mb-3">         	
+			         	<a href="/" class="logo"><img src="/static/image/logo.png" width="50px" height="50px" class="me-3">insider</a>
+	               </div>
+	                <div class="text-center mb-3">         	
+						<p>{{email}} 으로 전송된 인증번호를 입력하세요.</p>
+	               </div>
+	               <div class="mb-3">
+	                <input type="text" class="form-control" placeholder="인증번호" v-model="emailCode" @blur="emailVerifyCode()">
+	                 <p v-if="showEmailCodeWarning" class="tel-warning-message">인증번호가 일치하지 않습니다</p>
+	             </div>
+	                <div class="row mb-3">
+	            		 <button type="button" class="btn btn-primary" @click="sendEmail(email)">확인</button>	 
+	            	</div>
+	    
+        </div>
+	             
+	             
+	             <!-- 
 	             <div class="row mb-3">
 	                <button type="button" class="btn btn-primary" @click="handleSubmit">가입하기</button>
 	             </div>
-	
-	
+	 -->
+				
 	        </div>
+	                   <div class="container col-lg-3 card p-3 mt-3" style="display:flex;">
+        	<div class="text-center">
+        		계정이 있으신가요??
+        		<a href="login">로그인하기</a>
+        	</div>
+        </div>
 	    </form>
 	
 	
@@ -150,6 +200,7 @@
 	                return {
 	                    email : '',
 	                    name : '',
+	                    num : '',
 	                    nickname : '',
 	                    password : '',
 	                    passwordCk : '',
@@ -158,17 +209,21 @@
 	                    post : '',
 	                    basicAddr : '',
 	                    detailAddr : '',
+	                    emailCode : '',
 	                    showEmailWarning : false,
 	                    showNameWarning : false,
 	                    showNickWarning : false,
 	                    showPasswordWarning : false,
 	                    showPasswordCkWarning : false,
 	                    showTelWarning : false,
+	                    showEmailCodeWarning : false,
 	                    memberBirth : '',
 	                    formSubmit : false,
-	                    isDuplicated : false,
+	                    isEmailDuplicated : false,
+	                    isNickDuplicated : false,
 	                    stepOneHidden : false,
-	                    stepTwoHidden : true,
+	                    stepTwoHidden : false,
+	                    stepThreeHidden : false,
 	                };
 	            },
 	        
@@ -241,6 +296,38 @@
 	                    }
 	                    
 	                },
+	                
+	                StepOneSubmit(){
+	                	   if(this.showEmailWarning || this.email == "" ||
+	      	                     this.showNameWarning || this.name == "" ||
+	      	                        this.showNickWarning || this.nickname == "" ||
+	      	                        this.showPasswordCkWarning || this.passwordCk == "" ||
+	      	                        this.showPasswordWarning || this.password == "" || 
+	      	                        this.showTelWarning || this.tel == "" || this.isEmailDuplicated == true || this.isNickDuplicated == true){
+	      	                         return;
+	                	   }
+	                	   this.stepOneHidden = true;
+	                	
+	                },
+	                StepTwoSubmit(){
+	                	
+	                	if(this.gender == "" || this.post == "" || this.basicAddr == "" ||
+	                		this.detailAddr == ""){
+	                		return;
+	                	}
+	                	
+	                	   this.stepOneHidden = true;
+	                	   this.stepTwoHidden = true;
+	                	   this.stepThreeHidden = true;
+	                },
+	                
+	                goBackStepOne(){
+	                	this.stepOneHidden = false;
+	                	this.stepTwoHidden = true;
+	                },
+	                
+	                
+	                
 	                handleSubmit(){
 	
 	                     if(this.showEmailWarning || this.email == "" ||
@@ -249,7 +336,7 @@
 	                        this.showPasswordCkWarning || this.passwordCk == "" ||
 	                        this.showPasswordWarning || this.password == "" || 
 	                        this.showTelWarning || this.tel == "" || this.gender == "" ||
-	                        this.post == "" || this.basicAddr == "" || this.detailAddr == "" || this.isDuplicated == true){
+	                        this.post == "" || this.basicAddr == "" || this.detailAddr == "" || this.isEmailDuplicated == true || this.isNickDuplicated == true){
 	                         return;
 	                    }
 	
@@ -258,21 +345,42 @@
 	                      //  this.$refs.joinForm.submit(			);
 	         
 	                },
-	                async isEmailDuplicated(memberEmail){
+	                async isEmailDuplicatedCheck(memberEmail){
 	                	try{
-	                		const response = await axios.get("/member/emailCheck",{
+	                		const response = await axios.get("emailCheck",{
 	                			params : {
-	                				memberEmail : memberEmail
+	                				memberEmail : this.email
 	                			}	
+	                		
 	                	
 	                		});
-	 		
-	                	this.isDuplicated = response.data === "fail";
+	                	
+	                	this.isEmailDuplicated = response.data === "fail";
+	             
 	                	}catch(error){
 	                		console.error(error);
 	                	}
 	                	
 	                },
+	                
+	                async isNickDuplicatedCheck(memberNick){
+	                	try{
+	                		const response = await axios.get("nickCheck",{
+	                			params : {
+	                				memberNick : this.nickname
+	                			}	
+	                		
+	                	
+	                		});
+	                	
+	                	this.isNickDuplicated = response.data === "fail";
+	             
+	                	}catch(error){
+	                		console.error(error);
+	                	}
+	                	
+	                },
+	                
 	                
 	                findAddress() {
 	                    new daum.Postcode({
@@ -282,6 +390,34 @@
 	                        }
 	                    }).open();
 	                },
+	  
+	                async sendEmail(memberEmail){
+	     			       
+	     				
+	     				const response = await axios.get("sendMail",{
+	     					params : {
+	     						memberEmail : this.email
+	     					}
+	     				});
+	     				// 인증번호
+	     				this.num = response.data;
+	     				// num을 다른메서드에서 쓰기 위함
+	     				this.emailVerifyCode();
+	                },
+	                
+	                emailVerifyCode(){
+	                	console.log(this.num);
+	                	if(String(this.num) != this.emailCode){
+	                		showEmailCodeWarning = true;
+	                	}else{
+	                		showEmailCodeWarning = false;
+	                	}
+	                	             
+	                	
+	                	
+	                },
+	             
+	                
 	
 	
 	            },

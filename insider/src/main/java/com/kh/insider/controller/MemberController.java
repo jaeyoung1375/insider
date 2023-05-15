@@ -23,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.repo.MemberRepo;
+import com.kh.insider.service.MemberService;
 import com.kh.insider.service.SocialLoginService;
 import com.kh.insider.vo.FacebookProfileVO;
 import com.kh.insider.vo.FacebookResponseVO;
@@ -36,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @Slf4j
+@CrossOrigin
 @RequestMapping("/member")
 public class MemberController {
 	
@@ -45,6 +47,8 @@ public class MemberController {
 	
 	@Autowired
 	private MemberRepo memberRepo;
+	@Autowired
+	private MemberService memberService;
 	@Autowired
 	private SettingRepo settingRepo;
 	
@@ -100,8 +104,32 @@ public class MemberController {
 	public String isEmailDuplicated(@RequestParam String memberEmail) throws Exception {
 		
 		int result = memberRepo.isEmailDuplicated(memberEmail);
-		System.out.println("result = "+result);
+		log.debug("result = {}",result);
 		
+		if(result != 0) {
+			return "fail";
+		}else {
+			return "success";
+		}
+	}
+	
+	@GetMapping("/sendMail")
+	@ResponseBody
+	public String sendMail(@RequestParam String memberEmail, HttpSession session) {
+		
+		int num = memberService.sendEmail(memberEmail);
+		System.out.println(Integer.toString(num));
+		return Integer.toString(num);
+		
+	}
+	
+	
+	
+	@GetMapping("/nickCheck")
+	@ResponseBody
+	public String isNickDuplicated(@RequestParam String memberNick) throws Exception{
+		
+		int result = memberRepo.isNickDuplicated(memberNick);
 		if(result != 0) {
 			return "fail";
 		}else {

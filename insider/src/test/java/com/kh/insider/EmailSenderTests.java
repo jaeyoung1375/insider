@@ -30,7 +30,7 @@ public class EmailSenderTests {
 		MimeMessageHelper helper = 
 				new MimeMessageHelper(message, false, "UTF-8");
 		
-		helper.setTo("jaeyoung1375@naver.com");
+		helper.setTo("wodud1375@gmail.com");
 		helper.setSubject("마임메세지 템플릿 테스트");
 		
 		//email.html의 내용을 읽어와서 첨부

@@ -38,6 +38,11 @@ public class MemberRepoImpl implements MemberRepo{
 	public int isEmailDuplicated(String memberEmail) throws Exception{		
 		return sqlSession.selectOne("member.isEmailDuplicated",memberEmail);
 	}
+	
+	@Override
+	public int isNickDuplicated(String memberNick) throws Exception {
+		return sqlSession.selectOne("member.isNickDuplicated",memberNick);
+	}
 
 	@Override
 	public void update(MemberDto memberDto) {
@@ -67,6 +72,8 @@ public class MemberRepoImpl implements MemberRepo{
 	public void changePassword(MemberDto memberDto) {
 		sqlSession.update("member.changePassword", memberDto);
 	}
+
+	
 
 	
 
