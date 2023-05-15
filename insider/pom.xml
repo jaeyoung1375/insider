@@ -98,6 +98,13 @@
 			<artifactId>spring21</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		
+			<!--ffmpeg-->
+		<dependency>
+	     	<groupId>net.bramp.ffmpeg</groupId>
+	     	<artifactId>ffmpeg</artifactId>
+	     	<version>0.7.0</version>
+      	</dependency>
 	</dependencies>
 
 	<build>
