@@ -26,6 +26,11 @@ public class BoardRepoImpl implements BoardRepo {
 
 
 	@Override
+	public int sequence() {
+		 return sqlSession.selectOne("board.sequence");
+	}
+	
+	@Override
 	public void insert(BoardDto boardDto) {
 		 sqlSession.insert("board.insert", boardDto);		
 	}
@@ -35,5 +40,6 @@ public class BoardRepoImpl implements BoardRepo {
 	public boolean update(BoardDto boardDto) {
 		 return sqlSession.update("board.update", boardDto) > 0;
 	}
+
 
 }

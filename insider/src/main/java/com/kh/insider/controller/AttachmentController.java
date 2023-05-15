@@ -55,8 +55,18 @@ public class AttachmentController {
     public String file(){
         return "attachment/file";
     }
+    
+    
+    
+    @GetMapping("/test")
+    public String test01(){
+        return "attachment/test";
+    }
 
-    // 임시 서머노트 & 파일 업로드 연계
+    
+    
+
+    // 게시글 & 파일 업로드 연계
     @GetMapping("/insert")
     public String write(){
         return "attachment/insert";
@@ -274,8 +284,4 @@ public class AttachmentController {
 			.body(resource);
 	}
 	
-	@GetMapping("/test")
-	public String test() {
-		return "test";
-	}
 }

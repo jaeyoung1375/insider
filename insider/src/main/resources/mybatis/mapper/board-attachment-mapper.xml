@@ -27,6 +27,10 @@
    
    <mapper namespace="board_attachment">
    
+		<select id="sequence" resultType="int">
+			select board_attach_seq.nextval from dual
+		</select>
+   
 	   <insert id="insert" parameterType="BoardAttachmentDto">
 			insert into board_attachment (board_no, attachment_no) 
 			values ( #{boardNo}, #{attachmentNo})

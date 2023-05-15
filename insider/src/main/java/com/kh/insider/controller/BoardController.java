@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.insider.dto.BoardDto;
+import com.kh.insider.repo.BoardAttachmentRepo;
 import com.kh.insider.repo.BoardRepo;
 
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,9 @@ public class BoardController {
 	
 	@Autowired
 	private BoardRepo boardRepo;
+	
+	@Autowired
+	private BoardAttachmentRepo boardAttachmentRepo;
 
 	@GetMapping("/list")
 	public String list() {
@@ -34,20 +38,19 @@ public class BoardController {
     public String insert(){
         return "/board/insert";
     }
-    // 게시물 등록
+    
+    // 통합게시물 등록
     @PostMapping("/insert")
     public String insert(HttpSession session, Model model, @ModelAttribute BoardDto boardDto, RedirectAttributes attr){
 
-        // 1. 게시물
     	int boardNo = (int)session.getAttribute("boardNo");
         boardDto.setBoardNo(boardNo);
 
-        // 2. 게시물 작성자
-        int memberNo = (int)session.getAttribute("memberNo");
-        boardDto.setMemberNo(memberNo);
+        // 2. 통합게시물 작성자
+        String memberNick = (String)session.getAttribute("memberNick");
+        boardDto.setMemberNick(memberNick);
 
-
-        // 4. 게시물 등록
+        // 3. 통합게시물 등록
         boardRepo.insert(boardDto);
 
         // 5. 개별테이블 추가(Fix!!)
@@ -57,5 +60,6 @@ public class BoardController {
 
         return "redirect:detail/";
     }
+
 
 }

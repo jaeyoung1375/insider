@@ -70,7 +70,7 @@
 							</li>
 						<!-- 게시물작성 -->
 							<li class="nav-item mt-2">
-								<a class="nav-link" href="attachment/file"><i class="fa-regular fa-square-plus"></i></a>
+								<a class="nav-link" href="attachment/test"><i class="fa-regular fa-square-plus"></i></a>
 							</li>
 						<!-- 프로필 -->
 							<li class="nav-item">

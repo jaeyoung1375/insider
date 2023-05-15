@@ -7,7 +7,8 @@ import com.kh.insider.dto.BoardDto;
 public interface BoardRepo {
 	List<BoardDto> selectListPaging(int page);
 
-	boolean update(BoardDto boardDto);
+	int sequence();
 	void insert(BoardDto boardDto);
+	boolean update(BoardDto boardDto);
 
 }
