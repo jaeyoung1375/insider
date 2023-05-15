@@ -10,10 +10,10 @@
 	</insert>
 	<!-- 수정 -->
 	<update id="update">
-		update setting 
+		update setting set
 			setting_hide=#{settingHide}, setting_distance=#{settingDistance},
-			setting_alert=#{settingAlert}, setting_like_alert=#{settingLikeAlert}, 
-			setting_reply_alert=#{settingReplyAlert}, setting_followAlert=#{settingFollowAlert},
+			setting_like_alert=#{settingLikeAlert}, 
+			setting_reply_alert=#{settingReplyAlert}, setting_follow_alert=#{settingFollowAlert},
 			setting_video_auto=#{settingVideoAuto}, setting_reply_like_alert=#{settingReplyLikeAlert},
 			setting_message=#{settingMessage}, setting_allow_reply=#{settingAllowReply},
 			setting_watch_like=#{settingWatchLike}

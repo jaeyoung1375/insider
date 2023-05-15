@@ -20,7 +20,7 @@ public class DmUserRepoImpl implements DmUserRepo {
 	}
 
 	@Override
-	public List<DmUserDto> find(String memberNo) {
+	public List<DmUserDto> find(long memberNo) {
 		return sqlSession.selectList("dmUser.find", memberNo);
 	}
 

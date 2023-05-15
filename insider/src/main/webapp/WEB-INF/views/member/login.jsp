@@ -16,8 +16,9 @@
 		text-decoration: none;
 	}
 	</style>
-</head>
+</head>		
 <body>
+
 		        <div class="container col-lg-3 card p-5 mt-5" style="display:flex; justify-content: center" id="app">
 		        <div>
 		         <div class="text-center mb-3">         	
@@ -32,7 +33,7 @@
                 </div>
                 <div class="mb-3 row">
                     <p v-if="showEmptyWarning" class="email-warning-message">아이디 혹은 비밀번호를 입력해주세요</p>
-                     <p v-if="showInvalidWarning" class="email-warning-message">아이디 혹은 비밀번호를 일치하지 않습니다</p>
+                     <p v-if="${result == 0} && !showEmptyWarning">아이디 혹은 비밀번호를 일치하지 않습니다</p>
                 </div>
                 <div class="row mb-3">
                     <button class="btn btn-primary" type="submit">로그인</button>
@@ -71,6 +72,11 @@ redirect_uri=https://localhost:8080/member/facebook/auth&scope=public_profile,em
         	</div>
         </div>
 
+        <div>
+	        소셜유저 : ${sessionScope.socialUser}, 멤버 : ${sessionScope.member} , 세션번호 : ${sessionScope.memberNo}			
+        </div>
+
+
 
 
 
@@ -83,6 +89,7 @@ redirect_uri=https://localhost:8080/member/facebook/auth&scope=public_profile,em
                     return {
                       email : '',
                       password : '',
+                      
                       showEmptyWarning : false,
                       showInvalidWarning : false,
                     };
@@ -96,12 +103,8 @@ redirect_uri=https://localhost:8080/member/facebook/auth&scope=public_profile,em
                         if(this.email == '' || this.password == ''){
                             event.preventDefault();
                             this.showEmptyWarning = true;
-                        }else if(${result == 0}){
-                        	event.preventDefault();
-                        	showInvalidWarning = true;
                         }else{
-                        	showEmptyWarning : false;
-                            showInvalidWarning : false;
+                        	this.showEmptyWarning = false;
                         }
                     },
                   
@@ -113,5 +116,6 @@ redirect_uri=https://localhost:8080/member/facebook/auth&scope=public_profile,em
             app.mount("#app");
         </script>
       
+
 </body>
 </html>

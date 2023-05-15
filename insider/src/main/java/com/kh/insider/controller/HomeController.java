@@ -12,7 +12,7 @@ import com.kh.insider.dto.MemberDto;
 import com.kh.insider.repo.MemberRepo;
 
 @Controller
-@RequestMapping("/")
+
 public class HomeController {
 	
 	@Autowired

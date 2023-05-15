@@ -41,7 +41,7 @@
 				</div>
 			</div>
 		</div>
-	<!-- 개인정보 변경 -->
+	<!------------------------------------------- 개인정보 변경 ------------------------------------------->
 		<div class="col-md-8" v-show="page==0">
 			<div class="row">
 				<div class="col">
@@ -75,6 +75,9 @@
 			</div>
 			<div class="row">
 				<div class="col">
+					<input type="button" @click="findAddress()" value="우편번호 찾기" /><br />
+				</div>
+				<div class="col">
 					<input class="form-control" v-model="member.memberPost" readonly>
 				</div>
 			</div>
@@ -90,11 +93,11 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<h3>비밀번호 변경</h3>
+					<h3 @click="showPasswordCheckModal">비밀번호 변경</h3>
 				</div>
 			</div>
 		</div>
-	<!-- 프로필 편집 -->
+	<!------------------------------------------- 프로필 편집 ------------------------------------------->
 		<div class="col-md-8" v-show="page==1">
 			<div class="row">
 				<div class="col">
@@ -103,7 +106,7 @@
 			</div>
 			<div class="row">
 				<div class="col-3">
-					<img :src="profileUrl">
+					<img :src="profileUrl" width="100" height="100">
 				</div>
 				<div class="col-9">
 					<div class="row">
@@ -124,7 +127,7 @@
 					<span>소개</span>
 				</div>
 				<div class="col-9">
-					<input class="form-control" v-model="member.memberMsg">
+					<input type="text" class="form-control" v-model="member.memberMsg">
 				</div>
 			</div>
 			<div class="row">
@@ -132,11 +135,14 @@
 					<span>성별</span>
 				</div>
 				<div class="col-9">
-					<input class="form-control" v-model="member.memberGender">
+					<select class="form-control" v-model="member.memberGender">
+						<option :value="0" :selected="member.memberGender==0">남성</option>
+						<option :value="1" :selected="member.memberGender==1">여성</option>
+					</select>
 				</div>
 			</div>
 		</div>
-	<!-- 푸시 알림 -->
+	<!------------------------------------------- 푸시 알림 ------------------------------------------->
 		<div class="col-md-8" v-show="page==2">
 			<div class="row">
 				<div class="col">
@@ -149,11 +155,11 @@
 				</div>
 				<div class="col">
 					<span>받음</span>
-					<input type="radio" value="1" v-model="setting.settingLikeAlert" v-bind:checked="setting.settingLikeAlert==1">
+					<input type="radio" :value="1" v-model.number="setting.settingLikeAlert" v-bind:checked="setting.settingLikeAlert==1">
 				</div>
 				<div class="col">
 					<span>안받음</span>
-					<input type="radio" value="0" v-model="setting.settingLikeAlert" v-bind:checked="setting.settingLikeAlert==0">
+					<input type="radio" :value="0" v-model.number="setting.settingLikeAlert" v-bind:checked="setting.settingLikeAlert==0">
 				</div>
 			</div>
 			<div class="row">
@@ -162,11 +168,11 @@
 				</div>
 				<div class="col">
 					<span>받음</span>
-					<input type="radio" value="1" v-model="setting.settingReplyAlert" v-bind:checked="setting.settingReplyAlert==1">
+					<input type="radio" :value="1" v-model.number="setting.settingReplyAlert" v-bind:checked="setting.settingReplyAlert==1">
 				</div>
 				<div class="col">
 					<span>안받음</span>
-					<input type="radio" value="0" v-model="setting.settingReplyAlert" v-bind:checked="setting.settingReplyAlert==0">
+					<input type="radio" :value="0" v-model.number="setting.settingReplyAlert" v-bind:checked="setting.settingReplyAlert==0">
 				</div>
 			</div>
 			<div class="row">
@@ -175,11 +181,11 @@
 				</div>
 				<div class="col">
 					<span>받음</span>
-					<input type="radio" value="1" v-model="setting.settingFollowAlert" v-bind:checked="setting.settingFollowAlert==1">
+					<input type="radio" :value="1" v-model.number="setting.settingFollowAlert" v-bind:checked="setting.settingFollowAlert==1">
 				</div>
 				<div class="col">
 					<span>안받음</span>
-					<input type="radio" value="0" v-model="setting.settingFollowAlert" v-bind:checked="setting.settingFollowAlert==0">
+					<input type="radio" :value="0" v-model.number="setting.settingFollowAlert" v-bind:checked="setting.settingFollowAlert==0">
 				</div>
 			</div>
 			<div class="row">
@@ -188,15 +194,15 @@
 				</div>
 				<div class="col">
 					<span>받음</span>
-					<input type="radio" value="1" v-model="setting.settingReplyLikeAlert" v-bind:checked="setting.settingReplyLikeAlert==1">
+					<input type="radio" :value="1" v-model.number="setting.settingReplyLikeAlert" v-bind:checked="setting.settingReplyLikeAlert==1">
 				</div>
 				<div class="col">
 					<span>안받음</span>
-					<input type="radio" value="0" v-model="setting.settingReplyLikeAlert" v-bind:checked="setting.settingReplyLikeAlert==0">
+					<input type="radio" :value="0" v-model.number="setting.settingReplyLikeAlert" v-bind:checked="setting.settingReplyLikeAlert==0">
 				</div>
 			</div>
 		</div>
-	<!-- 내가볼수있는내용 -->
+	<!------------------------------------------- 내가볼수있는내용 ------------------------------------------->
 		<div class="col-md-8" v-show="page==3">
 			<div class="row">
 				<div class="col">
@@ -226,7 +232,7 @@
 					<span>반경</span>
 				</div>
 				<div class="col">
-					<input type="text" v-model="setting.settingDistance">
+					<input type="text" v-model.number="setting.settingDistance">
 				</div>
 				<div class="col">
 					<span>km 이내 게시물을 탐색합니다</span>
@@ -238,15 +244,15 @@
 				</div>
 				<div class="col">
 					<span>자동재생</span>
-					<input type="radio" value="1" v-model="setting.settingVideoAuto" v-bind:checked="setting.settingVideoAuto==1">
+					<input type="radio" :value="1" v-model.number="setting.settingVideoAuto" v-bind:checked="setting.settingVideoAuto==1">
 				</div>
 				<div class="col">
 					<span>수동재생</span>
-					<input type="radio" value="0" v-model="setting.settingVideoAuto" v-bind:checked="setting.settingVideoAuto==0">
+					<input type="radio" :value="0" v-model.number="setting.settingVideoAuto" v-bind:checked="setting.settingVideoAuto==0">
 				</div>
 			</div>
 		</div>
-	<!-- 내 콘텐츠를 볼수 있는 사람 -->
+	<!------------------------------------------- 내 콘텐츠를 볼수 있는 사람 ------------------------------------------->
 		<div class="col-md-8" v-show="page==4">
 			<div class="row">
 				<div class="col">
@@ -260,7 +266,7 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<input type="radio" value="0" v-model="setting.settingHide" v-bind:checked="setting.settingHide==0">
+					<input type="radio" :value="0" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==0">
 					<span>전체 공개</span>
 				</div>
 			</div>
@@ -271,7 +277,7 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<input type="radio" value="1" v-model="setting.settingHide" v-bind:checked="setting.settingHide==1"><span>친구추천 불가</span>
+					<input type="radio" :value="1" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==1"><span>친구추천 불가</span>
 				</div>
 			</div>
 			<div class="row">
@@ -281,7 +287,7 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<input type="radio" value="2" v-model="setting.settingHide" v-bind:checked="setting.settingHide==2"><span>친구에게만 공개</span>
+					<input type="radio" :value="2" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==2"><span>친구에게만 공개</span>
 				</div>
 			</div>
 			<div class="row">
@@ -291,7 +297,7 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<input type="radio" value="3" v-model="setting.settingHide" v-bind:checked="setting.settingHide==3"><span>비공개 계정</span>
+					<input type="radio" :value="3" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==3"><span>비공개 계정</span>
 				</div>
 			</div>
 			<div class="row">
@@ -311,7 +317,7 @@
 				</div>
 			</div>
 		</div>
-	<!-- 다른 사람이 나와 소통할 수 있는 방법 -->
+	<!------------------------------------------- 다른 사람이 나와 소통할 수 있는 방법 ------------------------------------------->
 		<div class="col-md-8" v-show="page==5">
 			<div class="row">
 				<div class="col">
@@ -330,35 +336,108 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<input type="radio" value="0" v-model="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==0">
+					<input type="radio" :value="0" v-model.number="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==0">
 					<span>모든 사람</span>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">
-					<input type="radio" value="1" v-model="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==1"> 
+					<input type="radio" :value="1" v-model.number="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==1"> 
 					<span>내가 팔로우 하는 사람</span>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">
-					<input type="radio" value="2" v-model="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==2"> 
+					<input type="radio" :value="2" v-model.number="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==2"> 
 					<span>내 팔로워</span>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">
-					<input type="radio" value="3" v-model="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==3"> 
+					<input type="radio" :value="3" v-model.number="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==3"> 
 					<span>내가 팔로우 하는 사람 및 내 팔로워</span>
 				</div>
 			</div>
 		</div>
 	</div>
+
+<!-- ---------------------------------비밀번호 확인 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="passwordModal" data-bs-backdrop="static" ref="passwordCheckModal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">비밀번호 변경</h5>
+					<button type="button" class="btn-close" @click="hidePasswordCheckModal" aria-label="Close">
+					<span aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="modal-body">
+				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
+					<div class="row">
+						<div class="col">
+							<span>비밀번호 확인</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<input class="form-control rounded" placeholder="비밀번호 입력" type="password" v-model="password">
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" @click="clickCheckPassword">확인</button>
+					<button type="button" class="btn btn-secondary" @click="hidePasswordCheckModal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- ---------------------------------비밀번호 변경 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="changePasswordModal" data-bs-backdrop="static" ref="passwordChangeModal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">비밀번호 변경</h5>
+					<button type="button" class="btn-close" @click="hidePasswordChangeModal" aria-label="Close">
+					<span aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="modal-body">
+				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
+					<div class="row">
+						<div class="col">
+							<span>바꿀 비밀번호 입력</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<input class="form-control rounded" placeholder="비밀번호 입력" type="password" v-model="newPassword">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<input class="form-control rounded" placeholder="비밀번호 확인" type="password" v-model="newPasswordCheck">
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" @click="changePassword" :disabled="!isValid">변경</button>
+					<button type="button" class="btn btn-secondary" @click="hidePasswordChangeModal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+<!-- 우편번호 찾기 CDN -->
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script>
 	Vue.createApp({
 		data() {
 			return {
+				passwordCheckModal:null,
+				passwordChangeModal:null,
 				page:1,
 				member:{
 					memberNo:"",
@@ -389,17 +468,23 @@
 					settingWatchLike:"",
 					isWatchLike:this.settingWatchLike==1,
 				},
+				password:"",
+				newPassword:"",
+				newPasswordCheck:"",
 			};
 		},
 		computed: {
 			//계산영역
 			profileUrl(){
 				if(this.member.attachmentNo>0){
-					return contextPath+"/rest/attachment/download"+this.member.attachmentNo;
+					return contextPath+"/rest/attachment/download/"+this.member.attachmentNo;
 				}
 				else{
 					return "https://via.placeholder.com/100x100?text=profile";
 				}
+			},
+			isValid(){
+				return this.newPassword.length>0 && this.newPassword==this.newPasswordCheck;
 			}
 		},
 		methods: {
@@ -435,46 +520,121 @@
 				if (file) {
 					let fd = new FormData();
 					fd.append("attach", file);
-					this.member.attachmentNo= this.uploadProfile(fd);
+					this.uploadProfile(fd);
 				};
 			},
 			//파일 저장 비동기 처리
 			async uploadProfile(formData){
 				const resp = await axios.post(contextPath+"/rest/attachment/upload/profile", formData);
-				
-				return resp;
+				this.member.attachmentNo = resp.data;
 			},
 			//비동기 회원 데이터 수정
 			async saveMember(){
-				const resp = await axios.put(contextPath+"/rest/member/"+this.member.memberNo, this.member);
+				const resp = await axios.put(contextPath+"/rest/member/", this.member);
 			},
 			//비동기 세팅 데이터 수정
 			async saveSetting(){
-				const resp = await axios.put(contextPath+"/rest/member/setting/"+this.member.memberNo, this.setting);
+				const resp = await axios.put(contextPath+"/rest/member/setting/", this.setting);
+			},
+			//비밀번호 변경 모달창 열기
+			showPasswordCheckModal(){
+				if(this.passwordCheckModal==null) return;
+				this.passwordCheckModal.show();
+			},
+			hidePasswordCheckModal(){
+				if(this.passwordCheckModal==null) return;
+				this.passwordCheckModal.hide();
+				this.password="";
+			},
+ 			showPasswordChangeModal(){
+				if(this.passwordChangeModal==null) return;
+				this.passwordChangeModal.show();
+			},
+			hidePasswordChangeModal(){
+				if(this.passwordChangeModal==null) return;
+				this.passwordChangeModal.hide();
+				this.newPassword="";
+				this.newPasswordCheck="";
+			},
+			//비밀번호 확인
+			clickCheckPassword(){
+				this.checkPassword();
+				if(this.passwordCheck){
+					this.hidePasswordCheckModal;
+				}
+			},
+			//비밀번호 확인 통신
+			async checkPassword(){
+				let sendPassword = {memberPassword:this.password}
+				const resp = await axios.post(contextPath+"/rest/member/setting/password", sendPassword);
+				if(resp.data){
+					this.hidePasswordCheckModal();
+					this.showPasswordChangeModal();
+				}
+				else{
+					alert("비밀번호를 다시 입력하세요");
+					this.password="";
+				}
+			},
+			//비밀번호 변경 통신
+			async changePassword(){
+				let sendNewPassword = {memberPassword:this.newPassword}
+				const resp = await axios.put(contextPath+"/rest/member/setting/password", sendNewPassword)
+				this.hidePasswordChangeModal();
+			},
+			//우편번호 찾기
+			findAddress(){
+				new daum.Postcode({
+					oncomplete: (data)=> {
+						// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+						
+						// 각 주소의 노출 규칙에 따라 주소를 조합한다.
+						// 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+						let addr = ""; // 주소 변수
+						let extraAddr = ""; // 참고항목 변수
+						
+						//사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+						if (data.userSelectedType === "R") {
+							// 사용자가 도로명 주소를 선택했을 경우
+							addr = data.roadAddress;
+						} else {
+							// 사용자가 지번 주소를 선택했을 경우(J)
+							addr = data.jibunAddress;
+						}
+						
+						// 우편번호와 주소 정보를 해당 필드에 넣는다.
+						this.member.memberPost = data.zonecode;
+						this.member.memberBasicAddr = addr;
+					},
+				}).open();
 			}
 		},
 		created(){
-			//쿼리에서 memberNo 반환
-			//this.setting.memberNo = this.$route.query.memberNo;
 			//세팅데이터 로드
-			//this.loadMember();
-			//this.loadSetting();
+			this.loadMember();
+			this.loadSetting();
+		},
+		mounted(){
+			//모달 선언
+			this.passwordCheckModal = new bootstrap.Modal(this.$refs.passwordCheckModal);
+			this.passwordChangeModal = new bootstrap.Modal(this.$refs.passwordChangeModal);
 		},
 		watch:{
 			//감시영역
-			member:{
+
+ 			member:{
 				deep:true,
-				handler(){
+				handler : _.throttle(function(){
 					this.saveMember();
-				},
+				}, 1000)
 			},
 			setting:{
 				deep:true,
 				handler(){
 					this.saveSetting();
 				},
-			}
-		}
+			},
+		},
 	}).mount("#app");
 </script>
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>
