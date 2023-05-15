@@ -20,4 +20,10 @@
 		where member_no = #{memberNo} and room_no = #{roomNo}
 	</select>
 
+	<!-- 채팅방에서 사용자 퇴장 -->
+	<delete id="leaveRoom">
+	    delete from dm_user 
+	    where member_no = #{memberNo} and room_no = #{roomNo}
+	</delete>
+
 </mapper>

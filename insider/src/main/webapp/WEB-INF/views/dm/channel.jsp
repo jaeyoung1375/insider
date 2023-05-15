@@ -9,7 +9,8 @@
 </style>
 
 <h1>DM 테스트</h1>
-<p>memberNo : ${sessionScope.memberNo}</p>
+<p>회원 번호 : ${sessionScope.memberNo}</p>
+<p>회원 닉네임 : ${sessionScope.memberNick}</p>
 
 <hr>
 
@@ -27,7 +28,7 @@
 
 <script type="text/template" id="message-template">
 	<div class="message">
-		<h3 class="memberNo">보낸사람</h3>
+		<h3 class="memberNick">보낸사람</h3>
 		<p class="content">내용</p>
 		<span class="time">HH:mm</span>
 	</div>
@@ -46,33 +47,30 @@
 		function loadMessage() {
 			const roomNo = new URLSearchParams(location.search).get("room");
 			$.ajax({
-				url:"${pageContext.request.contextPath}/rest/message/" + roomNo,
+				url:"${pageContext.request.contextPath}/rest/message/"+roomNo,
 				method:"get",
-				success:function(resp) {
-					// resp에 있는 목록의 모든 메세지를 화면에 추가
-					console.log(resp);
-					// 메세지 리스트 불러오는 함수 호출
-					displyMessageList(resp);
-					// 웹소켓 연결하는 함수 호출
+				success:function(resp){
+					//resp에 있는 목록의 모든 메세지를 화면에 추가
+					displayMessageList(resp);
+					//웹소켓 연결
 					connectWebSocket();
 				},
-			})
+			});
 		}
 		
 		// 메세지 리스트 불러오는 함수
-		function displyMessageList(resp) {
-			for(let i=0; i<resp.length; i++) {
-				console.log(e.data);
-				// 수신한 데이터(e.data)가 JSON 문자열 형태이므로 해석 후 처리
-				const data = JSON.parse(resp[i].messageBody);
+		function displayMessageList(resp){
+			for(let i=0; i < resp.length; i++) {
+				//수신한 데이터(e.data)가 JSON 문자열 형태이므로 해석 후 처리
+				const data = JSON.parse(resp[i].messageContent);
 				const time = moment(data.time).format("HH:mm");
 				
 				// 템플릿 불러오기
-				const template = $("#message-template").html();
+				var template = $("#message-template").html();
 				// 템플릿을 html로 해석
-				const html = $.parseHTML(template);
+				var html = $.parseHTML(template);
 				// html에 정보 담기
-				$(html).find(".memberNo").text(data.memberNo);
+				$(html).find(".memberNick").text(data.memberNick);
 				$(html).find(".content").text(data.content);
 				$(html).find(".time").text(time);
 				
@@ -94,8 +92,8 @@
 				// const data = { type:2, room:"${param.room}" }; -> jsp에만 할 수 있음
 				const room = new URLSearchParams(location.search).get("room");
 				const data = { type:2, room : room};	// js파일에서도 할 수 있음
-				console.log(room);
 				window.socket.send(JSON.stringify(data));
+				
 				changeToConnect();
 				$("<p>").text("서버에 연결되었습니다.").appendTo(".message-wrapper");
 			};
@@ -109,7 +107,6 @@
 			};
 			// 메세지 수신 시 수신된 메세지로 태그를 만들어서 추가
 			window.socket.onmessage = function(e) {
-				console.log(e.data);
 				// 수신한 데이터(e.data)가 JSON 문자열 형태이므로 해석 후 처리
 				const data = JSON.parse(e.data);
 				// fromNow: n초 전(갱신은 따로 처리해줘야 함)
@@ -120,7 +117,7 @@
 				// 템플릿을 html로 해석
 				const html = $.parseHTML(template);
 				// html에 정보 담기
-				$(html).find(".memberNo").text(data.memberNo);
+				$(html).find(".memberNick").text(data.memberNick);
 				$(html).find(".content").text(data.content);
 				$(html).find(".time").text(time);
 				
@@ -131,7 +128,7 @@
 			// 전송 버튼을 누르면 서버에 메세지를 전송하도록 구현
 			$(".btn-send").click(function() {
 				const text = $(".user-input").val();
-				if(text.lengh == 0) return;
+				if(text.length == 0) return;
 				
 				const data = { type : 1, content : text };
 				

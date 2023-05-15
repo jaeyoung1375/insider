@@ -12,8 +12,8 @@
 	
 	<insert id="create">
 		insert into dm_message(message_no, room_no, message_sender, message_content, 
-			message_send_time, message_read_time)
-		values(dm_message_seq.nextval, #{roomNo}, #{messageSender}, #{messageContent}, sysdate, sysdate)
+			message_send_time)
+		values(dm_message_seq.nextval, #{roomNo}, #{messageSender}, #{messageContent}, sysdate)
 	</insert>
 	
 	<select id="detail" resultType="DmMessageDto">
@@ -24,7 +24,7 @@
 		select message_no, room_no, message_sender, message_content, message_send_time
         from dm_message
         where room_no = #{roomNo}
-        order by message_send_time desc
+        order by message_send_time asc
     </select>
     
     <delete id="delete" parameterType="int">
