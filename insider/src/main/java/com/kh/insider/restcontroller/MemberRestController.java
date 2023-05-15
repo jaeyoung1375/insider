@@ -4,12 +4,12 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.MemberDto;
@@ -18,6 +18,9 @@ import com.kh.insider.dto.SettingDto;
 import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.SettingRepo;
+import com.kh.insider.vo.MemberWithProfileSearchResponseVO;
+import com.kh.insider.vo.MemberWithProfileSearchVO;
+import com.kh.insider.vo.PaginationVO;
 
 @RestController
 @RequestMapping("/rest/member")
@@ -64,5 +67,21 @@ public class MemberRestController {
 		long memberNo = (Long)session.getAttribute("memberNo");
 		memberDto.setMemberNo(memberNo);
 		memberRepo.changePassword(memberDto);
+	}
+	//리스트 출력
+	@GetMapping("/list")
+	public MemberWithProfileSearchResponseVO selectList(@ModelAttribute MemberWithProfileSearchVO vo){
+		MemberWithProfileSearchResponseVO responseVO = new MemberWithProfileSearchResponseVO();
+		int count = memberWithProfileRepo.selectCount(vo);
+		System.out.println(count);
+		vo.setCount(count);
+		responseVO.setMemberList(memberWithProfileRepo.selectList(vo));
+		
+		PaginationVO paginationVO = new PaginationVO();
+		paginationVO.setCount(count);
+		paginationVO.setPage(vo.getPage());
+		
+		responseVO.setPaginationVO(paginationVO);
+		return responseVO;
 	}
 }

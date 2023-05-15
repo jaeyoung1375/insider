@@ -75,7 +75,7 @@ report_content varchar2(300) not null,
 report_table_no number not null,
 report_table varchar2(30) check(report_table IN ('member', 'reply', 'board', 'dm_message', 'etc')) not null,
 report_time date default sysdate not null,
-report_check number(1) DEFAULT 0 NOT NULL CHECK (report_check IN (0, 1, 2))
+report_check number(1) DEFAULT 0 NOT NULL CHECK (report_check IN (0, 1, 2, 3))
 );
 create sequence report_seq;
 

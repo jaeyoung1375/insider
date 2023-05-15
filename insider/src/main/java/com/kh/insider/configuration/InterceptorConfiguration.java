@@ -16,18 +16,18 @@ public class InterceptorConfiguration implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		
 		// 1. MemberNonLoginInterceptor
-		registry.addInterceptor(memberNonLoginInterceptor)
-				.addPathPatterns(
-						"/**"
-						)
-				.excludePathPatterns(
-						"/member/login/**",
-						"/member/logout",
-						"/member/join/**",
-						"/member/addInfo",
-						"/member/auth/**",
-						"/static/**"
-						);
+//		registry.addInterceptor(memberNonLoginInterceptor)
+//				.addPathPatterns(
+//						"/**"
+//						)
+//				.excludePathPatterns(
+//						"/member/login/**",
+//						"/member/logout",
+//						"/member/join/**",
+//						"/member/addInfo",
+//						"/member/auth/**",
+//						"/static/**"
+//						);
 	
 	}
 }
