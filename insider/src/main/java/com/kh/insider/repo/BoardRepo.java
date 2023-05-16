@@ -11,4 +11,6 @@ public interface BoardRepo {
 	void insert(BoardDto boardDto);
 	boolean update(BoardDto boardDto);
 
+	void delete(int boardNo);
+
 }

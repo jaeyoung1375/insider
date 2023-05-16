@@ -25,9 +25,6 @@ public class BoardController {
 	@Autowired
 	private BoardRepo boardRepo;
 	
-	@Autowired
-	private BoardAttachmentRepo boardAttachmentRepo;
-
 	@GetMapping("/list")
 	public String list() {
 		return "board/list";
@@ -47,8 +44,8 @@ public class BoardController {
         boardDto.setBoardNo(boardNo);
 
         // 2. 통합게시물 작성자
-        String memberNick = (String)session.getAttribute("memberNick");
-        boardDto.setMemberNick(memberNick);
+        int memberNo = (int)session.getAttribute("memberNo");
+        boardDto.setMemberNo(memberNo);
 
         // 3. 통합게시물 등록
         boardRepo.insert(boardDto);

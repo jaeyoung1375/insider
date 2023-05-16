@@ -42,4 +42,11 @@ public class BoardRepoImpl implements BoardRepo {
 	}
 
 
+	@Override
+	public void delete(int boardNo) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 }

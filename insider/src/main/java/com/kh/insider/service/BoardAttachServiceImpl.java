@@ -1,35 +1,30 @@
-package com.kh.insider.repo;
+package com.kh.insider.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.insider.dto.BoardAttachmentDto;
+import com.kh.insider.dto.BoardDto;
+import com.kh.insider.repo.AttachmentRepo;
+import com.kh.insider.repo.BoardAttachmentRepo;
+import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.vo.BoardAttachVO;
 import com.kh.insider.vo.PaginationVO;
-import com.kh.insider.vo.SearchVO;
 
-@Repository
-public class BoardAttachmentRepoImpl implements BoardAttachmentRepo{
+@Service
+public class BoardAttachServiceImpl implements BoardAttachService{
 
-	@Autowired
-	private SqlSession sqlSession;
-
-	@Override
-	public void insert(BoardAttachmentDto boardAttachmentDto) {
-		int sequence = sqlSession.selectOne("board_attachment.sequence");
-		boardAttachmentDto.setBoardNo(sequence);
-		
-		sqlSession.insert("board_attachment.insert", boardAttachmentDto);
-	}
-
-	@Override
-	public void delete(int boardNo) {
-		sqlSession.delete("board_attachment.delete", boardNo);		
-	}
-	
+//	@Autowired
+//	private SqlSession sqlSession;
+//	@Autowired
+//	private BoardAttachmentRepo boardAttachmentRepo;
+//	
+//
 //	@Override
 //	public void insert(BoardAttachVO vo) {
 //		boardAttachmentRepo.insert(vo);
@@ -49,6 +44,5 @@ public class BoardAttachmentRepoImpl implements BoardAttachmentRepo{
 //	public void delete(int boardNo) {
 //		boardAttachmentRepo.delete(boardNo);
 //	}
-
 
 }
