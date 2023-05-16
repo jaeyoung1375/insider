@@ -30,6 +30,7 @@ public class InterceptorConfiguration implements WebMvcConfigurer {
 						"/member/emailCheck",
 						"/member/nickCheck",
 						"/member/sendMail",
+						"/member/passwordChange",
 						"/static/**"
 						);
 
