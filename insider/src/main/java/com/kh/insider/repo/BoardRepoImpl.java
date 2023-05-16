@@ -28,18 +28,16 @@ public class BoardRepoImpl implements BoardRepo {
 
 
 	@Override
+	public int sequence() {
+		 return sqlSession.selectOne("board.sequence");
+	}
+	
+	@Override
 	public void insert(BoardDto boardDto) {
 		 sqlSession.insert("board.insert", boardDto);		
 	}
 
 
-	@Override
-	public boolean update(BoardDto boardDto) {
-		 return sqlSession.update("board.update", boardDto) > 0;
-	}
-
-
-	@Override
 	public List<BoardListVO> selectListWithAttach(int page) {
 		int end = page*10;
 		int begin = end-9;
