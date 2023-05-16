@@ -227,14 +227,14 @@ Vue.createApp({
             isLiked :false,
             
 			boardLikeCount:0, // 좋아요 수를 저장할 변수
-
+			/*----------------------신고----------------------*/
 			//추가 메뉴 모달 및 신고 모달
 			additionalMenuModal:null,
 			reportMenuModal:null,
 			//신고 메뉴 리스트
 			reportContentList:[],
 			reportBoardNo:"",
-			
+			/*----------------------신고----------------------*/
         };
     },
     //데이터 실시간 계산 영역
@@ -295,7 +295,7 @@ Vue.createApp({
             this.boardLikeCount = resp.data.count;
            // console.log(this.boardLikeCount);
         },
-        
+        /*----------------------신고----------------------*/
         //신고 모달 show, hide
 		showAdditionalMenuModal(boardNo){
 			if(this.additionalMenuModal==null) return;
@@ -331,7 +331,7 @@ Vue.createApp({
 			const resp = await axios.post(contextPath+"/rest/report/", data)
 			this.hideReportMenuModal();
 		}
-        
+		/*----------------------신고----------------------*/
     },
     watch: {
        //percent가 변하면 percent의 값을 읽어와서 80% 이상인지 판정
