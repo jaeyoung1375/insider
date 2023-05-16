@@ -21,7 +21,7 @@ public class HomeController {
 	@GetMapping("")
 	public String home(Model model,
 			HttpSession session) {
-		//long memberNo = (long) session.getAttribute("memberNo"); 
+		Long memberNo = (Long) session.getAttribute("memberNo"); 
 		//MemberDto memberDto = memberRepo.find(memberNo);
 		
 		//model.addAttribute("memberDto",memberDto);

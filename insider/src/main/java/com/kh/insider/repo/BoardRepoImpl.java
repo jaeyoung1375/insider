@@ -1,5 +1,6 @@
 package com.kh.insider.repo;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +45,15 @@ public class BoardRepoImpl implements BoardRepo {
 		int begin = end-9;
 		Map<String, Object> param = Map.of("begin", begin, "end", end);
 		return sqlSession.selectList("board.boardListTreeSelect",param);
+	}
+
+
+	@Override
+	public void updateLikeCount(int boardNo, int count) {
+		Map<String, Object> param = new HashMap<>();
+		param.put("boardNo", boardNo);
+		param.put("count", count);
+		sqlSession.update("board.updateLikeCount",param);
 	}
 
 }
