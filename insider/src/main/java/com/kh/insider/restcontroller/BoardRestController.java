@@ -32,6 +32,24 @@ public class BoardRestController {
 	@Autowired
 	private BoardLikeRepo boardLikeRepo;
 	
+	//게시물 등록
+	@PostMapping("/")
+	public Long insert(BoardDto boardDto, HttpSession session) {
+		//시퀀스
+		Long boardNo = boardRepo.sequence();
+		System.out.println("boardNo = " +"boardNo");
+		//번호
+		boardDto.setBoardNo(boardNo);
+		//작성자
+		boardDto.setMemberNo(boardNo);
+		//콘텐트
+		boardDto.setBoardContent(boardDto.getBoardContent());
+		
+		//등록
+		return boardDto.getBoardNo();
+	}
+	
+	
 	//무한스크롤
 	@GetMapping("/page/{page}")
 	public List<BoardDto> paging(@PathVariable int page) {

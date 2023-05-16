@@ -8,7 +8,8 @@ import com.kh.insider.vo.BoardListVO;
 public interface BoardRepo {
 	List<BoardDto> selectListPaging(int page);
 
-	int sequence();
+	Long sequence();
+	
 	void insert(BoardDto boardDto);
 
 	void updateLikeCount(int boardNo, int count);

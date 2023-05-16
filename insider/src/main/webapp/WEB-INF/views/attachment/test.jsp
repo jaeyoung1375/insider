@@ -158,7 +158,7 @@ $(function(){
 		const text = confirm("게시물을 삭제하시겠어요?\n지금 나가면 수정 내용이 저장되지 않습니다.");
 		
 		if(text){
-			location.replace("/home/")
+			location.replace("/")
 		}
 	});
 		
@@ -233,20 +233,11 @@ $(function(){
 
 <!------------------------------------------------------------------------------------->
 
+<div id="app" class="vue-container">
 
+<form action="insert" method="post" enctype="multipart/form-data" class="form-submit">
 
-
-
-
-<!-- 기존 코드를 모달창 내부에 삽입하기 -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-xl">
-    <div class="modal-content">
-      <div class="modal-body">
-        <div id="app" class="vue-container">
-          <!-- 모달창 내용을 작성합니다 -->
-          <form action="insert" method="post" enctype="multipart/form-data" class="form-submit">
-            <div class="container-fluid">
+	<div class="container-fluid">
 	
 		<div class="row mt-3"></div>
 		
@@ -279,7 +270,7 @@ $(function(){
 				        <h1 class="card-title" ><i class="fa-regular fa-images"></i></h1>
 				        <p class="card-text fs-5">사진을 선택하세요.</p>
 				        <label for="upload" class="input-upload">업로드</label>
-				        <input type="file" name="boardAttachment" accept=".png, .jpg" id="upload" ref="files" @change="imageUpload" style="display:none;" multiple>
+				        <input type="file" name="boardAttach" accept="image/*, video/*" id="upload" ref="files" @change="imageUpload" style="display:none;" multiple>
 				        <p style="margin-top: 20px;">* 이미지는 최대 5개까지 선택 가능합니다.</p>
 				      </div>
 			      </div>
@@ -298,7 +289,7 @@ $(function(){
 						        <label for="upload2" class="input-uploadPlus">
 						        	<i class="fa-solid fa-plus fa-3x"></i>
 						        </label>
-						        <input type="file" name="boardAttachment" accept=".png, .jpg" id="upload2" ref="files2" @change="imageAddUpload" style="display:none;" multiple/>				        	
+						        <input type="file" name="boardAttach" accept="image/*, video/*" id="upload2" ref="files2" @change="imageAddUpload" style="display:none;" multiple/>				        	
 				        	</div>
 				        </div>
 				      </div>
@@ -383,7 +374,7 @@ $(function(){
 					    	</div>
 					    	
 					    	<div class="row mt-4">
-					    		<input type="text" name="tagName" class="form-control" placeholder="#해시태그" id="hashtag" autocomplete="off">
+					    		<input type="text" name="hashtagName" class="form-control" placeholder="#해시태그" id="hashtag" autocomplete="off">
 					    	</div>
 					    	
 					    	<div class="row mt-4">
@@ -398,33 +389,33 @@ $(function(){
 										</div>
 										<div class="col-md-3">
 											<input type="checkbox" name="boardIsReply" value="1" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
-										</div>	
+										</div>
+									
 					    	</div>
+					    	
 					    	<div class="row">
 									<p class="left" style="font-size: small;">게시물 상단의 메뉴에서 이 설정을 변경할 수 있습니다.</p>
 					    	</div>
+					    	
 					    	</div>
+			    	
 			   			</div>
 		      	</div>
+		        
 		      </div>
+		      
 		    </div>
+		
 		  </div>
 		 </div>
 		</div>
-          </form>
-        </div>
-      </div>
-      <div class="modal-footer">
+		
+		<div class="row mb-5"></div>
+	
 
-      </div>
-    </div>
-  </div>
+</form>
+
 </div>
-
-<!-- 모달창을 열 수 있는 버튼을 만듭니다 -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-  모달창 열기
-</button>
 
 
 

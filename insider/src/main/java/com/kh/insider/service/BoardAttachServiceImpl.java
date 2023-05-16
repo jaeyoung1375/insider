@@ -13,7 +13,6 @@ import com.kh.insider.dto.BoardDto;
 import com.kh.insider.repo.AttachmentRepo;
 import com.kh.insider.repo.BoardAttachmentRepo;
 import com.kh.insider.repo.BoardRepo;
-import com.kh.insider.vo.BoardAttachVO;
 import com.kh.insider.vo.PaginationVO;
 
 @Service

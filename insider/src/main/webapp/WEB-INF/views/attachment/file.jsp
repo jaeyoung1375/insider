@@ -31,7 +31,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="myModalLabel">게시글 업로드</h4>
+        <h4 class="modal-title" id="myModalLabel">이미지 & 동영상 업로드</h4>
       </div>
       <div class="modal-body">
         <form action="upload" method="post" enctype="multipart/form-data">

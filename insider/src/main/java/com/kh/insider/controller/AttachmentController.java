@@ -56,15 +56,10 @@ public class AttachmentController {
         return "attachment/file";
     }
     
-    
-    
     @GetMapping("/test")
     public String test01(){
         return "attachment/test";
     }
-
-    
-    
 
     // 게시글 & 파일 업로드 연계
     @GetMapping("/insert")
@@ -74,7 +69,8 @@ public class AttachmentController {
 	
 	// 파일업로드 글 쓸때 사용, 
 	@PostMapping("/upload")
-	public String upload3(@RequestParam MultipartFile attach) throws IllegalStateException, IOException, InterruptedException {
+//	public String upload(@RequestParam("attach") MultipartFile[] attach) throws IllegalStateException, IOException, InterruptedException {
+	public String upload(@RequestParam MultipartFile attach) throws IllegalStateException, IOException, InterruptedException {
 		System.out.println(attach.isEmpty());
 		// getName은 <input name="attach"> 여기서 name에 해당한다.
 		System.out.println("name = " + attach.getName());
@@ -229,6 +225,7 @@ public class AttachmentController {
 		
 		
 		//파일 찾기
+		File dir = new File("D:/upload");
 		File target = new File(dir, String.valueOf(attachmentNo));
 		
 		//보낼 데이터 생성

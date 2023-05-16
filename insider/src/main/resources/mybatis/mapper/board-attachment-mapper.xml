@@ -25,53 +25,16 @@
 	 		- 동적 바인딩 : #{이름} 형태로 작성하면 자동으로 자료형에 맞게 해당 데이터를 추출하여 작성해준다(DTO 변수명)
   -->
    
-   <mapper namespace="board_attachment">
+   <mapper namespace="boardAttachment">
    
-		<select id="sequence" resultType="int">
-			select board_attach_seq.nextval from dual
-		</select>
-   
-	   <insert id="insert" parameterType="BoardAttachVO">
+   		<!-- 등록 -->
+	   <insert id="insert" parameterType="BoardAttachmentDto">
 			insert into board_attachment
-			(board_no, board_content, board_reply_valid, board_like_valid, member_no, member_nick, attachment_no,
-			attachment_name, attachment_type, attachment_size) 
-			values ( #{boardNo}, #{boardContent}, #{boardReplyValid},  #{boardLikeValid},  #{memberNo},  
-						#{memberNick},  #{attachmentNo}, #{attachmentName},  #{attachmentType},  #{attachmentSize})
+			(board_no, attachment_no)
+			values ( #{boardNo}, #{attachmentNo})
 		</insert>
 		
-		<!-- 전체 목록 
+		<!-- 목록 -->
 
-		<select id="selectList" resultType="BoardAttachVO">
-			SELECT * FROM board_attachment
-			ORDER BY board_no DESC
-		</select>
-	 -->
-	
-		<!-- 상세보기 -->
-		<select id="selectOne" resultType="BoardAttachVO">
-			select * from board_attachment
-			where board_no = #{boardNo}
-		</select>
-		
-		<!-- 삭제 -->
-		<delete id="delete" parameterType="int">
-			delete from board_attach where board_no=#{boardNo}
-		</delete>
-		
-		<!-- SQL 구문 조각 생성 -->
-	 <sql id="topNheader">
-	 	select * from (
-	 		select rownum rn, TMP.*from(
-	 		</sql>
-	 <sql id="topNfooter">
-	 		)TMP
-	 	)where rn between #{begin} and #{end}
-	 </sql>
-	
-	 <select id="selectListPaging" resultType="BoardDto">
-	 	<include refid="topNheader"></include>
-	 		select * from board order by board_no asc
-	 	<include refid="topNfooter"></include>	
-	 </select>
    
    </mapper>
