@@ -192,7 +192,7 @@
 						</div>
 					</div>
 					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo">
-						<div class="col" @click="">
+						<div class="col" @click="reportContent(report.reportListContent)">
 							<span>{{report.reportListContent}}</span>
 						</div>
 					</div>
@@ -233,7 +233,7 @@ Vue.createApp({
 			reportMenuModal:null,
 			//신고 메뉴 리스트
 			reportContentList:[],
-			reportBoardNo="",
+			reportBoardNo:"",
 			
         };
     },
@@ -322,8 +322,14 @@ Vue.createApp({
 			this.reportContentList = [...resp.data];
 		},
 		//신고
-		async reportContent(){
-			const resp = await axios.put(contextPath+"/rest/")
+		async reportContent(reportContent){
+			const data={
+				reportContent:reportContent,
+				reportTableNo:this.reportBoardNo,
+				reportTable:"board",
+			}
+			const resp = await axios.post(contextPath+"/rest/report/", data)
+			this.hideReportMenuModal();
 		}
         
     },
