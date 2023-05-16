@@ -48,6 +48,12 @@
 		<include refid="topNfooter"></include>	
 	</select>
 	
+	<!-- 좋아요 개수 갱신 기능 -->
+	<update id="updateLikeCount">
+		update board set board_like = #{count} where board_no = #{boardNo}
+	</update>
+	
+	
 	<!-- board와 boardAttachment 계층형 조회 -->
 	<resultMap type="BoardListVO" id="boardListVO">
 		<association property="boardDto">
