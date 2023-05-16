@@ -351,13 +351,14 @@
 					begin:"", end:"", totalPage:"",	startBlock:"", finishBlock:"", first:false, last:false, prev:false,
 					next:false, nextPage:"", prevPage:"",
 				},
-				
+				/*---------------------------신고 데이터 --------------------------- */
 				reportContentModal:null,
 				newReportContent:"",
 				reportContentList:[],
 				reportContentListSub:[],
 				reportContentListEdit:[],
 				reportList:[],
+				reportSocket:null,
 			};
 		},
 		computed: {
@@ -472,6 +473,30 @@
 			async loadReportList(){
 				const resp = await axios.get(contextPath+"/rest/report/");
 				this.reportList=[...resp.data];
+			},
+			connectReportServer(){
+				const url = contextPath+"/ws/admin/report";
+				this.socket = new SockJS(url);
+				
+				this.socket.onopen = ()=>{
+					if(this.memberId.length>0){
+						this.login=true;
+					}
+					else{
+						this.login=false;
+					}
+				};
+				this.socket.onclose= ()=>{
+					this.login=false;
+				};
+				this.socket.onerror= ()=>{
+					this.login=false;
+				};
+				//메세지를 수신하면 수신된 메세지로 태그를 만들어서 추가
+				this.socket.onmessage=(e)=>{
+					const data = JSON.parse(e.data);
+					this.reportList = [data];
+				};
 			}
 			/*------------------------------ 신고관리 끝 ------------------------------*/
 		},
@@ -479,6 +504,7 @@
 			//데이터 불러오는 영역
 			this.loadMemberList();
 			this.loadReportList();
+			this.connectReportServer();
 		},
 		watch:{
 			//감시영역

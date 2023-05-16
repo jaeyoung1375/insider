@@ -13,6 +13,8 @@ public class WebSocketServerConfiguration implements WebSocketConfigurer {
 
 	@Autowired
 	private ChannelWebSocketServer channelWebSocketServer;
+	@Autowired
+	private AdminReportWebSocketServer adminReportWebSocketServer;
 	
 //	@Autowired
 //	private JsonWebSocketServer jsonWebSocketServer;
@@ -30,6 +32,12 @@ public class WebSocketServerConfiguration implements WebSocketConfigurer {
 //				.withSockJS();
 		
 		registry.addHandler(channelWebSocketServer, "/ws/channel")
+				.addInterceptors(new HttpSessionHandshakeInterceptor())
+				.withSockJS();
+		
+		
+		//관리자 서버 웹소켓
+		registry.addHandler(adminReportWebSocketServer, "/ws/admin/report")
 				.addInterceptors(new HttpSessionHandshakeInterceptor())
 				.withSockJS();
 		
