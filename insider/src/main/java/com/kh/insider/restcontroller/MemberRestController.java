@@ -71,10 +71,12 @@ public class MemberRestController {
 	//리스트 출력
 	@GetMapping("/list")
 	public MemberWithProfileSearchResponseVO selectList(@ModelAttribute MemberWithProfileSearchVO vo){
-		MemberWithProfileSearchResponseVO responseVO = new MemberWithProfileSearchResponseVO();
+		//정렬 리스트 trim
+		vo.refreshOrderList();
+		//전체 게시물 수 반환
 		int count = memberWithProfileRepo.selectCount(vo);
-		System.out.println(count);
 		vo.setCount(count);
+		MemberWithProfileSearchResponseVO responseVO = new MemberWithProfileSearchResponseVO();
 		responseVO.setMemberList(memberWithProfileRepo.selectList(vo));
 		
 		PaginationVO paginationVO = new PaginationVO();

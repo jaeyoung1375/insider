@@ -23,6 +23,10 @@
 	            width:100%;
 	            min-height: 300px;/* 50vh */
 	        }
+	            .hide{
+       		 display:none;
+    			}
+   
 	       
 	
 	.logo{
@@ -44,9 +48,9 @@
 	</head>
 	<body>
 			
-	    <div class="container col-lg-3 card p-5 mt-5" style="display:flex; justify-content: center;" id="app">
-	        <form action="join" method="post" @submit.prevent="handleSubmit" ref="joinForm">
-	        <div>
+	        <form action="join" method="post"  ref="joinForm" id="app">
+	    <div class="container col-lg-3 card p-5 mt-5">
+	        <div :class="{hide:stepOneHidden}">
 	            <div class="text-center mb-3">         	
 			         	<a href="/" class="logo"><img src="/static/image/logo.png" width="50px" height="50px" class="me-3">insider</a>
 	                </div>
@@ -76,6 +80,8 @@
 	                <input class="form-control" type="text" name="memberTel" placeholder="전화번호" v-model="tel" @blur="validateTel">
 	                <p v-if="showTelWarning" class="tel-warning-message">유효한 휴대폰번호를 입력해주세요. (예: 010-1234-5678)</p>
 	            </div>
+	            </div>
+	            
 	            <div class ="bir_wrap mb-3  ">
 	                <label class="form-label mt-4">생년월일</label>
 	                <div class="bir_yy">
@@ -116,23 +122,23 @@
 	    			 <label class="btn btn-outline-danger" for="select2">여성</label>
 	            </div>
 	            <div class="mb-3">
-	                <input type="text" name="memberPost" class="form-control mb-3" placeholder="우편번호" readonly>
-	                <button type="button" class="btn btn-secondary find-address-btn">우편번호 찾기</button>
+	                <input type="text" name="memberPost" class="form-control mb-3" placeholder="우편번호" readonly v-model="post">
+	                <button type="button"  @click="findAddress">우편번호 찾기</button>
 	             </div>
 	             <div class="mb-3">
-	                <input type="text" name="memberBasicAddr" class="form-control" placeholder="기본주소" readonly>
+	                <input type="text" name="memberBasicAddr" class="form-control" placeholder="기본주소" readonly v-model="basicAddr">
 	             </div>
 	             <div class="mb-3">
 	                <input type="text" name="memberDetailAddr" class="form-control" placeholder="상세주소" v-model="detailAddr">
 	    
 	             </div>
 	             <div class="row mb-3">
-	                <button type="submit" class="btn btn-primary" @click="handleSubmit">가입하기</button>
+	                <button type="button" class="btn btn-primary" @click="handleSubmit">가입하기</button>
 	             </div>
 	
-		</div>
-	    </form>
+	
 	        </div>
+	    </form>
 	
 	
 	    <script src="https://unpkg.com/vue@3.2.36"></script>
@@ -148,7 +154,9 @@
 	                    password : '',
 	                    passwordCk : '',
 	                    tel : '',
-	                    gender : '',                 
+	                    gender : '',
+	                    post : '',
+	                    basicAddr : '',
 	                    detailAddr : '',
 	                    showEmailWarning : false,
 	                    showNameWarning : false,
@@ -159,6 +167,8 @@
 	                    memberBirth : '',
 	                    formSubmit : false,
 	                    isDuplicated : false,
+	                    stepOneHidden : false,
+	                    stepTwoHidden : true,
 	                };
 	            },
 	        
@@ -243,8 +253,9 @@
 	                         return;
 	                    }
 	
-	                        this.formSubmit = true;
-	                        this.$refs.joinForm.submit();
+	                     //   this.formSubmit = true;
+	                        this.stepOneHidden = true;	
+	                      //  this.$refs.joinForm.submit(			);
 	         
 	                },
 	                async isEmailDuplicated(memberEmail){
@@ -261,6 +272,15 @@
 	                		console.error(error);
 	                	}
 	                	
+	                },
+	                
+	                findAddress() {
+	                    new daum.Postcode({
+	                        oncomplete: (data) => {
+	                            this.post = data.zonecode; // 우편번호를 입력
+	                            this.basicAddr = data.address; // 기본주소를 입력
+	                        }
+	                    }).open();
 	                },
 	
 	

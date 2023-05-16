@@ -70,7 +70,13 @@
 						<span>로그인 기록</span>
 					</div>
 					<div class="col-4">
-						<input class="form-control" v-model="memberSearchOption.searchLoginDays">
+						<select class="form-control" v-model="memberSearchOption.searchLoginDays">
+							<option value="">선택</option>
+							<option value="1">1일전</option>
+							<option value="7">7일전</option>
+							<option value="30">30일전</option>
+							<option value="365">365일전</option>
+						</select>
 					</div>
 				</div>
 				<div class="row">
@@ -146,6 +152,27 @@
 				<div class="row">
 					<div class="col">
 						<span>정렬 순서</span>
+					</div>
+					<div class="col">
+						<select class="form-control" v-model="memberOrderList[0]">
+							<option value="" selected>팔로워(선택)</option>
+							<option value="member_follow asc">팔로워 적은순</option>
+							<option value="member-follow desc">팔로워 많은순</option>
+						</select>
+					</div>
+					<div class="col">
+						<select class="form-control" v-model="memberOrderList[1]">
+							<option value="" selected>신고수(선택)</option>
+							<option value="member_report asc">신고수 적은순</option>
+							<option value="member_report desc">신고수 많은순</option>
+						</select>
+					</div>
+					<div class="col">
+						<select class="form-control" v-model="memberOrderList[2]">
+							<option value="" selected>로그인(선택)</option>
+							<option value="member_login desc">최근 접속자</option>
+							<option value="member_login asc">접속 기간 긴 순</option>
+						</select>
 					</div>
 					<div class="col">
 						<button type="button" class="btn btn-secondary" @click="resetMemberSearchOption">초기화</button>
@@ -266,9 +293,10 @@
 					memberEndBirth:"",
 					memberMinFollow:"",
 					memberMaxFollow:"",
-					orderList:[],
+					orderListString:"",
 					page:1,
 				},
+				memberOrderList:["","",""],
 				memberSearchPagination:{
 					begin:"",
 					end:"",
@@ -308,7 +336,7 @@
 			
 			//회원 리스트 출력
 			async loadMemberList(){
-				const resp = await axios.get(contextPath+"/rest/member/list");
+				const resp = await axios.get(contextPath+"/rest/member/list", {params:this.memberSearchOption});
 				this.memberList=[...resp.data.memberList];
 				this.memberSearchPagination=resp.data.paginationVO;
 			},
@@ -327,7 +355,7 @@
 				this.memberSearchOption.memberEndBirth="";
 				this.memberSearchOption.memberMinFollow="";
 				this.memberSearchOption.memberMaxFollow="";
-				this.memberSearchOption.orderList=[];
+				this.memberOrderList=["","",""];
 			},
 			//회원 검색 버튼 클릭시
 			async getListWithSearchOption(){
@@ -349,7 +377,11 @@
 			memberLastPage(){
 				if(!this.memberSearchPagination.last) this.memberSearchOption.page=this.memberSearchPagination.totalPage;
 			},
-			
+			//orderList 쿼리파라미터 반환
+			makeQueryForOrderList(){
+				const orderListParams = this.memberOrderList.join(',');
+				this.memberSearchOption.orderList=orderListParams;
+			}
 		},
 		created(){
 			//데이터 불러오는 영역
@@ -358,7 +390,13 @@
 		watch:{
 			//감시영역
 			"memberSearchOption.page":function(newVal, oldVal){
-				this.getListWithSearchOption();
+				this.loadMemberList();
+			},
+			memberOrderList:{
+				deep:true,
+				handler(newVal, oldVal) {
+					this.makeQueryForOrderList();
+				}
 			},
 		},
 		mounted(){
