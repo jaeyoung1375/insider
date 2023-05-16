@@ -14,6 +14,9 @@ public interface MemberRepo {
 	// 닉네임 중복확인
 	public int isNickDuplicated(String memberNick) throws Exception;
 	
+	
+	
+	
 	public void update(MemberDto memberDto);
 	public MemberDto login(String memberEmail, String memberPassword);
 	

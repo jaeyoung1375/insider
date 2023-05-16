@@ -137,6 +137,12 @@ public class MemberController {
 		}
 	}
 	
+	@GetMapping("/passwordChange")
+	public String passwordChagne() {
+		return "member/passwordChange";
+	}
+	
+	
 	
 	// 카카오 로그인
 	@GetMapping("/auth/kakao/callback")

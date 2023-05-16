@@ -37,7 +37,8 @@
                 </div>
                 <div class="row mb-3">
                     <button class="btn btn-primary" type="submit">로그인</button>
-                </div>             
+                </div> 
+                  
             </form>          
             	<div style="display:flex; justify-content: space-between; flex-direction: column; align-items: center;" >
             	 <div class="row mb-3">
@@ -55,6 +56,9 @@
             	 <img src="/static/image/social/google_login.png">
             </a>
             </div>
+             <div class="row text-center">
+                	<a class="mt-5" href="/member/passwordChange">비밀번호를 잊으셨나요?</a>
+                </div>         
          <!--  
             <div class="row mb-3">
             <a href="https://www.facebook.com/v2.11/dialog/oauth?
