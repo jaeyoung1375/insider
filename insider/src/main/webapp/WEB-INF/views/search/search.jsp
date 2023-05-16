@@ -36,8 +36,8 @@
 			
 		<!-- 리스트 -->
 			<div class="row">
-				<div class="col-4" v-for="(board, index) in boardList" :key="board.boardDto.boardNo">
-					{{board.boardDto.boardContent}}
+				<div class="col-4" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo">
+					{{board.boardWithNickDto.boardContent}}
 				</div>
 			</div>
 		</div>

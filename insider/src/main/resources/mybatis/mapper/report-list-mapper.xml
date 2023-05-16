@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="reportList">
+	<insert id="insert">
+		insert into report_list(report_list_no, report_list_content) values(report_list_seq.nextval, #{reportListContent})
+	</insert>
+	<select id="selectList" resultType="reportListDto">
+		select * from report_list order by report_list_no asc
+	</select>
+	<update id="update">
+		update report_list set report_list_content=#{reportListContent} where report_list_no=#{reportListNo}
+	</update>
+	<delete id="delete">
+		delete report_list where report_list_no=#{reportListNo}
+	</delete>
+</mapper>
