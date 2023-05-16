@@ -97,4 +97,8 @@
 		select * from board_attachment where board_no = #{boardNo}
 	</select>
 
+	<!-- 신고수 추가 기능 -->
+	<update id="addReport">
+		update board set board_report = board_report+1 where board_no=#{boardNo}
+	</update>
 </mapper>

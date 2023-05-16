@@ -72,6 +72,7 @@ create table report (
 report_no number primary key,
 member_no REFERENCES member(member_no) on delete cascade,
 report_content varchar2(300) not null,
+report_member_no NUMBER NOT NULL,
 report_table_no number not null,
 report_table varchar2(30) check(report_table IN ('member', 'reply', 'board', 'dm_message', 'etc')) not null,
 report_time date default sysdate not null,
@@ -114,3 +115,10 @@ PRIMARY key(tag_name, member_no)
 CREATE OR REPLACE VIEW board_with_nick as
 SELECT b.*, m.attachment_no, m.member_nick FROM board b
 inner JOIN MEMBER_WITH_PROFILE m ON b.member_no=m.member_no;
+
+--신고 현황관리 view 생성
+CREATE VIEW report_management as
+SELECT rc.*, m.member_name, m.member_nick, m.attachment_no from 
+(SELECT r.report_member_no, r.report_table_no, r.report_table, r.report_check, count(*) FROM report r
+GROUP BY r.report_member_no, r.report_table_no, r.report_table, r.report_check) rc
+INNER JOIN member_with_profile m ON rc.report_member_no=m.member_no;

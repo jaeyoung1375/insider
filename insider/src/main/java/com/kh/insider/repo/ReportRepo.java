@@ -7,6 +7,6 @@ import com.kh.insider.dto.ReportDto;
 public interface ReportRepo {
 	void insert(ReportDto reportDto);
 	void update(ReportDto reportDto);
-	ReportDto seletcOne(int reportNo);
+	ReportDto seletcOne(ReportDto reportDto);
 	List<ReportDto> selectList();
 }

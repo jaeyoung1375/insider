@@ -248,41 +248,8 @@
 			</div>
 		<!-- 신고 리스트 -->
 			<div class="row">
-				<div class="row">
-			<!-- 회원 신고 -->
-					<div class="col-6">
-						<div class="row">
-							<div class="col">
-								<h3>회원 신고 리스트</h3>
-							</div>
-						</div>
-					</div>
-			<!-- 게시물 신고 -->
-					<div class="col-6">
-						<div class="row">
-							<div class="col">
-								<h3>게시물 신고 리스트</h3>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-			<!-- 댓글 신고 -->
-					<div class="col-6">
-						<div class="row">
-							<div class="col">
-								<h3>댓글 신고 리스트</h3>
-							</div>
-						</div>
-					</div>
-			<!-- dm message 신고 -->
-					<div class="col-6">
-						<div class="row">
-							<div class="col">
-								<h3>dm 신고 리스트</h3>
-							</div>
-						</div>
-					</div>
+				<div class="row" >
+
 				</div>
 			</div>
 		</div>
@@ -390,6 +357,7 @@
 				reportContentList:[],
 				reportContentListSub:[],
 				reportContentListEdit:[],
+				reportList:[],
 			};
 		},
 		computed: {
@@ -501,11 +469,16 @@
 				this.reportContentListEdit[index]=false;
 				this.reportContentListSub[index].reportListContent = this.reportContentList[index].reportListContent; 
 			},
+			async loadReportList(){
+				const resp = await axios.get(contextPath+"/rest/report/");
+				this.reportList=[...resp.data];
+			}
 			/*------------------------------ 신고관리 끝 ------------------------------*/
 		},
 		created(){
 			//데이터 불러오는 영역
 			this.loadMemberList();
+			this.loadReportList();
 		},
 		watch:{
 			//감시영역
