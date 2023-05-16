@@ -3,7 +3,247 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="memberWithProfile">
+	<!-- SQL 구문 조각 생성 -->
+	<sql id="topNheader">
+		select * from (
+			select rownum rn, TMP.*from(
+			</sql>
+	<sql id="topNfooter">
+			)TMP
+		)where rn between #{begin} and #{end}
+	</sql>
+
 	<select id="selectOne" resultType="memberWithProfileDto">
 		select * from member_with_profile where member_no=#{memberNo}
+	</select>
+	
+	<select id="selectList" resultType="memberWithProfileDto">
+		<!-- 변수 선언 -->
+		<bind name="memberNoExist" value="memberNo!=null and !memberNo.equals('')"></bind>
+		<bind name="memberNameExist" value="memberName!=null and !memberName.equals('')"></bind>
+		<bind name="memberEmailExist" value="memberEmail!=null and !memberEmail.equals('')"></bind>
+		<bind name="memberNickExist" value="memberNick!=null and !memberNick.equals('')"></bind>
+		<bind name="searchLoginDaysExist" value="searchLoginDays!=null and !searchLoginDays.equals('')"></bind>
+		<bind name="memberAddressExist" value="memberAddress!=null and !memberAddress.equals('')"></bind>
+		<bind name="memberLevelExist" value="memberLevel!=null and !memberLevel.equals('')"></bind>
+		<bind name="memberGenderExist" value="memberGender!=null and !memberGender.equals('')"></bind>
+		<bind name="memberMinReportExist" value="memberMinReport!=null and !memberMinReport.equals('')"></bind>
+		<bind name="memberMaxReportExist" value="memberMaxReport!=null and !memberMaxReport.equals('')"></bind>
+		<bind name="memberBeginBirthExist" value="memberBeginBirth!=null and !memberBeginBirth.equals('')"></bind>
+		<bind name="memberEndBirthExist" value="memberEndBirth!=null and !memberEndBirth.equals('')"></bind>
+		<bind name="memberMinFollowExist" value="memberMinFollow!=null and !memberMinFollow.equals('')"></bind>
+		<bind name="memberMaxFollowExist" value="memberMaxFollow!=null and !memberMaxFollow.equals('')"></bind>
+		<bind name="orderListExist" value="orderList!=null and orderList.size()>0"></bind>
+		
+		<include refid="topNheader"></include>
+		select * from member_with_profile
+		
+		<where>
+		<!-- 회원번호 -->
+			<if test="memberNoExist">
+				and instr(member_no, #{memberNo})>0
+			</if>
+		<!-- 회원이름 -->
+			<if test="memberNameExist">
+				and instr(member_name, #{memberName})>0
+			</if>
+		<!-- 이메일 -->
+			<if test="memberEmailExist">
+				and instr(member_email, #{memberEmail})>0
+			</if>
+		<!-- 닉네임 -->
+			<if test="memberNickExist">
+				and instr(member_nick, #{memberNick})>0
+			</if>
+		<!-- 로그인 최근 ?일 검색 -->
+		 	 <if test="searchLoginDaysExist">
+			 	 and member_login between 
+			 	 	to_date(
+			 	 		to_char(
+			 	 			sysdate-#{searchLoginDays}, 'YYYY-MM-DD'),
+			 	 			'YYYY-MM-DD'
+			 	 	) and sysdate
+		 	 </if>
+		<!-- 주소 -->
+			<if test="memberAddressExist">
+		 		and (
+		 			instr(member_basic_addr, #{memberAddress})>0
+		 			or
+		 			instr(member_detail_addr, #{memberAddress})>0
+		 		)
+			</if>
+		<!-- 등급 -->
+			<if test="memberLevelExist">
+				and instr(member_level, #{memberLevel})>0
+			</if>
+		<!-- 성별 -->
+			<if test="memberGenderExist">
+				and instr(member_gender, #{memberGender})>0
+			</if>
+		<!-- 신고 -->
+		 	<choose>
+		 		<when test="memberMinReportExist and memberMaxReportExist">
+		 			and member_report between #{memberMinReport} and #{memberMaxReport}
+		 		</when>
+		 		<when test="memberMinReportExist">
+		 			and member_report >= #{memberMinReport}
+		 		</when>
+		 		<when test="memberMaxReportExist">
+		 			<![CDATA[
+		 			and member_Report <= #{memberMaxReport}
+		 			]]>
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
+		<!-- 생일 -->
+		 	<choose>
+		 		<when test="memberBeginBirthExist and memberEndBirthExist">
+		 			and member_birth between
+		 				to_date(#{memberBeginBirth}||' '||'00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+		 				and
+		 				to_date(#{memberEndBirth}||' '||'23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+		 		</when>
+		 		<when test="memberBeginBirthExist">
+		 			and member_birth >= to_date(#{memberBeginBirth}||' '||'00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+		 		</when>
+		 		<when test="memberEndBirthExist">
+		 			<![CDATA[
+		 			and member_birth <= to_date(#{memberEndBirth}||' '||'23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+		 			]]> 
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
+		<!-- 팔로우 -->
+		 	<choose>
+		 		<when test="memberMinFollowExist and memberMaxFollowExist">
+		 			and member_follow between #{memberMinFollow} and #{memberMaxFollow}
+		 		</when>
+		 		<when test="memberMinFollowExist">
+		 			and member_follow >= #{memberMinFollow}
+		 		</when>
+		 		<when test="memberMaxFollowExist">
+		 			<![CDATA[
+		 			and member_Follow <= #{memberMaxFollow}
+		 			]]>
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
+		</where>
+		
+		<if test="orderListExist">
+	 		<foreach collection="orderList" open="order by " item="order" separator=",">
+				${order}
+	 		</foreach> 
+	 	</if>
+	 	 
+		<include refid="topNfooter"></include>
+	</select>
+<!-- 복합 리스트 전체 카운트 구하기 -->
+	<select id="selectListCount" resultType="int">
+		<!-- 변수 선언 -->
+		<bind name="memberNoExist" value="memberNo!=null and !memberNo.equals('')"></bind>
+		<bind name="memberNameExist" value="memberName!=null and !memberName.equals('')"></bind>
+		<bind name="memberEmailExist" value="memberEmail!=null and !memberEmail.equals('')"></bind>
+		<bind name="searchLoginDaysExist" value="searchLoginDays!=null and !searchLoginDays.equals('')"></bind>
+		<bind name="memberAddressExist" value="memberAddress!=null and !memberAddress.equals('')"></bind>
+		<bind name="memberLevelExist" value="memberLevel!=null and !memberLevel.equals('')"></bind>
+		<bind name="memberGenderExist" value="memberGender!=null and !memberGender.equals('')"></bind>
+		<bind name="memberMinReportExist" value="memberMinReport!=null and !memberMinReport.equals('')"></bind>
+		<bind name="memberMaxReportExist" value="memberMaxReport!=null and !memberMaxReport.equals('')"></bind>
+		<bind name="memberBeginBirthExist" value="memberBeginBirth!=null and !memberBeginBirth.equals('')"></bind>
+		<bind name="memberEndBirthExist" value="memberEndBirth!=null and !memberEndBirth.equals('')"></bind>
+		<bind name="memberMinFollowExist" value="memberMinFollow!=null and !memberMinFollow.equals('')"></bind>
+		<bind name="memberMaxFollowExist" value="memberMaxFollow!=null and !memberMaxFollow.equals('')"></bind>
+		<bind name="orderListExist" value="orderList!=null and orderList.size()>0"></bind>
+		
+		select count(*) from member_with_profile
+		
+		<where>
+		<!-- 회원번호 -->
+			<if test="memberNoExist">
+				and instr(member_no, #{memberNo})>0
+			</if>
+		<!-- 회원이름 -->
+			<if test="memberNameExist">
+				and instr(member_name, #{memberName})>0
+			</if>
+		<!-- 이메일 -->
+			<if test="memberEmailExist">
+				and instr(member_email, #{memberEmail})>0
+			</if>
+		<!-- 로그인 최근 ?일 검색 -->
+		 	 <if test="searchLoginDaysExist">
+			 	 and member_login between 
+			 	 	to_date(
+			 	 		to_char(
+			 	 			sysdate-#{searchLoginDays}, 'YYYY-MM-DD'),
+			 	 			'YYYY-MM-DD'
+			 	 	) and sysdate
+		 	 </if>
+		<!-- 주소 -->
+			<if test="memberAddressExist">
+		 		and (
+		 			instr(member_basic_addr, #{memberAddress})>0
+		 			or
+		 			instr(member_detail_addr, #{memberAddress})>0
+		 		)
+			</if>
+		<!-- 등급 -->
+			<if test="memberLevelExist">
+				and instr(member_level, #{memberLevel})>0
+			</if>
+		<!-- 성별 -->
+			<if test="memberGenderExist">
+				and instr(member_gender, #{memberGender})>0
+			</if>
+		<!-- 신고 -->
+		 	<choose>
+		 		<when test="memberMinReportExist and memberMaxReportExist">
+		 			and member_report between #{memberMinReport} and #{memberMaxReport}
+		 		</when>
+		 		<when test="memberMinReportExist">
+		 			and member_report >= #{memberMinReport}
+		 		</when>
+		 		<when test="memberMaxReportExist">
+		 			<![CDATA[
+		 			and member_Report <= #{memberMaxReport}
+		 			]]>
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
+		<!-- 생일 -->
+		 	<choose>
+		 		<when test="memberBeginBirthExist and memberEndBirthExist">
+		 			and member_birth between
+		 				to_date(#{memberBeginBirth}||' '||'00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+		 				and
+		 				to_date(#{memberEndBirth}||' '||'23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+		 		</when>
+		 		<when test="memberBeginBirthExist">
+		 			and member_birth >= to_date(#{memberBeginBirth}||' '||'00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+		 		</when>
+		 		<when test="memberEndBirthExist">
+		 			<![CDATA[
+		 			and member_birth <= to_date(#{memberEndBirth}||' '||'23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+		 			]]> 
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
+		<!-- 팔로우 -->
+		 	<choose>
+		 		<when test="memberMinFollowExist and memberMaxFollowExist">
+		 			and member_follow between #{memberMinFollow} and #{memberMaxFollow}
+		 		</when>
+		 		<when test="memberMinFollowExist">
+		 			and member_follow >= #{memberMinFollow}
+		 		</when>
+		 		<when test="memberMaxFollowExist">
+		 			<![CDATA[
+		 			and member_Follow <= #{memberMaxFollow}
+		 			]]>
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
+		</where>
 	</select>
 </mapper>

@@ -42,10 +42,58 @@
 	 	)where rn between #{begin} and #{end}
 	 </sql>
 	
-	 <select id="selectListPaging" resultType="BoardDto">
-	 	<include refid="topNheader"></include>
-	 		select * from board order by board_no asc
-	 	<include refid="topNfooter"></include>	
-	 </select>
+	<select id="selectListPaging" resultType="BoardDto">
+		<include refid="topNheader"></include>
+			select * from board	order by board_no asc
+		<include refid="topNfooter"></include>	
+	</select>
 	
+	<!-- 좋아요 개수 갱신 기능 -->
+	<update id="updateLikeCount">
+		update board set board_like = #{count} where board_no = #{boardNo}
+	</update>
+	
+	
+	<!-- board와 boardAttachment 계층형 조회 -->
+	<resultMap type="BoardListVO" id="boardListVO">
+		<association property="boardDto">
+			<result column="board_no" property="boardNo"/>
+			<result column="member_no" property="memberNo"/>
+			<result column="board_content" property="boardContent"/>
+			<result column="board_like" property="boardLike"/>
+			<result column="board_lat" property="boardLat"/>
+			<result column="board_lon" property="boardLon"/>
+			<result column="board_time" property="boardTime"/>
+			<result column="board_reply" property="boardReply"/>
+			<result column="board_reply_valid" property="boardReplyValid"/>
+			<result column="board_like_valid" property="boardLikeValid"/>
+			<result column="board_report" property="boardReport"/>
+			<result column="board_hide" property="boardHide"/>
+			<result column="board_kid" property="boardKid"/>
+			<result column="board_size" property="boardSize"/>
+			<result column="board_member_nick" property="boardMemberNick"/>
+		</association>
+		<collection property="boardAttachmentList"
+				javaType="java.util.List" ofType="BoardAttachmentDto"
+				select="boardListTreeSelectSub" column="board_no">
+			<result column="board_attachment_no" property="boardAttachmentNo"/>
+			<result column="board_no" property="boardNo"/>
+			<result column="attachment_no" property="attachmentNo"/>
+		</collection>
+	</resultMap>
+	<!-- 계층형 조회 메인 구문 -->
+	<select id="boardListTreeSelect" resultMap="boardListVO">
+		<include refid="topNheader"></include>
+	 		select * from board 
+	 		<if test="column!=null and keyword!=null">
+				where instr(${column), #{keyword}) >0
+			</if>
+	 		order by board_no asc
+	 	<include refid="topNfooter"></include>	
+	</select>
+	<!-- 서브구문 -->
+	<select id="boardListTreeSelectSub" resultType="boardAttachmentDto">
+		select * from board_attachment where board_no = #{boardNo}
+	</select>
+
 </mapper>

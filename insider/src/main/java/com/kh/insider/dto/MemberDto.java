@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 public class MemberDto {
-	private long memberNo;
+	private Long memberNo;
 	private String memberName;
 	private String memberNick;
 	private String memberPassword;
@@ -25,6 +25,7 @@ public class MemberDto {
 	private String memberGender;
 	private int memberReport;
 	private String memberBirth;
+	private int memberFollow;
 	
 //	 public String getMemberBirth() {
 //	        return memberBirth;
