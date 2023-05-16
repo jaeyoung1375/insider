@@ -50,7 +50,7 @@
 	
 	<!-- board와 boardAttachment 계층형 조회 -->
 	<resultMap type="BoardListVO" id="boardListVO">
-		<association property="boardDto">
+		<association property="boardWithNickDto">
 			<result column="board_no" property="boardNo"/>
 			<result column="member_no" property="memberNo"/>
 			<result column="board_content" property="boardContent"/>
@@ -65,7 +65,8 @@
 			<result column="board_hide" property="boardHide"/>
 			<result column="board_kid" property="boardKid"/>
 			<result column="board_size" property="boardSize"/>
-			<result column="board_member_nick" property="boardMemberNick"/>
+			<result column="member_nick" property="memberNick"/>
+			<result column="attachment_no" property="attachmentNo"/>
 		</association>
 		<collection property="boardAttachmentList"
 				javaType="java.util.List" ofType="BoardAttachmentDto"
@@ -78,7 +79,7 @@
 	<!-- 계층형 조회 메인 구문 -->
 	<select id="boardListTreeSelect" resultMap="boardListVO">
 		<include refid="topNheader"></include>
-	 		select * from board 
+	 		select * from board_with_nick 
 	 		<if test="column!=null and keyword!=null">
 				where instr(${column), #{keyword}) >0
 			</if>

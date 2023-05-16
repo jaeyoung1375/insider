@@ -109,3 +109,8 @@ tag_name REFERENCES tag(tag_name),
 member_no REFERENCES member(MEMBER_no),
 PRIMARY key(tag_name, member_no)
 );
+
+--보드에 멤버닉, 어태치먼트 넘버 추가
+CREATE OR REPLACE VIEW board_with_nick as
+SELECT b.*, m.attachment_no, m.member_nick FROM board b
+inner JOIN MEMBER_WITH_PROFILE m ON b.member_no=m.member_no;
