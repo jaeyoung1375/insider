@@ -2,16 +2,22 @@ package com.kh.insider.restcontroller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.BoardDto;
+import com.kh.insider.dto.BoardLikeDto;
+import com.kh.insider.repo.BoardLikeRepo;
 import com.kh.insider.repo.BoardRepo;
+import com.kh.insider.vo.BoardLikeVO;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.PaginationVO;
 
@@ -23,6 +29,9 @@ public class BoardRestController {
 	@Autowired
 	private BoardRepo boardRepo;
 	
+	@Autowired
+	private BoardLikeRepo boardLikeRepo;
+	
 	//무한스크롤
 	@GetMapping("/page/{page}")
 	public List<BoardDto> paging(@PathVariable int page) {
@@ -33,4 +42,41 @@ public class BoardRestController {
 	public List<BoardListVO> boardList(@PathVariable int page){
 		return boardRepo.selectListWithAttach(page);
 	}
+	//좋아요
+	@PostMapping("/like")
+	public BoardLikeVO like(
+			HttpSession session,
+			@RequestBody BoardLikeDto boardLikeDto
+			) {
+		long memberNo = (Long)session.getAttribute("memberNo");
+		boardLikeDto.setMemberNo(memberNo);
+		
+		boolean current = boardLikeRepo.check(boardLikeDto);
+		if(current) {
+			boardLikeRepo.delete(boardLikeDto);
+		}
+		else {
+			boardLikeRepo.insert(boardLikeDto);
+		}
+		
+		int count = boardLikeRepo.count(boardLikeDto.getBoardNo());
+		
+		boardRepo.updateLikeCount(boardLikeDto.getBoardNo(), count);
+		
+		return BoardLikeVO.builder()
+					.result(!current)
+					.count(count)
+					.build();
+	}
+	//좋아요 여부 확인
+	@PostMapping("/check")
+	public boolean check(
+			HttpSession session,
+			@RequestBody BoardLikeDto boardLikeDto) {
+		long memberNo = (Long)session.getAttribute("memberNo");
+		boardLikeDto.setMemberNo(memberNo);
+		
+		return boardLikeRepo.check(boardLikeDto);
+	}
+	
 }
