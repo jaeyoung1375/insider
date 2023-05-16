@@ -234,15 +234,59 @@
 			</div>
 		</div>
 	<!--------------------------- 회원 관리 끝--------------------------->
-		
-	<!--------------------------- 신고 관리 --------------------------->
+	<!--------------------------- 신고 관리 시작 --------------------------->
 		<div class="col-md-8" v-show="adminMenu==2">
 			<div class="row">
 				<div class="col">
 					<h1>신고관리</h1>
 				</div>
 			</div>
+			<div class="row">
+				<div class="col">
+					<h3 @click="showReportContentModal">신고 내용 관리</h3>
+				</div>
+			</div>
+		<!-- 신고 리스트 -->
+			<div class="row">
+				<div class="row">
+			<!-- 회원 신고 -->
+					<div class="col-6">
+						<div class="row">
+							<div class="col">
+								<h3>회원 신고 리스트</h3>
+							</div>
+						</div>
+					</div>
+			<!-- 게시물 신고 -->
+					<div class="col-6">
+						<div class="row">
+							<div class="col">
+								<h3>게시물 신고 리스트</h3>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+			<!-- 댓글 신고 -->
+					<div class="col-6">
+						<div class="row">
+							<div class="col">
+								<h3>댓글 신고 리스트</h3>
+							</div>
+						</div>
+					</div>
+			<!-- dm message 신고 -->
+					<div class="col-6">
+						<div class="row">
+							<div class="col">
+								<h3>dm 신고 리스트</h3>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
+	<!--------------------------- 신고 관리 끝 --------------------------->
 	<!--------------------------- 회원 통계 --------------------------->
 		<div class="col-md-8" v-show="adminMenu==3">
 			<div class="row">
@@ -268,6 +312,57 @@
 			</div>
 		</div>
 	</div>
+	<!-- ---------------------------------신고 내용 관리 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="reportContentModal" data-bs-backdrop="static" ref="reportContentModal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">신고 내용 관리</h5>
+					<button type="button" class="btn-close" @click="hideReportContentModal" aria-label="Close">
+					<span aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="modal-body">
+				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
+					<div class="row">
+						<div class="col">
+							<input class="form-control rounded" placeholder="신규 내용 추가" type="text" v-model="newReportContent">
+						</div>
+						<div class="col">
+							<button class="btn btn-primary" @click="insertReportContent">등록</button>
+						</div>
+					</div>
+					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo">
+						<div class="row" v-if="!reportContentListEdit[index]">
+							<div class="col">
+								<span>{{report.reportListContent}}</span>
+							</div>
+							<div class="col">
+								<i class="fa-solid fa-pen-to-square" @click="reportContentListEdit[index]=true"></i>
+								<i class="fa-solid fa-trash" @click="deleteReportContent(report.reportListNo)"></i>
+							</div>
+						</div>
+						<div class="row" v-if="reportContentListEdit[index]">
+							<div class="col">
+								<input class="form-control" v-model="reportContentListSub[index].reportListContent">
+							</div>
+							<div class="col">
+								<i class="fa-solid fa-xmark" @click="hideReportContentEdit(index)"></i>
+								<i class="fa-solid fa-check" @click="updateReportContent(index, report.reportListNo)"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary">확인</button>
+					<button type="button" class="btn btn-secondary" @click="hideReportContentModal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ---------------------------------신고 내용 관리 모달 끝-------------------------- -->
+
+	
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 
@@ -280,37 +375,21 @@
 				adminMenu:1,
 				memberList:[],
 				memberSearchOption:{
-					memberName:"",
-					memberEmail:"",
-					memberNick:"",
-					searchLoginDays:"",
-					memberAddress:"",
-					memberLevel:"",
-					memberGender:"",
-					memberMinReport:"",
-					memberMaxReport:"",
-					memberBeginBirth:"",
-					memberEndBirth:"",
-					memberMinFollow:"",
-					memberMaxFollow:"",
-					orderListString:"",
-					page:1,
+					memberName:"", memberEmail:"", memberNick:"", searchLoginDays:"", memberAddress:"",	memberLevel:"",
+					memberGender:"", memberMinReport:"", memberMaxReport:"", memberBeginBirth:"", memberEndBirth:"",memberMinFollow:"",
+					memberMaxFollow:"",	orderListString:"",	page:1,
 				},
 				memberOrderList:["","",""],
 				memberSearchPagination:{
-					begin:"",
-					end:"",
-					totalPage:"",
-					startBlock:"",
-					finishBlock:"",
-					first:false,
-					last:false,
-					prev:false,
-					next:false,
-					nextPage:"",
-					prevPage:"",
-				}
+					begin:"", end:"", totalPage:"",	startBlock:"", finishBlock:"", first:false, last:false, prev:false,
+					next:false, nextPage:"", prevPage:"",
+				},
 				
+				reportContentModal:null,
+				newReportContent:"",
+				reportContentList:[],
+				reportContentListSub:[],
+				reportContentListEdit:[],
 			};
 		},
 		computed: {
@@ -318,6 +397,7 @@
 		},
 		methods: {
 			//메소드영역
+			/*------------------------------ 메뉴바 시작 ------------------------------*/
 			//쿼리값 page로 반환
 			initializePageFromQuery() {
 				const queryParams = new URLSearchParams(window.location.search);
@@ -333,7 +413,8 @@
 				//쿼리 히스토리 저장
 				window.history.pushState({ query: queryParams.toString() }, '', newURL);
 			},
-			
+			/*------------------------------ 메뉴바 끝 ------------------------------*/
+			/*------------------------------ 회원관리 시작 ------------------------------*/
 			//회원 리스트 출력
 			async loadMemberList(){
 				const resp = await axios.get(contextPath+"/rest/member/list", {params:this.memberSearchOption});
@@ -381,7 +462,46 @@
 			makeQueryForOrderList(){
 				const orderListParams = this.memberOrderList.join(',');
 				this.memberSearchOption.orderList=orderListParams;
-			}
+			},
+			/*------------------------------ 회원관리 끝 ------------------------------*/
+			/*------------------------------ 신고관리 시작 ------------------------------*/
+ 			showReportContentModal(){
+				if(this.reportContentModal==null) return;
+				this.reportContentModal.show();
+				this.loadReportContent();
+			},
+			hideReportContentModal(){
+				if(this.reportContentModal==null) return;
+				this.reportContentModal.hide();
+			},
+			async insertReportContent(){
+				const resp = await axios.post(contextPath+"/rest/reportContent/", {reportListContent:this.newReportContent});
+				this.newReportContent="";
+				this.loadReportContent();
+			},
+			async loadReportContent(){
+				const resp = await axios.get(contextPath+"/rest/reportContent/");
+				this.reportContentList = [...resp.data];
+				this.reportContentListSub = _.cloneDeep(this.reportContentList);
+			},
+			async deleteReportContent(no){
+				const resp = await axios.delete(contextPath+"/rest/reportContent/"+no);
+				this.loadReportContent();
+			},
+			async updateReportContent(index, no){
+				const data = {
+					reportListNo:no,
+					reportListContent:this.reportContentListSub[index].reportListContent,
+				};
+				const resp = await axios.put(contextPath+"/rest/reportContent/", data);
+				this.hideReportContentEdit(index);
+				this.loadReportContent();
+			},
+			hideReportContentEdit(index){
+				this.reportContentListEdit[index]=false;
+				this.reportContentListSub[index].reportListContent = this.reportContentList[index].reportListContent; 
+			},
+			/*------------------------------ 신고관리 끝 ------------------------------*/
 		},
 		created(){
 			//데이터 불러오는 영역
@@ -404,6 +524,8 @@
 			this.initializePageFromQuery();
 			//뒤로가기, 앞으로가기 누르면 이전 쿼리 반환
 			window.addEventListener('popstate', this.initializePageFromQuery);
+			//모달 선언
+			this.reportContentModal = new bootstrap.Modal(this.$refs.reportContentModal);
 		},
 	}).mount("#app");
 </script>
