@@ -82,7 +82,8 @@
                             <div class="d-flex" href="index.html">
                                 <div class="p-2"><img class="profile" src="/static/image/user.jpg"></div>
                                 <div class="p-2" style="margin-top: 12px;"><h4><b style="font-size: 20px;">{{board.boardNo}}</b></h4></div>
-                                <div class="p-2 flex-grow-1 mt-3"><h5>•••</h5></div>
+                            <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
+                                <div class="p-2 flex-grow-1 mt-3"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardNo)"></i></div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲ID▲▲▲▲▲▲▲▲▲▲▲▲▲-->
@@ -149,11 +150,66 @@
     
     
     </div>
+    
+    
+<!-- ---------------------------------추가 메뉴 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="additionalMenuModal" data-bs-backdrop="static" ref="additionalMenuModal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-body">
+				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
+					<div class="row">
+						<div class="col" @click="showReportMenuModal">
+							<h1>신고</h1>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div class="row" @click="hideAdditionalMenuModal">
+						<div class="col">
+							<h1>취소</h1>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<!-- ---------------------------------신고 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">신고</h5>
+					<button type="button" class="btn-close" @click="hideReportMenuModal" aria-label="Close">
+					<span aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="modal-body">
+				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
+					<div class="row">
+						<div class="col">
+							<h5>이 게시물을 신고하는 이유</h5>
+						</div>
+					</div>
+					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo">
+						<div class="col" @click="reportContent(report.reportListContent)">
+							<span>{{report.reportListContent}}</span>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" @click="clickCheckPassword">확인</button>
+					<button type="button" class="btn btn-secondary" @click="hideReportMenuModal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 </div>
   소셜유저 : ${sessionScope.socialUser}		
   회원번호 : ${sessionScope.memberNo}		
   멤버토큰 : ${sessionScope.member}		
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script>
 Vue.createApp({
     //데이터 설정 영역
@@ -171,6 +227,14 @@ Vue.createApp({
             isLiked :false,
             
 			boardLikeCount:0, // 좋아요 수를 저장할 변수
+			/*----------------------신고----------------------*/
+			//추가 메뉴 모달 및 신고 모달
+			additionalMenuModal:null,
+			reportMenuModal:null,
+			//신고 메뉴 리스트
+			reportContentList:[],
+			reportBoardNo:"",
+			/*----------------------신고----------------------*/
         };
     },
     //데이터 실시간 계산 영역
@@ -231,7 +295,43 @@ Vue.createApp({
             this.boardLikeCount = resp.data.count;
            // console.log(this.boardLikeCount);
         },
-        
+        /*----------------------신고----------------------*/
+        //신고 모달 show, hide
+		showAdditionalMenuModal(boardNo){
+			if(this.additionalMenuModal==null) return;
+			this.additionalMenuModal.show();
+			this.reportBoardNo=boardNo;
+		},
+		hideAdditionalMenuModal(){
+			if(this.additionalMenuModal==null) return;
+			this.additionalMenuModal.hide();
+		},
+		showReportMenuModal(){
+			if(this.additionalMenuModal==null) return;
+			this.reportMenuModal.show();
+			this.additionalMenuModal.hide();
+			this.loadReportContent();
+		},
+		hideReportMenuModal(){
+			if(this.additionalMenuModal==null) return;
+			this.reportMenuModal.hide();
+		},
+		//신고 목록 불러오기
+		async loadReportContent(){
+			const resp = await axios.get(contextPath+"/rest/reportContent/");
+			this.reportContentList = [...resp.data];
+		},
+		//신고
+		async reportContent(reportContent){
+			const data={
+				reportContent:reportContent,
+				reportTableNo:this.reportBoardNo,
+				reportTable:"board",
+			}
+			const resp = await axios.post(contextPath+"/rest/report/", data)
+			this.hideReportMenuModal();
+		}
+		/*----------------------신고----------------------*/
     },
     watch: {
        //percent가 변하면 percent의 값을 읽어와서 80% 이상인지 판정
@@ -253,6 +353,9 @@ Vue.createApp({
             this.percent = Math.round(percent);
          },250));
         
+         //추가메뉴, 신고 모달 선언
+		this.additionalMenuModal = new bootstrap.Modal(this.$refs.additionalMenuModal);
+		this.reportMenuModal = new bootstrap.Modal(this.$refs.reportMenuModal);
     },
     created(){
         this.loadList();
