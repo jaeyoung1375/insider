@@ -87,9 +87,9 @@
 						<i class="fa-solid fa-bars"></i>
 					</button>
 					<div class="dropdown-menu" aria-labelledby="dropdownMenuButton" v-show="sideMenu" :class="{'show' : sideMenu}">
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/member/setting">환경설정</a>
-						<a class="dropdown-item" href="#">Another action</a>
-						<a class="dropdown-item" href="#">Something else here</a>
+						<a class="dropdown-item" href="${pageContext.request.contextPath}/member/setting?page=1">환경설정</a>
+						<a class="dropdown-item" href="${pageContext.request.contextPath}/admin/">관리자 메뉴</a>
+						<a class="dropdown-item" href="${pageContext.request.contextPath}/member/login">로그인</a>
 						<c:if test="${socialUser != null}">
 						<a class="dropdown-item" href="${pageContext.request.contextPath}/member/logout">로그아웃</a>
 						</c:if>

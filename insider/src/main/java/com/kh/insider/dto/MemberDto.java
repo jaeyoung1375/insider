@@ -23,6 +23,11 @@ public class MemberDto {
 	private String memberTel;
 	private String memberGender;
 	private int memberReport;
+
 	private Date memberBirth;
+
+
+	private int memberFollow;
+
 	
 }

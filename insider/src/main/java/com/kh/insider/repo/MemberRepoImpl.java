@@ -62,12 +62,12 @@ public class MemberRepoImpl implements MemberRepo{
 	public void updateLoginTime(long memberNo) {
 		sqlSession.update("member.updateLoginTime",memberNo);
 	}
-	//단일조회
+	//memberNo 단일조회
 	@Override
 	public MemberDto findByNo(long memberNo) {
 		return sqlSession.selectOne("member.findByNo", memberNo);
 	}
-
+	//비밀번호 변경
 	@Override
 	public void changePassword(MemberDto memberDto) {
 		sqlSession.update("member.changePassword", memberDto);

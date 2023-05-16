@@ -10,32 +10,32 @@
 	<div class="row">
 	<!-- 좌측 사이드 메뉴바 -->
 		<div class="col-md-4">
-			<div class="row setting-menu" v-on:click="page=0" :class="{'selected':page==0}">
+			<div class="row setting-menu" @click="changePage(0)" :class="{'selected':page==0}">
 				<div class="col">
 					<h2>개인정보 변경</h2>
 				</div>
 			</div>
-			<div class="row setting-menu" v-on:click="page=1" :class="{'selected':page==1}">
+			<div class="row setting-menu" @click="changePage(1)" :class="{'selected':page==1}">
 				<div class="col">
 					<h2>프로필 편집</h2>
 				</div>
 			</div>
-			<div class="row setting-menu" v-on:click="page=2" :class="{'selected':page==2}">
+			<div class="row setting-menu" @click="changePage(2)" :class="{'selected':page==2}">
 				<div class="col">
 					<h2>푸시 알림</h2>
 				</div>
 			</div>
-			<div class="row setting-menu" v-on:click="page=3" :class="{'selected':page==3}">
+			<div class="row setting-menu" @click="changePage(3)" :class="{'selected':page==3}">
 				<div class="col">
 					<h2>내가 볼 수 있는 내용</h2>
 				</div>
 			</div>
-			<div class="row setting-menu" v-on:click="page=4" :class="{'selected':page==4}">
+			<div class="row setting-menu" @click="changePage(4)" :class="{'selected':page==4}">
 				<div class="col">
 					<h2>공개 범위</h2>
 				</div>
 			</div>
-			<div class="row setting-menu" v-on:click="page=5" :class="{'selected':page==5}">
+			<div class="row setting-menu" @click="changePage(5)" :class="{'selected':page==5}">
 				<div class="col">
 					<h2>소통 방법</h2>
 				</div>
@@ -438,7 +438,7 @@
 			return {
 				passwordCheckModal:null,
 				passwordChangeModal:null,
-				page:1,
+				page:"",
 				member:{
 					memberNo:"",
 					memberName:"",
@@ -607,7 +607,23 @@
 						this.member.memberBasicAddr = addr;
 					},
 				}).open();
-			}
+			},
+			
+			//쿼리값 page로 반환
+			initializePageFromQuery() {
+				const queryParams = new URLSearchParams(window.location.search);
+				const page = queryParams.get('page');
+				this.page = page
+			},
+			//쿼리 업데이트를 위한 page 데이터 변경 및 쿼리 변경 메서드
+			changePage(page){
+				this.page=page;
+				const queryParams = new URLSearchParams(window.location.search);
+				queryParams.set('page', this.page);
+				const newURL = `?`+queryParams.toString();
+				//쿼리 히스토리 저장
+				window.history.pushState({ query: queryParams.toString() }, '', newURL);
+			},
 		},
 		created(){
 			//세팅데이터 로드
@@ -618,10 +634,14 @@
 			//모달 선언
 			this.passwordCheckModal = new bootstrap.Modal(this.$refs.passwordCheckModal);
 			this.passwordChangeModal = new bootstrap.Modal(this.$refs.passwordChangeModal);
+			
+			//쿼리 초기화 및 변화 감지
+			this.initializePageFromQuery();
+			//뒤로가기, 앞으로가기 누르면 이전 쿼리 반환
+			window.addEventListener('popstate', this.initializePageFromQuery);
 		},
 		watch:{
 			//감시영역
-
  			member:{
 				deep:true,
 				handler : _.throttle(function(){

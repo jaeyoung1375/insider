@@ -10,26 +10,7 @@ public class PaginationVO {
 	private int size = 10;	//기본값 설정
 	private int count;
 	private int blockSize=10;
-	//검색 여부 판정
-	public boolean isSearch() {
-		return keyword.equals("") == false;
-	}
-	public boolean isList() {
-		return !isSearch();
-	}
 
-	public String getParameter() {
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("size=");
-		buffer.append(size);
-		if(isSearch()) {
-			buffer.append("&column=");
-			buffer.append(column);
-			buffer.append("&keyword=");
-			buffer.append(keyword);
-		}
-		return buffer.toString();
-	}
 	//시작행 번호 계산
 	public int getBegin() {
 		return page*size-size+1;
