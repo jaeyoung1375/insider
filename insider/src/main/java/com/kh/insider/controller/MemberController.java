@@ -241,7 +241,7 @@ public class MemberController {
 			return "redirect:/";
 		}
 		// addInfo로 넘길 정보
-		session.setAttribute("socialUser",googleUser);
+		session.setAttribute("loginUser",googleUser);
 		session.setAttribute("member",response.getAccess_token());
 		session.setAttribute("refresh_token",response.getRefresh_token());
 		
