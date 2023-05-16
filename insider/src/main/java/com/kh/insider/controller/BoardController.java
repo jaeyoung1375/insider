@@ -39,7 +39,7 @@ public class BoardController {
     @PostMapping("/insert")
     public String insert(HttpSession session, Model model, @ModelAttribute BoardDto boardDto, RedirectAttributes attr){
 
-    	Long boardNo =boardRepo.sequence();
+    	int boardNo =boardRepo.sequence();
         boardDto.setBoardNo(boardNo);
 
         // 게시물 작성자

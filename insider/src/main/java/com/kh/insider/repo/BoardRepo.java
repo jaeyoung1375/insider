@@ -8,7 +8,7 @@ import com.kh.insider.vo.BoardListVO;
 public interface BoardRepo {
 	List<BoardDto> selectListPaging(int page);
 
-	Long sequence();
+	int sequence();
 	
 	void insert(BoardDto boardDto);
 

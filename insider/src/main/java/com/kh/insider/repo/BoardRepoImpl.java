@@ -28,7 +28,7 @@ public class BoardRepoImpl implements BoardRepo {
 
 
 	@Override
-	public Long sequence() {
+	public int sequence() {
 		 return sqlSession.selectOne("board.sequence");
 	}
 	

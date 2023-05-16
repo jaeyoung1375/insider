@@ -34,9 +34,9 @@ public class BoardRestController {
 	
 	//게시물 등록
 	@PostMapping("/")
-	public Long insert(BoardDto boardDto, HttpSession session) {
+	public int insert(BoardDto boardDto, HttpSession session) {
 		//시퀀스
-		Long boardNo = boardRepo.sequence();
+		int boardNo = boardRepo.sequence();
 		System.out.println("boardNo = " +"boardNo");
 		//번호
 		boardDto.setBoardNo(boardNo);

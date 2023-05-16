@@ -5,9 +5,7 @@ import java.sql.Date;
 import lombok.Data;
 
 @Data
-public class BoardDto {
-
-
+public class BoardWithNickDto {
 	public int boardNo;
 	public long memberNo;
 	public String boardContent;
@@ -22,4 +20,7 @@ public class BoardDto {
 	public int boardHide;
 	public int boardKid;
 	public int boardSize;
+	
+	private String memberNick;
+	private Integer attachmentNo;
 }
