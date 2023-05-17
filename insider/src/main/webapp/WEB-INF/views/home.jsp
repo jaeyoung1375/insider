@@ -80,10 +80,14 @@
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼ID▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-2">
                             <div class="d-flex" href="index.html">
-                                <div class="p-2"><img class="profile" src="/static/image/user.jpg"></div>
-                                <div class="p-2" style="margin-top: 12px;"><h4><b style="font-size: 20px;">{{board.boardNo}}</b></h4></div>
+                                <div class="p-2"><img class="profile" :src="profileUrl(index)"></div>
+                                <div class="p-2" style="margin-top: 12px;"><h4><b style="font-size: 20px;">{{board.boardWithNickDto.memberNick}}</b></h4></div>
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
+
+                                <div class="p-2 flex-grow-1 mt-3"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo)"></i></div>
+
                                 <div class="p-2 flex-grow-1 mt-3"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardNo, board.memberNo)"></i></div>
+
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲ID▲▲▲▲▲▲▲▲▲▲▲▲▲-->
@@ -124,7 +128,7 @@
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼좋아요▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-1" style="height: 40px;">
                             <div class="d-flex" href="index.html">
-                                <div class="p-2"><i :class="{'fa-heart': true, 'like':isLiked[index], 'fa-solid': isLiked[index], 'fa-regular': !isLiked[index]}" @click="likePost(board.boardNo,index)" style="font-size: 32px;"></i></div>
+                                <div class="p-2"><i :class="{'fa-heart': true, 'like':isLiked[index], 'fa-solid': isLiked[index], 'fa-regular': !isLiked[index]}" @click="likePost(board.boardWithNickDto.boardNo,index)" style="font-size: 32px;"></i></div>
                                 <div class="p-2"><img src="/static/image/dm.png"></div>
                                 <div class="p-2"><img src="/static/image/message_ico.png"></div>
                                 <div class="p-2 flex-grow-1"><h5><img src="/static/image/save_post.png"></h5></div>
@@ -134,7 +138,7 @@
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼멘트▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-1">
                             <h4 class="mt-2"><b>좋아요 {{boardLikeCount[index]}}개</b></h4>
-                            <h4><b>{{board.boardNo}}</b></h4><h6>{{board.boardContent}}</h6>
+                            <h4><b>{{board.boardWithNickDto.memberNick}}</b></h4><h6>{{board.boardWithNickDto.boardContent}}</h6>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲멘트▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼댓글 모달창 열기▼▼▼▼▼▼▼▼▼▼▼▼▼-->
@@ -271,7 +275,17 @@ Vue.createApp({
     },
     //데이터 실시간 계산 영역
     computed:{
-
+    	profileUrl(index){
+    		 return index => {
+    		      const board = this.boardList[index];
+    		      if (board && board.boardWithNickDto && board.boardWithNickDto.attachmentNo > 0) {
+    		        return contextPath + "/rest/attachment/download/" + board.boardWithNickDto.attachmentNo;
+    		      }
+    		      else {
+    		        return "https://via.placeholder.com/100x100?text=profile";
+    		      }
+    		    };
+    		  },
     },
     //메소드
     methods:{
@@ -280,14 +294,14 @@ Vue.createApp({
             if(this.finish == true) return; //다 불러왔으면
             this.loading = true;
 
-            const resp = await axios.get("${pageContext.request.contextPath}/rest/board/page/"+ this.page);
+            const resp = await axios.get("${pageContext.request.contextPath}/rest/board/list/"+ this.page);
             console.log(resp.data);
             //console.log(resp.data[0].boardLike);
             
             for (const board of resp.data) {
-            	this.isLiked.push(await this.likeChecked(board.boardNo));
+            	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
             	console.log(this.isLiked);
-            	this.boardLikeCount.push(board.boardLike);
+            	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
             	console.log(this.boardLikeCount);
             	//this.boardLikeCount.push(board.boardLike);
             	//this.boardLikeCount = boardList.boardLike;
@@ -304,7 +318,7 @@ Vue.createApp({
         },
         
         async likeChecked(boardNo) {
-        	const resp = await axios.post("${pageContext.request.contextPath}/rest/board/check", {boardNo: boardNo});
+        	const resp = await axios.post("${pageContext.request.contextPath}/rest/board/check", {boardNo:boardNo});
 //         	if(resp.data){
 //         		return $(".like").removeClass("fa-regular")
 //         							.addClass("fa-solid");
@@ -320,7 +334,7 @@ Vue.createApp({
         
         
         async likePost(boardNo, index) {
-            const resp = await axios.post("${pageContext.request.contextPath}/rest/board/like", {boardNo: boardNo});
+            const resp = await axios.post("${pageContext.request.contextPath}/rest/board/like", {boardNo:boardNo});
             console.log(resp.data.count);
             if(resp.data.result){
             	this.isLiked[index] = true;
