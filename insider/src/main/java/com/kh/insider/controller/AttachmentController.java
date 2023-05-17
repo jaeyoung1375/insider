@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,9 +52,9 @@ public class AttachmentController {
 	private AttachmentRepo attachmentRepo;
 	
 	// 임시 파일 업로드 주소
-    @GetMapping("/file")
-    public String file(){
-        return "attachment/file";
+    @GetMapping("/upload")
+    public String upload(){
+        return "attachment/upload";
     }
     
     @GetMapping("/test")
@@ -69,19 +70,21 @@ public class AttachmentController {
 	
 	// 파일업로드 글 쓸때 사용, 
 	@PostMapping("/upload")
-//	public String upload(@RequestParam("attach") MultipartFile[] attach) throws IllegalStateException, IOException, InterruptedException {
-	public String upload(@RequestParam MultipartFile attach) throws IllegalStateException, IOException, InterruptedException {
-		System.out.println(attach.isEmpty());
-		// getName은 <input name="attach"> 여기서 name에 해당한다.
-		System.out.println("name = " + attach.getName());
-		System.out.println("original file name = " + attach.getOriginalFilename());
-		System.out.println("content type = " + attach.getContentType());
-		System.out.println("size = " + attach.getSize());
+	public String upload(@RequestParam("attach") MultipartFile[] attach) throws IllegalStateException, IOException, InterruptedException {
+//	public String upload(@RequestParam MultipartFile attach) throws IllegalStateException, IOException, InterruptedException {
 		
-		if(!attach.isEmpty()) {//파일이 있을 경우
+		for(MultipartFile file : attach) {
+		System.out.println(file.isEmpty());
+		// getName은 <input name="attach"> 여기서 name에 해당한다.
+		System.out.println("name = " + file.getName());
+		System.out.println("original file name = " + file.getOriginalFilename());
+		System.out.println("content type = " + file.getContentType());
+		System.out.println("size = " + file.getSize());
+		
+		if(!file.isEmpty()) {//파일이 있을 경우
 			
 			// 파일 및 파일 형식 판별 --------------------------------
-			String contentType = attach.getContentType(); 
+			String contentType = file.getContentType(); 
 			String fileType = null; 
 			System.out.println("dir는 다음과 같습니다 "+dir);
 			
@@ -96,7 +99,7 @@ public class AttachmentController {
 				System.out.println("비디오입니다. 파일확장자는 "+fileType+" 입니다.");
 				// 빈 파일 생성 파일명=시퀀스.파일형식 ex) 1.png, 2.jpeg, 3.mp4  
 				File target = new File(dir, String.valueOf(attachmentNo)+"."+fileType);
-				attach.transferTo(target);
+				file.transferTo(target);
 			}
 			// 사진인지 판별
 			else if(contentType.contains("image"))
@@ -105,7 +108,7 @@ public class AttachmentController {
 				fileType = contentType.replaceAll("image/","");
 				System.out.println("사진입니다. 파일확장자는 "+fileType+" 입니다.");
 				File target = new File(dir, String.valueOf(attachmentNo));
-				attach.transferTo(target);
+				file.transferTo(target);
 			}			
 			// 파일 저장(저장 위치는 임시로 생성)---------------------------	
 			
@@ -165,7 +168,7 @@ public class AttachmentController {
 				// 비디오 DB 저장----------------------------
 				attachmentRepo.insert(AttachmentDto.builder()
 								.attachmentNo(attachmentNo)
-								.attachmentName(attach.getOriginalFilename())
+								.attachmentName(file.getOriginalFilename())
 								.attachmentType(contentType)
 								.attachmentSize(videoSize)
 							.build());
@@ -176,57 +179,53 @@ public class AttachmentController {
 				// 이미지 DB 저장----------------------------
 				attachmentRepo.insert(AttachmentDto.builder()
 								.attachmentNo(attachmentNo)
-								.attachmentName(attach.getOriginalFilename())
+								.attachmentName(file.getOriginalFilename())
 								.attachmentType(contentType)
-								.attachmentSize(attach.getSize())
+								.attachmentSize(file.getSize())
 							.build());
+				}
+			
 			}
-			
-			
 		}
 		return "redirect:/";
 	}
 
 	
-	@GetMapping("/show")
-	public String show(
-			@RequestParam int attachmentNo, 
-			Model model) {
-		
-		// 보여줄 파일의 contentType 조회
-		String contentType = attachmentRepo.selectOne(attachmentNo).getAttachmentType();
-		if(contentType.contains("video")) {
-			model.addAttribute("isVideo","Y");
-		}
-		
-		else if(contentType.contains("image")) {
-			model.addAttribute("isVideo","N");
-		}
-		
-		// Restful하게 비디오를 조회하기 위한 model.addAttribute
-		model.addAttribute("attachmentNo",attachmentNo);
-		// ContentType에 따라 비디오를 재생하기 위한 model.addAttribute
-		model.addAttribute("contentType",contentType); 
-		return "attachment/show";
-	}
+//	@GetMapping("/show")
+//	public String show(
+//			@RequestParam int attachmentNo, 
+//			Model model) {
+//		
+//		// 보여줄 파일의 contentType 조회
+//		String contentType = attachmentRepo.selectOne(attachmentNo).getAttachmentType();
+//		if(contentType.contains("video")) {
+//			model.addAttribute("isVideo","Y");
+//		}
+//		
+//		else if(contentType.contains("image")) {
+//			model.addAttribute("isVideo","N");
+//		}
+//		
+//		// Restful하게 비디오를 조회하기 위한 model.addAttribute
+//		model.addAttribute("attachmentNo",attachmentNo);
+//		// ContentType에 따라 비디오를 재생하기 위한 model.addAttribute
+//		model.addAttribute("contentType",contentType); 
+//		return "attachment/show";
+//	}
 	
 
 	// 첨부파일 조회
 	@GetMapping("/download")
 	public ResponseEntity<ByteArrayResource> download(
-			@RequestParam int attachmentNo) throws IOException {
+			@PathVariable int attachmentNo) throws IOException {
 		
 		//DB 조회
 		AttachmentDto attachmentDto = attachmentRepo.selectOne(attachmentNo);
-		if(attachmentDto == null) {//없으면 404
-			return ResponseEntity.notFound().build();
-		}	
-		
-		
-		
+	
 		//파일 찾기
 		File dir = new File("D:/upload");
 		File target = new File(dir, String.valueOf(attachmentNo));
+		if(!target.exists()) return ResponseEntity.notFound().build();
 		
 		//보낼 데이터 생성
 		byte[] data = FileUtils.readFileToByteArray(target);

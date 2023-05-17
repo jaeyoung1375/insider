@@ -5,6 +5,10 @@
 
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+
+
 <style>
 	.div-center {
 		display: inline-block;
@@ -134,6 +138,24 @@
 
 
 <script type="text/javascript">
+
+// <script type="text/javascript">
+// $(function(){
+//     $('[name=summernote]').summernote({
+//         placeholder: '내용 작성',
+//         tabsize: 4,//탭키를 누르면 띄어쓰기 몇 번 할지
+//         height: 250,//최초 표시될 높이(px)
+//         toolbar: [//메뉴 설정
+//             ['style', ['style']],
+//             ['font', ['bold', 'underline', 'clear']],
+//             ['color', ['color']],
+//             ['para', ['ul', 'ol', 'paragraph']],
+//             ['table', ['table']],
+//             ['insert', ['link', 'picture']]
+//         ]
+//     });
+// });
+
 
 //내용 글자 수 카운트
 $(function(){

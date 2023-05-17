@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
+<script src="path/to/dropzone.js"></script>
 
 <script>
     function previewFile() {
@@ -55,5 +56,44 @@
     $('#myModal').modal('show');
   });
 </script>
+
+<template>
+  <div>
+    <vue-dropzone
+      ref="myDropzone"
+      id="dropzone"
+      :options="dropzoneOptions"
+      @vdropzone-success="onSuccess"0
+    ></vue-dropzone>
+    <button @click="upload">Upload</button>
+  </div>
+</template>
+
+<script>
+import vue2Dropzone from 'vue2-dropzone';
+
+export default {
+  components: {
+    vueDropzone: vue2Dropzone
+  },
+  data() {
+    return {
+      dropzoneOptions: {
+        url: '/upload',
+        maxFiles: 10 // Maximum number of files to be uploaded
+      }
+    };
+  },
+  methods: {
+    onSuccess(file, response) {
+      // Handle successful upload
+    },
+    upload() {
+      this.$refs.myDropzone.processQueue(); // Trigger upload process
+    }
+  }
+};
+</script>
+
 
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>

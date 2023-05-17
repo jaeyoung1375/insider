@@ -18,7 +18,7 @@
 		) 
 		values(
 			board_seq.nextval, #{memberNo}, #{boardContent}, #{boardLike}, #{boardLat}, #{boardLon},
-			SYSDATE , #{board_reply}, #{boardReplyValid}, #{boardLikeValid}, #{board_report},
+			SYSDATE , #{boardReply}, #{boardReplyValid}, #{boardLikeValid}, #{boardReport},
 			#{boardHide}, #{boardKid}, #{boardSize}
 		)
 	</insert>

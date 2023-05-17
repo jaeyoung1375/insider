@@ -35,6 +35,8 @@
 		</insert>
 		
 		<!-- 목록 -->
-
+		<select id="list" resultType="BoardAttachmentDto" parameterType="int">
+			select*from board_attachment where board_no=#{boardNo}
+		</select>
    
    </mapper>

@@ -6,5 +6,6 @@ public interface AttachmentRepo {
 
     int sequence();
     void insert(AttachmentDto attachmentDto);
+//    int save(MultipartFile attach) throws IllegalStateException, IOException;
     AttachmentDto selectOne(int attachmentNo);
 }

@@ -1,5 +1,7 @@
 package com.kh.insider.repo;
 
+import java.util.List;
+
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -14,6 +16,11 @@ public class BoardAttachmentRepoImpl implements BoardAttachmentRepo{
 
 	@Override
 	public void insert(BoardAttachmentDto boardAttachmentDto) {
-		sqlSession.insert("board_attachment.insert", boardAttachmentDto);
+		sqlSession.insert("boardAttachment.insert", boardAttachmentDto);
+	}
+
+	@Override
+	public List<BoardAttachmentDto> selectList(int boardNo) {
+		return sqlSession.selectList("boardAttachment.list", boardNo);
 	}
 }
