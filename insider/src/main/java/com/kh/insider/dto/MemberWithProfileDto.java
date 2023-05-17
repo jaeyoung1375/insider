@@ -25,4 +25,5 @@ public class MemberWithProfileDto {
 	private int memberFollow;
 	private Integer attachmentNo;
 	private String memberNick;
+	private Date memberJoin;
 }

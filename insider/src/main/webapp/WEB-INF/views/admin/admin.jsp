@@ -248,41 +248,27 @@
 			</div>
 		<!-- 신고 리스트 -->
 			<div class="row">
-				<div class="row">
-			<!-- 회원 신고 -->
-					<div class="col-6">
-						<div class="row">
-							<div class="col">
-								<h3>회원 신고 리스트</h3>
-							</div>
-						</div>
-					</div>
-			<!-- 게시물 신고 -->
-					<div class="col-6">
-						<div class="row">
-							<div class="col">
-								<h3>게시물 신고 리스트</h3>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-			<!-- 댓글 신고 -->
-					<div class="col-6">
-						<div class="row">
-							<div class="col">
-								<h3>댓글 신고 리스트</h3>
-							</div>
-						</div>
-					</div>
-			<!-- dm message 신고 -->
-					<div class="col-6">
-						<div class="row">
-							<div class="col">
-								<h3>dm 신고 리스트</h3>
-							</div>
-						</div>
-					</div>
+				<div class="col">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>회원정보</th>
+								<th>신고 위치</th>
+								<th>신고개수</th>
+								<th>처리여부</th>
+								<th>비고</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(report, index) in reportList" :key="index">
+								<td>{{report.memberName}}{{report.memberNick}}</td>
+								<td>{{report.reportTable}}</td>
+								<td>{{report.count}}</td>
+								<td>{{report.reportCheck}}</td>
+								<td>내용보기</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</div>
@@ -365,7 +351,8 @@
 	
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-
+<!-- SockJS라이브러리 의존성 추가  -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
 <script>
 	Vue.createApp({
 		data() {
@@ -384,12 +371,14 @@
 					begin:"", end:"", totalPage:"",	startBlock:"", finishBlock:"", first:false, last:false, prev:false,
 					next:false, nextPage:"", prevPage:"",
 				},
-				
+				/*---------------------------신고 데이터 --------------------------- */
 				reportContentModal:null,
 				newReportContent:"",
 				reportContentList:[],
 				reportContentListSub:[],
 				reportContentListEdit:[],
+				reportList:[],
+				reportSocket:null,
 			};
 		},
 		computed: {
@@ -501,11 +490,34 @@
 				this.reportContentListEdit[index]=false;
 				this.reportContentListSub[index].reportListContent = this.reportContentList[index].reportListContent; 
 			},
+			async loadReportList(){
+				const resp = await axios.get(contextPath+"/rest/report/");
+				this.reportList=[...resp.data];
+			},
+ 			connectReportServer(){
+				const url = contextPath+"/ws/admin/report";
+				this.socket = new SockJS(url);
+				
+				this.socket.onopen = ()=>{
+				};
+				this.socket.onclose= ()=>{
+				};
+				this.socket.onerror= ()=>{
+				};
+				//메세지를 수신하면 수신된 메세지로 태그를 만들어서 추가
+				this.socket.onmessage=(e)=>{
+					const data = JSON.parse(e.data);
+					console.log(data);
+					this.reportList = [...data];
+				};
+			}
 			/*------------------------------ 신고관리 끝 ------------------------------*/
 		},
 		created(){
 			//데이터 불러오는 영역
 			this.loadMemberList();
+			this.loadReportList();
+			this.connectReportServer();
 		},
 		watch:{
 			//감시영역

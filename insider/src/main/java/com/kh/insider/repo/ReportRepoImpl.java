@@ -25,8 +25,8 @@ public class ReportRepoImpl implements ReportRepo {
 	}
 
 	@Override
-	public ReportDto seletcOne(int reportNo) {
-		return sqlSession.selectOne("report.selectOne", reportNo);
+	public ReportDto seletcOne(ReportDto reportDto) {
+		return sqlSession.selectOne("report.selectOne", reportDto);
 	}
 
 	@Override
