@@ -271,7 +271,8 @@ Vue.createApp({
     		      const board = this.boardList[index];
     		      if (board && board.boardWithNickDto && board.boardWithNickDto.attachmentNo > 0) {
     		        return contextPath + "/rest/attachment/download/" + board.boardWithNickDto.attachmentNo;
-    		      } else {
+    		      }
+    		      else {
     		        return "https://via.placeholder.com/100x100?text=profile";
     		      }
     		    };
