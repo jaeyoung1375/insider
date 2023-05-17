@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class BoardDto {
 
+
 	public int boardNo;
 	public long memberNo;
 	public String boardContent;
