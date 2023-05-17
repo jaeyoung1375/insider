@@ -122,3 +122,24 @@ SELECT rc.*, m.member_name, m.member_nick, m.attachment_no from
 (SELECT r.report_member_no, r.report_table_no, r.report_table, r.report_check, count(*) FROM report r
 GROUP BY r.report_member_no, r.report_table_no, r.report_table, r.report_check) rc
 INNER JOIN member_with_profile m ON rc.report_member_no=m.member_no;
+
+--차단 테이블
+CREATE TABLE block(
+member_no REFERENCES member(member_no) ON delete CASCADE,
+block_no REFERENCES member(member_no) ON delete CASCADE,
+PRIMARY KEY(member_no, block_no)
+);
+
+--팔로우 테이블
+CREATE TABLE follow(
+member_no REFERENCES member(member_no) ON DELETE CASCADE,
+follow_follower REFERENCES member(member_no) ON DELETE CASCADE,
+follow_time DATE DEFAULT sysdate NOT NULL,
+follow_allow number(1) DEFAULT 1 NOT NULL,
+PRIMARY key(member_no, follow_follower)
+);
+
+--멤버 member_join 칼럼 추가
+alter TABLE MEMBER ADD member_join DATE DEFAULT sysdate;
+UPDATE MEMBER SET member_join=sysdate;
+ALTER TABLE MEMBER MODIFY member_join NOT NULL;
