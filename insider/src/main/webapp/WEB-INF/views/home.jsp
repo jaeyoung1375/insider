@@ -71,7 +71,7 @@
 </style>
 <div id="app">
 	<div class="container" style="margin-top: 20px; max-width: 1000px">
-        <div class="row" v-for="(board, index) in boardList" :key="index">
+        <div class="row" v-for="(board, index) in boardList" :key="board.boardNo">
             <!--●●●●●●●●●●●●●●피드공간●●●●●●●●●●●●●●●●●●●●●●-->
             <div class="col" style="max-width: 620px; margin: 0 auto;">
                 <!--피드001-->
@@ -97,7 +97,7 @@
                                 </div>
                                 <div class="carousel-inner">
                                   <div class="carousel-item active">
-                                    <img src="/static/image/r.jpeg" class="d-block" @dblclick="likePost(board.boardNo)" alt="...">
+                                    <img src="/static/image/r.jpeg" class="d-block" @dblclick="likePost(board.boardNo,index)" alt="...">
                                   </div>
                                   <div class="carousel-item">
                                     <img src="/static/image/h.jpg" class="d-block" alt="...">
@@ -119,7 +119,7 @@
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼좋아요▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-1" style="height: 40px;">
                             <div class="d-flex" href="index.html">
-                                <div class="p-2"><i :class="{'fa-heart': true, 'like':isLiked, 'fa-solid': isLiked, 'fa-regular': !isLiked}" @click="likePost(board.boardNo)" style="font-size: 32px;"></i></div>
+                                <div class="p-2"><i :class="{'fa-heart': true, 'like':isLiked[index], 'fa-solid': isLiked[index], 'fa-regular': !isLiked[index]}" @click="likePost(board.boardNo,index)" style="font-size: 32px;"></i></div>
                                 <div class="p-2"><img src="/static/image/dm.png"></div>
                                 <div class="p-2"><img src="/static/image/message_ico.png"></div>
                                 <div class="p-2 flex-grow-1"><h5><img src="/static/image/save_post.png"></h5></div>
@@ -128,14 +128,19 @@
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲좋아요▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼멘트▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-1">
-                            <h4 class="mt-2"><b>좋아요 {{boardLikeCount}}개</b></h4>
+                            <h4 class="mt-2"><b>좋아요 {{boardLikeCount[index]}}개</b></h4>
                             <h4><b>{{board.boardNo}}</b></h4><h6>{{board.boardContent}}</h6>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲멘트▲▲▲▲▲▲▲▲▲▲▲▲▲-->
+                        <!--▼▼▼▼▼▼▼▼▼▼▼▼▼댓글 모달창 열기▼▼▼▼▼▼▼▼▼▼▼▼▼-->
+             			<div class="p-1">
+             				<h6 @click="showBoardModal(board.boardNo)">댓글 더보기</h6>             
+             			</div>           
+                        <!--▲▲▲▲▲▲▲▲▲▲▲▲▲댓글 모달창 열기▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼댓글입력창▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-1">
                             <div class="d-flex">
-                                <div class="p-2"><img src="/static/image/emoticon.png"></div>
+<!--                                 <div class="p-2"><img src="/static/image/emoticon.png"></div> -->
                                 <div class="p-1"><input class="form-control" type="text" placeholder="댓글 달기..."
                                                         style="border: 2px solid white; width: 18em;"></div>
                                 <div class="p-2 flex-grow-1"><h5 style="color: dodgerblue" href="#">게시</h5></div>
@@ -150,6 +155,26 @@
     
     
     </div>
+    
+<!-- ---------------------------------댓글 모달-------------------------- -->
+ <div class="modal" tabindex="-1" role="dialog" id="modal03" 
+                            data-bs-backdrop="static" ref="modal03">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">제목</h5>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 모달에서 표시할 실질적인 내용 구성 -->
+                        <p>본문 내용</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="hideBoardModal">닫기</button>
+                    </div>
+                </div>
+            </div>
+         </div>   
+
     
     
 <!-- ---------------------------------추가 메뉴 모달-------------------------- -->
@@ -224,9 +249,9 @@ Vue.createApp({
             //안전장치
             loading:false,
             //▲▲▲▲▲▲▲▲▲▲▲▲▲무한 페이징▲▲▲▲▲▲▲▲▲▲▲▲▲
-            isLiked :false,
             
-			boardLikeCount:0, // 좋아요 수를 저장할 변수
+			boardLikeCount:[], // 좋아요 수를 저장할 변수
+            isLiked : [],
 			/*----------------------신고----------------------*/
 			//추가 메뉴 모달 및 신고 모달
 			additionalMenuModal:null,
@@ -235,6 +260,8 @@ Vue.createApp({
 			reportContentList:[],
 			reportBoardNo:"",
 			/*----------------------신고----------------------*/
+			
+			boardModal:null,
         };
     },
     //데이터 실시간 계산 영역
@@ -250,11 +277,17 @@ Vue.createApp({
 
             const resp = await axios.get("${pageContext.request.contextPath}/rest/board/page/"+ this.page);
             console.log(resp.data);
-            console.log(resp.data[0].boardLike);
+            //console.log(resp.data[0].boardLike);
+            
             for (const board of resp.data) {
-            	this.isLiked = await this.likeChecked(board.boardNo);
-            	this.boardLikeCount = board.boardLike;
+            	this.isLiked.push(await this.likeChecked(board.boardNo));
+            	console.log(this.isLiked);
+            	this.boardLikeCount.push(board.boardLike);
+            	console.log(this.boardLikeCount);
+            	//this.boardLikeCount.push(board.boardLike);
+            	//this.boardLikeCount = boardList.boardLike;
               }
+            //this.boardListCount=[...resp.data.boardLike]
 			
             //this.boardLikeCount.push(...resp.data.boardLike);
             this.boardList.push(...resp.data);
@@ -281,20 +314,30 @@ Vue.createApp({
         },
         
         
-        async likePost(boardNo) {
+        async likePost(boardNo, index) {
             const resp = await axios.post("${pageContext.request.contextPath}/rest/board/like", {boardNo: boardNo});
             console.log(resp.data.count);
             if(resp.data.result){
-            	this.isLiked = true;
+            	this.isLiked[index] = true;
             }
             else {
-            	this.isLiked = false;
+            	this.isLiked[index] = false;
             }
             
             
-            this.boardLikeCount = resp.data.count;
+            this.boardLikeCount[index] = resp.data.count;
            // console.log(this.boardLikeCount);
         },
+        
+        showBoardModal(boardNo) {
+        	if(this.boardModal==null) return;
+        	this.boardModal.show();
+        },
+        hideBoardModal() {
+        	if(this.boardModal==null) return;
+        	this.boardModal.hide();
+        },
+        
         /*----------------------신고----------------------*/
         //신고 모달 show, hide
 		showAdditionalMenuModal(boardNo){
@@ -356,6 +399,7 @@ Vue.createApp({
          //추가메뉴, 신고 모달 선언
 		this.additionalMenuModal = new bootstrap.Modal(this.$refs.additionalMenuModal);
 		this.reportMenuModal = new bootstrap.Modal(this.$refs.reportMenuModal);
+		this.boardModal = new bootstrap.Modal(this.$refs.modal03);
     },
     created(){
         this.loadList();
