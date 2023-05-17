@@ -12,8 +12,7 @@ public interface DmUserRepo {
 	
 	boolean check(DmUserDto dmUserDto);
 	
-	void invite(DmUserDto dmUserDto);
-	
-//	void exit(DmUserDto dmUserDto);
+	//채팅방에서 사용자 퇴장
+	void leaveRoom(DmUserDto dmUserDto);
 	
 }

@@ -33,5 +33,15 @@ public class DmRoomRepoImpl implements DmRoomRepo {
 	public List<DmRoomDto> list() {
 		return sqlSession.selectList("dmRoom.list");
 	}
+	
+	@Override
+    public void updateRoomName(DmRoomDto dmRoomDto) {
+        sqlSession.update("dmRoom.updateRoomName", dmRoomDto);
+    }
+	
+	@Override
+    public void deleteIfEmpty(int roomNo) {
+        sqlSession.delete("dmRoom.deleteIfEmpty", roomNo);
+    }
 
 }

@@ -12,18 +12,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.insider.dto.BoardDto;
+import com.kh.insider.repo.BoardAttachmentRepo;
 import com.kh.insider.repo.BoardRepo;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequestMapping("/board")
-@Slf4j
 public class BoardController {
 	
 	@Autowired
 	private BoardRepo boardRepo;
-
+	
 	@GetMapping("/list")
 	public String list() {
 		return "board/list";
@@ -34,28 +34,34 @@ public class BoardController {
     public String insert(){
         return "/board/insert";
     }
-    // 게시물 등록
+    
+    // 통합게시물 등록
     @PostMapping("/insert")
     public String insert(HttpSession session, Model model, @ModelAttribute BoardDto boardDto, RedirectAttributes attr){
 
-        // 1. 게시물
-    	int boardNo = (int)session.getAttribute("boardNo");
+    	int boardNo =boardRepo.sequence();
         boardDto.setBoardNo(boardNo);
 
-        // 2. 게시물 작성자
-        int memberNo = (int)session.getAttribute("memberNo");
+        // 게시물 작성자
+        Long memberNo = (Long)session.getAttribute("memberNo");
         boardDto.setMemberNo(memberNo);
 
-
-        // 4. 게시물 등록
+        // 게시물 등록
         boardRepo.insert(boardDto);
 
-        // 5. 개별테이블 추가(Fix!!)
+        // 개별테이블 추가(Fix!!)
 
-        // 리디렉트어트리뷰트 추가
+        // 리다이렉트어트리뷰트 추가
         attr.addAttribute("boardNo", boardNo);
 
-        return "redirect:detail/";
+        return "redirect:/";
     }
+    
+    //비동기
+    @GetMapping("/rest")
+    public String rest() {
+    	return "/board/rest";
+    }
+
 
 }
