@@ -98,6 +98,7 @@
 				</div>
 			</aside>
 		</header>
+<!--  
 <script>
 	Vue.createApp({
 		data() {
@@ -127,5 +128,6 @@
 		}
 	}).mount("#aside");
 </script>
+ -->
 	<section>
 
