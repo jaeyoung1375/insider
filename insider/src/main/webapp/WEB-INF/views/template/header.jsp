@@ -93,7 +93,7 @@
 						<c:if test="${socialUser != null}">
 						<a class="dropdown-item" href="${pageContext.request.contextPath}/member/logout">로그아웃</a>
 						</c:if>
-						
+						<a class="dropdown-item" href="${pageContext.request.contextPath}/member/logout">로그아웃</a>
 					</div>
 				</div>
 			</aside>

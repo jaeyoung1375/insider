@@ -67,7 +67,7 @@ public class BoardRestController {
 		long memberNo=(Long)session.getAttribute("memberNo");
 		
 		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
-		return boardRepo.selectListWithFollow(boardSearchVO);
+		return boardRepo.selectListWithoutFollow(boardSearchVO);
 	}
 	//좋아요
 	@PostMapping("/like")
