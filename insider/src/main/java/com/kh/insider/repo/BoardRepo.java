@@ -16,4 +16,7 @@ public interface BoardRepo {
 
 	//컨텐트까지 포함한 리스트 출력
 	List<BoardListVO> selectListWithAttach(int page);
+	
+	//신고수 추가
+	void addReport(int boardNo);
 }

@@ -38,6 +38,7 @@ public class DmServiceImpl implements DmService {
 	@Autowired
 	private DmMessageRepo dmMessageRepo;
 
+
 	//여러 개의 방을 관리할 저장소
 	Map<Integer, DmRoomVO> rooms = Collections.synchronizedMap(new HashMap<>());
 	
@@ -50,7 +51,7 @@ public class DmServiceImpl implements DmService {
 	}
 
 	//- DmRoom 생성
-	public void createRoom(int roomNo) {
+	public void createRoom(int roomNo, String memberNick) {
 		if(containsRoom(roomNo)) return;
 		rooms.put(roomNo, new DmRoomVO());
 	
@@ -59,10 +60,11 @@ public class DmServiceImpl implements DmService {
 		if(!isWaitingRoom && dmRoomRepo.find(roomNo) == null) {
 			DmRoomDto dmRoomDto = new DmRoomDto();
 			dmRoomDto.setRoomNo(roomNo);
-			//dmRoomDto.setRoomName("채팅방 이름");
+			dmRoomDto.setRoomName(memberNick);
 			dmRoomRepo.create(dmRoomDto);
 		}
 	}
+	
 	//- DmRoom 제거
 	public void deleteRoom(int roomNo) {
 		rooms.remove(roomNo);
@@ -71,7 +73,7 @@ public class DmServiceImpl implements DmService {
 	
 	//- 사용자 방에 입장
 	public void join(DmUserVO user, int roomNo) {
-		createRoom(roomNo);
+		createRoom(roomNo, user.getMemberNick());
 		//방 선택
 		DmRoomVO dmRoomVO = rooms.get(roomNo);
 		dmRoomVO.enter(user);
@@ -92,6 +94,7 @@ public class DmServiceImpl implements DmService {
 		userDto.setMemberNo(user.getMemberNo());
 		dmUserRepo.enter(userDto);
 		
+		
 		log.debug("{}님이 {}방으로 참여하였습니다.", user.getMemberNo(), roomNo);
 	}
 	
@@ -104,7 +107,7 @@ public class DmServiceImpl implements DmService {
 		
 		//참여자 제거(DB)
 		
-		log.debug("{}님이 {}방으로 퇴장하였습니다.", user.getMemberNo(), roomNo);
+		log.debug("{}님이 {}방에서 퇴장하였습니다.", user.getMemberNo(), roomNo);
 	}
 	
 	//- 방에 메세지를 전송하는 기능(broadcast)
@@ -185,7 +188,7 @@ public class DmServiceImpl implements DmService {
 			MemberMessageVO msg = new MemberMessageVO();
 			msg.setContent(receiveVO.getContent());
 			msg.setTime(System.currentTimeMillis());
-			msg.setMemberNo(user.getMemberNo());
+			msg.setMemberNick(user.getMemberNick());
 			
 			//JSON 변환
 			String json = mapper.writeValueAsString(msg);
@@ -196,10 +199,12 @@ public class DmServiceImpl implements DmService {
 		//입장메세지인 경우
 		else if (receiveVO.getType() == WebSocketConstant.JOIN) {
 			int roomNo = receiveVO.getRoom();
-			//this.moveUser(user, roomNo);
-			this.join(user, roomNo);
+			this.moveUser(user, roomNo);
+			//this.join(user, roomNo);
 			
 		}
 	}
+	
+
 	
 }

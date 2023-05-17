@@ -13,23 +13,20 @@ public class WebSocketServerConfiguration implements WebSocketConfigurer {
 
 	@Autowired
 	private ChannelWebSocketServer channelWebSocketServer;
+	@Autowired
+	private AdminReportWebSocketServer adminReportWebSocketServer;
 	
-//	@Autowired
-//	private JsonWebSocketServer jsonWebSocketServer;
 	
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-
-
-//		//테스트
-//		registry.addHandler(jsonWebSocketServer, "/ws/json")
-//				.withSockJS();
-//		
-//		registry.addHandler(channelWebSocketServer, "/ws/channel6")
-//				.addInterceptors(new HttpSessionHandshakeInterceptor())
-//				.withSockJS();
 		
 		registry.addHandler(channelWebSocketServer, "/ws/channel")
+				.addInterceptors(new HttpSessionHandshakeInterceptor())
+				.withSockJS();
+		
+		
+		//관리자 서버 웹소켓
+		registry.addHandler(adminReportWebSocketServer, "/ws/admin/report")
 				.addInterceptors(new HttpSessionHandshakeInterceptor())
 				.withSockJS();
 		

@@ -54,4 +54,10 @@ public class BoardRepoImpl implements BoardRepo {
 		sqlSession.update("board.updateLikeCount",param);
 	}
 
+
+	@Override
+	public void addReport(int boardNo) {
+		sqlSession.update("board.addReport", boardNo);
+	}
+
 }
