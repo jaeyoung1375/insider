@@ -191,27 +191,38 @@ public class AttachmentController {
 	}
 
 	
-//	@GetMapping("/show")
-//	public String show(
-//			@RequestParam int attachmentNo, 
-//			Model model) {
-//		
-//		// 보여줄 파일의 contentType 조회
-//		String contentType = attachmentRepo.selectOne(attachmentNo).getAttachmentType();
-//		if(contentType.contains("video")) {
-//			model.addAttribute("isVideo","Y");
-//		}
-//		
-//		else if(contentType.contains("image")) {
-//			model.addAttribute("isVideo","N");
-//		}
-//		
-//		// Restful하게 비디오를 조회하기 위한 model.addAttribute
-//		model.addAttribute("attachmentNo",attachmentNo);
-//		// ContentType에 따라 비디오를 재생하기 위한 model.addAttribute
-//		model.addAttribute("contentType",contentType); 
-//		return "attachment/show";
-//	}
+	// 파일 업로드 & 다른 테이블 연계
+	// @PostMapping("/upload4")
+	// public String upload4(
+	// 		@ModelAttribute PocketmonDto pocketmonDto,
+	// 		@RequestParam MultipartFile attach) throws IllegalStateException, IOException {
+		
+	// 	//1.포켓몬 등록
+	// 	pocketmonDao.insert(pocketmonDto);
+		
+	// 	if(!attach.isEmpty()) {
+	// 		//2.첨부파일 저장 및 등록(첨부파일이 있으면)
+	// 		int attachmentNo = attachmentDao.sequence();
+			
+	// 		File target = new File(dir, String.valueOf(attachmentNo));
+	// 		attach.transferTo(target);//저장
+			
+	// 		attachmentDao.insert(AttachmentDto.builder()
+	// 					.attachmentNo(attachmentNo)
+	// 					.attachmentName(attach.getOriginalFilename())
+	// 					.attachmentType(attach.getContentType())
+	// 					.attachmentSize(attach.getSize())
+	// 				.build());
+			
+	// 		//3.포켓몬과 첨부파일 정보를 연결(첨부파일이 있으면)
+	// 		pocketmonImageDao.insert(PocketmonImageDto.builder()
+	// 					.pocketmonNo(pocketmonDto.getNo())
+	// 					.attachmentNo(attachmentNo)
+	// 				.build());
+	// 	}
+		
+	// 	return "redirect:/";
+	// }
 	
 
 	// 첨부파일 조회

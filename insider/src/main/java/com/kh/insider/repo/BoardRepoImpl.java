@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.BoardDto;
+import com.kh.insider.vo.BoardAttachmentVO;
 import com.kh.insider.vo.BoardListVO;
 
 @Repository
@@ -34,9 +35,13 @@ public class BoardRepoImpl implements BoardRepo {
 	
 	@Override
 	public void insert(BoardDto boardDto) {
-		 sqlSession.insert("board.insert", boardDto);		
+		sqlSession.insert("board.insert", boardDto);
 	}
 
+//	@Override
+//	public List<BoardAttachmentVO> selectAttach(int boardNo) {
+//		return sqlSession.selectList("board.selectAttach", boardNo);
+//	}
 
 	public List<BoardListVO> selectListWithAttach(int page) {
 		int end = page*10;
@@ -59,5 +64,7 @@ public class BoardRepoImpl implements BoardRepo {
 	public void addReport(int boardNo) {
 		sqlSession.update("board.addReport", boardNo);
 	}
+
+
 
 }

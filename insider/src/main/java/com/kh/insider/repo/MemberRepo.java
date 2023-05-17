@@ -20,4 +20,7 @@ public interface MemberRepo {
 	//단일 번호조회
 	public MemberDto findByNo(long memberNo);
 	public void changePassword(MemberDto memberDto);
+	
+	// 닉네임
+	String nick(int memberNo);
 }

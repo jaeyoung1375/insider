@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @Data@AllArgsConstructor@NoArgsConstructor@Builder
 public class BoardAttachmentDto {
 
-	public Long boardNo;
-	public int attachmentNo;
+	private int boardNo;
+	private int attachmentNo;
 	
 	public String getImageURL() {
 		if(attachmentNo == 0) return "https://via.placeholder.com/150x150";

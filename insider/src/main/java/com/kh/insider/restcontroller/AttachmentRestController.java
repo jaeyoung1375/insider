@@ -52,7 +52,7 @@ public class AttachmentRestController {
 	}
 	
 	//업로드
-	@PostMapping("/upload")
+	@PostMapping("/insert")
 	public AttachmentDto upload(@RequestParam MultipartFile attach) throws IllegalStateException, IOException {
 		if(!attach.isEmpty()) {//파일이 있을 경우
 			//번호 생성

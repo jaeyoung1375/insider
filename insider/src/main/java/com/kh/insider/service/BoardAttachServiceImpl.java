@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.insider.dto.BoardAttachmentDto;
@@ -18,30 +19,34 @@ import com.kh.insider.vo.PaginationVO;
 @Service
 public class BoardAttachServiceImpl implements BoardAttachService{
 
-//	@Autowired
-//	private SqlSession sqlSession;
-//	@Autowired
-//	private BoardAttachmentRepo boardAttachmentRepo;
-//	
-//
+	@Autowired
+	private BoardAttachmentRepo boardAttachmentRepo;
+	@Autowired
+	private BoardRepo boardRepo;
+	@Autowired
+	private AttachmentRepo attachmentRepo;
+	
+//	@Transactional
 //	@Override
-//	public void insert(BoardAttachVO vo) {
-//		boardAttachmentRepo.insert(vo);
+//	public void insert(BoardDto boardDto, List<MultipartFile> boardAttach) throws IllegalStateException, IOException {
+//		boardRepo.insert(boardDto);
+//		for(MultipartFile file : boardAttach) {
+//			int attachmentNo = attachmentRepo.save(file);
+//			boardAttachmentRepo.insert(BoardAttachmentDto.builder()
+//					.boardNo(boardDto.getBoardNo())
+//					.attachmentNo(attachmentNo)
+//					.build());
+//		}
 //	}
-//
-//	@Override
-//	public List<BoardAttachVO> selectList(PaginationVO paging) {
-//		return boardAttachmentRepo.selectList(paging);
-//	}
-//
-//	@Override
-//	public BoardAttachVO selectOne(int boardNo) {
-//		return boardAttachmentRepo.selectOne(boardNo);
-//	}
-//
+//	@Transactional
 //	@Override
 //	public void delete(int boardNo) {
-//		boardAttachmentRepo.delete(boardNo);
+////		boardRepo.delete(boardNo);
+////		boardAttachmentRepo.delete(boardNo);
+//
 //	}
+	
+
+
 
 }

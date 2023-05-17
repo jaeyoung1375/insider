@@ -14,6 +14,14 @@ public class BoardAttachmentRepoImpl implements BoardAttachmentRepo{
 	@Autowired
 	private SqlSession sqlSession;
 
+//	@Override
+//	public void insert(BoardAttachmentDto boardAttachmentDto) {
+//		int sequence = sqlSession.selectOne("board_attachment.sequence");
+//		boardAttachmentDto.setBoardAttachmentNo(sequence);
+//		
+//		sqlSession.insert("board_attachment.insert", boardAttachmentDto);
+//	}
+	
 	@Override
 	public void insert(BoardAttachmentDto boardAttachmentDto) {
 		sqlSession.insert("boardAttachment.insert", boardAttachmentDto);

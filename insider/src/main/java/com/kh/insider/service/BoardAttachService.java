@@ -1,21 +1,17 @@
 package com.kh.insider.service;
 
 
+import java.io.IOException;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import com.kh.insider.dto.BoardDto;
 import com.kh.insider.vo.PaginationVO;
 
 public interface BoardAttachService {
 	
-//	//등록
-//	void insert(BoardAttachVO vo);
+//void insert(BoardDto boardDto, List<MultipartFile> boardAttach) throws IllegalStateException, IOException;
 //	
-//	//목록
-//	List<BoardAttachVO> selectList(PaginationVO paging);
-//	
-//	//상세
-//	BoardAttachVO selectOne(int boardNo);
-//	
-//	//삭제
-//	void delete(int boardNo);
+//void delete(int boardNo);
 }
