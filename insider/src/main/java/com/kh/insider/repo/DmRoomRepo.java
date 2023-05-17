@@ -14,4 +14,9 @@ public interface DmRoomRepo {
     
     List<DmRoomDto> list();
     
+    void updateRoomName(DmRoomDto dmRoomDto);
+    
+    //유저가 없을 경우 채팅방 삭제
+    void deleteIfEmpty(int roomNo);
+    
 }

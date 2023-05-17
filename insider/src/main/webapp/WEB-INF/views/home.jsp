@@ -97,7 +97,12 @@
                                 </div>
                                 <div class="carousel-inner">
                                   <div class="carousel-item active">
+
                                     <img src="/static/image/r.jpeg" class="d-block" @dblclick="likePost(board.boardNo,index)" alt="...">
+
+                                    <img src="/static/image/r.jpeg" class="d-block" @dblclick="likePost(board.boardNo)" alt="...">
+<%--                                   	<img src="'${pageContext.request.contextPath}/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardNo)" alt="..."> --%>
+
                                   </div>
                                   <div class="carousel-item">
                                     <img src="/static/image/h.jpg" class="d-block" alt="...">
