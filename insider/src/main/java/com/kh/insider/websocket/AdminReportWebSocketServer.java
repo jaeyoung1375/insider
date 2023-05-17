@@ -1,5 +1,6 @@
 package com.kh.insider.websocket;
 
+import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -9,6 +10,9 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class AdminReportWebSocketServer extends TextWebSocketHandler{
 	
@@ -31,6 +35,11 @@ public class AdminReportWebSocketServer extends TextWebSocketHandler{
 		for(WebSocketSession user : users) {
 			user.sendMessage(message);
 		}
-		
+	}
+	//서버에서 연결된 유저들에게 메세지 전달(AdminReportService로 호출)
+	public void sendToAdmin(String message) throws IOException {
+		for(WebSocketSession user : users) {
+			user.sendMessage(new TextMessage(message));
+		}
 	}
 }

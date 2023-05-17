@@ -1,5 +1,6 @@
 package com.kh.insider.restcontroller;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -16,6 +17,7 @@ import com.kh.insider.dto.ReportManagementDto;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.ReportManagementRepo;
 import com.kh.insider.repo.ReportRepo;
+import com.kh.insider.service.AdminReportService;
 
 @RequestMapping("/rest/report")
 @RestController
@@ -26,9 +28,11 @@ public class ReportRestController {
 	private ReportManagementRepo reportManagementRepo;
 	@Autowired
 	private BoardRepo boardRepo;
+	@Autowired
+	private AdminReportService adminReportService;
 	
 	@PostMapping("/")
-	public boolean insert(@RequestBody ReportDto reportDto, HttpSession session) {
+	public boolean insert(@RequestBody ReportDto reportDto, HttpSession session) throws IOException {
 		//true : 최초신고, false : 신고내용 갱신
 		long memberNo = (Long)session.getAttribute("memberNo");
 		reportDto.setMemberNo(memberNo);
@@ -41,6 +45,8 @@ public class ReportRestController {
 			case "board" : 
 				boardRepo.addReport(reportDto.getReportTableNo());
 			}
+			//최신 현황을 admin report 게시판으로 전송
+			adminReportService.sendDataToAllCilients();
 			return true;
 		}
 		else {
