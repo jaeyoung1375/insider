@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="block">
+	<select id="selectList" resultType="blockDto">
+		select * from block where member_no=#{memberNo}
+	</select>
+	<select id="selectListBlocked" resultType="blockDto">
+		select * from block where block_no=#{blockNo}
+	</select>
+	<insert id="insert">
+		insert into block(member_no, block_no) values(#{memberNo}, #{blockNo})
+	</insert>
+	<delete id="delete">
+		delete block where member_no=#{memberNo} and block_no=#{blockNo}
+	</delete>
+</mapper>

@@ -83,7 +83,11 @@
                                 <div class="p-2"><img class="profile" :src="profileUrl(index)"></div>
                                 <div class="p-2" style="margin-top: 12px;"><h4><b style="font-size: 20px;">{{board.boardWithNickDto.memberNick}}</b></h4></div>
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
+
                                 <div class="p-2 flex-grow-1 mt-3"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo)"></i></div>
+
+                                <div class="p-2 flex-grow-1 mt-3"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardNo, board.memberNo)"></i></div>
+
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲ID▲▲▲▲▲▲▲▲▲▲▲▲▲-->
@@ -263,7 +267,7 @@ Vue.createApp({
 			reportMenuModal:null,
 			//신고 메뉴 리스트
 			reportContentList:[],
-			reportBoardNo:"",
+			reportBoardData:[],
 			/*----------------------신고----------------------*/
 			
 			boardModal:null,
@@ -355,10 +359,10 @@ Vue.createApp({
         
         /*----------------------신고----------------------*/
         //신고 모달 show, hide
-		showAdditionalMenuModal(boardNo){
+		showAdditionalMenuModal(boardNo, memberNo){
 			if(this.additionalMenuModal==null) return;
 			this.additionalMenuModal.show();
-			this.reportBoardNo=boardNo;
+			this.reportBoardData=[boardNo, memberNo];
 		},
 		hideAdditionalMenuModal(){
 			if(this.additionalMenuModal==null) return;
@@ -383,8 +387,9 @@ Vue.createApp({
 		async reportContent(reportContent){
 			const data={
 				reportContent:reportContent,
-				reportTableNo:this.reportBoardNo,
+				reportTableNo:this.reportBoardData[0],
 				reportTable:"board",
+				reportMemberNo:this.reportBoardData[1],
 			}
 			const resp = await axios.post(contextPath+"/rest/report/", data)
 			this.hideReportMenuModal();
