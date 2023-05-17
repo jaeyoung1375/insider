@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.ReplyDto;
 import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.repo.ReplyRepo;
@@ -39,12 +40,12 @@ public class ReplyRestController {
 	public void write(HttpSession session,@ModelAttribute ReplyDto replyDto) {
 		//작성자 설정
 		long memberNo = (long) session.getAttribute("member");
-//		MemberDto memberDto = memberRepo.find(memberNo);
-//		String memberNick = memberDto.getMemberNick();
-//		
-//		//회원 번호 및 회원 닉네임 설정
-//		replyDto.setReplyMemberNo(memberNo);
-//		replyDto.setReplyMemberNick(memberNick);
+		MemberDto memberDto = memberRepo.findByNo(memberNo);
+		String memberNick = memberDto.getMemberNick();
+		
+		//회원 번호 및 회원 닉네임 설정
+		replyDto.setReplyMemberNo(memberNo);
+		replyDto.setReplyMemberNick(memberNick);
 		
 		//등록
 		replyRepo.insert(replyDto);
