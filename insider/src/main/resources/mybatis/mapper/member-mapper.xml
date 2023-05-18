@@ -68,4 +68,6 @@
 		update member set member_login = sysdate where member_no = #{memberNo}
 	</update>
 	
+	<!-- 통계 -->
+	
 </mapper>
