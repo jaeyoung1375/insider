@@ -11,4 +11,5 @@ import lombok.Data;
 public class BoardListVO {
 	private BoardWithNickDto boardWithNickDto;
 	private List<BoardAttachmentDto> boardAttachmentList;
+	private Integer likeCount;
 }

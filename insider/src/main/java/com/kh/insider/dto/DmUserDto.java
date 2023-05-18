@@ -11,6 +11,6 @@ public class DmUserDto {
 	private int roomNo;
 	private Date joinTime;
 	//private Integer inviterNo;
-	private String memberName;
+	private String memberNick;
 	
 }

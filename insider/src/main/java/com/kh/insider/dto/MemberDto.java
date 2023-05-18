@@ -29,5 +29,9 @@ public class MemberDto {
 
 	private int memberFollow;
 
+
+
+	private Date memberJoin;
+
 	
 }

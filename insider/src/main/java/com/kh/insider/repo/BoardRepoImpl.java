@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.BoardDto;
 import com.kh.insider.vo.BoardListVO;
+import com.kh.insider.vo.BoardSearchVO;
 
 @Repository
 public class BoardRepoImpl implements BoardRepo {
@@ -20,31 +21,37 @@ public class BoardRepoImpl implements BoardRepo {
 
 	@Override
 	public List<BoardDto> selectListPaging(int page) {
-		int end = page*10;
-		int begin = end-9;
+		int end = page*2;
+		int begin = end-1;
 		Map<String, Object> param = Map.of("begin", begin, "end", end);
 		return sqlSession.selectList("board.selectListPaging",param);
 	}
 
 
 	@Override
+	public int sequence() {
+		 return sqlSession.selectOne("board.sequence");
+	}
+	
+	@Override
 	public void insert(BoardDto boardDto) {
 		 sqlSession.insert("board.insert", boardDto);		
 	}
 
-
-	@Override
-	public boolean update(BoardDto boardDto) {
-		 return sqlSession.update("board.update", boardDto) > 0;
-	}
-
-
 	@Override
 	public List<BoardListVO> selectListWithAttach(int page) {
-		int end = page*10;
-		int begin = end-9;
+		int end = page*2;
+		int begin = end-1;
 		Map<String, Object> param = Map.of("begin", begin, "end", end);
 		return sqlSession.selectList("board.boardListTreeSelect",param);
+	}
+	@Override
+	public List<BoardListVO> selectListWithFollow(BoardSearchVO vo) {
+		return sqlSession.selectList("board.boardListWithFollow", vo);
+	}
+	@Override
+	public List<BoardListVO> selectListWithoutFollow(BoardSearchVO vo) {
+		return sqlSession.selectList("board.boardListWithoutFollow", vo);
 	}
 
 
@@ -55,5 +62,15 @@ public class BoardRepoImpl implements BoardRepo {
 		param.put("count", count);
 		sqlSession.update("board.updateLikeCount",param);
 	}
+
+
+	@Override
+	public void addReport(int boardNo) {
+		sqlSession.update("board.addReport", boardNo);
+	}
+
+
+
+
 
 }

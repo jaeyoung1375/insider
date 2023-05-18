@@ -5,6 +5,7 @@
 <h1>DM HOME</h1>
 
 <p>회원 번호 : ${sessionScope.memberNo}</p>
+<p>회원 닉네임 : ${sessionScope.memberNick}</p>
 
 <hr>
 

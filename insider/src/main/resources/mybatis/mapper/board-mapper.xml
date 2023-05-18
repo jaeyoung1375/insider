@@ -5,18 +5,24 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
 <mapper namespace="board">
+	
+	<select id="sequence" resultType="Long">
+		select board_seq.nextval from dual
+	</select>
+
 	<insert id="insert" parameterType="BoardDto">
 		insert into board(
-			board_no, member_no, board_content, board_lat, board_lon,
-			board_reply_valid, board_like_valid,
+			board_no, member_no, board_content, board_like, board_lat, board_lon, 
+			board_time, board_reply, board_reply_valid, board_like_valid, board_report, 
 			board_hide, board_kid, board_size
 		) 
 		values(
-			board_seq.nextval, #{memberNo}, #{boardContent}, #{boardLat}, #{boardLon},
-			#{boardReplyValid}, #{boardLikeValid},
+			board_seq.nextval, #{memberNo}, #{boardContent}, #{boardLike}, #{boardLat}, #{boardLon},
+			SYSDATE , #{board_reply}, #{boardReplyValid}, #{boardLikeValid}, #{board_report},
 			#{boardHide}, #{boardKid}, #{boardSize}
 		)
 	</insert>
+	
 	<select id="selectOne" resultType="BoardDto">
 		select * from board where board_no=#{boardNo}
 	</select>
@@ -82,13 +88,12 @@
 			<result column="attachment_no" property="attachmentNo"/>
 		</collection>
 	</resultMap>
+	
+	
 	<!-- 계층형 조회 메인 구문 -->
 	<select id="boardListTreeSelect" resultMap="boardListVO">
 		<include refid="topNheader"></include>
 	 		select * from board_with_nick 
-	 		<if test="column!=null and keyword!=null">
-				where instr(${column), #{keyword}) >0
-			</if>
 	 		order by board_no asc
 	 	<include refid="topNfooter"></include>	
 	</select>
@@ -96,5 +101,57 @@
 	<select id="boardListTreeSelectSub" resultType="boardAttachmentDto">
 		select * from board_attachment where board_no = #{boardNo}
 	</select>
+	
+	<!-- 계층형 조회 메인 구문 팔로우, 차단 구현 -->
+	<select id="boardListWithFollow" resultMap="boardListVO">
+		<bind name="followExist" value="followDtoList!=null and followDtoList.size()>0"></bind>
+		<bind name="blockExist" value="blockDtoList!=null and blockDtoList.size()>0"></bind>
+		<include refid="topNheader"></include>
+	 		select * from board_with_nick 
+	 		<where>
+	 			<choose>
+		 			<when test="followExist">
+		 				and member_no in
+		 				<foreach collection="followDtoList" open="(" close=")" item="followDto" separator=",">
+		 					#{followDto.followFollower}
+		 				</foreach>
+		 			</when>
+		 			<otherwise>
+		 				and member_no in(-1)
+		 			</otherwise>
+	 			</choose>
+	 			<if test="blockExist">
+	 				and member_no not in
+	 				<foreach collection="blockDtoList" open="(" close=")" item="blockDto" separator=",">
+	 					#{blockDto.blockNo}
+	 				</foreach>
+	 			</if>
+	 		</where>
+	 		order by board_no asc
+	 	<include refid="topNfooter"></include>	
+	</select>
 
+	<!-- 계층형 조회 메인 구문 차단 구현 -->
+	<select id="boardListWithoutFollow" resultMap="boardListVO">
+		<bind name="followExist" value="followDtoList!=null and followDtoList.size()>0"></bind>
+		<bind name="blockExist" value="blockDtoList!=null and blockDtoList.size()>0"></bind>
+		<include refid="topNheader"></include>
+	 		select * from board_with_nick 
+	 		<where>
+	 			<if test="blockExist">
+	 				and member_no not in
+	 				<foreach collection="blockDtoList" open="(" close=")" item="blockDto" separator=",">
+	 					#{blockDto.blockNo}
+	 				</foreach>
+	 			</if>
+	 		</where>
+	 		order by board_no asc
+	 	<include refid="topNfooter"></include>	
+	</select>
+
+
+	<!-- 신고수 추가 기능 -->
+	<update id="addReport">
+		update board set board_report = board_report+1 where board_no=#{boardNo}
+	</update>
 </mapper>

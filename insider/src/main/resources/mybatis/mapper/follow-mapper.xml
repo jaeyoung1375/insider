@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="follow">
+	<insert id="insert">
+		insert into follow(member_no, follow_follower, follow_allow) values(#{memberNo}, #{followFollower}, #{followAllow})
+	</insert>
+	<select id="selectList" resultType="followDto">
+		select * from follow where member_no=#{memberNo}
+	</select>
+	
+	<!-- follow_with_profile 구문인데 그냥 넣음 -->
+	<select id="getFollowList" resultType="followWithProfileDto">
+		select * from follow_with_profile where member_no=#{memberNo}
+	</select>
+	<select id="getFollowerList" resultType="followerWithProfileDto">
+		select * from follow_with_profile where follow_follower=#{memberNo}
+	</select>
+	<update id="changeAllow">
+		update follow set follow_allow=1 where member_no=#{memberNo} and follow_follower=#{followFollower}
+	</update>
+	<delete id="delete">
+		delete follow where member_no=#{memberNo} and follow_follower=#{followFollower}
+	</delete>
+	
+	<!-- 팔로워 수 반환 -->
+	<select id="followerNumber" resultType="int">
+		select count(*) from follow where follow_follower=#{memberNo}
+	</select>
+	
+	<!-- 팔로우 한 수 반환 -->
+	<select id="followNumber" resultType="int">
+		select count(*) from follow where memberNo=#{memberNo}
+	</select>
+	
+	<select id="selectOne" resultType="followDto">
+		select * from follow where member_no=#{memberNo} and follow_follower=#{followFollower}
+	</select>	
+</mapper>

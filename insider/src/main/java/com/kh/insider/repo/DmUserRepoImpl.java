@@ -32,14 +32,8 @@ public class DmUserRepoImpl implements DmUserRepo {
 	}
 
 	@Override
-	public void invite(DmUserDto dmUserDto) {
-		sqlSession.update("dmUser.invite", dmUserDto);
-	}
-
-//	@Override
-//	public void exit(DmUserDto dmUserDto) {
-//		int roomNo = dmUserDto.getRoomNo();
-//		sqlSession.delete("dmUser.delete", roomNo);
-//	}
+    public void leaveRoom(DmUserDto dmUserDto) {
+        sqlSession.delete("dmUser.leaveRoom", dmUserDto);
+    }
 
 }
