@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.FollowDto;
+import com.kh.insider.dto.FollowWithProfileDto;
+import com.kh.insider.dto.FollowerWithProfileDto;
 
 @Repository
 public class FollowRepoImpl implements FollowRepo {
@@ -20,8 +22,13 @@ public class FollowRepoImpl implements FollowRepo {
 	}
 
 	@Override
-	public List<FollowDto> selectList(long memberNo) {
-		return sqlSession.selectList("follow.selectList", memberNo);
+	public List<FollowWithProfileDto> getFollowList(long memberNo) {
+		return sqlSession.selectList("follow.getFollowList", memberNo);
+	}
+	
+	@Override
+	public List<FollowerWithProfileDto> getFollowerList(long memberNo) {
+		return sqlSession.selectList("follow.getFollowerList", memberNo);
 	}
 
 	@Override
@@ -43,6 +50,17 @@ public class FollowRepoImpl implements FollowRepo {
 	public int getFollowNumber(long memberNo) {
 		return sqlSession.selectOne("follow.followNumber", memberNo);
 	}
+
+	@Override
+	public List<FollowDto> selectList(long memberNo) {
+		return sqlSession.selectList("follow.selectList", memberNo);
+	}
+
+	@Override
+	public FollowDto selectOne(FollowDto followDto) {
+		return sqlSession.selectOne("follow.selectOne", followDto);
+	}
+
 
 
 }

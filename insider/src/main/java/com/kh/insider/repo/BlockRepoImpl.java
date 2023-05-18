@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.BlockDto;
+import com.kh.insider.dto.BlockWithProfileDto;
 
 @Repository
 public class BlockRepoImpl implements BlockRepo{
@@ -31,6 +32,16 @@ public class BlockRepoImpl implements BlockRepo{
 	@Override
 	public void delete(BlockDto blockDto) {
 		sqlSession.delete("block.delete", blockDto);
+	}
+
+	@Override
+	public BlockDto selectOne(BlockDto blockDto) {
+		return sqlSession.selectOne("block.selectOne", blockDto);
+	}
+
+	@Override
+	public List<BlockWithProfileDto> getBlockList(long memberNo) {
+		return sqlSession.selectList("block.getBlockList", memberNo);
 	}
 
 }
