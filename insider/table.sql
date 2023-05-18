@@ -143,3 +143,16 @@ PRIMARY key(member_no, follow_follower)
 alter TABLE MEMBER ADD member_join DATE DEFAULT sysdate;
 UPDATE MEMBER SET member_join=sysdate;
 ALTER TABLE MEMBER MODIFY member_join NOT NULL;
+
+--차단자, 팔로우, 팔로워 뷰 추가
+CREATE OR REPLACE VIEW followWithProfile as
+SELECT f.*, m.member_name, m.member_nick, m.attachment_no FROM follow f
+inner JOIN member_with_profile m ON f.FOLLOW_FOLLOWER = m.MEMBER_NO;
+
+CREATE OR REPLACE VIEW followerWithProfile as
+SELECT f.*, m.member_name, m.member_nick, m.attachment_no FROM follow f
+inner JOIN member_with_profile m ON f.member_no = m.MEMBER_NO;
+
+CREATE OR REPLACE VIEW BlockWithProfile as
+SELECT b.*, m.member_name, m.member_nick, m.attachment_no FROM block b
+inner JOIN member_with_profile m ON b.BLOCK_NO = m.MEMBER_NO;
