@@ -5,6 +5,30 @@
 .selected{
 	border:1px solid black
 }
+.chart-arrow-left{
+	position: absolute;
+	z-index: 1;
+	top: 50%;
+	margin-left:0.5em;
+	transform: translate(-50%, -50%);
+	color:lightgray;
+	cursor:pointer;
+	font-size:2em;
+}
+.chart-arrow-right{
+	position: absolute;
+	top:50%;
+	right: 0%;
+	margin-right:0.5em;
+	transform: translate(-50%, -50%);
+	font-size:2em;
+	cursor:pointer;
+	color:lightgray;
+}
+.chart-disabled{
+	display:none;
+	cursor:default
+}
 </style>
 <div class="container-fluid mt-4" id="app">
 	<div class="row">
@@ -287,13 +311,22 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<input type="radio" value="days" v-model="memberLoginSearch.col" :checked="memberLoginSearch.col=='days'" @click="getMemberLoginStats"/>일별
-					<input type="radio" value="months" v-model="memberLoginSearch.col" :checked="memberLoginSearch.col=='months'" @click="getMemberLoginStats"/>월별
+					<input type="radio" value="days" v-model="memberLoginSearch.col" :checked="memberLoginSearch.col=='days'" />일별
+					<input type="radio" value="months" v-model="memberLoginSearch.col" :checked="memberLoginSearch.col=='months'" />월별
+				</div>
+				<div class="col">
+					<button type="button" class="btn btn-secondary" @click="getMemberLoginStats">검색</button>
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">
-					<canvas id="loginChart"></canvas>
+				<div class="col" style="position:relative">
+					<div class="chart-arrow-left" :class="{'chart-disabled':!loginChartLeft}">
+						<i class="fa-solid fa-chevron-left" @click="loginStatsPrev"></i>
+					</div>
+					<div class="chart-arrow-right" :class="{'chart-disabled':memberLoginSearch.page==1}">
+						<i class="fa-solid fa-chevron-right" @click="loginStatsNext"></i>
+					</div>
+					<canvas ref="loginChart"></canvas>
 				</div>
 			</div>
 			<div class="row">
@@ -303,7 +336,7 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<canvas id="joinChart"></canvas>
+					<canvas ref="joinChart"></canvas>
 				</div>
 			</div>
 		</div>
@@ -382,6 +415,9 @@
 <!-- chartJS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+	//chartJS 변수 선언
+	let loginChart;
+	let joinChart;
 	Vue.createApp({
 		data() {
 			return {
@@ -430,6 +466,7 @@
 				},
 				loginChart:null,
 				joinChart:null,
+				loginChartLeft:true,
 			};
 		},
 		computed: {
@@ -566,13 +603,26 @@
 			/*------------------------------ 멤버통계 시작 ------------------------------*/
 			async getMemberLoginStats(){
 				const resp = await axios.post(contextPath+"/rest/member/stats/", this.memberLoginSearch)
+				this.loginChartLeft=true;
+				if(this.memberLoginSearch.col=='days'){
+					if(resp.data.length<31){
+						this.loginChartLeft=false;
+					}
+				}
+				else{
+					if(resp.data.length<12){
+						this.loginChartLeft=false;
+					}
+				}
 				this.memberLoginList.col = _.map(resp.data, 'col');
 				this.memberLoginList.count = _.map(resp.data, 'count');
 				//캔버스 사용 초기화
-				if(this.loginChart!=null) this.loginChart=null;
-				this.loginChart = document.querySelector("#loginChart");
+				if(loginChart!=null) {
+					loginChart.destroy();
+				}
+				loginChart = this.$refs.loginChart;
 				
-				new Chart(this.loginChart, {
+				loginChart = new Chart(loginChart, {
 					type: "bar",
 					data: {
 						labels: this.memberLoginList.col.reverse(),
@@ -601,8 +651,13 @@
 				const resp = await axios.post(contextPath+"/rest/member/stats/", this.memberJoinSearch)
 				this.memberJoinList.col = _.map(resp.data, 'col');
 				this.memberJoinList.count = _.map(resp.data, 'count');
-				const ctx = document.querySelector("#joinChart");
-				new Chart(ctx, {
+				//차트 초기화
+				if(joinChart!=null) {
+					joinChart.destroy();
+				}
+				joinChart = this.$refs.joinChart;
+				
+				joinChart = new Chart(joinChart, {
 					type: "bar",
 					data: {
 						labels: this.memberJoinList.col.reverse(),
@@ -626,6 +681,15 @@
 						},
 					},
 				});
+			},
+			loginStatsPrev(){
+				this.memberLoginSearch.page++;
+				this.getMemberLoginStats();
+			},
+			loginStatsNext(){
+				if(this.memberLoginSearch.page==1) return
+				else this.memberLoginSearch.page--;
+				this.getMemberLoginStats();
 			}
 		},
 		created(){
