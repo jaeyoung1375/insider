@@ -55,8 +55,13 @@ public class AttachmentController {
     public String file(){
         return "attachment/file";
     }
+    
+    @GetMapping("/test")
+    public String test01(){
+        return "attachment/test";
+    }
 
-    // 임시 서머노트 & 파일 업로드 연계
+    // 게시글 & 파일 업로드 연계
     @GetMapping("/insert")
     public String write(){
         return "attachment/insert";
@@ -64,7 +69,8 @@ public class AttachmentController {
 	
 	// 파일업로드 글 쓸때 사용, 
 	@PostMapping("/upload")
-	public String upload3(@RequestParam MultipartFile attach) throws IllegalStateException, IOException, InterruptedException {
+//	public String upload(@RequestParam("attach") MultipartFile[] attach) throws IllegalStateException, IOException, InterruptedException {
+	public String upload(@RequestParam MultipartFile attach) throws IllegalStateException, IOException, InterruptedException {
 		System.out.println(attach.isEmpty());
 		// getName은 <input name="attach"> 여기서 name에 해당한다.
 		System.out.println("name = " + attach.getName());
@@ -205,39 +211,6 @@ public class AttachmentController {
 	}
 	
 
-	// 파일 업로드 & 다른 테이블 연계
-	// @PostMapping("/upload4")
-	// public String upload4(
-	// 		@ModelAttribute PocketmonDto pocketmonDto,
-	// 		@RequestParam MultipartFile attach) throws IllegalStateException, IOException {
-		
-	// 	//1.포켓몬 등록
-	// 	pocketmonDao.insert(pocketmonDto);
-		
-	// 	if(!attach.isEmpty()) {
-	// 		//2.첨부파일 저장 및 등록(첨부파일이 있으면)
-	// 		int attachmentNo = attachmentDao.sequence();
-			
-	// 		File target = new File(dir, String.valueOf(attachmentNo));
-	// 		attach.transferTo(target);//저장
-			
-	// 		attachmentDao.insert(AttachmentDto.builder()
-	// 					.attachmentNo(attachmentNo)
-	// 					.attachmentName(attach.getOriginalFilename())
-	// 					.attachmentType(attach.getContentType())
-	// 					.attachmentSize(attach.getSize())
-	// 				.build());
-			
-	// 		//3.포켓몬과 첨부파일 정보를 연결(첨부파일이 있으면)
-	// 		pocketmonImageDao.insert(PocketmonImageDto.builder()
-	// 					.pocketmonNo(pocketmonDto.getNo())
-	// 					.attachmentNo(attachmentNo)
-	// 				.build());
-	// 	}
-		
-	// 	return "redirect:/";
-	// }
-
 	// 첨부파일 조회
 	@GetMapping("/download")
 	public ResponseEntity<ByteArrayResource> download(
@@ -252,6 +225,7 @@ public class AttachmentController {
 		
 		
 		//파일 찾기
+		File dir = new File("D:/upload");
 		File target = new File(dir, String.valueOf(attachmentNo));
 		
 		//보낼 데이터 생성
@@ -274,8 +248,4 @@ public class AttachmentController {
 			.body(resource);
 	}
 	
-	@GetMapping("/test")
-	public String test() {
-		return "test";
-	}
 }

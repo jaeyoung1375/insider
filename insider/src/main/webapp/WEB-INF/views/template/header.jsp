@@ -71,7 +71,7 @@
 							</li>
 						<!-- 게시물작성 -->
 							<li class="nav-item mt-2">
-								<a class="nav-link" href="attachment/file"><i class="fa-regular fa-square-plus"></i></a>
+								<a class="nav-link" href="attachment/test"><i class="fa-regular fa-square-plus"></i></a>
 							</li>
 						<!-- 프로필 -->
 							<li class="nav-item">
@@ -93,7 +93,7 @@
 						<c:if test="${socialUser != null}">
 						<a class="dropdown-item" href="${pageContext.request.contextPath}/member/logout">로그아웃</a>
 						</c:if>
-						
+						<a class="dropdown-item" href="${pageContext.request.contextPath}/member/logout">로그아웃</a>
 					</div>
 				</div>
 			</aside>

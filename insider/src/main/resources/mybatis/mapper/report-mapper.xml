@@ -4,14 +4,14 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="report">
 	<insert id="insert">
-		insert into report(report_no, member_no, report_content, report_table_no, report_table)
-		 values(report_seq.nextval, #{memberNo}, #{reportContent}, #{reportTableNo}, #{reportTable})
+		insert into report(report_no, member_no, report_content, report_member_no, report_table_no, report_table)
+		 values(report_seq.nextval, #{memberNo}, #{reportContent}, #{reportMemberNo}, #{reportTableNo}, #{reportTable})
 	</insert>
 	<update id="update">
-		update report set report_check=#{reportCheck} where report_no=#{reportNo}
+		update report set report_content=#{reportContent}, report_time=sysdate where member_no=#{memberNo} and report_table_no=#{reportTableNo} and report_table=#{reportTable}
 	</update>
 	<select id="selectOne" resultType="ReportDto">
-		select * from report where report_no=#{reportNo}
+		select * from report where member_no=#{memberNo} and report_table_no=#{reportTableNo} and report_table=#{reportTable}
 	</select>
 	
 	<sql id="topNheader">

@@ -25,16 +25,16 @@
 	 		- 동적 바인딩 : #{이름} 형태로 작성하면 자동으로 자료형에 맞게 해당 데이터를 추출하여 작성해준다(DTO 변수명)
   -->
    
-   <mapper namespace="board_attachment">
+   <mapper namespace="boardAttachment">
    
+   		<!-- 등록 -->
 	   <insert id="insert" parameterType="BoardAttachmentDto">
-			insert into board_attachment (board_no, attachment_no) 
+			insert into board_attachment
+			(board_no, attachment_no)
 			values ( #{boardNo}, #{attachmentNo})
 		</insert>
 		
-		<!-- 삭제 -->
-		<delete id="delete" parameterType="int">
-			delete board_attach where board_no=#{boardNo}
-		</delete>
+		<!-- 목록 -->
+
    
    </mapper>

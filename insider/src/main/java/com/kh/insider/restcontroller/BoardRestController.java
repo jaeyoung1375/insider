@@ -17,10 +17,14 @@ import com.kh.insider.dto.BoardDto;
 import com.kh.insider.dto.BoardLikeDto;
 import com.kh.insider.repo.BoardLikeRepo;
 import com.kh.insider.repo.BoardRepo;
+import com.kh.insider.service.BoardSearchService;
 import com.kh.insider.vo.BoardLikeVO;
 import com.kh.insider.vo.BoardListVO;
-import com.kh.insider.vo.PaginationVO;
+import com.kh.insider.vo.BoardSearchVO;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @CrossOrigin
 @RestController
 @RequestMapping("/rest/board")
@@ -31,16 +35,44 @@ public class BoardRestController {
 	
 	@Autowired
 	private BoardLikeRepo boardLikeRepo;
+	@Autowired
+	private BoardSearchService boardSearchService;
+	
+	//게시물 등록
+	@PostMapping("/")
+	public int insert(BoardDto boardDto, HttpSession session) {
+		//시퀀스
+		int boardNo = boardRepo.sequence();
+		System.out.println("boardNo = " +"boardNo");
+		//번호
+		boardDto.setBoardNo(boardNo);
+		//작성자
+		boardDto.setMemberNo(boardNo);
+		//콘텐트
+		boardDto.setBoardContent(boardDto.getBoardContent());
+		
+		//등록
+		return boardDto.getBoardNo();
+	}
+	
 	
 	//무한스크롤
 	@GetMapping("/page/{page}")
-	public List<BoardDto> paging(@PathVariable int page) {
-		return boardRepo.selectListPaging(page);
+	public List<BoardListVO> paging(@PathVariable int page, HttpSession session) {
+		long memberNo=(Long)session.getAttribute("memberNo");
+		
+		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
+		boardSearchVO.setBoardCount(15);
+		return boardRepo.selectListWithFollow(boardSearchVO);
 	}
-	//리스트 출력을 위한 계층형 조회
+	//검색 페이지 리스트 출력을 위한 계층형 조회
 	@GetMapping("/list/{page}")
-	public List<BoardListVO> boardList(@PathVariable int page){
-		return boardRepo.selectListWithAttach(page);
+	public List<BoardListVO> boardList(@PathVariable int page, HttpSession session){
+		long memberNo=(Long)session.getAttribute("memberNo");
+		
+		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
+		boardSearchVO.setBoardCount(15);
+		return boardRepo.selectListWithoutFollow(boardSearchVO);
 	}
 	//좋아요
 	@PostMapping("/like")

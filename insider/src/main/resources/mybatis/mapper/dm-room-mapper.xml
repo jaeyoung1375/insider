@@ -12,7 +12,7 @@
 	
 	<insert id="create">
 		insert into dm_room(room_no, room_name, room_created)
-		values(dm_room_seq.nextval, null, sysdate)
+		values(dm_room_seq.nextval, #{roomName}, sysdate)
 	</insert>
 	
 	<!--  채팅방 유무  -->
@@ -24,5 +24,20 @@
 	<select id="list" resultType="DmRoomDto">
 		select * from dm_room order by room_no desc
 	</select>
+	
+	<!-- 채팅방 이름 변경 -->
+	<update id="updateRoomName">
+        update dm_room set room_name = #{roomName} where room_no = #{roomNo}
+    </update>
+    
+    <!-- 유저가 없을 경우 채팅방 삭제 -->
+    <delete id="deleteIfEmpty">
+    	delete from dm_room
+    	where room_no = #{roomNo}
+    	and not exists (
+    		select 1 from dm_user
+    		where room_no = #{roomNo}
+    	)
+	</delete>
 
 </mapper>

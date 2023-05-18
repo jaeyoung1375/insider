@@ -34,7 +34,8 @@ public class MemberDto {
 	private int memberFollow;
 
 
-	
+	private Date memberJoin;
+
 	public String getMemberLogin() {
 		
 		Date date = memberLogin;
