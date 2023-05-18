@@ -227,7 +227,6 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" @click="clickCheckPassword">확인</button>
 					<button type="button" class="btn btn-secondary" @click="hideReportMenuModal">취소</button>
 				</div>
 			</div>
