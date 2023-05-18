@@ -81,7 +81,7 @@
                         <div class="p-2">
                             <div class="d-flex">
                                 <div class="p-1"><img class="profile" :src="profileUrl(index)"></div>
-                                <div class="p-2" style="margin-top: 11px;"><h4><b style="font-size: 17px;">{{board.boardWithNickDto.memberNick}} · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
+                                <div class="p-2" style="margin-top: 8px;"><h4><b style="font-size: 17px;">{{board.boardWithNickDto.memberNick}} · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
 
                                 <div class="p-2 flex-grow-1 mt-3"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo)"></i></div>
@@ -92,29 +92,29 @@
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲ID▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼사진▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-2">
-                            <div id="carouselExampleIndicators" class="carousel slide">
+                            <div :id="'carouselExampleIndicators'+index" class="carousel slide">
                                 <div class="carousel-indicators">
-                                  <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                                  <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                                  <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                                  <button v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#carouselExampleIndicators'+index" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
+<!--                                   <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button> -->
+<!--                                   <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button> -->
                                 </div>
                                 <div class="carousel-inner">
-                                  <div class="carousel-item active">
-                                    <img src="/static/image/r.jpeg" class="d-block" @dblclick="likePost(board.boardNo,index)" alt="...">
-<%--                                   	<img src="'${pageContext.request.contextPath}/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardNo)" alt="..."> --%>
+                                  <div  v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
+<!--                                     <img src="/static/image/r.jpeg" class="d-block" @dblclick="likePost(board.boardNo,index)" alt="..."> -->
+                                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,index)"> 
                                   </div>
-                                  <div class="carousel-item">
-                                    <img src="/static/image/h.jpg" class="d-block" alt="...">
-                                  </div>
-                                  <div class="carousel-item">
-                                    <img src="/static/image/m.jpg" class="d-block" alt="...">
-                                  </div>
+<!--                                   <div class="carousel-item"> -->
+<!--                                     <img src="/static/image/h.jpg" class="d-block" alt="..."> -->
+<!--                                   </div> -->
+<!--                                   <div class="carousel-item"> -->
+<!--                                     <img src="/static/image/m.jpg" class="d-block" alt="..."> -->
+<!--                                   </div> -->
                                 </div>
-                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                                <button class="carousel-control-prev" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="prev">
                                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                   <span class="visually-hidden">Previous</span>
                                 </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                                <button  class="carousel-control-next" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="next">
                                   <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                   <span class="visually-hidden">Next</span>
                                 </button>
@@ -296,9 +296,9 @@ Vue.createApp({
             
             for (const board of resp.data) {
             	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
-            	console.log(this.isLiked);
+            	//console.log(this.isLiked);
             	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
-            	console.log(this.boardLikeCount);
+            	//console.log(this.boardLikeCount);
             	//this.boardLikeCount.push(board.boardLike);
             	//this.boardLikeCount = boardList.boardLike;
               }
