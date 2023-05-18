@@ -133,7 +133,7 @@
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼멘트▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-1">
                             <h4 class="mt-2"><b>좋아요 {{boardLikeCount[index]}}개</b></h4>
-                            <h4><b>{{board.boardWithNickDto.memberNick}} {{board.boardWithNickDto.boardTimeAuto}}</b></h4><h6>{{board.boardWithNickDto.boardContent}}</h6>
+                            <h4><b>{{board.boardWithNickDto.memberNick}}</b></h4><h6>{{board.boardWithNickDto.boardContent}}</h6>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲멘트▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼댓글 모달창 열기▼▼▼▼▼▼▼▼▼▼▼▼▼-->
