@@ -246,4 +246,8 @@
 		 	</choose>
 		</where>
 	</select>
+	
+<!-- 통합 통계 -->
+	
+	
 </mapper>
