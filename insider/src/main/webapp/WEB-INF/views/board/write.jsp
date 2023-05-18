@@ -40,7 +40,7 @@
     });
 </script>
 
-<form action="insert" method="post">
+<form action="write" method="post">
     <div id="summernoteContainer">
         <textarea id="summernote" name="boardContent" required></textarea>
     </div>

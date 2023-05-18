@@ -15,7 +15,7 @@ public interface BoardRepo {
 
 	void updateLikeCount(int boardNo, int count);
 
-//	List<BoardAttachmentVO> selectAttach(int boardNo);
+	void connect(int boardNo, int attachmentNo);
 	
 	//컨텐트까지 포함한 리스트 출력
 	List<BoardListVO> selectListWithAttach(int page);

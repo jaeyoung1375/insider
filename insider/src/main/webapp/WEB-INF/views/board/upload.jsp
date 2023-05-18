@@ -3,10 +3,11 @@
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 <script src="path/to/dropzone.js"></script>
 
+<!-- 미리보기 -->
 <script>
     function previewFile() {
         var preview = document.getElementById('preview');
-        var file = document.getElementById('attach').files[0];
+        var file = document.getElementById('attaches').files[0];
         var reader = new FileReader();
 
         if (file.type.match('image.*')) {
@@ -27,6 +28,31 @@
     }
 </script>
 
+<!-- 서머노트 -->
+<script>
+    $(document).ready(function() {
+        $('#summernote').summernote({
+            toolbar: false,
+            callbacks: {
+                onInit: function() {
+                    // Retrieve the initial content
+                    var content = $('#summernote').val();
+                    // Convert line breaks to <br> tags
+                    content = content.replace(/\n/g, '<br>');
+                    // Set the modified content back to summernote
+                    $('#summernote').summernote('code', content);
+                },
+                onSubmit: function(content) {
+                    // Convert <br> tags back to line breaks before submitting
+                    content = content.replace(/<br>/g, '\n');
+                    // Update the textarea value
+                    $('#summernote').val(content);
+                }
+            }
+        });
+    });
+</script>
+
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
@@ -36,9 +62,13 @@
       </div>
       <div class="modal-body">
         <form action="upload" method="post" enctype="multipart/form-data">
-          <input type="file" name="attach" id="attach" accept="image/*, video/*" onchange="previewFile()">
+          <input type="file" name="attaches" id="attaches" accept="image/*, video/*" onchange="previewFile()">
           <br><br>
           <div id="preview"></div>
+          <br><br>
+<!--           	<div id="summernoteContainer"> -->
+<!--         		<textarea id="summernote" name="boardContent" required></textarea> -->
+<!--     		</div> -->
           <br><br>
           <button type="submit" class="btn btn-primary">업로드</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
@@ -50,50 +80,14 @@
 
 
 
-
+<!-- 모달 -->
 <script>
   $(document).ready(function() {
     $('#myModal').modal('show');
   });
 </script>
 
-<template>
-  <div>
-    <vue-dropzone
-      ref="myDropzone"
-      id="dropzone"
-      :options="dropzoneOptions"
-      @vdropzone-success="onSuccess"0
-    ></vue-dropzone>
-    <button @click="upload">Upload</button>
-  </div>
-</template>
 
-<script>
-import vue2Dropzone from 'vue2-dropzone';
-
-export default {
-  components: {
-    vueDropzone: vue2Dropzone
-  },
-  data() {
-    return {
-      dropzoneOptions: {
-        url: '/upload',
-        maxFiles: 10 // Maximum number of files to be uploaded
-      }
-    };
-  },
-  methods: {
-    onSuccess(file, response) {
-      // Handle successful upload
-    },
-    upload() {
-      this.$refs.myDropzone.processQueue(); // Trigger upload process
-    }
-  }
-};
-</script>
 
 
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>

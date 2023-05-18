@@ -28,7 +28,7 @@
    <mapper namespace="boardAttachment">
    
    		<!-- 등록 -->
-	   <insert id="insert" parameterType="BoardAttachmentDto">
+	   <insert id="connect" parameterType="int">
 			insert into board_attachment
 			(board_no, attachment_no)
 			values ( #{boardNo}, #{attachmentNo})

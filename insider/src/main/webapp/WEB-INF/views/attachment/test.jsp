@@ -160,19 +160,38 @@
 //내용 글자 수 카운트
 $(function(){
 
-	$("#contentCheck").on("input",function(){
-		const size = $(this).val().length;
+// 	$("#contentCheck").on("input",function(){
+// 		const size = $(this).val().length;
 		
-		if(size <= 1000){
-			const target = $(this).next().children(".length").children(".count");
-			target.text(size);
-		}
+// 		if(size <= 1000){
+// 			const target = $(this).next().children(".length").children(".count");
+// 			target.text(size);
+// 		}
 		
-		if(size > 1000){
-			$(this).val($(this).val().substring(0, 1000));
-		}
+// 		if(size > 1000){
+// 			$(this).val($(this).val().substring(0, 1000));
+// 		}
 		
-	});
+// 	});
+ $('#summernote').summernote({
+            toolbar: false,
+            callbacks: {
+                onInit: function() {
+                    // Retrieve the initial content
+                    var content = $('#summernote').val();
+                    // Convert line breaks to <br> tags
+                    content = content.replace(/\n/g, '<br>');
+                    // Set the modified content back to summernote
+                    $('#summernote').summernote('code', content);
+                },
+                onSubmit: function(content) {
+                    // Convert <br> tags back to line breaks before submitting
+                    content = content.replace(/<br>/g, '\n');
+                    // Update the textarea value
+                    $('#summernote').val(content);
+                }
+            }
+        });
 	
 	
 	
@@ -384,16 +403,19 @@ $(function(){
 					    	
 					    	<div class="row mb-2"></div>
 					    	
-					    	<div class="row">
-					    		<textarea id="contentCheck" class="form-control content" rows="6" name="boardContent" placeholder="문구를 입력하세요"></textarea>
-					    		<div class="right">
-										<span class="length">
-											<span class="count">0</span>
-											/
-											<span class="total">1000</span>
-										</span>
-									</div>
-					    	</div>
+					    <div class="row">
+    <div id="summernoteContainer">
+        <textarea id="summernote" class="form-control content" rows="6" name="boardContent" placeholder="문구를 입력하세요" required></textarea>
+    </div>
+    <div class="right">
+        <span class="length">
+            <span class="count">0</span>
+            /
+            <span class="total">1000</span>
+        </span>
+    </div>
+</div>
+
 					    	
 					    	<div class="row mt-4">
 					    		<input type="text" name="hashtagName" class="form-control" placeholder="#해시태그" id="hashtag" autocomplete="off">

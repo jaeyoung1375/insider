@@ -66,5 +66,11 @@ public class BoardRepoImpl implements BoardRepo {
 	}
 
 
-
+	@Override
+	public void connect(int boardNo, int attachmentNo) {
+	    Map<String, Integer> params = new HashMap<>();
+	    params.put("boardNo", boardNo);
+	    params.put("attachmentNo", attachmentNo);
+	    sqlSession.insert("boardAttachment.connect", params);
+	}
 }

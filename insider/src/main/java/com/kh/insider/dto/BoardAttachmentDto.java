@@ -11,8 +11,4 @@ public class BoardAttachmentDto {
 	private int boardNo;
 	private int attachmentNo;
 	
-	public String getImageURL() {
-		if(attachmentNo == 0) return "https://via.placeholder.com/150x150";
-		else return "/download?attachmentNo="+attachmentNo;
-	}
 }
