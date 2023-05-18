@@ -26,11 +26,11 @@
 		border-radius: 50%;
 	}
 	
-	
-	textarea {
-    border: none;
-    resize: none;
-  }
+.note-editor .note-editing-area .note-editable {
+    width: 100% !important;
+    height: 200px !important;
+    resize: none !important;
+}
   
   .left {
   	text-align: left;
@@ -173,25 +173,30 @@ $(function(){
 // 		}
 		
 // 	});
- $('#summernote').summernote({
-            toolbar: false,
-            callbacks: {
-                onInit: function() {
-                    // Retrieve the initial content
-                    var content = $('#summernote').val();
-                    // Convert line breaks to <br> tags
-                    content = content.replace(/\n/g, '<br>');
-                    // Set the modified content back to summernote
-                    $('#summernote').summernote('code', content);
-                },
-                onSubmit: function(content) {
-                    // Convert <br> tags back to line breaks before submitting
-                    content = content.replace(/<br>/g, '\n');
-                    // Update the textarea value
-                    $('#summernote').val(content);
-                }
+$(document).ready(function() {
+    $('#summernote').summernote({
+        toolbar: false,
+        callbacks: {
+            onInit: function() {
+                // Retrieve the initial content
+                var content = $('#summernote').val();
+                // Convert line breaks to <br> tags
+                content = content.replace(/\n/g, '<br>');
+                // Set the modified content back to Summernote
+                $('#summernote').summernote('code', content);
+            },
+            onKeyup: function() {
+                // Update the character count
+                var content = $('#summernote').summernote('code');
+                var characterCount = content.replace(/<[^>]+>/g, '').length;
+                $('.count').text(characterCount);
             }
-        });
+        }
+    });
+});
+
+
+
 	
 	
 	
@@ -404,17 +409,17 @@ $(function(){
 					    	<div class="row mb-2"></div>
 					    	
 					    <div class="row">
-    <div id="summernoteContainer">
-        <textarea id="summernote" class="form-control content" rows="6" name="boardContent" placeholder="문구를 입력하세요" required></textarea>
-    </div>
-    <div class="right">
-        <span class="length">
-            <span class="count">0</span>
-            /
-            <span class="total">1000</span>
-        </span>
-    </div>
-</div>
+						    <div id="summernoteContainer">
+						        <textarea id="summernote" class="form-control content" rows="6" name="boardContent" placeholder="문구를 입력하세요" required ></textarea>
+						    </div>
+						    <div class="right">
+						        <span class="length">
+						            <span class="count">0</span>
+						            /
+						            <span class="total">1000</span>
+						        </span>
+						    </div>
+						</div>
 
 					    	
 					    	<div class="row mt-4">
