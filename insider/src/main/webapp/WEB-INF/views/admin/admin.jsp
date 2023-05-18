@@ -280,6 +280,32 @@
 					<h1>회원 통계</h1>
 				</div>
 			</div>
+			<div class="row">
+				<div class="col">
+					<h3>방문자 수 통계</h3>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<input type="radio" value="days" v-model="memberLoginSearch.col" :checked="memberLoginSearch.col=='days'" @click="getMemberLoginStats"/>일별
+					<input type="radio" value="months" v-model="memberLoginSearch.col" :checked="memberLoginSearch.col=='months'" @click="getMemberLoginStats"/>월별
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<canvas id="loginChart"></canvas>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<h3>가입자 수 통계</h3>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<canvas id="joinChart"></canvas>
+				</div>
+			</div>
 		</div>
 	<!--------------------------- 게시물 통계 --------------------------->
 		<div class="col-md-8" v-show="adminMenu==4">
@@ -353,6 +379,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <!-- SockJS라이브러리 의존성 추가  -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+<!-- chartJS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 	Vue.createApp({
 		data() {
@@ -379,6 +407,29 @@
 				reportContentListEdit:[],
 				reportList:[],
 				reportSocket:null,
+				/*---------------------------통계 데이터 --------------------------- */
+				memberLoginSearch:{
+					stat:"member_login",
+					col:"days",
+					order:"all_parts.date_part DESC",
+					page:1,
+				},
+				memberJoinSearch:{
+					stat:"member_join",
+					col:"days",
+					order:"all_parts.date_part DESC",
+					page:1,
+				},
+				memberLoginList:{
+					col:[],
+					count:[],
+				},
+				memberJoinList:{
+					col:[],
+					count:[],
+				},
+				loginChart:null,
+				joinChart:null,
 			};
 		},
 		computed: {
@@ -510,14 +561,81 @@
 					console.log(data);
 					this.reportList = [...data];
 				};
-			}
+			},
 			/*------------------------------ 신고관리 끝 ------------------------------*/
+			/*------------------------------ 멤버통계 시작 ------------------------------*/
+			async getMemberLoginStats(){
+				const resp = await axios.post(contextPath+"/rest/member/stats/", this.memberLoginSearch)
+				this.memberLoginList.col = _.map(resp.data, 'col');
+				this.memberLoginList.count = _.map(resp.data, 'count');
+				//캔버스 사용 초기화
+				if(this.loginChart!=null) this.loginChart=null;
+				this.loginChart = document.querySelector("#loginChart");
+				
+				new Chart(this.loginChart, {
+					type: "bar",
+					data: {
+						labels: this.memberLoginList.col.reverse(),
+						datasets: [
+							{
+								label: "방문자 수(명)",
+								data: this.memberLoginList.count.reverse(),
+								borderWidth: 1,
+								backgroundColor: [
+									"navy",
+								],
+								borderColor: [
+									"navy",
+								],
+							},
+						],
+					},
+					options: {
+						scales: {
+							y: {beginAtZero: true,},
+						},
+					},
+				});
+			},
+			async getMemberJoinStats(){
+				const resp = await axios.post(contextPath+"/rest/member/stats/", this.memberJoinSearch)
+				this.memberJoinList.col = _.map(resp.data, 'col');
+				this.memberJoinList.count = _.map(resp.data, 'count');
+				const ctx = document.querySelector("#joinChart");
+				new Chart(ctx, {
+					type: "bar",
+					data: {
+						labels: this.memberJoinList.col.reverse(),
+						datasets: [
+							{
+								label: "가입자 수(명)",
+								data: this.memberJoinList.count.reverse(),
+								borderWidth: 1,
+								backgroundColor: [
+									"navy",
+								],
+								borderColor: [
+									"navy",
+								],
+							},
+						],
+					},
+					options: {
+						scales: {
+							y: {beginAtZero: true,},
+						},
+					},
+				});
+			}
 		},
 		created(){
 			//데이터 불러오는 영역
 			this.loadMemberList();
 			this.loadReportList();
 			this.connectReportServer();
+			this.getMemberLoginStats();
+			this.getMemberJoinStats();
+
 		},
 		watch:{
 			//감시영역

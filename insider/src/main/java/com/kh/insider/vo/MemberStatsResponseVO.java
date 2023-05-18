@@ -1,5 +1,9 @@
 package com.kh.insider.vo;
 
-public class MemberStatsResponseVO {
+import lombok.Data;
 
+@Data
+public class MemberStatsResponseVO {
+	private String col;
+	private int count;
 }
