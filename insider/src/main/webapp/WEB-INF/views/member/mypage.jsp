@@ -126,7 +126,7 @@
  							</div>	
  						<div class="content" style="text-align:left;">
  							<div class="content">
- 							<p style="font-size: 12px; color:gray;">신뢰할 수 있는 커뮤니티를 유지하기 위해 Instagram 계정에 대한 정보가 표시됩니다</p>
+ 							<p style="font-size: 12px; color:gray;">신뢰할 수 있는 커뮤니티를 유지하기 위해 Insider 계정에 대한 정보가 표시됩니다</p>
  							</div>
  							<div class="date" style="display:flex;">
  							<i class="fa-solid fa-calendar-days"></i>&nbsp;&nbsp;
