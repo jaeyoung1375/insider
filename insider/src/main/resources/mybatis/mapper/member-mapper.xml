@@ -47,6 +47,11 @@
 		select * from member where member_email = #{memberEmail}
 	</select>
 	
+	<select id="findByNickName" resultType="MemberDto">
+		select * from member where member_nick = #{memberNick}
+	</select>
+	
+	
 	<!-- 이메일 중복 확인 -->
 	<select id="isEmailDuplicated" resultType="int">
 		select count(*) from member where member_email = #{memberEmail}
@@ -56,6 +61,10 @@
 	<select id="isNickDuplicated" resultType="int">
 		select count(*) from member where member_nick = #{memberNick}
 	</select>
+	
+	<update id="updateTempPassword">
+		update member set member_password = #{memberPassword} where member_email = #{memberEmail}
+	</update>
 	
 	
 	<!-- 회원정보 수정(패스워드 x)-->
@@ -67,7 +76,7 @@
 	</update>
 	<!-- 회원정보 수정(패스워드)-->
 	<update id="changePassword">
-		update member set member_password=#{memberPassword} where member_no=#{memberNo}
+		update member set member_password=#{memberPassword} where member_email=#{memberEmail}
 	</update>
 	<!-- 로그인 시각 갱신 -->
 	<update id="updateLoginTime">

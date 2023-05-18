@@ -18,15 +18,16 @@ import org.springframework.util.StringUtils;
 @Repository
 public class MemberServiceImpl implements MemberService{
 	
-	
+	private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+";
 	
 	@Autowired
 	private JavaMailSender sender;
+	Random random = new Random();
 
 	@Override
 	public int RandomCode() {
 		
-		Random random = new Random();
+		
 		
 		return random.nextInt(888888)+111111;
 	}
@@ -67,6 +68,22 @@ public class MemberServiceImpl implements MemberService{
 	    }
 	    
 	    return num;
+	}
+
+	@Override
+	public String generatTempPassword() {
+		
+		
+		StringBuilder tempPassword = new StringBuilder();
+		
+		for(int i = 0; i<10; i++) {
+			int index = random.nextInt(CHARACTERS.length());
+			char randomChar = CHARACTERS.charAt(index);
+			tempPassword.append(randomChar);
+		}
+		
+		return tempPassword.toString();
+		
 	}
 	
 

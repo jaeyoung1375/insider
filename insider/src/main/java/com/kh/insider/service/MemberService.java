@@ -2,6 +2,7 @@ package com.kh.insider.service;
 
 public interface MemberService {
 	public int RandomCode();
+	public String generatTempPassword(); // 임시비밀번호 생성
 	public int sendEmail(String email);
 	
 	/*

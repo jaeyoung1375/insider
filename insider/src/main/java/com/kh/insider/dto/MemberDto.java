@@ -1,7 +1,10 @@
 package com.kh.insider.dto;
 
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Data;
 
@@ -12,6 +15,7 @@ public class MemberDto {
 	private String memberNick;
 	private String memberPassword;
 	private String memberEmail;
+	 @DateTimeFormat(pattern = "E MMM dd HH:mm:ss z yyyy")
 	private Date memberLogin;
 	private int memberLat;
 	private int memberLon;
@@ -29,5 +33,14 @@ public class MemberDto {
 
 	private int memberFollow;
 
+
 	
+	public String getMemberLogin() {
+		
+		Date date = memberLogin;
+        SimpleDateFormat outputFormat = new SimpleDateFormat("d일 M월 yyyy년");
+        String formattedDate = outputFormat.format(date);
+        
+        return formattedDate;
+	}
 }

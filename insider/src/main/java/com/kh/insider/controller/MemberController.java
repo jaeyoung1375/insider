@@ -1,21 +1,21 @@
 package com.kh.insider.controller;
 
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
+
 import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -99,6 +99,18 @@ public class MemberController {
 		return "redirect:/";
 	}
 	
+	@GetMapping("/{memberNick}")
+	public String myPage(@PathVariable String memberNick, Model model) {
+		
+		// 프로필 정보 불러오기
+		MemberDto findMember = memberRepo.findByNickName(memberNick);
+		model.addAttribute("memberDto",findMember);
+		
+		
+		
+		return "/member/mypage";
+	}
+	
 	@GetMapping("/emailCheck")
 	@ResponseBody
 	public String isEmailDuplicated(@RequestParam String memberEmail) throws Exception {
@@ -115,7 +127,7 @@ public class MemberController {
 	
 	@GetMapping("/sendMail")
 	@ResponseBody
-	public String sendMail(@RequestParam String memberEmail, HttpSession session) {
+	public String sendMail(@RequestParam String memberEmail) {
 		
 		int num = memberService.sendEmail(memberEmail);
 		System.out.println(Integer.toString(num));
@@ -138,8 +150,19 @@ public class MemberController {
 	}
 	
 	@GetMapping("/passwordChange")
-	public String passwordChagne() {
+	public String passwordChange() {
 		return "member/passwordChange";
+	}
+	
+	@PostMapping("/passwordChange")
+	@ResponseBody
+	public String passwordChange(@RequestBody MemberDto dto) {
+		// 임시 비밀번호
+		String generatTempPassword = memberService.generatTempPassword();
+		dto.setMemberPassword(generatTempPassword);
+		memberRepo.updateTempPassword(dto);
+		
+		return generatTempPassword;
 	}
 	
 	
@@ -168,7 +191,7 @@ public class MemberController {
 		}else {
 			System.out.println("기존회원이므로 로그인을 진행합니다.");
 			// 로그인 시각 갱신
-			memberRepo.updateLoginTime(memberNo);
+			memberRepo.updateLoginTime(originalMember.getMemberNo());
 			// 회원정보
 			session.setAttribute("socialUser",originalMember);
 			session.setAttribute("memberNo", originalMember.getMemberNo());
@@ -238,7 +261,7 @@ public class MemberController {
 			System.out.println("기존회원이므로 로그인을 진행합니다.");
 			// 회원정보
 			// 로그인 시각 갱신
-			memberRepo.updateLoginTime(memberNo);
+			memberRepo.updateLoginTime(googleUser.getMemberNo());
 			session.setAttribute("socialUser",originalMember);
 			session.setAttribute("memberNo", originalMember.getMemberNo());
 			// 토큰정보
