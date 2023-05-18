@@ -315,7 +315,7 @@
 					<input type="radio" value="months" v-model="memberLoginSearch.col" :checked="memberLoginSearch.col=='months'" />월별
 				</div>
 				<div class="col">
-					<button type="button" class="btn btn-secondary" @click="getMemberLoginStats">검색</button>
+					<button type="button" class="btn btn-secondary" @click="getMemberLoginStats(true)">검색</button>
 				</div>
 			</div>
 			<div class="row">
@@ -336,6 +336,21 @@
 			</div>
 			<div class="row">
 				<div class="col">
+					<input type="radio" value="days" v-model="memberJoinSearch.col" :checked="memberJoinSearch.col=='days'" />일별
+					<input type="radio" value="months" v-model="memberJoinSearch.col" :checked="memberJoinSearch.col=='months'" />월별
+				</div>
+				<div class="col">
+					<button type="button" class="btn btn-secondary" @click="getMemberJoinStats(true)">검색</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col" style="position:relative">
+					<div class="chart-arrow-left" :class="{'chart-disabled':!joinChartLeft}">
+						<i class="fa-solid fa-chevron-left" @click="joinStatsPrev"></i>
+					</div>
+					<div class="chart-arrow-right" :class="{'chart-disabled':memberJoinSearch.page==1}">
+						<i class="fa-solid fa-chevron-right" @click="joinStatsNext"></i>
+					</div>
 					<canvas ref="joinChart"></canvas>
 				</div>
 			</div>
@@ -467,6 +482,7 @@
 				loginChart:null,
 				joinChart:null,
 				loginChartLeft:true,
+				joinChartLeft:true,
 			};
 		},
 		computed: {
@@ -601,7 +617,10 @@
 			},
 			/*------------------------------ 신고관리 끝 ------------------------------*/
 			/*------------------------------ 멤버통계 시작 ------------------------------*/
-			async getMemberLoginStats(){
+			async getMemberLoginStats(buttonClick){
+				if(buttonClick){
+					this.memberLoginSearch.page=1;
+				}
 				const resp = await axios.post(contextPath+"/rest/member/stats/", this.memberLoginSearch)
 				this.loginChartLeft=true;
 				if(this.memberLoginSearch.col=='days'){
@@ -647,8 +666,22 @@
 					},
 				});
 			},
-			async getMemberJoinStats(){
-				const resp = await axios.post(contextPath+"/rest/member/stats/", this.memberJoinSearch)
+			async getMemberJoinStats(buttonClick){
+				if(buttonClick){
+					this.memberJoinSearch.page=1;
+				}
+				const resp = await axios.post(contextPath+"/rest/member/stats/", this.memberJoinSearch);
+				this.joinChartLeft=true;
+				if(this.memberJoinSearch.col=='days'){
+					if(resp.data.length<31){
+						this.joinChartLeft=false;
+					}
+				}
+				else{
+					if(resp.data.length<12){
+						this.joinChartLeft=false;
+					}
+				}
 				this.memberJoinList.col = _.map(resp.data, 'col');
 				this.memberJoinList.count = _.map(resp.data, 'count');
 				//차트 초기화
@@ -682,15 +715,23 @@
 					},
 				});
 			},
+			//차트 좌우버튼 클릭시
 			loginStatsPrev(){
 				this.memberLoginSearch.page++;
 				this.getMemberLoginStats();
 			},
 			loginStatsNext(){
-				if(this.memberLoginSearch.page==1) return
-				else this.memberLoginSearch.page--;
+				this.memberLoginSearch.page--;
 				this.getMemberLoginStats();
-			}
+			},
+			joinStatsPrev(){
+				this.memberJoinSearch.page++;
+				this.getMemberJoinStats();
+			},
+			joinStatsNext(){
+				this.memberJoinSearch.page--;
+				this.getMemberJoinStats();
+			},
 		},
 		created(){
 			//데이터 불러오는 영역
