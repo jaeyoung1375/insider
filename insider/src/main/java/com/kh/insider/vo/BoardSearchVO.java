@@ -12,9 +12,10 @@ public class BoardSearchVO {
 	private List<FollowDto> followDtoList;
 	private List<BlockDto> blockDtoList;
 	private int page;
+	private int boardCount;
 	
 	public int getEnd() {
-		return page*2;
+		return page*boardCount;
 	}
 	public int getBegin() {
 		return this.getEnd()-1;

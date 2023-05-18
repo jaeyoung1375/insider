@@ -58,8 +58,12 @@ public class BoardRestController {
 	
 	//무한스크롤
 	@GetMapping("/page/{page}")
-	public List<BoardDto> paging(@PathVariable int page) {
-		return boardRepo.selectListPaging(page);
+	public List<BoardListVO> paging(@PathVariable int page, HttpSession session) {
+		long memberNo=(Long)session.getAttribute("memberNo");
+		
+		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
+		boardSearchVO.setBoardCount(15);
+		return boardRepo.selectListWithFollow(boardSearchVO);
 	}
 	//검색 페이지 리스트 출력을 위한 계층형 조회
 	@GetMapping("/list/{page}")
@@ -67,6 +71,7 @@ public class BoardRestController {
 		long memberNo=(Long)session.getAttribute("memberNo");
 		
 		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
+		boardSearchVO.setBoardCount(15);
 		return boardRepo.selectListWithoutFollow(boardSearchVO);
 	}
 	//좋아요
