@@ -79,47 +79,42 @@
                     <div class="d-flex flex-column">
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼ID▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-2">
-                            <div class="d-flex" href="index.html">
-                                <div class="p-2"><img class="profile" :src="profileUrl(index)"></div>
-                                <div class="p-2" style="margin-top: 12px;"><h4><b style="font-size: 20px;">{{board.boardWithNickDto.memberNick}}</b></h4></div>
+                            <div class="d-flex">
+                                <div class="p-1"><img class="profile" :src="profileUrl(index)"></div>
+                                <div class="p-2" style="margin-top: 8px;"><h4><b style="font-size: 17px;">{{board.boardWithNickDto.memberNick}} · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
 
                                 <div class="p-2 flex-grow-1 mt-3"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo)"></i></div>
 
-                                <div class="p-2 flex-grow-1 mt-3"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardNo, board.memberNo)"></i></div>
 
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲ID▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼사진▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-2">
-                            <div id="carouselExampleIndicators" class="carousel slide">
+                            <div :id="'carouselExampleIndicators'+index" class="carousel slide">
                                 <div class="carousel-indicators">
-                                  <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                                  <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                                  <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                                  <button v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#carouselExampleIndicators'+index" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
+<!--                                   <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button> -->
+<!--                                   <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button> -->
                                 </div>
                                 <div class="carousel-inner">
-                                  <div class="carousel-item active">
-
-                                    <img src="/static/image/r.jpeg" class="d-block" @dblclick="likePost(board.boardNo,index)" alt="...">
-
-                                    <img src="/static/image/r.jpeg" class="d-block" @dblclick="likePost(board.boardNo)" alt="...">
-<%--                                   	<img src="'${pageContext.request.contextPath}/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardNo)" alt="..."> --%>
-
+                                  <div  v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
+<!--                                     <img src="/static/image/r.jpeg" class="d-block" @dblclick="likePost(board.boardNo,index)" alt="..."> -->
+                                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,index)"> 
                                   </div>
-                                  <div class="carousel-item">
-                                    <img src="/static/image/h.jpg" class="d-block" alt="...">
-                                  </div>
-                                  <div class="carousel-item">
-                                    <img src="/static/image/m.jpg" class="d-block" alt="...">
-                                  </div>
+<!--                                   <div class="carousel-item"> -->
+<!--                                     <img src="/static/image/h.jpg" class="d-block" alt="..."> -->
+<!--                                   </div> -->
+<!--                                   <div class="carousel-item"> -->
+<!--                                     <img src="/static/image/m.jpg" class="d-block" alt="..."> -->
+<!--                                   </div> -->
                                 </div>
-                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                                <button class="carousel-control-prev" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="prev">
                                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                   <span class="visually-hidden">Previous</span>
                                 </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                                <button  class="carousel-control-next" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="next">
                                   <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                   <span class="visually-hidden">Next</span>
                                 </button>
@@ -289,20 +284,21 @@ Vue.createApp({
     },
     //메소드
     methods:{
+    	//전체 리스트 불러오기
         async loadList(){
             if(this.loading == true) return; //로딩중이면
             if(this.finish == true) return; //다 불러왔으면
             this.loading = true;
 
             const resp = await axios.get("${pageContext.request.contextPath}/rest/board/list/"+ this.page);
-            console.log(resp.data);
+            //console.log(resp.data);
             //console.log(resp.data[0].boardLike);
             
             for (const board of resp.data) {
             	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
-            	console.log(this.isLiked);
+            	//console.log(this.isLiked);
             	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
-            	console.log(this.boardLikeCount);
+            	//console.log(this.boardLikeCount);
             	//this.boardLikeCount.push(board.boardLike);
             	//this.boardLikeCount = boardList.boardLike;
               }
@@ -312,30 +308,23 @@ Vue.createApp({
             this.boardList.push(...resp.data);
             this.page++;
             
-            if(resp.data < 10) this.finish = true; //데이터가 10개 미만이면 더 읽을게 없다
+            if(resp.data < 2) this.finish = true; //데이터가 10개 미만이면 더 읽을게 없다
 
             this.loading = false;
         },
         
+        //로그인한 회원이 좋아요 눌렀는지 확인
         async likeChecked(boardNo) {
         	const resp = await axios.post("${pageContext.request.contextPath}/rest/board/check", {boardNo:boardNo});
-//         	if(resp.data){
-//         		return $(".like").removeClass("fa-regular")
-//         							.addClass("fa-solid");
-//         	}
-//         	else{
-//         		return $(".like").removeClass("fa-solid")
-//         								.addClass("fa-regular");        		
-//         	}
-			
-        	console.log(resp.data);
+
+        	//console.log(resp.data);
         	return resp.data;
         },
         
-        
+        //좋아요
         async likePost(boardNo, index) {
             const resp = await axios.post("${pageContext.request.contextPath}/rest/board/like", {boardNo:boardNo});
-            console.log(resp.data.count);
+            //console.log(resp.data.count);
             if(resp.data.result){
             	this.isLiked[index] = true;
             }
@@ -347,6 +336,32 @@ Vue.createApp({
             this.boardLikeCount[index] = resp.data.count;
            // console.log(this.boardLikeCount);
         },
+        
+        //게시글 날짜 계산 함수
+        dateCount(date) {
+        	const curTime = new Date();
+        	const postTime = new Date(date);
+        	const duration = Math.floor((curTime - postTime) / (1000 * 60));
+        	
+        	
+        	if(duration < 60){
+        		return duration + "분 전";
+        	}
+        	else if(duration < 1440) {
+        		const hours = Math.floor(duration / 60);
+        		return hours + "시간 전"
+        	} 
+        	else {
+        		const days = Math.floor(duration / 1440);
+        		return days + "일 전";
+        		//return day + "일 전";
+        	}
+        		//return Math.floor(time) + "시간 전";
+        	
+        	
+        },
+        
+       
         
         showBoardModal(boardNo) {
         	if(this.boardModal==null) return;
@@ -407,6 +422,8 @@ Vue.createApp({
     mounted(){
 
          window.addEventListener("scroll", _.throttle(()=>{
+        	//console.log("스크롤 이벤트");
+            //console.log(this);
             const height = document.body.clientHeight - window.innerHeight;
             const current = window.scrollY
             const percent = (current / height) * 100

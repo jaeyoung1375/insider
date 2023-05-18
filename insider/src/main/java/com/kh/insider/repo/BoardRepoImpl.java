@@ -21,8 +21,8 @@ public class BoardRepoImpl implements BoardRepo {
 
 	@Override
 	public List<BoardDto> selectListPaging(int page) {
-		int end = page*10;
-		int begin = end-9;
+		int end = page*2;
+		int begin = end-1;
 		Map<String, Object> param = Map.of("begin", begin, "end", end);
 		return sqlSession.selectList("board.selectListPaging",param);
 	}
@@ -40,8 +40,8 @@ public class BoardRepoImpl implements BoardRepo {
 
 	@Override
 	public List<BoardListVO> selectListWithAttach(int page) {
-		int end = page*10;
-		int begin = end-9;
+		int end = page*2;
+		int begin = end-1;
 		Map<String, Object> param = Map.of("begin", begin, "end", end);
 		return sqlSession.selectList("board.boardListTreeSelect",param);
 	}
