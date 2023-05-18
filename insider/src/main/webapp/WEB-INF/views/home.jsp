@@ -71,7 +71,7 @@
 </style>
 <div id="app">
 	<div class="container" style="margin-top: 20px; max-width: 1000px">
-        <div class="row" v-for="(board, index) in boardList" :key="index">
+        <div class="row" v-for="(board, index) in boardList" :key="index" >
             <!--●●●●●●●●●●●●●●피드공간●●●●●●●●●●●●●●●●●●●●●●-->
             <div class="col" style="max-width: 620px; margin: 0 auto;">
                 <!--피드001-->
@@ -198,7 +198,7 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" @click="clickCheckPassword">확인</button>
+					<!-- <button type="button" class="btn btn-primary" @click="clickCheckPassword">확인</button> -->
 					<button type="button" class="btn btn-secondary" @click="hideReportMenuModal">취소</button>
 				</div>
 			</div>
@@ -221,11 +221,11 @@ Vue.createApp({
             page:1,
             boardList:[],
             finish:false,
+            boardNo : '',
             //안전장치
             loading:false,
             //▲▲▲▲▲▲▲▲▲▲▲▲▲무한 페이징▲▲▲▲▲▲▲▲▲▲▲▲▲
             isLiked :false,
-            
 			boardLikeCount:0, // 좋아요 수를 저장할 변수
 			/*----------------------신고----------------------*/
 			//추가 메뉴 모달 및 신고 모달
@@ -239,7 +239,7 @@ Vue.createApp({
     },
     //데이터 실시간 계산 영역
     computed:{
-
+		
     },
     //메소드
     methods:{
@@ -247,12 +247,13 @@ Vue.createApp({
             if(this.loading == true) return; //로딩중이면
             if(this.finish == true) return; //다 불러왔으면
             this.loading = true;
-
+			
             const resp = await axios.get("${pageContext.request.contextPath}/rest/board/page/"+ this.page);
             console.log(resp.data);
             console.log(resp.data[0].boardLike);
             for (const board of resp.data) {
             	this.isLiked = await this.likeChecked(board.boardNo);
+            	this.boardNo = board.boardNo;
             	this.boardLikeCount = board.boardLike;
               }
 			
