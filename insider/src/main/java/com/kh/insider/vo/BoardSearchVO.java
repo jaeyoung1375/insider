@@ -14,9 +14,9 @@ public class BoardSearchVO {
 	private int page;
 	
 	public int getEnd() {
-		return page*10;
+		return page*2;
 	}
 	public int getBegin() {
-		return this.getEnd()-9;
+		return this.getEnd()-1;
 	}
 }
