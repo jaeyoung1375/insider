@@ -315,6 +315,12 @@
 					<input type="radio" value="months" v-model="memberLoginSearch.col" :checked="memberLoginSearch.col=='months'" />월별
 				</div>
 				<div class="col">
+					<select class="form-control" v-model="memberLoginSearch.order">
+						<option value="all_parts.date_part DESC">날짜별 정렬</option>
+						<option value="count desc">많은 순</option>
+					</select>
+				</div>
+				<div class="col">
 					<button type="button" class="btn btn-secondary" @click="getMemberLoginStats(true)">검색</button>
 				</div>
 			</div>
@@ -338,6 +344,12 @@
 				<div class="col">
 					<input type="radio" value="days" v-model="memberJoinSearch.col" :checked="memberJoinSearch.col=='days'" />일별
 					<input type="radio" value="months" v-model="memberJoinSearch.col" :checked="memberJoinSearch.col=='months'" />월별
+				</div>
+				<div class="col">
+					<select class="form-control" v-model="memberJoinSearch.order">
+						<option value="all_parts.date_part DESC">날짜별 정렬</option>
+						<option value="count desc">많은 순</option>
+					</select>
 				</div>
 				<div class="col">
 					<button type="button" class="btn btn-secondary" @click="getMemberJoinStats(true)">검색</button>
@@ -635,6 +647,10 @@
 				}
 				this.memberLoginList.col = _.map(resp.data, 'col');
 				this.memberLoginList.count = _.map(resp.data, 'count');
+				if(this.memberLoginSearch.order=='all_parts.date_part DESC'){
+					this.memberLoginList.col.reverse();
+					this.memberLoginList.count.reverse();
+				}
 				//캔버스 사용 초기화
 				if(loginChart!=null) {
 					loginChart.destroy();
@@ -644,11 +660,11 @@
 				loginChart = new Chart(loginChart, {
 					type: "bar",
 					data: {
-						labels: this.memberLoginList.col.reverse(),
+						labels: this.memberLoginList.col,
 						datasets: [
 							{
 								label: "방문자 수(명)",
-								data: this.memberLoginList.count.reverse(),
+								data: this.memberLoginList.count,
 								borderWidth: 1,
 								backgroundColor: [
 									"navy",
@@ -684,6 +700,10 @@
 				}
 				this.memberJoinList.col = _.map(resp.data, 'col');
 				this.memberJoinList.count = _.map(resp.data, 'count');
+				if(this.memberJoinSearch.order=='all_parts.date_part DESC'){
+					this.memberJoinList.col.reverse();
+					this.memberJoinList.count.reverse();
+				}
 				//차트 초기화
 				if(joinChart!=null) {
 					joinChart.destroy();
@@ -693,11 +713,11 @@
 				joinChart = new Chart(joinChart, {
 					type: "bar",
 					data: {
-						labels: this.memberJoinList.col.reverse(),
+						labels: this.memberJoinList.col,
 						datasets: [
 							{
 								label: "가입자 수(명)",
-								data: this.memberJoinList.count.reverse(),
+								data: this.memberJoinList.count,
 								borderWidth: 1,
 								backgroundColor: [
 									"navy",

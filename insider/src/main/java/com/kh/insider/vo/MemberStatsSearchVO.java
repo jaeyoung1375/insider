@@ -12,7 +12,12 @@ public class MemberStatsSearchVO {
 	//시작행 번호 계산
 	public int getSize() {
 		if(this.col.equals("days")) {
-			return 31;
+			if(this.order.equals("all_parts.date_part DESC")) {
+				return 31;
+			}
+			else {
+				return 10;
+			}
 		}
 		else {
 			return 12;
