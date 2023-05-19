@@ -39,8 +39,10 @@
                 </div>
                 <div>{{message.content}}</div>
                 <div>{{timeFormat(message.time)}}</div>
+                <i class="fa-solid fa-x" v-on:click="deleteMessage(index)"></i>
             </div>
         </div>
+        
     </div>
 
 	<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
@@ -57,6 +59,7 @@
                     text:"",//사용자가 입력하는 내용
                     messageList:[],//채팅 기록
                     memberNick:"${sessionScope.memberNick}",//나의 아이디
+                    memberNo:"${sessionScope.memberNo}",
                     socket:null,//웹소켓 연결 객체
                 };
             },
@@ -74,15 +77,16 @@
             	    }
             	},
             	// 메세지 리스트 불러오는 함수
-	            displayMessageList(resp) {
-				    this.messageList = resp.map(msg => {
+           		displayMessageList(resp) {
+				    this.messageList = resp.map((msg) => {
 				        const msgContent = JSON.parse(msg.messageContent);
 				        return {
+				            messageNo: msgContent.messageNo,  // 메세지 삭제를 위해 추가
 				            memberNick: msgContent.memberNick,
 				            content: msgContent.content,
 				            time: this.timeFormat(msgContent.time),
-					    };
-					});
+				        };
+				    });
 				},
 			    connect(){
             		const url = "${pageContext.request.contextPath}/ws/channel";
@@ -124,11 +128,17 @@
             	},
             	timeFormat(time) {
             		return moment(time).format("A h:mm");
-            	}
+            	},
+            	//메세지 삭제
+            	deleteMessage(index) {
+            	    const messageNo = this.messageList[index].messageNo;
+            	    //console.log("messageNo: " + messageNo);
+            	    const data = { type: 3, messageNo: messageNo, memberNo: this.memberNo };
+            	    this.socket.send(JSON.stringify(data));
+            	    this.loadMessage();
+            	},
             },
             computed:{ 
-            	//실시간으로 메세지가 입력될 때마다 실행되므로 성능의 무리가 간다. 
-            	//vue에서 역할을 구분하기 위해서 사용한다.
             	jsonText() {
             		return JSON.stringify({ type: 1, content: this.text });
             	},

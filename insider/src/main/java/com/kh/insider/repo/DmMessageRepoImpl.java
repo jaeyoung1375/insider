@@ -15,17 +15,18 @@ public class DmMessageRepoImpl implements DmMessageRepo {
 	private SqlSession sqlSession;
 
 	@Override
-	public int sequence() {
+	public long sequence() {
 		return sqlSession.selectOne("dmMessage.sequence");
 	}
 
 	@Override
-	public void create(DmMessageDto dmMessageDto) {
+	public long create(DmMessageDto dmMessageDto) {
 		sqlSession.insert("dmMessage.create", dmMessageDto);
+		return dmMessageDto.getMessageNo();
 	}
 
 	@Override
-	public DmMessageDto detail(int messageNo) {
+	public DmMessageDto detail(long messageNo) {
 		return sqlSession.selectOne("dmMessage.detail", messageNo);
 	}
 
