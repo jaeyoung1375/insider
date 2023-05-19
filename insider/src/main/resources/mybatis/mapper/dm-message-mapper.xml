@@ -6,14 +6,14 @@
     
 <mapper namespace="dmMessage">
 
-	<select id="sequence">
+	<select id="sequence" resultType="long">
 		select dm_message_seq.nextval from dual
 	</select>
 	
-	<insert id="create">
+	<insert id="create" parameterType="DmMessageDto" useGeneratedKeys="true" keyProperty="messageNo" keyColumn="message_no">
 		insert into dm_message(message_no, room_no, message_sender, message_content, 
 			message_send_time)
-		values(dm_message_seq.nextval, #{roomNo}, #{messageSender}, #{messageContent}, sysdate)
+		values(#{messageNo}, #{roomNo}, #{messageSender}, #{messageContent}, sysdate)
 	</insert>
 	
 	<select id="detail" resultType="DmMessageDto">
