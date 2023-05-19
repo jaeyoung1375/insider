@@ -97,29 +97,17 @@
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼사진▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div style="padding: 4px 8px 8px 8px;">
                             <div :id="'carouselExampleIndicators'+index" class="carousel slide">
+                                
                                 <div class="carousel-indicators">
                                   <button v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#carouselExampleIndicators'+index" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
-<!--                                   <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button> -->
-<!--                                   <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button> -->
                                 </div>
+                               
                                 <div class="carousel-inner">
-                                  <div class="carousel-item active">
-
-                                    <img src="/static/image/r.jpeg" class="d-block" @dblclick="likePost(board.boardNo,index)" alt="...">
-
-<!--                                     <img src="/static/image/r.jpeg" class="d-block" @dblclick="likePost(board.boardNo)" alt="..."> -->
-<%--                                   	<img src="'${pageContext.request.contextPath}/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardNo)" alt="..."> --%>
                                   <div  v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
-<!--                                     <img src="/static/image/r.jpeg" class="d-block" @dblclick="likePost(board.boardNo,index)" alt="..."> -->
-<%--                                    	<img :src="'${pageContext.request.contextPath}/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,index)">  --%>
+                                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,index)"> 
                                   </div>
-<!--                                   <div class="carousel-item"> -->
-<!--                                     <img src="/static/image/h.jpg" class="d-block" alt="..."> -->
-<!--                                   </div> -->
-<!--                                   <div class="carousel-item"> -->
-<!--                                     <img src="/static/image/m.jpg" class="d-block" alt="..."> -->
-<!--                                   </div> -->
                                 </div>
+                               
                                 <button class="carousel-control-prev" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="prev">
                                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                   <span class="visually-hidden">Previous</span>
@@ -237,14 +225,12 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<!-- <button type="button" class="btn btn-primary" @click="clickCheckPassword">확인</button> -->
 					<button type="button" class="btn btn-secondary" @click="hideReportMenuModal">취소</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
-</div>
 </div>
   소셜유저 : ${sessionScope.socialUser}		
   회원번호 : ${sessionScope.memberNo}		
@@ -261,15 +247,12 @@ Vue.createApp({
             page:1,
             boardList:[],
             finish:false,
-            boardNo : '',
             //안전장치
             loading:false,
             //▲▲▲▲▲▲▲▲▲▲▲▲▲무한 페이징▲▲▲▲▲▲▲▲▲▲▲▲▲
-
 			loginMemberNo:"${sessionScope.memberNo}", // 로그인한 세션 값
 			followCheckList:[],
 			
-
 			boardLikeCount:[], // 좋아요 수를 저장할 변수
             isLiked : [],
 			/*----------------------신고----------------------*/
@@ -305,8 +288,8 @@ Vue.createApp({
             if(this.loading == true) return; //로딩중이면
             if(this.finish == true) return; //다 불러왔으면
             this.loading = true;
-            const resp = await axios.get("${pageContext.request.contextPath}/rest/board/page/"+ this.page);
 
+            const resp = await axios.get("${pageContext.request.contextPath}/rest/board/page/"+ this.page);
             //console.log(resp.data);
             //console.log(resp.data[0].boardLike);
             
