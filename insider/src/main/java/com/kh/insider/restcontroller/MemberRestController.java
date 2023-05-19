@@ -1,5 +1,7 @@
 package com.kh.insider.restcontroller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +18,12 @@ import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.dto.SettingDto;
 import com.kh.insider.repo.MemberRepo;
+import com.kh.insider.repo.MemberStatsRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.SettingRepo;
-import com.kh.insider.vo.MemberWithProfileSearchResponseVO;
+import com.kh.insider.vo.MemberStatsResponseVO;
+import com.kh.insider.vo.MemberStatsSearchVO;
+import com.kh.insider.vo.MemberWithProfileResponseVO;
 import com.kh.insider.vo.MemberWithProfileSearchVO;
 import com.kh.insider.vo.PaginationVO;
 
@@ -31,6 +36,8 @@ public class MemberRestController {
 	private MemberWithProfileRepo memberWithProfileRepo;
 	@Autowired
 	private MemberRepo memberRepo;
+	@Autowired
+	private MemberStatsRepo memberStatsRepo;
 	
 	//멤버정보 불러오기
 	@GetMapping("/{memberNo}")
@@ -70,13 +77,13 @@ public class MemberRestController {
 	}
 	//리스트 출력
 	@GetMapping("/list")
-	public MemberWithProfileSearchResponseVO selectList(@ModelAttribute MemberWithProfileSearchVO vo){
+	public MemberWithProfileResponseVO selectList(@ModelAttribute MemberWithProfileSearchVO vo){
 		//정렬 리스트 trim
 		vo.refreshOrderList();
 		//전체 게시물 수 반환
 		int count = memberWithProfileRepo.selectCount(vo);
 		vo.setCount(count);
-		MemberWithProfileSearchResponseVO responseVO = new MemberWithProfileSearchResponseVO();
+		MemberWithProfileResponseVO responseVO = new MemberWithProfileResponseVO();
 		responseVO.setMemberList(memberWithProfileRepo.selectList(vo));
 		
 		PaginationVO paginationVO = new PaginationVO();
@@ -85,5 +92,10 @@ public class MemberRestController {
 		
 		responseVO.setPaginationVO(paginationVO);
 		return responseVO;
+	}
+	//통계자료 반환
+	@PostMapping("/stats/")
+	public List<MemberStatsResponseVO> getStats(@RequestBody MemberStatsSearchVO memberStatsSearchVO){
+		return memberStatsRepo.selectList(memberStatsSearchVO);
 	}
 }

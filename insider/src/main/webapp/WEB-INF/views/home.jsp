@@ -8,7 +8,7 @@
 	P {
             display: flex;
             margin: 5px auto auto auto;
-            max-width: 600px;
+            max-width: 650px;
             width: 80%;
             border: 2px solid black;
             height: 1000px
@@ -78,20 +78,19 @@
                 <div class="head_feed bg-white" style="border: 0.5px solid #b4b4b4; border-radius: 10px;">
                     <div class="d-flex flex-column">
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼ID▼▼▼▼▼▼▼▼▼▼▼▼▼-->
-                        <div class="p-2">
+                        <div style="padding: 8px 8px 4px 8px;">
                             <div class="d-flex">
-                                <div class="p-1"><img class="profile" :src="profileUrl(index)"></div>
-                                <div class="p-2" style="margin-top: 8px;"><h4><b style="font-size: 17px;">{{board.boardWithNickDto.memberNick}} · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
+                                <div class="p-2"><img class="profile" :src="profileUrl(index)"></div>
+                                <div class="p-2" style="margin-top: 8px;"><h4><b style="font-size: 16px;">{{board.boardWithNickDto.memberNick}} · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
+                                <div class="p-2 me-4" style="margin-top: 8px;"><h4><b style="font-size: 15px;">· 팔로우</b></h4></div>
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
 
-                                <div class="p-2 flex-grow-1 mt-3"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo)"></i></div>
-
-
+                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo)"></i></div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲ID▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼사진▼▼▼▼▼▼▼▼▼▼▼▼▼-->
-                        <div class="p-2">
+                        <div style="padding: 4px 8px 8px 8px;">
                             <div :id="'carouselExampleIndicators'+index" class="carousel slide">
                                 <div class="carousel-indicators">
                                   <button v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#carouselExampleIndicators'+index" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
@@ -289,23 +288,18 @@ Vue.createApp({
             if(this.loading == true) return; //로딩중이면
             if(this.finish == true) return; //다 불러왔으면
             this.loading = true;
-            const resp = await axios.get("${pageContext.request.contextPath}/rest/board/list/"+ this.page);
+            const resp = await axios.get("${pageContext.request.contextPath}/rest/board/page/"+ this.page);
+
             //console.log(resp.data);
             //console.log(resp.data[0].boardLike);
             
             for (const board of resp.data) {
-<<<<<<< HEAD
-            	this.isLiked = await this.likeChecked(board.boardNo);
-            	this.boardNo = board.boardNo;
-            	this.boardLikeCount = board.boardLike;
-=======
             	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
             	//console.log(this.isLiked);
             	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
             	//console.log(this.boardLikeCount);
             	//this.boardLikeCount.push(board.boardLike);
             	//this.boardLikeCount = boardList.boardLike;
->>>>>>> branch 'jaeyeong' of https://github.com/Hangsuu/finalProject.git
               }
             //this.boardListCount=[...resp.data.boardLike]
 			
@@ -313,7 +307,7 @@ Vue.createApp({
             this.boardList.push(...resp.data);
             this.page++;
             
-            if(resp.data < 2) this.finish = true; //데이터가 10개 미만이면 더 읽을게 없다
+            if(resp.data < 2) this.finish = true; //데이터가 2개 미만이면 더 읽을게 없다
 
             this.loading = false;
         },
@@ -346,10 +340,14 @@ Vue.createApp({
         dateCount(date) {
         	const curTime = new Date();
         	const postTime = new Date(date);
+        	console.log(postTime);
         	const duration = Math.floor((curTime - postTime) / (1000 * 60));
+        	console.log(duration);
         	
-        	
-        	if(duration < 60){
+        	if(duration < 1){
+        		return "방금 전";
+        	}
+        	else if(duration < 60){
         		return duration + "분 전";
         	}
         	else if(duration < 1440) {
