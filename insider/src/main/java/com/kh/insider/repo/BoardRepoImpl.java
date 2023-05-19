@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.kh.insider.dto.BoardDto;
 import com.kh.insider.vo.BoardAttachmentVO;
 import com.kh.insider.vo.BoardListVO;
+import com.kh.insider.vo.BoardSearchVO;
 
 @Repository
 public class BoardRepoImpl implements BoardRepo {
@@ -21,8 +22,8 @@ public class BoardRepoImpl implements BoardRepo {
 
 	@Override
 	public List<BoardDto> selectListPaging(int page) {
-		int end = page*10;
-		int begin = end-9;
+		int end = page*2;
+		int begin = end-1;
 		Map<String, Object> param = Map.of("begin", begin, "end", end);
 		return sqlSession.selectList("board.selectListPaging",param);
 	}
@@ -38,16 +39,20 @@ public class BoardRepoImpl implements BoardRepo {
 		sqlSession.insert("board.insert", boardDto);
 	}
 
-//	@Override
-//	public List<BoardAttachmentVO> selectAttach(int boardNo) {
-//		return sqlSession.selectList("board.selectAttach", boardNo);
-//	}
-
+	@Override
 	public List<BoardListVO> selectListWithAttach(int page) {
-		int end = page*10;
-		int begin = end-9;
+		int end = page*2;
+		int begin = end-1;
 		Map<String, Object> param = Map.of("begin", begin, "end", end);
 		return sqlSession.selectList("board.boardListTreeSelect",param);
+	}
+	@Override
+	public List<BoardListVO> selectListWithFollow(BoardSearchVO vo) {
+		return sqlSession.selectList("board.boardListWithFollow", vo);
+	}
+	@Override
+	public List<BoardListVO> selectListWithoutFollow(BoardSearchVO vo) {
+		return sqlSession.selectList("board.boardListWithoutFollow", vo);
 	}
 
 
@@ -66,17 +71,19 @@ public class BoardRepoImpl implements BoardRepo {
 	}
 
 
-	@Override
-	public void connect(int boardNo, int attachmentNo) {
-	    Map<String, Integer> params = new HashMap<>();
-	    params.put("boardNo", boardNo);
-	    params.put("attachmentNo", attachmentNo);
-	    sqlSession.insert("boardAttachment.connect", params);
-	}
+
+//	@Override
+//	public void connect(int boardNo, int attachmentNo) {
+//	    Map<String, Integer> params = new HashMap<>();
+//	    params.put("boardNo", boardNo);
+//	    params.put("attachmentNo", attachmentNo);
+//	    sqlSession.insert("boardAttachment.connect", params);
+//	}
 
 
 	@Override
 	public void delete(int boardNo) {
 		sqlSession.delete("board.delete", boardNo);		
 	}
+
 }

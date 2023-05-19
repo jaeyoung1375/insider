@@ -8,7 +8,16 @@
 		select * from block where member_no=#{memberNo}
 	</select>
 	<select id="selectListBlocked" resultType="blockDto">
-		select * from block where block_no=#{blockNo}
+		select * from block where block_no=#{memberNo}
+	</select>
+	<select id="selectOne" resultType="blockDto">
+		select * from block where member_no=#{memberNo} and block_no=#{blockNo}
+	</select>
+	<select id="getBlockList" resultType="blockWithProfileDto">
+		select * from block_with_profile where member_no=#{memberNo}
+	</select>
+	<select id="getBlockedList" resultType="blockWithProfileDto">
+		select * from block_with_profile where block_no=#{memberNo}
 	</select>
 	<insert id="insert">
 		insert into block(member_no, block_no) values(#{memberNo}, #{blockNo})
