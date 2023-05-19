@@ -21,6 +21,8 @@ import com.kh.insider.service.BoardSearchService;
 import com.kh.insider.vo.BoardLikeVO;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
+import com.kh.insider.vo.BoardTimeStatsResponseVO;
+import com.kh.insider.vo.BoardTimeStatsSearchVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -110,6 +112,12 @@ public class BoardRestController {
 		boardLikeDto.setMemberNo(memberNo);
 		
 		return boardLikeRepo.check(boardLikeDto);
+	}
+	
+	//통계자료 반환
+	@PostMapping("/boardTime/")
+	public List<BoardTimeStatsResponseVO> getStats(@RequestBody BoardTimeStatsSearchVO boardTimeStatsSearchVO){
+		return boardRepo.getBoardTimeStats(boardTimeStatsSearchVO);
 	}
 	
 }

@@ -5,6 +5,8 @@ import java.util.List;
 import com.kh.insider.dto.BoardDto;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
+import com.kh.insider.vo.BoardTimeStatsResponseVO;
+import com.kh.insider.vo.BoardTimeStatsSearchVO;
 
 public interface BoardRepo {
 	List<BoardDto> selectListPaging(int page);
@@ -27,4 +29,7 @@ public interface BoardRepo {
 	
 	//신고수 추가
 	void addReport(int boardNo);
+	
+	//게시물 생성 통계
+	List<BoardTimeStatsResponseVO> getBoardTimeStats(BoardTimeStatsSearchVO boardTimeStatsSearchVO);
 }

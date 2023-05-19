@@ -7,4 +7,5 @@ import com.kh.insider.vo.MemberStatsSearchVO;
 
 public interface MemberStatsRepo {
 	List<MemberStatsResponseVO> selectList(MemberStatsSearchVO memberStatsSearchVO);
+	List<MemberStatsResponseVO> selectListCumulative(MemberStatsSearchVO memberStatsSearchVO);
 }

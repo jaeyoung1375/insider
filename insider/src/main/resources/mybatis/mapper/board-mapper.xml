@@ -159,4 +159,51 @@
 	<select id="getTotalPostCount" resultType="int">
 		select count(*) from board where member_no = #{memberNo}
 	</select>
+	
+	<!-- 게시물 생성 통계 -->
+	<select id="timeStats" resultType="boardTimeStatsResponseVO">
+		<include refid="topNheader"></include>
+		WITH all_parts AS (
+			<choose>
+				<when test="col.equals('days')">
+					SELECT TRUNC(SYSDATE) - LEVEL + 1 AS date_part
+					FROM dual
+					<![CDATA[
+					CONNECT BY LEVEL <= TRUNC(SYSDATE) - TO_DATE('2023-01-01', 'YYYY-MM-DD') + 1
+					]]>
+				</when>
+				<otherwise>
+					SELECT ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -LEVEL + 1) AS date_part
+					FROM dual
+					<![CDATA[
+					CONNECT BY LEVEL <= MONTHS_BETWEEN(TRUNC(SYSDATE, 'MM'), TO_DATE('2023-01', 'YYYY-MM')) + 1
+					]]>
+				</otherwise>
+			</choose>
+		)
+		SELECT TO_CHAR(
+			all_parts.date_part,
+			<choose>
+				<when test="col.equals('days')">
+					'MM/DD'
+				</when>
+				<otherwise>
+					'YY/MM'
+				</otherwise>
+			</choose>
+		) AS col, NVL(COUNT(board.board_time), 0) AS count
+		FROM all_parts
+			<choose>
+				<when test="col.equals('days')">
+					LEFT JOIN board ON all_parts.date_part = TRUNC(board.board_time)
+				</when>
+				<otherwise>
+					LEFT JOIN board ON TO_CHAR(all_parts.date_part, 'YYYY-MM') = TO_CHAR(board.board_time, 'YYYY-MM')
+				</otherwise>
+			</choose>
+		GROUP BY all_parts.date_part
+		ORDER BY ${order}
+		<include refid="topNfooter"></include>
+	</select>
+	
 </mapper>

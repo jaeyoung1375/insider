@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 import com.kh.insider.dto.BoardDto;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
+import com.kh.insider.vo.BoardTimeStatsResponseVO;
+import com.kh.insider.vo.BoardTimeStatsSearchVO;
 
 @Repository
 public class BoardRepoImpl implements BoardRepo {
@@ -73,6 +75,12 @@ public class BoardRepoImpl implements BoardRepo {
 	@Override
 	public int getTotalPostCount(Long MemberNo) {
 		return sqlSession.selectOne("board.getTotalPostCount",MemberNo);
+	}
+
+
+	@Override
+	public List<BoardTimeStatsResponseVO> getBoardTimeStats(BoardTimeStatsSearchVO boardTimeStatsSearchVO) {
+		return sqlSession.selectList("board.timeStats", boardTimeStatsSearchVO);
 	}
 
 
