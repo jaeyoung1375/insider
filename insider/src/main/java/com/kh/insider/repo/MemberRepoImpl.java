@@ -70,7 +70,7 @@ public class MemberRepoImpl implements MemberRepo{
 
 	//닉네임(boardController에서 닉네임 받아오기)
 	@Override
-	public String nick(int memberNo) {
+	public String nick(long memberNo) {
 		return sqlSession.selectOne("member.nick",memberNo);
 	}
 

@@ -11,7 +11,7 @@ import com.kh.insider.vo.PaginationVO;
 
 public interface BoardAttachService {
 	
-//void insert(BoardDto boardDto, List<MultipartFile> boardAttach) throws IllegalStateException, IOException;
-//	
-//void delete(int boardNo);
+void insert(BoardDto boardDto, List<MultipartFile> boardAttachment) throws IllegalStateException, IOException;
+	
+void delete(int boardNo);
 }

@@ -22,4 +22,6 @@ public interface BoardRepo {
 	
 	//신고수 추가
 	void addReport(int boardNo);
+
+	void delete(int boardNo);
 }

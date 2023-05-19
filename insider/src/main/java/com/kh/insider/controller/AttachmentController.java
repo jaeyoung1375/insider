@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -53,11 +54,7 @@ public class AttachmentController {
 	@PostConstruct
 	public void init() {
 		dir = new File(fileuploadProperties.getPath());
-	}
-	
-	@Autowired
-	private AttachmentRepo attachmentRepo;
-	
+	} 
     
     @GetMapping("/test")
     public String test01(){
@@ -65,15 +62,17 @@ public class AttachmentController {
     }
 
 	// 첨부파일 조회
-	@GetMapping("/download")
+	@GetMapping("/download/{fileName}")
+	@ResponseBody
 	public ResponseEntity<ByteArrayResource> download(
-			@PathVariable int attachmentNo) throws IOException {
+			@PathVariable int fileName) throws IOException {
 		
-		//DB 조회
-		AttachmentDto attachmentDto = attachmentRepo.selectOne(attachmentNo);
-	
+//		//DB 조회
+//		AttachmentDto attachmentDto = attachmentRepo.selectOne(attachmentRepo);
+
 		//파일 찾기
-		File target = new File(dir, String.valueOf(attachmentNo));
+		File dir = new File("D:/upload");
+		File target = new File(dir, String.valueOf(fileName));
 		if(!target.exists()) return ResponseEntity.notFound().build();
 		
 		//보낼 데이터 생성
@@ -83,14 +82,13 @@ public class AttachmentController {
 		//헤더와 바디를 설정하며 ResponseEntity를 만들어 반환
 		return ResponseEntity.ok()
 			.contentType(MediaType.APPLICATION_OCTET_STREAM)
-			.contentLength(attachmentDto.getAttachmentSize())
+			.contentLength(target.length())
 			.header(HttpHeaders.CONTENT_ENCODING, 
 										StandardCharsets.UTF_8.name())
 			.header(HttpHeaders.CONTENT_DISPOSITION,
 				ContentDisposition.attachment()
 							.filename(
-									attachmentDto.getAttachmentName(), 
-									StandardCharsets.UTF_8
+									"reply.png", StandardCharsets.UTF_8
 							).build().toString()
 			)
 			.body(resource);

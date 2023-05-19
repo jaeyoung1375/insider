@@ -20,7 +20,7 @@ public class SettingRepoImpl implements SettingRepo{
 		sqlSession.update("setting.update", settingDto);
 	}
 	@Override
-	public SettingDto selectOne(int memberNo) {
+	public SettingDto selectOne(long memberNo) {
 		return sqlSession.selectOne("setting.selectOne", memberNo);
 	}
 	

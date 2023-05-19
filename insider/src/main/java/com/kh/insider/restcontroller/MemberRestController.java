@@ -34,7 +34,7 @@ public class MemberRestController {
 	
 	//멤버정보 불러오기
 	@GetMapping("/{memberNo}")
-	public MemberWithProfileDto getMember(@PathVariable int memberNo) {
+	public MemberWithProfileDto getMember(@PathVariable long memberNo) {
 		return memberWithProfileRepo.selectOne(memberNo);
 	}
 	//멤버정보 수정
@@ -45,7 +45,7 @@ public class MemberRestController {
 	
 	//환경설정 불러오기
 	@GetMapping("/setting/{memberNo}")
-	public SettingDto setting(@PathVariable int memberNo) {
+	public SettingDto setting(@PathVariable long memberNo) {
 		return settingRepo.selectOne(memberNo);
 	}
 	

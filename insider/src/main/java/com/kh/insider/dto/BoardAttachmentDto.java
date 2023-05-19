@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @Data@AllArgsConstructor@NoArgsConstructor@Builder
 public class BoardAttachmentDto {
 
+	private int boardAttachmentNo;
 	private int boardNo;
 	private int attachmentNo;
 	

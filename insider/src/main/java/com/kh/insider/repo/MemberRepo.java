@@ -22,5 +22,5 @@ public interface MemberRepo {
 	public void changePassword(MemberDto memberDto);
 	
 	// 닉네임
-	String nick(int memberNo);
+	String nick(long memberNo);
 }

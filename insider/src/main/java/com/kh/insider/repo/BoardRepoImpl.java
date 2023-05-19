@@ -73,4 +73,10 @@ public class BoardRepoImpl implements BoardRepo {
 	    params.put("attachmentNo", attachmentNo);
 	    sqlSession.insert("boardAttachment.connect", params);
 	}
+
+
+	@Override
+	public void delete(int boardNo) {
+		sqlSession.delete("board.delete", boardNo);		
+	}
 }

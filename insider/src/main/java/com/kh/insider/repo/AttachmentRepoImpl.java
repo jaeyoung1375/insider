@@ -39,22 +39,23 @@ public class AttachmentRepoImpl implements AttachmentRepo{
 			directory.mkdirs();
 		}
 
-//	@Override
-//	public int save(MultipartFile attach) throws IllegalStateException, IOException {
-//		
-//		int attachmentNo = sqlSession.selectOne("attach.sequence");
-//		
-//		String fileName = String.valueOf(attachmentNo);
-//		File target = new File(directory, fileName);
-//		attach.transferTo(target);
-//		
-//		sqlSession.insert("attach.insert", AttachmentDto.builder()
-//				.attachmentNo(attachmentNo)
-//				.attachmentName(attach.getOriginalFilename())
-//				.attachmentType(attach.getContentType())
-//				.attachmentSize(attach.getSize())
-//				.build());
-//		return attachmentNo;
-//	}
+	@Override
+	public int save(MultipartFile attach) throws IllegalStateException, IOException {
+		
+		int attachmentNo = sqlSession.selectOne("attachment.sequence");
+		
+		String fileName = String.valueOf(attachmentNo);
+		File target = new File(directory, fileName);
+		attach.transferTo(target);
+		
+		sqlSession.insert("attach.insert", AttachmentDto.builder()
+				.attachmentNo(attachmentNo)
+				.attachmentName(attach.getOriginalFilename())
+				.attachmentType(attach.getContentType())
+				.attachmentSize(attach.getSize())
+				.build());
+		
+		return attachmentNo;
+	}
 
 }
