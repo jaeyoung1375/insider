@@ -154,4 +154,9 @@
 	<update id="addReport">
 		update board set board_report = board_report+1 where board_no=#{boardNo}
 	</update>
+	
+	<!-- 게시물 총 개수  -->
+	<select id="getTotalPostCount" resultType="int">
+		select count(*) from board where member_no = #{memberNo}
+	</select>
 </mapper>

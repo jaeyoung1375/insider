@@ -5,6 +5,30 @@
 .selected{
 	border:1px solid black
 }
+.chart-arrow-left{
+	position: absolute;
+	z-index: 1;
+	top: 50%;
+	margin-left:0.5em;
+	transform: translate(-50%, -50%);
+	color:lightgray;
+	cursor:pointer;
+	font-size:2em;
+}
+.chart-arrow-right{
+	position: absolute;
+	top:50%;
+	right: 0%;
+	margin-right:0.5em;
+	transform: translate(-50%, -50%);
+	font-size:2em;
+	cursor:pointer;
+	color:lightgray;
+}
+.chart-disabled{
+	display:none;
+	cursor:default
+}
 </style>
 <div class="container-fluid mt-4" id="app">
 	<div class="row">
@@ -280,6 +304,68 @@
 					<h1>회원 통계</h1>
 				</div>
 			</div>
+			<div class="row">
+				<div class="col">
+					<h3>방문자 수 통계</h3>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<input type="radio" value="days" v-model="memberLoginSearch.col" :checked="memberLoginSearch.col=='days'" />일별
+					<input type="radio" value="months" v-model="memberLoginSearch.col" :checked="memberLoginSearch.col=='months'" />월별
+				</div>
+				<div class="col">
+					<select class="form-control" v-model="memberLoginSearch.order">
+						<option value="all_parts.date_part DESC">날짜별 정렬</option>
+						<option value="count desc">많은 순</option>
+					</select>
+				</div>
+				<div class="col">
+					<button type="button" class="btn btn-secondary" @click="getMemberLoginStats(true)">검색</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col" style="position:relative">
+					<div class="chart-arrow-left" :class="{'chart-disabled':!loginChartLeft}">
+						<i class="fa-solid fa-chevron-left" @click="loginStatsPrev"></i>
+					</div>
+					<div class="chart-arrow-right" :class="{'chart-disabled':memberLoginSearch.page==1}">
+						<i class="fa-solid fa-chevron-right" @click="loginStatsNext"></i>
+					</div>
+					<canvas ref="loginChart"></canvas>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<h3>가입자 수 통계</h3>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<input type="radio" value="days" v-model="memberJoinSearch.col" :checked="memberJoinSearch.col=='days'" />일별
+					<input type="radio" value="months" v-model="memberJoinSearch.col" :checked="memberJoinSearch.col=='months'" />월별
+				</div>
+				<div class="col">
+					<select class="form-control" v-model="memberJoinSearch.order">
+						<option value="all_parts.date_part DESC">날짜별 정렬</option>
+						<option value="count desc">많은 순</option>
+					</select>
+				</div>
+				<div class="col">
+					<button type="button" class="btn btn-secondary" @click="getMemberJoinStats(true)">검색</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col" style="position:relative">
+					<div class="chart-arrow-left" :class="{'chart-disabled':!joinChartLeft}">
+						<i class="fa-solid fa-chevron-left" @click="joinStatsPrev"></i>
+					</div>
+					<div class="chart-arrow-right" :class="{'chart-disabled':memberJoinSearch.page==1}">
+						<i class="fa-solid fa-chevron-right" @click="joinStatsNext"></i>
+					</div>
+					<canvas ref="joinChart"></canvas>
+				</div>
+			</div>
 		</div>
 	<!--------------------------- 게시물 통계 --------------------------->
 		<div class="col-md-8" v-show="adminMenu==4">
@@ -353,7 +439,12 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <!-- SockJS라이브러리 의존성 추가  -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+<!-- chartJS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+	//chartJS 변수 선언
+	let loginChart;
+	let joinChart;
 	Vue.createApp({
 		data() {
 			return {
@@ -379,6 +470,31 @@
 				reportContentListEdit:[],
 				reportList:[],
 				reportSocket:null,
+				/*---------------------------통계 데이터 --------------------------- */
+				memberLoginSearch:{
+					stat:"member_login",
+					col:"days",
+					order:"all_parts.date_part DESC",
+					page:1,
+				},
+				memberJoinSearch:{
+					stat:"member_join",
+					col:"days",
+					order:"all_parts.date_part DESC",
+					page:1,
+				},
+				memberLoginList:{
+					col:[],
+					count:[],
+				},
+				memberJoinList:{
+					col:[],
+					count:[],
+				},
+				loginChart:null,
+				joinChart:null,
+				loginChartLeft:true,
+				joinChartLeft:true,
 			};
 		},
 		computed: {
@@ -510,14 +626,141 @@
 					console.log(data);
 					this.reportList = [...data];
 				};
-			}
+			},
 			/*------------------------------ 신고관리 끝 ------------------------------*/
+			/*------------------------------ 멤버통계 시작 ------------------------------*/
+			async getMemberLoginStats(buttonClick){
+				if(buttonClick){
+					this.memberLoginSearch.page=1;
+				}
+				const resp = await axios.post(contextPath+"/rest/member/stats/", this.memberLoginSearch)
+				this.loginChartLeft=true;
+				if(this.memberLoginSearch.col=='days'){
+					if(resp.data.length<31){
+						this.loginChartLeft=false;
+					}
+				}
+				else{
+					if(resp.data.length<12){
+						this.loginChartLeft=false;
+					}
+				}
+				this.memberLoginList.col = _.map(resp.data, 'col');
+				this.memberLoginList.count = _.map(resp.data, 'count');
+				if(this.memberLoginSearch.order=='all_parts.date_part DESC'){
+					this.memberLoginList.col.reverse();
+					this.memberLoginList.count.reverse();
+				}
+				//캔버스 사용 초기화
+				if(loginChart!=null) {
+					loginChart.destroy();
+				}
+				loginChart = this.$refs.loginChart;
+				
+				loginChart = new Chart(loginChart, {
+					type: "bar",
+					data: {
+						labels: this.memberLoginList.col,
+						datasets: [
+							{
+								label: "방문자 수(명)",
+								data: this.memberLoginList.count,
+								borderWidth: 1,
+								backgroundColor: [
+									"navy",
+								],
+								borderColor: [
+									"navy",
+								],
+							},
+						],
+					},
+					options: {
+						scales: {
+							y: {beginAtZero: true,},
+						},
+					},
+				});
+			},
+			async getMemberJoinStats(buttonClick){
+				if(buttonClick){
+					this.memberJoinSearch.page=1;
+				}
+				const resp = await axios.post(contextPath+"/rest/member/stats/", this.memberJoinSearch);
+				this.joinChartLeft=true;
+				if(this.memberJoinSearch.col=='days'){
+					if(resp.data.length<31){
+						this.joinChartLeft=false;
+					}
+				}
+				else{
+					if(resp.data.length<12){
+						this.joinChartLeft=false;
+					}
+				}
+				this.memberJoinList.col = _.map(resp.data, 'col');
+				this.memberJoinList.count = _.map(resp.data, 'count');
+				if(this.memberJoinSearch.order=='all_parts.date_part DESC'){
+					this.memberJoinList.col.reverse();
+					this.memberJoinList.count.reverse();
+				}
+				//차트 초기화
+				if(joinChart!=null) {
+					joinChart.destroy();
+				}
+				joinChart = this.$refs.joinChart;
+				
+				joinChart = new Chart(joinChart, {
+					type: "bar",
+					data: {
+						labels: this.memberJoinList.col,
+						datasets: [
+							{
+								label: "가입자 수(명)",
+								data: this.memberJoinList.count,
+								borderWidth: 1,
+								backgroundColor: [
+									"navy",
+								],
+								borderColor: [
+									"navy",
+								],
+							},
+						],
+					},
+					options: {
+						scales: {
+							y: {beginAtZero: true,},
+						},
+					},
+				});
+			},
+			//차트 좌우버튼 클릭시
+			loginStatsPrev(){
+				this.memberLoginSearch.page++;
+				this.getMemberLoginStats();
+			},
+			loginStatsNext(){
+				this.memberLoginSearch.page--;
+				this.getMemberLoginStats();
+			},
+			joinStatsPrev(){
+				this.memberJoinSearch.page++;
+				this.getMemberJoinStats();
+			},
+			joinStatsNext(){
+				this.memberJoinSearch.page--;
+				this.getMemberJoinStats();
+			},
 		},
 		created(){
 			//데이터 불러오는 영역
 			this.loadMemberList();
 			this.loadReportList();
 			this.connectReportServer();
+			this.getMemberLoginStats();
+			this.getMemberJoinStats();
+
 		},
 		watch:{
 			//감시영역

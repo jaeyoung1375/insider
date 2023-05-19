@@ -232,6 +232,7 @@
 					</div>
 				</div>
 				<div class="modal-footer">
+					<!-- <button type="button" class="btn btn-primary" @click="clickCheckPassword">확인</button> -->
 					<button type="button" class="btn btn-secondary" @click="hideReportMenuModal">취소</button>
 				</div>
 			</div>
@@ -255,10 +256,10 @@ Vue.createApp({
             page:1,
             boardList:[],
             finish:false,
+            boardNo : '',
             //안전장치
             loading:false,
             //▲▲▲▲▲▲▲▲▲▲▲▲▲무한 페이징▲▲▲▲▲▲▲▲▲▲▲▲▲
-            
 			boardLikeCount:[], // 좋아요 수를 저장할 변수
             isLiked : [],
 			/*----------------------신고----------------------*/
@@ -294,8 +295,8 @@ Vue.createApp({
             if(this.loading == true) return; //로딩중이면
             if(this.finish == true) return; //다 불러왔으면
             this.loading = true;
-
             const resp = await axios.get("${pageContext.request.contextPath}/rest/board/page/"+ this.page);
+
             //console.log(resp.data);
             //console.log(resp.data[0].boardLike);
             
