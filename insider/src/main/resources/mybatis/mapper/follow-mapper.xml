@@ -14,10 +14,15 @@
 	
 	<!-- follow_with_profile 구문인데 그냥 넣음 -->
 	<select id="getFollowList" resultType="followWithProfileDto">
-		select * from follow_with_profile where member_no=#{memberNo}
+		select * from followwithprofile where member_no=#{memberNo}
 	</select>
+	
+	<select id="getFollowNo" resultType="long">
+		select follow_follower from follow where member_no=#{memberNo}
+	</select>
+	
 	<select id="getFollowerList" resultType="followerWithProfileDto">
-		select * from follow_with_profile where follow_follower=#{memberNo}
+		select * from followwithprofile where follow_follower=#{memberNo}
 	</select>
 	<update id="changeAllow">
 		update follow set follow_allow=1 where member_no=#{memberNo} and follow_follower=#{followFollower}

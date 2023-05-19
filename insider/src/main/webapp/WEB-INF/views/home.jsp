@@ -9,7 +9,7 @@
             display: flex;
             margin: 5px auto auto auto;
             max-width: 650px;
-            width: 80%;
+            width: 90%;
             border: 2px solid black;
             height: 1000px
         }
@@ -43,9 +43,9 @@
     .head_feed {
         display: table;
         margin: 5px auto 5px auto;
-        width: 70%;
-        max-width: 600px;
-        max-width: 600px;
+        width: 80%;
+        max-width: 650px;
+        max-width: 650px;
     }
 
     .fix_test {
@@ -55,7 +55,7 @@
     }
 
     .carousel-inner img {
-        width: 400px;
+        width: 470px;
         height: 480px;
     }
     
@@ -66,6 +66,10 @@
 	
 	.fa-heart {
 	cursor: pointer;
+	}
+	
+	.isFollow {
+	display: none;
 	}
 	
 </style>
@@ -81,8 +85,9 @@
                         <div style="padding: 8px 8px 4px 8px;">
                             <div class="d-flex">
                                 <div class="p-2"><img class="profile" :src="profileUrl(index)"></div>
-                                <div class="p-2" style="margin-top: 8px;"><h4><b style="font-size: 16px;">{{board.boardWithNickDto.memberNick}} · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
-                                <div class="p-2 me-4" style="margin-top: 8px;"><h4><b style="font-size: 15px;">· 팔로우</b></h4></div>
+                                <div class="p-2" style="margin-top: 8px;"><h4><b style="font-size: 15px;">{{board.boardWithNickDto.memberNick}} · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
+                                <div v-if="followCheckIf(index)" @click="follow(board.boardWithNickDto.memberNo)" class="p-2 me-5" style="margin-top: 8px;"><h4><b style="font-size: 15px; color:blue; cursor: pointer;">팔로우</b></h4></div>
+<!--                                 <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> -->
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
 
                                 <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo)"></i></div>
@@ -260,6 +265,11 @@ Vue.createApp({
             //안전장치
             loading:false,
             //▲▲▲▲▲▲▲▲▲▲▲▲▲무한 페이징▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+			loginMemberNo:"${sessionScope.memberNo}", // 로그인한 세션 값
+			followCheckList:[],
+			
+
 			boardLikeCount:[], // 좋아요 수를 저장할 변수
             isLiked : [],
 			/*----------------------신고----------------------*/
@@ -270,7 +280,6 @@ Vue.createApp({
 			reportContentList:[],
 			reportBoardData:[],
 			/*----------------------신고----------------------*/
-			
 			boardModal:null,
         };
     },
@@ -287,6 +296,7 @@ Vue.createApp({
     		      }
     		    };
     		  },
+    	
     },
     //메소드
     methods:{
@@ -304,6 +314,7 @@ Vue.createApp({
             	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
             	//console.log(this.isLiked);
             	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
+            	//this.followCheck(board.boardWithNickDto.memberNo);
             	//console.log(this.boardLikeCount);
             	//this.boardLikeCount.push(board.boardLike);
             	//this.boardLikeCount = boardList.boardLike;
@@ -371,6 +382,49 @@ Vue.createApp({
         	
         },
         
+        //팔로우
+        async follow(followNo) {
+        	//const loginNo = sessionStorage.getItem('memberNo');
+        	//console.log(followNo);
+        	const resp = await axios.get("${pageContext.request.contextPath}/rest/follow/"+followNo);
+        	return resp.data;
+        	//if(loginNo == this.boardList.boardWithNickDto.memberNo)
+        	this.followCheck();
+        	//this.loadList();
+        	//this.followCheckIf(index) = false;
+        	//console.log(this.followCheckIf(index));
+        },
+        
+        /* //팔로우 여부 체크
+        async followCheck(followNo) {
+        	const resp = await axios.get("${pageContext.request.contextPath}/rest/follow/check/"+followNo);
+        	this.followCheckList.push(resp.data);
+        }, */
+        
+        // 팔로우 v-if 여부체크 함수
+       	followCheckIf(index){
+        	const board = this.boardList[index];
+       		return !this.followCheckList.includes(board.boardWithNickDto.memberNo);
+        },
+        
+     	 //팔로우 여부 체크
+        async followCheck() {
+        	const resp = await axios.get("${pageContext.request.contextPath}/rest/follow/check");
+        	//const newData = {followFollower : this.loginMemberNo};
+        	const newData = memberNo;
+        	//const newData=0;
+        	console.log(newData);
+        	//console.log(newData);
+        	//console.log(this.loginMemberNo)
+        	this.followCheckList.push(...resp.data);
+        	this.followCheckList.push(parseInt(newData));
+        	
+        	console.log(this.followCheckList)
+        	//console.log(this.boardList);
+        	//console.log(this.boardList[0]);
+        	//const check = this.followCheckList.some(followFollower => followFollower === this.boardList[0].boardWithNickDto.memberNo)
+        	//console.log(check);
+        },
        
         
         showBoardModal(boardNo) {
@@ -449,11 +503,12 @@ Vue.createApp({
 		this.boardModal = new bootstrap.Modal(this.$refs.modal03);
     },
     created(){
-        this.loadList();
+    	//this.loginMemberNo =  "${sessionScope.memberNo}";        
+    	this.loadList();
+    	this.followCheck();
         //this.likeChecked(boardNo);
     },
 }).mount("#app");
 </script>
-
 
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>
