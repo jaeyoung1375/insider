@@ -22,4 +22,8 @@ public class MemberProfileRepoImpl implements MemberProfileRepo{
 		sqlSession.delete("memberProfile.delete", memberNo);
 	}
 
+	@Override
+	public Integer selectAttachNo(long memberNo) {
+		return sqlSession.selectOne("memberProfile.one", memberNo);
+	}
 }

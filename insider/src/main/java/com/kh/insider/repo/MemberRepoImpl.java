@@ -78,16 +78,14 @@ public class MemberRepoImpl implements MemberRepo{
 		sqlSession.update("member.changePassword", memberDto);
 	}
 
+	//닉네임(boardController에서 닉네임 받아오기)
+	@Override
+	public String nick(long memberNo) {
+		return sqlSession.selectOne("member.nick",memberNo);
+	}
 	@Override
 	public void updateTempPassword(MemberDto dto) {
 		sqlSession.update("member.updateTempPassword",dto);
 	}
-
-	
-
-	
-
-	
-
 	
 }

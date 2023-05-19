@@ -1,10 +1,13 @@
 package com.kh.insider.vo;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.springframework.web.socket.TextMessage;
+
+import com.kh.insider.dto.DmMessageDto;
 
 import lombok.Data;
 
@@ -12,7 +15,8 @@ import lombok.Data;
 public class DmRoomVO {
 	
 	private int roomNo;
-	//private String roomName;
+	private String roomName;
+	private List<DmMessageDto> messages;
 	
     //채팅방의 사용자를 저장할 저장소
     private Set<DmUserVO> users = new CopyOnWriteArraySet<>();

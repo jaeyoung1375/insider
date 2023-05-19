@@ -11,9 +11,11 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kh.insider.dto.DmMessageDeletedDto;
 import com.kh.insider.dto.DmMessageDto;
 import com.kh.insider.dto.DmRoomDto;
 import com.kh.insider.dto.DmUserDto;
+import com.kh.insider.repo.DmMessageDeletedRepo;
 import com.kh.insider.repo.DmMessageRepo;
 import com.kh.insider.repo.DmRoomRepo;
 import com.kh.insider.repo.DmUserRepo;
@@ -37,7 +39,10 @@ public class DmServiceImpl implements DmService {
 	
 	@Autowired
 	private DmMessageRepo dmMessageRepo;
-
+	
+	@Autowired
+	private DmMessageDeletedRepo dmMessageDeletedRepo;
+	
 
 	//여러 개의 방을 관리할 저장소
 	Map<Integer, DmRoomVO> rooms = Collections.synchronizedMap(new HashMap<>());
@@ -93,10 +98,9 @@ public class DmServiceImpl implements DmService {
 		userDto.setRoomNo(roomNo);
 		userDto.setMemberNo(user.getMemberNo());
 		dmUserRepo.enter(userDto);
-		
-		
+	    
 		log.debug("{}님이 {}방으로 참여하였습니다.", user.getMemberNo(), roomNo);
-	}
+    }
 	
 	//사용자 방에서 퇴장
 	public void exit(DmUserVO user, int roomNo) {
@@ -114,7 +118,8 @@ public class DmServiceImpl implements DmService {
 	public void broadcastRoom(
 			DmUserVO user,
 			int roomNo,
-			TextMessage jsonMessage) throws IOException {
+			TextMessage jsonMessage,
+			long messageNo) throws IOException {
 		if(containsRoom(roomNo) == false) return;
 		
 		DmRoomVO dmRoomVO = rooms.get(roomNo);
@@ -123,6 +128,7 @@ public class DmServiceImpl implements DmService {
 		//메세지 DB 저장
 		//- 사용자 아이디, 방 이름, 메세지 내용
 		DmMessageDto dmMessageDto = new DmMessageDto();
+		dmMessageDto.setMessageNo(messageNo);
 		dmMessageDto.setRoomNo(roomNo);
 		dmMessageDto.setMessageSender(user.getMemberNo());
 		dmMessageDto.setMessageContent(jsonMessage.getPayload());
@@ -189,22 +195,38 @@ public class DmServiceImpl implements DmService {
 			msg.setContent(receiveVO.getContent());
 			msg.setTime(System.currentTimeMillis());
 			msg.setMemberNick(user.getMemberNick());
+			long messageNo = dmMessageRepo.sequence();
+			msg.setMessageNo(messageNo);
+			msg.setMemberNo(user.getMemberNo());
 			
 			//JSON 변환
 			String json = mapper.writeValueAsString(msg);
 			TextMessage jsonMessage = new TextMessage(json);
 			
-			this.broadcastRoom(user, roomNo, jsonMessage);
+			//채팅방으로 메세지 전송
+			 this.broadcastRoom(user, roomNo, jsonMessage, messageNo);
 		}
 		//입장메세지인 경우
 		else if (receiveVO.getType() == WebSocketConstant.JOIN) {
 			int roomNo = receiveVO.getRoom();
 			this.moveUser(user, roomNo);
 			//this.join(user, roomNo);
-			
 		}
+		
+	    //메시지 삭제
+		else if(receiveVO.getType() == WebSocketConstant.DELETE) {
+			long messageNo = receiveVO.getMessageNo();
+			this.deleteMessage(user, messageNo);
+		}
+		
 	}
-	
-
+	//메세지 삭제
+	private void deleteMessage(DmUserVO user, long messageNo) {
+		DmMessageDeletedDto dmMessageDeletedDto = new DmMessageDeletedDto();
+        dmMessageDeletedDto.setMemberNo(user.getMemberNo());
+        dmMessageDeletedDto.setMessageNo(messageNo);
+        dmMessageDeletedRepo.insertDeleteMessage(dmMessageDeletedDto);
+	}
+		
 	
 }
