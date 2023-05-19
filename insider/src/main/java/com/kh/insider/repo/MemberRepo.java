@@ -30,4 +30,7 @@ public interface MemberRepo {
 	
 	
 	public void changePassword(MemberDto memberDto);
+	
+	// 닉네임
+	String nick(long memberNo);
 }

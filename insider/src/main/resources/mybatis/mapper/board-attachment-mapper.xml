@@ -27,14 +27,26 @@
    
    <mapper namespace="boardAttachment">
    
+       <!-- R 첨부파일 시퀀스 -->
+    <select id="sequence" resultType="int">
+        select board_attachment_seq.nextval from dual
+    </select>
+    
    		<!-- 등록 -->
 	   <insert id="insert" parameterType="BoardAttachmentDto">
 			insert into board_attachment
-			(board_no, attachment_no)
-			values ( #{boardNo}, #{attachmentNo})
+			(board_attachment_no, board_no, attachment_no)
+			values ( #{boardAttachmentNo}, #{boardNo}, #{attachmentNo})
 		</insert>
 		
 		<!-- 목록 -->
-
+		<select id="list" resultType="BoardAttachmentDto" parameterType="int">
+			select*from board_attachment where board_no=#{boardNo}
+		</select>
+		
+		<!-- 삭제 -->
+		<delete id="delete" parameterType="int">
+			delete board_attachment where board_no=#{boardNo}
+		</delete>
    
    </mapper>

@@ -20,7 +20,7 @@ public class FollowRepoImpl implements FollowRepo {
 	public void insert(FollowDto followDto) {
 		sqlSession.insert("follow.insert", followDto);
 	}
-
+	
 	@Override
 	public List<FollowWithProfileDto> getFollowList(long memberNo) {
 		return sqlSession.selectList("follow.getFollowList", memberNo);
@@ -59,6 +59,11 @@ public class FollowRepoImpl implements FollowRepo {
 	@Override
 	public FollowDto selectOne(FollowDto followDto) {
 		return sqlSession.selectOne("follow.selectOne", followDto);
+	}
+
+	@Override
+	public List<Long> check(long memberNo) {
+		return sqlSession.selectList("follow.getFollowNo",memberNo);
 	}
 
 

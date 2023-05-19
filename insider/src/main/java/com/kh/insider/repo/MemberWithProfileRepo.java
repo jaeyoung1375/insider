@@ -6,9 +6,10 @@ import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.vo.MemberWithProfileSearchVO;
 
 public interface MemberWithProfileRepo {
-	MemberWithProfileDto selectOne(int memberNo);
+	MemberWithProfileDto selectOne(long memberNo);
 	
 	//회원 검색 및 조회
 	List<MemberWithProfileDto> selectList(MemberWithProfileSearchVO memberWithProfileSearchVO);
 	int selectCount(MemberWithProfileSearchVO memberWithProfileSearchVO);
+
 }
