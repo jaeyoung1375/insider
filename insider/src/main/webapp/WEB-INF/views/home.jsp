@@ -9,7 +9,11 @@
             display: flex;
             margin: 5px auto auto auto;
             max-width: 650px;
+<<<<<<< HEAD
             width: 90%;
+=======
+            width: 80%;
+>>>>>>> branch 'jaeyeong' of https://github.com/Hangsuu/finalProject.git
             border: 2px solid black;
             height: 1000px
         }
@@ -85,9 +89,14 @@
                         <div style="padding: 8px 8px 4px 8px;">
                             <div class="d-flex">
                                 <div class="p-2"><img class="profile" :src="profileUrl(index)"></div>
+<<<<<<< HEAD
                                 <div class="p-2" style="margin-top: 8px;"><h4><b style="font-size: 15px;">{{board.boardWithNickDto.memberNick}} · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
                                 <div v-if="followCheckIf(index)" @click="follow(board.boardWithNickDto.memberNo)" class="p-2 me-5" style="margin-top: 8px;"><h4><b style="font-size: 15px; color:blue; cursor: pointer;">팔로우</b></h4></div>
 <!--                                 <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> -->
+=======
+                                <div class="p-2" style="margin-top: 8px;"><h4><b style="font-size: 16px;">{{board.boardWithNickDto.memberNick}} · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
+                                <div class="p-2 me-4" style="margin-top: 8px;"><h4><b style="font-size: 15px;">· 팔로우</b></h4></div>
+>>>>>>> branch 'jaeyeong' of https://github.com/Hangsuu/finalProject.git
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
 
                                 <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo)"></i></div>
