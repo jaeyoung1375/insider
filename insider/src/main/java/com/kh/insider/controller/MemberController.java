@@ -1,7 +1,7 @@
 package com.kh.insider.controller;
 
 import java.net.URISyntaxException;
-
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.kh.insider.dto.BoardDto;
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.MemberRepo;
@@ -117,6 +118,10 @@ public class MemberController {
 		// 전체 게시물 개수
 		int totalPostCount = boardRepo.getTotalPostCount(findMember.getMemberNo());
 		
+		// 마이페이지 게시물 조회
+		List<BoardDto> getTotalMyPost = boardRepo.getTotalMyPost(findMember.getMemberNo());
+		
+		model.addAttribute("getTotalMyPost",getTotalMyPost);
 		model.addAttribute("totalPostCount",totalPostCount);
 		model.addAttribute("memberDto",findMember);
 		model.addAttribute("isOwner",isOwner);

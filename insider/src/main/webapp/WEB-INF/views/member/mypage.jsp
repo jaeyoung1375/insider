@@ -2,7 +2,6 @@
     pageEncoding="UTF-8"%>
 <%@ include file="../template/header.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-
 <style>
    .media-height{
         	width: 250px; 
@@ -12,57 +11,58 @@
         .imgHover:hover{
 			opacity:1!important;
 		}
+		.nomal{
+			text-decoration: none;
+			color:black;
+		}
 </style>
-
-
-
-
-
 
 		<div id="app" class="container-fluid">
 			    <div class="row">
+          		<!-- 본인 여부에 따른 프로필 변경  -->
             <div class="col-4 text-center">
-                <img style="border-radius: 70%;" src="${pageContext.request.contextPath}/static/image/user.jpg"
+            	<c:choose>
+            	<c:when test="${isOwner}">
+                <img style="border-radius: 70%;" :src="profileUrl"
+ 				width = "150" height="150" @click="openFileInput">
+ 				<input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*" style="display: none;">
+                </c:when>       
+                <c:otherwise> 
+                  <img style="border-radius: 70%;"
  				width = "150" height="150">
+                </c:otherwise>
+                </c:choose>           		
             </div>
-            <div class="col-4" style=" width:40%; margin-left:70px;">
-            	
+            <div class="col-4" style=" width:40%; margin-left:70px;">	
             	<div class="col-7" style="display:flex;">
             		<div class="col-6" style="width:60%;">
            		 <a href="#" class="btn btn-default" @click="showModal">${memberDto.memberNick}</a>    
-    
      		</div>
      			<c:choose>
      			<c:when test="${isOwner}"> <!-- 본인 프로필 이라면 -->
      				<div class="col-7">
-            		<a class="btn btn-secondary" href="setting">프로필 편집</a>
+            		<a class="btn btn-secondary" href="/member/setting?page=1">프로필 편집</a>
             		</div>
-            	
             	<div class="col-5" style="width:40%;">
-            	<button class="btn btn-secondary" @click="showModal2" style="background-color: white; border:none;"><i class="fa-sharp fa-solid fa-gear" style="font-size:24px;"></i></button>
+            	<button class="btn btn-secondary" @click="myOptionModalShow" style="background-color: white; border:none;"><i class="fa-sharp fa-solid fa-gear" style="font-size:24px;"></i></button>
  				</div>
      			</c:when>
-     			
      			<c:otherwise> <!-- 본인 프로필이 아니라면 -->
      					<div class="col-5">
             	<button class="btn btn-primary">팔로우</button>
             	</div>
-            	
             	<div class="col-5"  style=" width:70%;">
             	<button class="btn btn-secondary">메시지 보내기</button>
             	</div>
-            	
             	<div class="col-5" style=" width:30%;">
             	<button class="btn btn-secondary"><i class="fa-solid fa-user-plus"></i></button>
-            	</div
-            	>
+            	</div>
             	<div class="col-5" style="width:40%;">
             	<button class="btn btn-secondary" @click="showModal2"><i class="fa-solid fa-ellipsis"></i></button>
  				</div>
      			</c:otherwise>
      			</c:choose>
      			
-            
  				</div>
 	            <div class="row mt-4" style="width:130%;">
 	            	<div class="col-7" style="display:flex; margin-left:10px;">
@@ -91,45 +91,40 @@
 					for aespa 💙
 					#aespastyles_ (member)
 					est june 2020 ✨ | twitter:
-					twitter.com/aespastyles?s=21
+					twitter.com/aespastyles?s=21				
 					</span>
 	            </div>
             	
             </div>
             </div>
             <hr>
-            	<div class="position-absolute mt-5 start-50 translate-middle-x media-width" style="display: flex; flex-direction: column; width: 770px;">
-		<div style="margin-bottom:10px;display: flex;flex-direction: row; width: 100%;">     
-		    <div class="media-height" style="margin-right: 10px; position:relative;">
-		        <img src="${pageContext.request.contextPath}/static/image/m.jpg" style="width:100%; height:250px;">
-		        <i  class="fa-solid fa-note-sticky fa-lg" style="color:white;position:absolute;right:0;top:20px;"></i>
-		        <div class="imgHover" style="cursor:pointer;position:absolute;background-color:#22222221;left:0;right:0;top:0;bottom:0;opacity:0;color:white;" >
-                   	<i class="fa-solid fa-heart fa-lg" style="position:absolute;top:50%;left:25%;">1</i>
-                    <i class="fa-regular fa-comment fa-lg" style="position:absolute;top:50%;left:50%;">2</i>
+     <!-- 게시물 시작 -->
+<div class="position-absolute mt-5 start-50 translate-middle-x media-width" style="display: flex; flex-direction: column; width: 770px;"> 
+    <div style="margin-bottom:10px;display: flex;flex-direction: row; width: 100%;">    
+        <c:forEach items="${getTotalMyPost}" var="list" varStatus="status">
+            <div class="media-height" style="margin-right: 10px; position:relative;">
+                <img src="/rest/attachment/download/${list.attachmentNo}" style="width:100%; height:250px;">
+                <i class="fa-solid fa-note-sticky fa-lg" style="color:white;position:absolute;right:0;top:20px;"></i>
+                <div class="imgHover" style="cursor:pointer;position:absolute;background-color:#22222221;left:0;right:0;top:0;bottom:0;opacity:0;color:white;">
+                    <i class="fa-solid fa-heart fa-lg" style="position:absolute;top:50%;left:25%;">${list.boardLike}</i>
+                    <i class="fa-regular fa-comment fa-lg" style="position:absolute;top:50%;left:50%;">${list.boardReply}</i>
                 </div>
+            </div>
+            <!-- 한 줄에 3개 이미지가 출력되었을 때 줄 바꿈 처리 -->
+            <c:if test="${status.index % 3 == 2}">
                 </div>
-                
-                <div class="media-height" style="margin-right: 10px; position:relative;">
-		        <img src="${pageContext.request.contextPath}/static/image/m.jpg" style="width:100%; height:250px;">
-		        <i  class="fa-solid fa-note-sticky fa-lg" style="color:white;position:absolute;right:0;top:20px;"></i>
-		        <div class="imgHover" style="cursor:pointer;position:absolute;background-color:#22222221;left:0;right:0;top:0;bottom:0;opacity:0;color:white;" >
-                   	<i class="fa-solid fa-heart fa-lg" style="position:absolute;top:50%;left:25%;"></i>
-                    <i class="fa-regular fa-comment fa-lg" style="position:absolute;top:50%;left:50%;"></i>
-                </div>
-                </div>
-                
-                <div class="media-height" style="margin-right: 10px; position:relative;">
-		        <img src="${pageContext.request.contextPath}/static/image/m.jpg" style="width:100%; height:250px;">
-		        <i  class="fa-solid fa-note-sticky fa-lg" style="color:white;position:absolute;right:0;top:20px;"></i>
-		        <div class="imgHover" style="cursor:pointer;position:absolute;background-color:#22222221;left:0;right:0;top:0;bottom:0;opacity:0;color:white;" >
-                   	<i class="fa-solid fa-heart fa-lg" style="position:absolute;top:50%;left:25%;"></i>
-                    <i class="fa-regular fa-comment fa-lg" style="position:absolute;top:50%;left:50%;"></i>
-                </div>
-                </div>
-               
-                </div>
+                <div style="margin-bottom:10px;display: flex;flex-direction: row; width: 100%;">
+            </c:if>
+            
+        </c:forEach>
        
-		</div>        
+    </div>
+    
+</div>
+<!-- 게시물 영역 끝 --> 
+		
+		
+		<!-- Modal 창 영역 -->
                    <div class="modal" tabindex="-1" role="dialog" id="modal03"
                             data-bs-backdrop="static"
                             ref="modal03" @click.self="hideModal">
@@ -137,7 +132,7 @@
                 <div class="modal-content">
                     <div class="modal-header" style="display:flex; justify-content: center;">
                         <h5 class="modal-title" style="text-align:center;">
-                        	 <img style="border-radius: 70%;" src="${pageContext.request.contextPath}/static/image/user.jpg"
+                        	 <img style="border-radius: 70%;" :src="profileUrl"
  							width = "150" height="150">
  							<div class="nickname">
  							${memberDto.memberNick}
@@ -171,7 +166,7 @@
         </div>
         
         
-		    <div class="modal" tabindex="-1" role="dialog" id="addtionModal"
+		    <div class="modal" tabindex="-1" role="dialog" id="myOptionModal"
                             data-bs-backdrop="static"
                             ref="addtionModal" @click.self="hideModal2">
             <div class="modal-dialog" role="document">
@@ -243,6 +238,31 @@
       
         </div>
         
+        
+          <div class="modal" tabindex="-1" role="dialog" id="myOptionModal"
+                            data-bs-backdrop="static"
+                            ref="myOptionModal" @click.self="myOptionModalHide">
+            <div class="modal-dialog" role="document">
+                	<div class="modal-content">
+                			 <div class="modal-header" style="display:flex; justify-content: center;">
+                       	<a href="/member/setting" class="nomal">설정 및 개인정보</a>
+                    	</div>
+                    	 <div class="modal-header" style="display:flex; justify-content: center;">
+                       	<a href="/member/setting?page=2" class="nomal">알림</a>
+                    	</div>
+                    
+                        <div class="modal-header" style="display:flex; justify-content: center;">
+                       	<a href="/member/logout" class="nomal">로그아웃</a>
+                    	</div>
+                   
+                 
+                        <button type="button" class="btn"
+                                data-bs-dismiss="modal" style="color:red;">취소</button>
+                   
+                </div>      
+            </div>
+        </div>
+        <!-- Modal 창 영역 끝 -->
 		
 		
 		</div> <!-- vue 끝 -->
@@ -262,11 +282,35 @@
 				reportMenuModal:null,
 				blockModal : null,
 				blockResultModal : null,
+				myOptionModal : null,
 				reportContentList:[],
 				reportBoardNo:"",
+				member:{
+					memberNo:"",
+					memberName:"",
+					memberEmail:"",
+					memberLat:"",
+					memberLon:"",
+					memberPost:"",
+					memberBasicAddr:"",
+					memberDetailAddr:"",
+					memberMsg:"",
+					memberTel:"",
+					memberGender:"",
+					memberBirth:"",
+					attachmentNo:"",
+				},
 			};
 		},
 		computed: {
+			profileUrl(){
+				if(this.member.attachmentNo>0){
+					return contextPath+"/rest/attachment/download/"+this.member.attachmentNo;
+				}
+				else{
+					return "https://via.placeholder.com/100x100?text=profile";
+				}
+			},
 			
 		},
 		methods: {
@@ -305,16 +349,50 @@
             	  if(this.blockResultModal == null) return;
                   this.blockResultModal.hide(); 
               },
+              myOptionModalShow(){
+            	  if(this.myOptionModal == null) return;
+                  this.myOptionModal.show();  
+              },
+              myOptionModalHide(){
+            	  if(this.myOptionModal == null) return;
+                  this.myOptionModal.hide();  
+              },
               
               accountView(){
             	  this.addtionModal.hide();
             	  this.modal.show();
               },
+          	//멤버 정보 불러오기
+  			async loadMember(){
+  				const resp = await axios.get(contextPath+"/rest/member/"+memberNo);
+  				Object.assign(this.member, resp.data);
+  			},
+              
+          	//프로필 사진 변경 누르면 실행
+  		    openFileInput() {
+  				this.$refs.fileInput.click();
+  			},
+  			//파일이 추가되면 실행
+			handleFileUpload(event) {
+				const file = event.target.files[0];
+				// 파일 업로드 로직 처리
+				if (file) {
+					let fd = new FormData();
+					fd.append("attach", file);
+					this.uploadProfile(fd);
+				};
+			},
+			//파일 저장 비동기 처리
+			async uploadProfile(formData){
+				const resp = await axios.post(contextPath+"/rest/attachment/upload/profile", formData);
+				this.member.attachmentNo = resp.data;
+			},
             
 			
 		},
 		created(){
 			//데이터 불러오는 영역
+			this.loadMember();
 		},
 		watch:{
 			//감시영역
@@ -325,6 +403,8 @@
             this.addtionModal = new bootstrap.Modal(this.$refs.addtionModal);
             this.blockModal = new bootstrap.Modal(this.$refs.blockModal);
             this.blockResultModal = new bootstrap.Modal(this.$refs.blockResultModal);
+            this.myOptionModal = new bootstrap.Modal(this.$refs.myOptionModal);
+            
 		},
 	}).mount("#app");
 </script>

@@ -8,8 +8,8 @@
 	P {
             display: flex;
             margin: 5px auto auto auto;
-            max-width: 600px;
-            width: 80%;
+            max-width: 650px;
+            width: 90%;
             border: 2px solid black;
             height: 1000px
         }
@@ -43,9 +43,9 @@
     .head_feed {
         display: table;
         margin: 5px auto 5px auto;
-        width: 70%;
-        max-width: 600px;
-        max-width: 600px;
+        width: 80%;
+        max-width: 650px;
+        max-width: 650px;
     }
 
     .fix_test {
@@ -55,7 +55,7 @@
     }
 
     .carousel-inner img {
-        width: 400px;
+        width: 470px;
         height: 480px;
     }
     
@@ -68,6 +68,10 @@
 	cursor: pointer;
 	}
 	
+	.isFollow {
+	display: none;
+	}
+	
 </style>
 <div id="app">
 	<div class="container" style="margin-top: 20px; max-width: 1000px">
@@ -78,20 +82,20 @@
                 <div class="head_feed bg-white" style="border: 0.5px solid #b4b4b4; border-radius: 10px;">
                     <div class="d-flex flex-column">
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼ID▼▼▼▼▼▼▼▼▼▼▼▼▼-->
-                        <div class="p-2">
+                        <div style="padding: 8px 8px 4px 8px;">
                             <div class="d-flex">
-                                <div class="p-1"><img class="profile" :src="profileUrl(index)"></div>
-                                <div class="p-2" style="margin-top: 8px;"><h4><b style="font-size: 17px;">{{board.boardWithNickDto.memberNick}} · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
+                                <div class="p-2"><img class="profile" :src="profileUrl(index)"></div>
+                                <div class="p-2" style="margin-top: 8px;"><h4><b style="font-size: 15px;">{{board.boardWithNickDto.memberNick}} · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
+                                <div v-if="followCheckIf(index)" @click="follow(board.boardWithNickDto.memberNo)" class="p-2 me-5" style="margin-top: 8px;"><h4><b style="font-size: 15px; color:blue; cursor: pointer;">팔로우</b></h4></div>
+<!--                                 <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> -->
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
 
-                                <div class="p-2 flex-grow-1 mt-3"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo)"></i></div>
-
-
+                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo)"></i></div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲ID▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼사진▼▼▼▼▼▼▼▼▼▼▼▼▼-->
-                        <div class="p-2">
+                        <div style="padding: 4px 8px 8px 8px;">
                             <div :id="'carouselExampleIndicators'+index" class="carousel slide">
                                 <div class="carousel-indicators">
                                   <button v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#carouselExampleIndicators'+index" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
@@ -99,9 +103,15 @@
 <!--                                   <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button> -->
                                 </div>
                                 <div class="carousel-inner">
+                                  <div class="carousel-item active">
+
+                                    <img src="/static/image/r.jpeg" class="d-block" @dblclick="likePost(board.boardNo,index)" alt="...">
+
+<!--                                     <img src="/static/image/r.jpeg" class="d-block" @dblclick="likePost(board.boardNo)" alt="..."> -->
+<%--                                   	<img src="'${pageContext.request.contextPath}/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardNo)" alt="..."> --%>
                                   <div  v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
 <!--                                     <img src="/static/image/r.jpeg" class="d-block" @dblclick="likePost(board.boardNo,index)" alt="..."> -->
-                                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,index)"> 
+<%--                                    	<img :src="'${pageContext.request.contextPath}/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,index)">  --%>
                                   </div>
 <!--                                   <div class="carousel-item"> -->
 <!--                                     <img src="/static/image/h.jpg" class="d-block" alt="..."> -->
@@ -235,6 +245,7 @@
 	</div>
 
 </div>
+</div>
   소셜유저 : ${sessionScope.socialUser}		
   회원번호 : ${sessionScope.memberNo}		
   멤버토큰 : ${sessionScope.member}		
@@ -254,6 +265,11 @@ Vue.createApp({
             //안전장치
             loading:false,
             //▲▲▲▲▲▲▲▲▲▲▲▲▲무한 페이징▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+			loginMemberNo:"${sessionScope.memberNo}", // 로그인한 세션 값
+			followCheckList:[],
+			
+
 			boardLikeCount:[], // 좋아요 수를 저장할 변수
             isLiked : [],
 			/*----------------------신고----------------------*/
@@ -264,7 +280,6 @@ Vue.createApp({
 			reportContentList:[],
 			reportBoardData:[],
 			/*----------------------신고----------------------*/
-			
 			boardModal:null,
         };
     },
@@ -281,6 +296,7 @@ Vue.createApp({
     		      }
     		    };
     		  },
+    	
     },
     //메소드
     methods:{
@@ -289,23 +305,19 @@ Vue.createApp({
             if(this.loading == true) return; //로딩중이면
             if(this.finish == true) return; //다 불러왔으면
             this.loading = true;
-            const resp = await axios.get("${pageContext.request.contextPath}/rest/board/list/"+ this.page);
+            const resp = await axios.get("${pageContext.request.contextPath}/rest/board/page/"+ this.page);
+
             //console.log(resp.data);
             //console.log(resp.data[0].boardLike);
             
             for (const board of resp.data) {
-<<<<<<< HEAD
-            	this.isLiked = await this.likeChecked(board.boardNo);
-            	this.boardNo = board.boardNo;
-            	this.boardLikeCount = board.boardLike;
-=======
             	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
             	//console.log(this.isLiked);
             	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
+            	//this.followCheck(board.boardWithNickDto.memberNo);
             	//console.log(this.boardLikeCount);
             	//this.boardLikeCount.push(board.boardLike);
             	//this.boardLikeCount = boardList.boardLike;
->>>>>>> branch 'jaeyeong' of https://github.com/Hangsuu/finalProject.git
               }
             //this.boardListCount=[...resp.data.boardLike]
 			
@@ -313,7 +325,7 @@ Vue.createApp({
             this.boardList.push(...resp.data);
             this.page++;
             
-            if(resp.data < 2) this.finish = true; //데이터가 10개 미만이면 더 읽을게 없다
+            if(resp.data < 2) this.finish = true; //데이터가 2개 미만이면 더 읽을게 없다
 
             this.loading = false;
         },
@@ -346,10 +358,14 @@ Vue.createApp({
         dateCount(date) {
         	const curTime = new Date();
         	const postTime = new Date(date);
+        	console.log(postTime);
         	const duration = Math.floor((curTime - postTime) / (1000 * 60));
+        	console.log(duration);
         	
-        	
-        	if(duration < 60){
+        	if(duration < 1){
+        		return "방금 전";
+        	}
+        	else if(duration < 60){
         		return duration + "분 전";
         	}
         	else if(duration < 1440) {
@@ -366,6 +382,49 @@ Vue.createApp({
         	
         },
         
+        //팔로우
+        async follow(followNo) {
+        	//const loginNo = sessionStorage.getItem('memberNo');
+        	//console.log(followNo);
+        	const resp = await axios.get("${pageContext.request.contextPath}/rest/follow/"+followNo);
+        	return resp.data;
+        	//if(loginNo == this.boardList.boardWithNickDto.memberNo)
+        	this.followCheck();
+        	//this.loadList();
+        	//this.followCheckIf(index) = false;
+        	//console.log(this.followCheckIf(index));
+        },
+        
+        /* //팔로우 여부 체크
+        async followCheck(followNo) {
+        	const resp = await axios.get("${pageContext.request.contextPath}/rest/follow/check/"+followNo);
+        	this.followCheckList.push(resp.data);
+        }, */
+        
+        // 팔로우 v-if 여부체크 함수
+       	followCheckIf(index){
+        	const board = this.boardList[index];
+       		return !this.followCheckList.includes(board.boardWithNickDto.memberNo);
+        },
+        
+     	 //팔로우 여부 체크
+        async followCheck() {
+        	const resp = await axios.get("${pageContext.request.contextPath}/rest/follow/check");
+        	//const newData = {followFollower : this.loginMemberNo};
+        	const newData = memberNo;
+        	//const newData=0;
+        	console.log(newData);
+        	//console.log(newData);
+        	//console.log(this.loginMemberNo)
+        	this.followCheckList.push(...resp.data);
+        	this.followCheckList.push(parseInt(newData));
+        	
+        	console.log(this.followCheckList)
+        	//console.log(this.boardList);
+        	//console.log(this.boardList[0]);
+        	//const check = this.followCheckList.some(followFollower => followFollower === this.boardList[0].boardWithNickDto.memberNo)
+        	//console.log(check);
+        },
        
         
         showBoardModal(boardNo) {
@@ -444,11 +503,12 @@ Vue.createApp({
 		this.boardModal = new bootstrap.Modal(this.$refs.modal03);
     },
     created(){
-        this.loadList();
+    	//this.loginMemberNo =  "${sessionScope.memberNo}";        
+    	this.loadList();
+    	this.followCheck();
         //this.likeChecked(boardNo);
     },
 }).mount("#app");
 </script>
-
 
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>

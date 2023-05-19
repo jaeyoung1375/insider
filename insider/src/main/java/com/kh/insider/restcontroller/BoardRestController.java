@@ -62,8 +62,9 @@ public class BoardRestController {
 		long memberNo=(Long)session.getAttribute("memberNo");
 		
 		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
-		boardSearchVO.setBoardCount(15);
-		return boardRepo.selectListWithFollow(boardSearchVO);
+		boardSearchVO.setBoardCount(2);
+		return boardRepo.selectListWithoutFollow(boardSearchVO);
+		//return boardRepo.selectListWithFollow(boardSearchVO);
 	}
 	//검색 페이지 리스트 출력을 위한 계층형 조회
 	@GetMapping("/list/{page}")
