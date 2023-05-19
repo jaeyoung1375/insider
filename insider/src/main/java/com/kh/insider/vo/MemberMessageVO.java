@@ -13,5 +13,8 @@ public class MemberMessageVO {
 	
 	private String memberNick, content;
 	private long time;
+	
+	private long messageNo;
+	private long memberNo;
 
 }

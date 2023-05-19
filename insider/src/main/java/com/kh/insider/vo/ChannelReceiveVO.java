@@ -11,5 +11,8 @@ public class ChannelReceiveVO {
 	private int type;
 	private String content;
 	private int room;
+	
+	private long messageNo; 
+	private long memberNo;
 
 }
