@@ -22,6 +22,9 @@ public interface BoardRepo {
 	//차단 구현 리스트 출력
 	List<BoardListVO> selectListWithoutFollow(BoardSearchVO vo);
 	
+	// 전체 게시물 개수
+	int getTotalPostCount(Long MemberNo);
+	
 	//신고수 추가
 	void addReport(int boardNo);
 }

@@ -93,7 +93,15 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<!--ffmpeg-->
+
+		<dependency>
+			<groupId>com.kh</groupId>
+			<artifactId>spring21</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+			<!--ffmpeg-->
+
 		<dependency>
 	     	<groupId>net.bramp.ffmpeg</groupId>
 	     	<artifactId>ffmpeg</artifactId>

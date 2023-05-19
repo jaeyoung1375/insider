@@ -1,28 +1,30 @@
 package com.kh.insider.controller;
 
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
+
 import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.insider.dto.MemberDto;
+import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.MemberRepo;
+import com.kh.insider.service.MemberService;
 import com.kh.insider.service.SocialLoginService;
 import com.kh.insider.vo.FacebookProfileVO;
 import com.kh.insider.vo.FacebookResponseVO;
@@ -36,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @Slf4j
+@CrossOrigin
 @RequestMapping("/member")
 public class MemberController {
 	
@@ -46,10 +49,15 @@ public class MemberController {
 	@Autowired
 	private MemberRepo memberRepo;
 	@Autowired
+	private MemberService memberService;
+	@Autowired
 	private SettingRepo settingRepo;
 	
 	@Autowired
 	private SocialLoginService socialLoginService;
+	
+	@Autowired
+	private BoardRepo boardRepo;
 	
 	@GetMapping("/join")
 	public String join() {
@@ -97,12 +105,33 @@ public class MemberController {
 		return "redirect:/";
 	}
 	
+	@GetMapping("/{memberNick}")
+	public String myPage(@PathVariable String memberNick, Model model, HttpSession session) {
+		
+		// 프로필 정보 불러오기
+		MemberDto findMember = memberRepo.findByNickName(memberNick);
+		// 로그인한 사용자
+		MemberDto loginUser = (MemberDto)session.getAttribute("socialUser");
+		// 본인 프로필 인지 여부
+		boolean isOwner = loginUser.getMemberNick().equals(memberNick);
+		// 전체 게시물 개수
+		int totalPostCount = boardRepo.getTotalPostCount(findMember.getMemberNo());
+		
+		model.addAttribute("totalPostCount",totalPostCount);
+		model.addAttribute("memberDto",findMember);
+		model.addAttribute("isOwner",isOwner);
+		
+		
+		
+		return "/member/mypage";
+	}
+	
 	@GetMapping("/emailCheck")
 	@ResponseBody
 	public String isEmailDuplicated(@RequestParam String memberEmail) throws Exception {
 		
 		int result = memberRepo.isEmailDuplicated(memberEmail);
-		System.out.println("result = "+result);
+		log.debug("result = {}",result);
 		
 		if(result != 0) {
 			return "fail";
@@ -110,6 +139,47 @@ public class MemberController {
 			return "success";
 		}
 	}
+	
+	@GetMapping("/sendMail")
+	@ResponseBody
+	public String sendMail(@RequestParam String memberEmail) {
+		
+		int num = memberService.sendEmail(memberEmail);
+		System.out.println(Integer.toString(num));
+		return Integer.toString(num);
+		
+	}
+	
+	
+	
+	@GetMapping("/nickCheck")
+	@ResponseBody
+	public String isNickDuplicated(@RequestParam String memberNick) throws Exception{
+		
+		int result = memberRepo.isNickDuplicated(memberNick);
+		if(result != 0) {
+			return "fail";
+		}else {
+			return "success";
+		}
+	}
+	
+	@GetMapping("/passwordChange")
+	public String passwordChange() {
+		return "member/passwordChange";
+	}
+	
+	@PostMapping("/passwordChange")
+	@ResponseBody
+	public String passwordChange(@RequestBody MemberDto dto) {
+		// 임시 비밀번호
+		String generatTempPassword = memberService.generatTempPassword();
+		dto.setMemberPassword(generatTempPassword);
+		memberRepo.updateTempPassword(dto);
+		
+		return generatTempPassword;
+	}
+	
 	
 	
 	// 카카오 로그인
@@ -136,7 +206,7 @@ public class MemberController {
 		}else {
 			System.out.println("기존회원이므로 로그인을 진행합니다.");
 			// 로그인 시각 갱신
-			memberRepo.updateLoginTime(memberNo);
+			memberRepo.updateLoginTime(originalMember.getMemberNo());
 			// 회원정보
 			session.setAttribute("socialUser",originalMember);
 			session.setAttribute("memberNo", originalMember.getMemberNo());
@@ -206,7 +276,7 @@ public class MemberController {
 			System.out.println("기존회원이므로 로그인을 진행합니다.");
 			// 회원정보
 			// 로그인 시각 갱신
-			memberRepo.updateLoginTime(memberNo);
+			memberRepo.updateLoginTime(googleUser.getMemberNo());
 			session.setAttribute("socialUser",originalMember);
 			session.setAttribute("memberNo", originalMember.getMemberNo());
 			// 토큰정보
@@ -215,7 +285,7 @@ public class MemberController {
 			return "redirect:/";
 		}
 		// addInfo로 넘길 정보
-		session.setAttribute("socialUser",googleUser);
+		session.setAttribute("loginUser",googleUser);
 		session.setAttribute("member",response.getAccess_token());
 		session.setAttribute("refresh_token",response.getRefresh_token());
 		

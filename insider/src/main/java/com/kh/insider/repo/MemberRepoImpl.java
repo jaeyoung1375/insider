@@ -35,8 +35,18 @@ public class MemberRepoImpl implements MemberRepo{
 	}
 	
 	@Override
+	public MemberDto findByNickName(String memberNick) {
+		return sqlSession.selectOne("member.findByNickName",memberNick);
+	}
+	
+	@Override
 	public int isEmailDuplicated(String memberEmail) throws Exception{		
 		return sqlSession.selectOne("member.isEmailDuplicated",memberEmail);
+	}
+	
+	@Override
+	public int isNickDuplicated(String memberNick) throws Exception {
+		return sqlSession.selectOne("member.isNickDuplicated",memberNick);
 	}
 
 	@Override
@@ -54,7 +64,7 @@ public class MemberRepoImpl implements MemberRepo{
 	}
 
 	@Override
-	public void updateLoginTime(long memberNo) {
+	public void updateLoginTime(Long memberNo) {
 		sqlSession.update("member.updateLoginTime",memberNo);
 	}
 	//memberNo 단일조회
@@ -67,6 +77,15 @@ public class MemberRepoImpl implements MemberRepo{
 	public void changePassword(MemberDto memberDto) {
 		sqlSession.update("member.changePassword", memberDto);
 	}
+
+	@Override
+	public void updateTempPassword(MemberDto dto) {
+		sqlSession.update("member.updateTempPassword",dto);
+	}
+
+	
+
+	
 
 	
 

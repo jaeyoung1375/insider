@@ -22,7 +22,7 @@
 		        <div class="container col-lg-3 card p-5 mt-5" style="display:flex; justify-content: center" id="app">
 		        <div>
 		         <div class="text-center mb-3">         	
-		         	<a href="/" class="logo"><img src="/static/image/logo.png" width="50px" height="50px" class="me-3">insider</a>
+		         	<a href="/" class="logo"><img src="/static/image/logo.png" style="width:50px; height:50px;" >insider</a>
                 </div>
             <form action="login" method="post" @submit="isEmpty" >
                 <div class="mb-3 row">
@@ -33,11 +33,12 @@
                 </div>
                 <div class="mb-3 row">
                     <p v-if="showEmptyWarning" class="email-warning-message">아이디 혹은 비밀번호를 입력해주세요</p>
-                     <p v-if="${result == 0} && !showEmptyWarning">아이디 혹은 비밀번호를 일치하지 않습니다</p>
+                     <p v-if="${result == 0} && !showEmptyWarning">아이디 혹은 비밀번호를 일치하지 않습니다 </p>	
                 </div>
                 <div class="row mb-3">
                     <button class="btn btn-primary" type="submit">로그인</button>
-                </div>             
+                </div> 
+                  
             </form>          
             	<div style="display:flex; justify-content: space-between; flex-direction: column; align-items: center;" >
             	 <div class="row mb-3">
@@ -55,6 +56,9 @@
             	 <img src="/static/image/social/google_login.png">
             </a>
             </div>
+             <div class="row text-center">
+                	<a class="mt-5" href="/member/passwordChange">비밀번호를 잊으셨나요?</a>
+                </div>         
          <!--  
             <div class="row mb-3">
             <a href="https://www.facebook.com/v2.11/dialog/oauth?
