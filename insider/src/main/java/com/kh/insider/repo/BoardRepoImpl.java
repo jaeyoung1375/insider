@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.BoardDto;
+import com.kh.insider.vo.BoardAttachmentVO;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
 
@@ -34,8 +35,11 @@ public class BoardRepoImpl implements BoardRepo {
 	}
 	
 	@Override
-	public void insert(BoardDto boardDto) {
-		 sqlSession.insert("board.insert", boardDto);		
+	public BoardDto insert(BoardDto boardDto) {
+		int boardNo = sqlSession.selectOne("board.sequence");
+		boardDto.setBoardNo(boardNo);
+		sqlSession.insert("board.insert", boardDto);
+		return sqlSession.selectOne("board.selectOne", boardNo);
 	}
 
 	@Override
@@ -77,6 +81,18 @@ public class BoardRepoImpl implements BoardRepo {
 
 
 
+//	@Override
+//	public void connect(int boardNo, int attachmentNo) {
+//	    Map<String, Integer> params = new HashMap<>();
+//	    params.put("boardNo", boardNo);
+//	    params.put("attachmentNo", attachmentNo);
+//	    sqlSession.insert("boardAttachment.connect", params);
+//	}
 
+
+	@Override
+	public void delete(int boardNo) {
+		sqlSession.delete("board.delete", boardNo);		
+	}
 
 }
