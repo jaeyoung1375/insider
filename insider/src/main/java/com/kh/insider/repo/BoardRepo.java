@@ -12,7 +12,7 @@ public interface BoardRepo {
 
 	int sequence();
 	
-	void insert(BoardDto boardDto);
+	BoardDto insert(BoardDto boardDto);
 
 	void updateLikeCount(int boardNo, int count);
 	

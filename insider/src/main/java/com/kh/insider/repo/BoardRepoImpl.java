@@ -35,8 +35,11 @@ public class BoardRepoImpl implements BoardRepo {
 	}
 	
 	@Override
-	public void insert(BoardDto boardDto) {
+	public BoardDto insert(BoardDto boardDto) {
+		int boardNo = sqlSession.selectOne("board.sequence");
+		boardDto.setBoardNo(boardNo);
 		sqlSession.insert("board.insert", boardDto);
+		return sqlSession.selectOne("board.selectOne", boardNo);
 	}
 
 	@Override

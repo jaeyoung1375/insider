@@ -29,7 +29,7 @@ public class BoardAttachmentRepoImpl implements BoardAttachmentRepo{
 	
 	@Override
 	public void insert(BoardAttachmentDto boardAttachmentDto) {
-		int sequence = sqlSession.selectOne("board_attachment.sequence");
+		int sequence = sqlSession.selectOne("boardAttachment.sequence");
 		boardAttachmentDto.setBoardAttachmentNo(sequence);
 		sqlSession.insert("boardAttachment.insert", boardAttachmentDto);
 	}

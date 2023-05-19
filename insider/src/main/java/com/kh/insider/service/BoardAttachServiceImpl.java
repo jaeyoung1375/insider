@@ -29,12 +29,12 @@ public class BoardAttachServiceImpl implements BoardAttachService{
 	@Transactional
 	@Override
 	public void insert(BoardDto boardDto, List<MultipartFile> boardAttachment) throws IllegalStateException, IOException {
-		boardRepo.insert(boardDto);
+		BoardDto newDto = boardRepo.insert(boardDto);
 		if (boardAttachment != null) {
 		for(MultipartFile file : boardAttachment) {
 			int attachmentNo = attachmentRepo.save(file);
 			boardAttachmentRepo.insert(BoardAttachmentDto.builder()
-					.boardNo(boardDto.getBoardNo())
+					.boardNo(newDto.getBoardNo())
 					.attachmentNo(attachmentNo)
 					.build());
 			}

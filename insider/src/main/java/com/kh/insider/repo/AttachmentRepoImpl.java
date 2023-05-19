@@ -22,10 +22,10 @@ public class AttachmentRepoImpl implements AttachmentRepo{
 	    return sqlSession.selectOne("attachment.sequence");
 	}
 
-	@Override
-	public void insert(AttachmentDto attachmentDto) {
-	    sqlSession.insert("attachment.insert", attachmentDto);
-	}
+//	@Override
+//	public void insert(AttachmentDto attachmentDto) {
+//	    sqlSession.insert("attachment.insert", attachmentDto);
+//	}
 
 
 	@Override
@@ -48,7 +48,7 @@ public class AttachmentRepoImpl implements AttachmentRepo{
 		File target = new File(directory, fileName);
 		attach.transferTo(target);
 		
-		sqlSession.insert("attach.insert", AttachmentDto.builder()
+		sqlSession.insert("attachment.insert", AttachmentDto.builder()
 				.attachmentNo(attachmentNo)
 				.attachmentName(attach.getOriginalFilename())
 				.attachmentType(attach.getContentType())

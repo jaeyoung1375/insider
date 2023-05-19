@@ -106,7 +106,7 @@
 <%--                                   	<img src="'${pageContext.request.contextPath}/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardNo)" alt="..."> --%>
                                   <div  v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
 <!--                                     <img src="/static/image/r.jpeg" class="d-block" @dblclick="likePost(board.boardNo,index)" alt="..."> -->
-                                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,index)"> 
+<%--                                    	<img :src="'${pageContext.request.contextPath}/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,index)">  --%>
                                   </div>
 <!--                                   <div class="carousel-item"> -->
 <!--                                     <img src="/static/image/h.jpg" class="d-block" alt="..."> -->
@@ -238,6 +238,7 @@
 		</div>
 	</div>
 
+</div>
 </div>
   소셜유저 : ${sessionScope.socialUser}		
   회원번호 : ${sessionScope.memberNo}		

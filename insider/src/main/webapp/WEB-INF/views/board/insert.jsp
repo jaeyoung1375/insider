@@ -281,6 +281,15 @@ $(document).ready(function() {
 
 <div id="app" class="vue-container">
 
+<!-- <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"> -->
+<!--   <div class="modal-dialog" role="document"> -->
+<!--     <div class="modal-content"> -->
+<!--       <div class="modal-header"> -->
+<!--         <h4 class="modal-title" id="myModalLabel">이미지 & 동영상 업로드</h4> -->
+<!--       </div> -->
+<!--       <div class="modal-body"> -->
+
+
 <form action="insert" method="post" enctype="multipart/form-data" class="form-submit">
 
 	<div class="container-fluid">
@@ -316,7 +325,7 @@ $(document).ready(function() {
 				        <h1 class="card-title" ><i class="fa-regular fa-images"></i></h1>
 				        <p class="card-text fs-5">사진을 선택하세요.</p>
 				        <label for="upload" class="input-upload">업로드</label>
-				        <input type="file" name="boardAttach" accept="image/*, video/*" id="upload" ref="files" @change="imageUpload" style="display:none;" multiple>
+				        <input type="file" name="boardAttachment" accept="image/*, video/*" id="upload" ref="files" @change="imageUpload" style="display:none;" multiple>
 				        <p style="margin-top: 20px;">* 이미지는 최대 5개까지 선택 가능합니다.</p>
 				      </div>
 			      </div>
@@ -335,7 +344,7 @@ $(document).ready(function() {
 						        <label for="upload2" class="input-uploadPlus">
 						        	<i class="fa-solid fa-plus fa-3x"></i>
 						        </label>
-						        <input type="file" name="boardAttach" accept="image/*, video/*" id="upload2" ref="files2" @change="imageAddUpload" style="display:none;" multiple/>				        	
+						        <input type="file" name="boardAttachment" accept="image/*, video/*" id="upload2" ref="files2" @change="imageAddUpload" style="display:none;" multiple/>				        	
 				        	</div>
 				        </div>
 				      </div>

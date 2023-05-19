@@ -28,6 +28,9 @@ import com.kh.insider.repo.MemberProfileRepo;
 import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.service.BoardAttachService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Controller
 @RequestMapping("/board")
 public class BoardController {
@@ -88,12 +91,12 @@ public class BoardController {
         return "redirect:/";
     }
     
-	// 임시 파일 업로드 주소
-    @GetMapping("/upload")
-    public String upload(){
-        return "board/upload";
-    }
-    
+//	// 임시 파일 업로드 주소
+//    @GetMapping("/upload")
+//    public String upload(){
+//        return "board/upload";
+//    }
+//    
 // // 파일 업로드 & 다른 테이블 연계
 // 	 @PostMapping("/upload")
 // 	 public String upload(
@@ -305,8 +308,9 @@ public class BoardController {
 							Model model,
 							@ModelAttribute MemberDto memberDto) throws IllegalStateException, IOException {
     	Long memberNo = (Long)session.getAttribute("memberNo");
+    	
 		boardDto.setMemberNo(memberNo);
-	
+		log.debug("boardAttach={}", boardAttachment);
 		boardAttachService.insert(boardDto, boardAttachment);
 		attr.addAttribute("memberNo",memberNo);
 		return "redirect:/";

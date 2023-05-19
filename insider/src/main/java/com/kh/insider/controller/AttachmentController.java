@@ -62,7 +62,7 @@ public class AttachmentController {
     }
 
 	// 첨부파일 조회
-	@GetMapping("/download/{fileName}")
+	@GetMapping("/download")
 	@ResponseBody
 	public ResponseEntity<ByteArrayResource> download(
 			@PathVariable int fileName) throws IOException {

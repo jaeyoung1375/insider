@@ -12,13 +12,13 @@
 
 	<insert id="insert" parameterType="BoardDto">
 		insert into board(
-			board_no, member_no, board_content, board_like, board_lat, board_lon, 
-			board_time, board_reply, board_reply_valid, board_like_valid, board_report, 
+			board_no, member_no, board_content, board_lat, board_lon, 
+			board_time, board_reply_valid, board_like_valid, 
 			board_hide, board_kid, board_size
 		) 
 		values(
-			board_seq.nextval, #{memberNo}, #{boardContent}, #{boardLike}, #{boardLat}, #{boardLon},
-			SYSDATE , #{boardReply}, #{boardReplyValid}, #{boardLikeValid}, #{boardReport},
+			#{boardNo}, #{memberNo}, #{boardContent}, #{boardLat}, #{boardLon},
+			SYSDATE , #{boardReplyValid}, #{boardLikeValid}, 
 			#{boardHide}, #{boardKid}, #{boardSize}
 		)
 	</insert>
