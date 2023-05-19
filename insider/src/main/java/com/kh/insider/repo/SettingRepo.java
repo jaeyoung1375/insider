@@ -8,5 +8,5 @@ public interface SettingRepo {
 	//수정
 	void update(SettingDto settingDto);
 	//정보 읽기
-	SettingDto selectOne(int memberNo);
+	SettingDto selectOne(long memberNo);
 }

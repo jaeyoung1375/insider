@@ -18,6 +18,6 @@ public class BoardSearchVO {
 		return page*boardCount;
 	}
 	public int getBegin() {
-		return this.getEnd()-1;
+		return this.getEnd()-(boardCount-1);
 	}
 }

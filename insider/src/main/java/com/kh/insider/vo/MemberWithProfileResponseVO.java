@@ -7,7 +7,7 @@ import com.kh.insider.dto.MemberWithProfileDto;
 import lombok.Data;
 
 @Data
-public class MemberWithProfileSearchResponseVO {
+public class MemberWithProfileResponseVO {
 	private List<MemberWithProfileDto> memberList;
 	private PaginationVO paginationVO;
 }

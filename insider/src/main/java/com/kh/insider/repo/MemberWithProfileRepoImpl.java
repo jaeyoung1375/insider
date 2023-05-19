@@ -15,7 +15,7 @@ public class MemberWithProfileRepoImpl implements MemberWithProfileRepo{
 	private SqlSession sqlSession;
 	
 	@Override
-	public MemberWithProfileDto selectOne(int memberNo) {
+	public MemberWithProfileDto selectOne(long memberNo) {
 		return sqlSession.selectOne("memberWithProfile.selectOne", memberNo);
 	}
 

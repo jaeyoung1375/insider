@@ -1,7 +1,5 @@
 package com.kh.insider.dto;
 
-import java.sql.Date;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,11 +8,13 @@ import lombok.NoArgsConstructor;
 @Data@AllArgsConstructor@NoArgsConstructor@Builder
 public class BoardAttachmentDto {
 
-	public Long boardNo;
-	public int attachmentNo;
+	private int boardAttachmentNo;
+	private int boardNo;
+	private int attachmentNo;
 	
-	public String getImageURL() {
-		if(attachmentNo == 0) return "https://via.placeholder.com/150x150";
-		else return "/rest/attachment/download/"+attachmentNo;
-	}
+//	public String getImageURL() {
+//		if(attachmentNo == 0) return "https://via.placeholder.com/150x150";
+//		else return "/rest/attachment/download/"+attachmentNo;
+//	}
+
 }

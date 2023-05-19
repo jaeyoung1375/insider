@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="dmMessageDeleted">
+
+	<!-- 삭제된 메세지 등록 -->
+    <insert id="insertDeleteMessage">
+        INSERT INTO dm_message_deleted (member_no, message_no)
+        VALUES (#{memberNo}, #{messageNo})
+    </insert>
+    
+</mapper>
+    
