@@ -22,4 +22,7 @@ public interface FollowRepo {
 	int getFollowerNumber(long memberNo);
 	//팔로우 한 수 반환(session의 memberNo 입력)
 	int getFollowNumber(long memberNo);
+	
+	//메인 홈에서 팔로우 전체 체크
+	List<Long> check(long memberNo);
 }

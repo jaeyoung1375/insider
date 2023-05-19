@@ -1,14 +1,18 @@
 package com.kh.insider.restcontroller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.FollowDto;
+import com.kh.insider.dto.FollowWithProfileDto;
 import com.kh.insider.repo.FollowRepo;
 import com.kh.insider.repo.MemberRepo;
 
@@ -43,5 +47,23 @@ public class FollowRestController {
 			followRepo.delete(followDto);
 			return false;
 		}
+	}
+	
+//	@GetMapping("/check/{followerNo}")
+//	public FollowDto followCheck(@PathVariable long followerNo, HttpSession session) {
+//		long memberNo = (Long)session.getAttribute("memberNo");
+//		FollowDto followDto = new FollowDto();
+//		followDto.setMemberNo(memberNo);
+//		followDto.setFollowFollower(followerNo);
+//		
+//		return followRepo.selectOne(followDto);
+//	}
+	
+	@GetMapping("/check")
+	public List<Long> followcheck(
+			HttpSession session) {
+		long memberNo = (Long)session.getAttribute("memberNo");
+		
+		 return followRepo.check(memberNo);
 	}
 }
