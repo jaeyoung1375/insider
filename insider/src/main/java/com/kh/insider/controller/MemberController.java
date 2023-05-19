@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.insider.dto.MemberDto;
+import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.service.MemberService;
 import com.kh.insider.service.SocialLoginService;
@@ -54,6 +55,9 @@ public class MemberController {
 	
 	@Autowired
 	private SocialLoginService socialLoginService;
+	
+	@Autowired
+	private BoardRepo boardRepo;
 	
 	@GetMapping("/join")
 	public String join() {
@@ -102,11 +106,20 @@ public class MemberController {
 	}
 	
 	@GetMapping("/{memberNick}")
-	public String myPage(@PathVariable String memberNick, Model model) {
+	public String myPage(@PathVariable String memberNick, Model model, HttpSession session) {
 		
 		// 프로필 정보 불러오기
 		MemberDto findMember = memberRepo.findByNickName(memberNick);
+		// 로그인한 사용자
+		MemberDto loginUser = (MemberDto)session.getAttribute("socialUser");
+		// 본인 프로필 인지 여부
+		boolean isOwner = loginUser.getMemberNick().equals(memberNick);
+		// 전체 게시물 개수
+		int totalPostCount = boardRepo.getTotalPostCount(findMember.getMemberNo());
+		
+		model.addAttribute("totalPostCount",totalPostCount);
 		model.addAttribute("memberDto",findMember);
+		model.addAttribute("isOwner",isOwner);
 		
 		
 		

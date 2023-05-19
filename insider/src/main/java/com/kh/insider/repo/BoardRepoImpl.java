@@ -70,6 +70,12 @@ public class BoardRepoImpl implements BoardRepo {
 	}
 
 
+	@Override
+	public int getTotalPostCount(Long MemberNo) {
+		return sqlSession.selectOne("board.getTotalPostCount",MemberNo);
+	}
+
+
 
 
 

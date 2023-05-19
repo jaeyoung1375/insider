@@ -99,7 +99,7 @@
 			</aside>
 		</header>
 
-<!-- 	
+	
 <script>
 
 	Vue.createApp({
@@ -130,6 +130,6 @@
 		}
 	}).mount("#aside");
 </script>
- -->
+
 	<section>
 

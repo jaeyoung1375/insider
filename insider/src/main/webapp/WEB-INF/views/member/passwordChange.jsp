@@ -105,6 +105,7 @@
 	     					this.count--;
 	     					 if (this.count === 0) {
 	     				        clearInterval(this.timer); // 타이머 종료
+	     				       this.emailCode == '';
 	     				      }
 	     				},1000);
 	                },

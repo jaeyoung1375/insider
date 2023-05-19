@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	    pageEncoding="UTF-8"%>
-	
+	    pageEncoding="UTF-8"%>	
 	<!DOCTYPE html>
 	<html>
 	<head>
@@ -32,8 +31,6 @@
     			display:block;
     			}
    
-	       
-	
 	.logo{
 			font-size: 50px;
 			color: black;
@@ -72,9 +69,16 @@
   padding: 25px;
   cursor: pointer;
 }
-	    </style>
-	
-	
+.timer {
+	position:absolute;
+ 	top: 50%;
+  text-align:right;
+  bottom : 0;
+  transform: translateY(-50%);
+  color: #555;
+		
+}
+</style>
 	</head>
 	<body>
 			
@@ -82,12 +86,12 @@
 	    <div class="container col-lg-3 card p-5 mt-5">
 	    
 	   		<!-- 1단계 -->
-	        <div :class="{hide:stepOneHidden}">
 	            <div class="text-center mb-3">         	
 			         	<a href="/" class="logo"><img src="/static/image/logo.png" width="50" height="50" class="me-3">insider</a>
 	                </div>
+	        <div :class="{hide:stepOneHidden}">
 	            <div class="row form-floating mb-3"> 
-	                <input class="form-control" type="text" name="memberEmail" placeholder="이메일" v-model="email" @blur="validateEmail" @keyup="isEmailDuplicatedCheck(email)" :class="{'is-valid' : !showEmailWarning && !isEmailDuplicated && email != '','is-invalid': showEmailWarning || isEmailDuplicated }">
+	                <input class="form-control" type="text" name="memberEmail" placeholder="이메일" v-model="email" @blur="validateEmail" @keyup="isEmailDuplicatedCheck(email)" :class="{'is-valid' : !showEmailWarning && !isEmailDuplicated  && email.length > 10,'is-invalid': showEmailWarning || isEmailDuplicated }">
 	                    <label for="floatingInput">이메일 주소 <span style="color:red;">*</span></label>
 	                <p v-if="showEmailWarning" class="email-warning-message">유효하지 않은 이메일입니다</p>
 	                <p v-if="isEmailDuplicated" class="email-warning-message">중복된 이메일 입니다</p>
@@ -131,10 +135,7 @@
 	            <!-- 생년월일 -->
 	           <div class ="bir_wrap mb-3">
 	                <div class="bir_yy">
-	                    <span class="ps_box">
-	                    <!-- 
-	                        <input type="text" class="form-control" id="year" placeholder="년(4자)" maxlength="4" @blur="saveMemberBirth">
-	                     -->
+	                    <span class="ps_box">	               
 	                      <select v-model="selectedYear" id="year" class="form-select" @blur="saveMemberBirth">
 	                      	 <option v-for="year in years" :value="year">{{ year }}</option>
 	                      </select>
@@ -184,25 +185,21 @@
 	             <div class="row mb-3">
 	            		 <button type="button" class="btn btn-primary" @click="prevBtn">이전으로</button>	 
 	            </div>
-	            
-	            <!-- 
-	           	<div class="row mb-3">
-	            		 <button type="button" class="btn btn-primary" @click="goBackStepOne">돌아가기</button>	 
-	            </div>
-	             -->
+	                     
 	             </div>
 	             <!-- 2단계 끝 -->
 	             
 	             <!-- 3단계 -->
 	             <div :class="{hide :!stepThreeHidden}">
-	              <div class="text-center mb-3">         	
-			         	<a href="/" class="logo"><img src="/static/image/logo.png" width="50px" height="50px" class="me-3">insider</a>
-	               </div>
+	              
 	                <div class="text-center mb-3">         	
 						<p>{{email}} 으로 전송된 인증번호를 입력하세요.</p>
 	               </div>
 	               <div class="row form-floating mb-3">
-	                <input type="text" class="form-control" placeholder="인증번호" v-model.number="emailCode" @blur="emailVerifyCode" :class="{'is-valid' : !showEmailCodeWarning && emailCode != '', 'is-invalid' : showEmailCodeWarning || emailCode == ''} ">
+	                <input type="text" class="form-control" placeholder="인증번호" v-model.number="emailCode" @blur="emailVerifyCode" >
+	                 <span class="timer" :class="{'hide': !isDisabled }">
+  					{{ Math.floor(count / 60) }}: {{ String(count % 60).padStart(2, '0') }}
+  					</span>
 	                 <p v-if="showEmailCodeWarning" class="tel-warning-message">인증번호가 일치하지 않습니다</p>
 	             </div>
 	                <div class="row mb-3">
@@ -210,14 +207,7 @@
 	            	</div>
 	    
         </div>
-	             
-	             
-	             <!-- 
-	             <div class="row mb-3">
-	                <button type="button" class="btn btn-primary" @click="handleSubmit">가입하기</button>
-	             </div>
-	 -->
-				
+	             	            				
 	        </div>
 	                   <div class="container col-lg-3 card p-3 mt-3" style="display:flex;">
         	<div class="text-center">
@@ -265,9 +255,10 @@
 	                    selectedYear: new Date().getFullYear(),
 	                    selectedMonth: new Date().getMonth()+1,
 	                    selectedDay: new Date().getDate(),
+	                    isDisabled : false,
+            			count : 0,
 	                };
 	            },
-	        
 	            computed: {
 	                formattedMemberBirth() {
 	                	  const yy = this.selectedYear;
@@ -318,10 +309,7 @@
 	                    days.push(day);
 	                  }
 	                  return days;
-	              },
-	              
-	       
-	              
+	              },	              	                  
 	             },
 	            methods:{
 	
@@ -332,10 +320,7 @@
 	
 	            		  this.memberBirth = year + '/' + month + '/' + day;
 	            		  $("#memberBirth").val(this.memberBirth);
-	            		},
-	              
-	 
-	
+	            		},	             		
 	                validateEmail(){
 	                    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 	
@@ -389,7 +374,6 @@
 	                    }
 	                    
 	                },
-	                
 	                StepOneSubmit(){
 	                	   if(this.showEmailWarning || this.email == "" ||
 	      	                     this.showNameWarning || this.name == "" ||
@@ -399,32 +383,23 @@
 	      	                        this.showTelWarning || this.tel == "" || this.isEmailDuplicated == true || this.isNickDuplicated == true){
 	      	                         return;
 	                	   }
-	                	   this.stepOneHidden = true;
-	                	
+	                	   this.stepOneHidden = true;  	
 	                },
-	                StepTwoSubmit(){
-	                	
+	                StepTwoSubmit(){ 	
 	                	if(this.gender == "" || this.post == "" || this.basicAddr == "" ||
 	                		this.detailAddr == ""){
 	                		return;
 	                	}
-	                	
 	                	   this.stepOneHidden = true;
 	                	   this.stepTwoHidden = true;
 	                	   this.stepThreeHidden = true;
-	                	   this.sendEmail(this.email);
-	                	   
+	                	   this.sendEmail(this.email);       	   
 	                },
-	                
 	                goBackStepOne(){
 	                	this.stepOneHidden = false;
 	                	this.stepTwoHidden = true;
-	                },
-	                
-	                
-	                
+	                },           
 	                handleSubmit(event){
-	
 	                     if(this.showEmailWarning || this.email == "" ||
 	                     this.showNameWarning || this.name == "" ||
 	                        this.showNickWarning || this.nickname == "" ||
@@ -437,7 +412,6 @@
 	                    	 event.preventDefault();
 	                         return;
 	                    }
-	
 	                       this.stepOneHidden = true;	
 	                      this.$refs.joinForm.submit();
 	         
@@ -447,9 +421,7 @@
 	                		const response = await axios.get("emailCheck",{
 	                			params : {
 	                				memberEmail : this.email
-	                			}	
-	                		
-	                	
+	                			}	                	
 	                		});
 	                	
 	                	this.isEmailDuplicated = response.data === "fail";
@@ -465,20 +437,16 @@
 	                		const response = await axios.get("nickCheck",{
 	                			params : {
 	                				memberNick : this.nickname
-	                			}	
-	                		
-	                	
+	                			}			
 	                		});
 	                	
 	                	this.isNickDuplicated = response.data === "fail";
-	             
 	                	}catch(error){
 	                		console.error(error);
 	                	}
 	                	
 	                },
-	                
-	                
+	                  
 	                findAddress() {
 	                    new daum.Postcode({
 	                        oncomplete: (data) => {
@@ -487,10 +455,8 @@
 	                        }
 	                    }).open();
 	                },
-	  
-	                async sendEmail(memberEmail){
-	     			       
-	     				
+	                
+	                async sendEmail(memberEmail){	     			       		
 	     				const response = await axios.get("sendMail",{
 	     					params : {
 	     						memberEmail : this.email
@@ -500,6 +466,17 @@
 	     				this.num = response.data;
 	     				// num을 다른메서드에서 쓰기 위함
 	     				this.emailVerifyCode();
+	     				
+						this.isDisabled = true;
+	     				this.count = 299;
+	     				this.timer = setInterval(() => {
+	     					this.count--;
+	     					 if (this.count === 0) {
+	     				        clearInterval(this.timer); // 타이머 종료
+	     				        this.emailCode == '';
+	     				      }
+	     				},1000);
+	     				
 	                },
 	                
 	                emailVerifyCode(){
@@ -516,17 +493,7 @@
 	                	
 	                },    
 	          
-	                
-	                
-	             
-	                
-	
-	
-	            },
-	            watch: {
-	           
-	               
-	            },
+	            },	      
 	        });
 	        app.mount("#app");
 	    </script>

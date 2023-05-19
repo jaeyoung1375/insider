@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ include file="../template/header.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <style>
    .media-height{
@@ -12,6 +13,12 @@
 			opacity:1!important;
 		}
 </style>
+
+
+
+
+
+
 		<div id="app" class="container-fluid">
 			    <div class="row">
             <div class="col-4 text-center">
@@ -21,11 +28,23 @@
             <div class="col-4" style=" width:40%; margin-left:70px;">
             	
             	<div class="col-7" style="display:flex;">
-            		<div class="col-6" style="width:80%;">
+            		<div class="col-6" style="width:60%;">
            		 <a href="#" class="btn btn-default" @click="showModal">${memberDto.memberNick}</a>    
     
      		</div>
-            	<div class="col-5">
+     			<c:choose>
+     			<c:when test="${isOwner}"> <!-- 본인 프로필 이라면 -->
+     				<div class="col-7">
+            		<a class="btn btn-secondary" href="setting">프로필 편집</a>
+            		</div>
+            	
+            	<div class="col-5" style="width:40%;">
+            	<button class="btn btn-secondary" @click="showModal2" style="background-color: white; border:none;"><i class="fa-sharp fa-solid fa-gear" style="font-size:24px;"></i></button>
+ 				</div>
+     			</c:when>
+     			
+     			<c:otherwise> <!-- 본인 프로필이 아니라면 -->
+     					<div class="col-5">
             	<button class="btn btn-primary">팔로우</button>
             	</div>
             	
@@ -40,12 +59,16 @@
             	<div class="col-5" style="width:40%;">
             	<button class="btn btn-secondary" @click="showModal2"><i class="fa-solid fa-ellipsis"></i></button>
  				</div>
+     			</c:otherwise>
+     			</c:choose>
+     			
+            
  				</div>
 	            <div class="row mt-4" style="width:130%;">
 	            	<div class="col-7" style="display:flex; margin-left:10px;">
 	            		<div class="col-6">
 	            			<span>게시물 
-	            				<span style="font-weight: bold;">112개</span>
+	            				<span style="font-weight: bold;">${totalPostCount}</span>
 	            			</span>
 	            		</div>
 	            		<div class="col-6">
@@ -62,7 +85,8 @@
 	            </div>
 	            <div class="row mt-4">
 	            	<span style="font-size:12px;">
-	            	Aespa fashion 에스파 패션
+	            	<h5>${memberDto.memberName}</h5>
+	            	Aespa fashion 에스파 패션	          
 					팬 페이지
 					for aespa 💙
 					#aespastyles_ (member)
@@ -102,16 +126,10 @@
                     <i class="fa-regular fa-comment fa-lg" style="position:absolute;top:50%;left:50%;"></i>
                 </div>
                 </div>
-                
-                
-
                
                 </div>
        
-		</div>
-		
-                
-                
+		</div>        
                    <div class="modal" tabindex="-1" role="dialog" id="modal03"
                             data-bs-backdrop="static"
                             ref="modal03" @click.self="hideModal">
@@ -122,7 +140,7 @@
                         	 <img style="border-radius: 70%;" src="${pageContext.request.contextPath}/static/image/user.jpg"
  							width = "150" height="150">
  							<div class="nickname">
- 							허재영11
+ 							${memberDto.memberNick}
  							</div>	
  						<div class="content" style="text-align:left;">
  							<div class="content">
@@ -159,11 +177,11 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header" style="display:flex; justify-content: center;">
-                  		<a href="#" class="btn btn-default" style="color:red;">차단</a>
+                  		<a href="#" class="btn btn-default block" style="color:red;"  @click="blockModalShow">차단</a>
                     </div>
                      
                        <div class="modal-header" style="display:flex; justify-content: center;">
-                        <a href="#" class="btn" style="color:red;">신고</a>
+                        <a href="#" class="btn report" style="color:red;">신고</a>
                     </div>
                         <div class="modal-header" style="display:flex; justify-content: center;">
                        	<a @click="accountView">이 계정 정보</a>
@@ -176,6 +194,55 @@
                 </div>      
             </div>
         </div>
+        
+        
+          <div class="modal" tabindex="-1" role="dialog" id="blockModal"
+                            data-bs-backdrop="static"
+                            ref="blockModal" @click.self="blockModalHide">
+            <div class="modal-dialog" role="document" style="width:30%;">
+                <div class="modal-content">
+                    <div class="modal-header" style="display:flex; justify-content: center; flex-direction: column;">
+                  	<h5 class="modal-title" style="text-align:center;">
+                  		${memberDto.memberNick}님을 차단하시겠어요?
+                  	</h5>
+                  	<div class="content" style="font-size:12px; text-align:center;">
+                  		상대방은 Insider에서 회원님의 프로필, 게시물 및 스토리를 찾을 수 없게 됩니다. Insider은 회원님이 차단한 사실을 상대방에게 알리지 않습니다.                  	
+                  	</div>
+                    </div>
+                     <div class="modal-header" style="display:flex; justify-content: center;" >
+                  		 <button type="button" class="btn" data-bs-dismiss="modal" style="color:red;">취소</button>
+                    </div>
+                   
+                    <div class="modal-header" style="display:flex; justify-content: center;">
+                       	<a @click="blockResultModalShow">차단</a>
+                    </div>
+                   
+                </div>      
+            </div>
+        </div>
+        
+         <div class="modal" tabindex="-1" role="dialog" id="blockResultModal"
+                            data-bs-backdrop="static"
+                            ref="blockResultModal" @click.self="blockResultModalHide">
+            <div class="modal-dialog" role="document" style="width:30%;">
+                <div class="modal-content">
+                    <div class="modal-header" style="display:flex; justify-content: center; flex-direction: column;">
+                  	<h5 class="modal-title" style="text-align:center;">
+                  		${memberDto.memberNick}님을 차단했습니다.
+                  	</h5>
+                  	<div class="content" style="font-size:12px; text-align:center;">
+                  		<p style="font-size:12px; color:gray;">상대방의 프로필에서 언제든지 차단을 해제할 수 있습니다.</p>                 	
+                  	</div>
+                  	</div>
+                  	<div class="model-header" style="text-align:center;">
+                     <button type="button" class="btn" data-bs-dismiss="modal" style="color:red;">닫기</button>   
+                     </div>
+                     
+            </div>
+        </div>
+      
+        </div>
+        
 		
 		
 		</div> <!-- vue 끝 -->
@@ -193,6 +260,8 @@
 				modal : null,
 				addtionModal : null,
 				reportMenuModal:null,
+				blockModal : null,
+				blockResultModal : null,
 				reportContentList:[],
 				reportBoardNo:"",
 			};
@@ -218,12 +287,30 @@
                   if(this.addtionModal == null) return;
                   this.addtionModal.hide();
               },
+              blockModalShow(){
+            	   if(this.blockModal == null) return;
+            	   this.addtionModal.hide();
+                   this.blockModal.show();      
+              },
+              blockModalHide(){
+            	  if(this.blockModal == null) return;
+                  this.blockModal.hide();
+              },
+              blockResultModalShow(){
+            	  if(this.blockResultModal == null) return;
+            	  this.blockModal.hide();
+                  this.blockResultModal.show(); 
+              },
+              blockResultModalHide(){
+            	  if(this.blockResultModal == null) return;
+                  this.blockResultModal.hide(); 
+              },
               
               accountView(){
             	  this.addtionModal.hide();
             	  this.modal.show();
-              }
-              
+              },
+            
 			
 		},
 		created(){
@@ -236,7 +323,8 @@
 			
             this.modal = new bootstrap.Modal(this.$refs.modal03);
             this.addtionModal = new bootstrap.Modal(this.$refs.addtionModal);
-            this.reportMenuModal = new bootstrap.Modal(this.$refs.reportMenuModal);
+            this.blockModal = new bootstrap.Modal(this.$refs.blockModal);
+            this.blockResultModal = new bootstrap.Modal(this.$refs.blockResultModal);
 		},
 	}).mount("#app");
 </script>
