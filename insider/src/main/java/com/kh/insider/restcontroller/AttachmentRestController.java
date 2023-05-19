@@ -76,40 +76,40 @@ public class AttachmentRestController {
 //		return null;//또는 예외 발생
 //	}
 //	
-//	//다운로드
-//	@GetMapping("/download/{attachmentNo}")
-//	public ResponseEntity<ByteArrayResource> download(
-//									@PathVariable int attachmentNo) throws IOException {
-//		//DB 조회
-//		AttachmentDto attachmentDto = attachmentRepo.selectOne(attachmentNo);
-//		if(attachmentDto == null) {//없으면 404
-//			return ResponseEntity.notFound().build();
-//		}
-//		
-//		//파일 찾기
-//		File target = new File(dir, String.valueOf(attachmentNo));
-//		
-//		//보낼 데이터 생성
-//		byte[] data = FileUtils.readFileToByteArray(target);
-//		ByteArrayResource resource = new ByteArrayResource(data);
-//		
-////		제공되는 모든 상수와 명령을 동원해서 최대한 오류 없이 편하게 작성
-//		return ResponseEntity.ok()
-////					.header(HttpHeaders.CONTENT_TYPE, 
-////							MediaType.APPLICATION_OCTET_STREAM_VALUE)
-//					.contentType(MediaType.APPLICATION_OCTET_STREAM)
-//					.contentLength(attachmentDto.getAttachmentSize())
-//					.header(HttpHeaders.CONTENT_ENCODING, 
-//												StandardCharsets.UTF_8.name())
-//					.header(HttpHeaders.CONTENT_DISPOSITION,
-//						ContentDisposition.attachment()
-//									.filename(
-//											attachmentDto.getAttachmentName(), 
-//											StandardCharsets.UTF_8
-//									).build().toString()
-//					)
-//					.body(resource);
-//	}
+	//다운로드
+	@GetMapping("/download/{attachmentNo}")
+	public ResponseEntity<ByteArrayResource> download(
+									@PathVariable int attachmentNo) throws IOException {
+		//DB 조회
+		AttachmentDto attachmentDto = attachmentRepo.selectOne(attachmentNo);
+		if(attachmentDto == null) {//없으면 404
+			return ResponseEntity.notFound().build();
+		}
+		
+		//파일 찾기
+		File target = new File(dir, String.valueOf(attachmentNo));
+		
+		//보낼 데이터 생성
+		byte[] data = FileUtils.readFileToByteArray(target);
+		ByteArrayResource resource = new ByteArrayResource(data);
+		
+//		제공되는 모든 상수와 명령을 동원해서 최대한 오류 없이 편하게 작성
+		return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_TYPE, 
+							MediaType.APPLICATION_OCTET_STREAM_VALUE)
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.contentLength(attachmentDto.getAttachmentSize())
+					.header(HttpHeaders.CONTENT_ENCODING, 
+												StandardCharsets.UTF_8.name())
+					.header(HttpHeaders.CONTENT_DISPOSITION,
+						ContentDisposition.attachment()
+									.filename(
+											attachmentDto.getAttachmentName(), 
+											StandardCharsets.UTF_8
+									).build().toString()
+					)
+					.body(resource);
+	}
 	
 	//프로필 업로드
 	@PostMapping("/upload/profile")
@@ -125,7 +125,7 @@ public class AttachmentRestController {
 			attach.transferTo(target);
 			
 			//DB 저장
-			attachmentRepo.save((MultipartFile) AttachmentDto.builder()
+			attachmentRepo.insert(AttachmentDto.builder()
 							.attachmentNo(attachmentNo)
 							.attachmentName(attach.getOriginalFilename())
 							.attachmentType(attach.getContentType())
