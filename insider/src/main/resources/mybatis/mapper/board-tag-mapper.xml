@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="boardTag">
+	<insert id="insert">
+		insert into board_tag(board_tag_no, tag_name, board_no) values(board_tag_seq.nextval, #{tagName}, #{boardNo})
+	</insert>
+	<delete id="delete">
+		delete board_tag where board_no=#{boardNo} 
+	</delete>
+	<select id="selectList" resultType="boardTagDto">
+		select * from board_tag where board_no=#{boardNo} order by board_tag_no asc
+	</select>
+</mapper>

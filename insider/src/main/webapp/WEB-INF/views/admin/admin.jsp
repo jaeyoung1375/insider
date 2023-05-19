@@ -29,11 +29,15 @@
 	display:none;
 	cursor:default
 }
+.admin-menu-bar{
+	position:fixed;
+	left:0;
+}
 </style>
-<div class="container-fluid mt-4" id="app">
-	<div class="row">
+<div id="app">
+	<div class="row admin-menu-bar">
 	<!------------------------------ 좌측 사이드 메뉴바 ---------------------------->
-		<div class="col-md-4">
+		<div class="col">
 			<div class="row admin-menu" @click="changeAdminMenu(1)" :class="{'selected':adminMenu==1}">
 				<div class="col">
 					<h2>회원 관리</h2>
@@ -60,8 +64,11 @@
 				</div>
 			</div>
 		</div>
+	</div>
 	<!--------------------------- 회원 관리 시작 --------------------------->
-		<div class="col-md-8" v-show="adminMenu==1">
+	<div class="container-fluid mt-4">
+	<div class="row">
+		<div class="col" v-show="adminMenu==1">
 			<div class="row">
 				<div class="col">
 					<h1>회원관리</h1>
@@ -259,7 +266,7 @@
 		</div>
 	<!--------------------------- 회원 관리 끝--------------------------->
 	<!--------------------------- 신고 관리 시작 --------------------------->
-		<div class="col-md-8" v-show="adminMenu==2">
+		<div class="col" v-show="adminMenu==2">
 			<div class="row">
 				<div class="col">
 					<h1>신고관리</h1>
@@ -298,7 +305,7 @@
 		</div>
 	<!--------------------------- 신고 관리 끝 --------------------------->
 	<!--------------------------- 회원 통계 --------------------------->
-		<div class="col-md-8" v-show="adminMenu==3">
+		<div class="col" v-show="adminMenu==3">
 			<div class="row">
 				<div class="col">
 					<h1>회원 통계</h1>
@@ -393,7 +400,7 @@
 			</div>
 		</div>
 	<!--------------------------- 게시물 통계 --------------------------->
-		<div class="col-md-8" v-show="adminMenu==4">
+		<div class="col" v-show="adminMenu==4">
 			<div class="row">
 				<div class="col">
 					<h1>게시물 통계</h1>
@@ -434,13 +441,14 @@
 			</div>
 		</div>
 	<!--------------------------- 조회 통계 --------------------------->
-		<div class="col-md-8" v-show="adminMenu==5">
+		<div class="col" v-show="adminMenu==5">
 			<div class="row">
 				<div class="col">
 					<h1>조회 통계</h1>
 				</div>
 			</div>
 		</div>
+	</div>
 	</div>
 	<!-- ---------------------------------신고 내용 관리 모달-------------------------- -->
 	<div class="modal" tabindex="-1" role="dialog" id="reportContentModal" data-bs-backdrop="static" ref="reportContentModal">
