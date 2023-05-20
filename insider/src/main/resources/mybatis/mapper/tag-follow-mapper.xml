@@ -6,11 +6,14 @@
 	<insert id="insert">
 		insert into tag_follow(tag_name, member_no) values(#{tagName}, #{memberNo})
 	</insert>
-	<select id="selectTagList" resultType="tagFollowDto">
+	<select id="selectList" resultType="tagFollowDto">
 		select * from tag_follow where member_no = #{memberNo}
 	</select>
-	<select id="selectCount" resultType="int">
+	<select id="countFromMember" resultType="int">
 		select count(*) from tag_follow where member_no=#{memberNo}
+	</select>
+	<select id="countFromTag" resultType="int">
+		select count(*) from tag_follow where tag_name=#{tagName}
 	</select>
 	<delete id="delete">
 		delete tag_follow where member_no=#{memberNo} and tag_name=#{tagName}

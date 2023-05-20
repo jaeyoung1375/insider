@@ -439,6 +439,47 @@
 					<canvas ref="boardTimeChart"></canvas>
 				</div>
 			</div>
+			<!-- 게시물 태그 수 통계 -->
+			<div class="row">
+				<div class="col">
+					<h3>태그 통계</h3>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-10">
+					<div class="row">
+						<div class="col">
+							<span>기간설정 </span>
+						</div>
+						<div class="col-4">
+							<input class="form-control" type="date" v-model="boardTagSearch.startDate">
+						</div>
+						<div class="col">
+							<span> 부터 </span>
+						</div>
+						<div class="col-4">
+							<input class="form-control" type="date" v-model="boardTagSearch.endDate">
+						</div>
+						<div class="col">
+							<span> 까지</span>
+						</div>
+					</div>
+				</div>
+				<div class="col-2">
+					<button type="button" class="btn btn-secondary" @click="getBoardTagStats(true)">검색</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col" style="position:relative">
+					<div class="chart-arrow-left" :class="{'chart-disabled':boardTagSearch.page==1}">
+						<i class="fa-solid fa-chevron-left" @click="boardTagStatsPrev"></i>
+					</div>
+					<div class="chart-arrow-right" :class="{'chart-disabled':!boardTagChartRight}">
+						<i class="fa-solid fa-chevron-right" @click="boardTagStatsNext"></i>
+					</div>
+					<canvas ref="boardTagChart"></canvas>
+				</div>
+			</div>
 		</div>
 	<!--------------------------- 조회 통계 --------------------------->
 		<div class="col" v-show="adminMenu==5">
@@ -513,6 +554,7 @@
 	let joinChart;
 	let cumulativeChart;
 	let boardTimeChart;
+	let boardTagChart;
 	Vue.createApp({
 		data() {
 			return {
@@ -576,15 +618,21 @@
 					order:"all_parts.date_part DESC",
 					page:1,
 				},
+				boardTagSearch:{
+					startDate:"",
+					endDate:"",
+					page:1,
+				},
 				boardTimeList:{
 					col:[],
 					count:[],
 				},
-				boardTimeList:{
-					col:[],
+				boardTagList:{
+					tagName:[],
 					count:[],
 				},
 				boardTimeChartLeft:true,
+				boardTagChartRight:true,
 			};
 		},
 		computed: {
@@ -832,6 +880,10 @@
 				const resp = await axios.post(contextPath+"/rest/member/stats/cumulative/", this.memberCumulativeSearch);
 				this.memberCumulativeList.col = _.map(resp.data, 'col');
 				this.memberCumulativeList.count = _.map(resp.data, 'count');
+				if(this.memberCumulativeList.col[0]==null){
+					this.memberCumulativeList.col.splice(0, 1);
+					this.memberCumulativeList.count.splice(0, 1);
+				}
 				//차트 초기화
 				if(cumulativeChart!=null) {
 					cumulativeChart.destroy();
@@ -886,7 +938,7 @@
 				if(buttonClick){
 					this.boardTimeSearch.page=1;
 				}
-				const resp = await axios.post(contextPath+"/rest/board/boardTime/", this.boardTimeSearch)
+				const resp = await axios.post(contextPath+"/rest/board/stats/boardTime", this.boardTimeSearch)
 				this.boardTimeChartLeft=true;
 				if(this.boardTimeSearch.col=='days'){
 					if(resp.data.length<31){
@@ -935,6 +987,48 @@
 					},
 				});
 			},
+			async getBoardTagStats(buttonClick){
+				if(buttonClick){
+					this.boardTagSearch.page=1;
+				}
+				const resp = await axios.post(contextPath+"/rest/board/stats/boardTag", this.boardTagSearch)
+				this.boardTagChartRight=true;
+				if(resp.data.length<15){
+					this.boardTagChartRight=false;
+				}
+				this.boardTagList.tagName = _.map(resp.data, 'tagName');
+				this.boardTagList.count = _.map(resp.data, 'count');
+				//캔버스 사용 초기화
+				if(boardTagChart!=null) {
+					boardTagChart.destroy();
+				}
+				boardTagChart = this.$refs.boardTagChart;
+				
+				boardTagChart = new Chart(boardTagChart, {
+					type: "bar",
+					data: {
+						labels: this.boardTagList.tagName,
+						datasets: [
+							{
+								label: "생성 개수",
+								data: this.boardTagList.count,
+								borderWidth: 1,
+								backgroundColor: [
+									"navy",
+								],
+								borderColor: [
+									"navy",
+								],
+							},
+						],
+					},
+					options: {
+						scales: {
+							y: {beginAtZero: true,},
+						},
+					},
+				});
+			},
 			//차트 좌우버튼 클릭시
 			boardTimeStatsPrev(){
 				this.boardTimeSearch.page++;
@@ -943,6 +1037,14 @@
 			boardTimeStatsNext(){
 				this.boardTimeSearch.page--;
 				this.getBoardTimeStats();
+			},
+			boardTagStatsPrev(){
+				this.boardTagSearch.page--;
+				this.getBoardTagStats();
+			},
+			boardTagStatsNext(){
+				this.boardTagSearch.page++;
+				this.getBoardTagStats();
 			},
 		
 		/*------------------------------ 게시물통계통계 끝 ------------------------------*/
@@ -957,6 +1059,7 @@
 			this.getMemberJoinStats();
 			this.getMemberCumulativeStats();
 			this.getBoardTimeStats();
+			this.getBoardTagStats();
 		},
 		watch:{
 			//감시영역

@@ -160,6 +160,7 @@
 		select count(*) from board where member_no = #{memberNo}
 	</select>
 	
+<!-- 통계 관련 sql -->
 	<!-- 게시물 생성 통계 -->
 	<select id="timeStats" resultType="boardTimeStatsResponseVO">
 		<include refid="topNheader"></include>
@@ -206,4 +207,38 @@
 		<include refid="topNfooter"></include>
 	</select>
 	
+	<select id="boardTagStats" resultType="boardTagStatsResponseVO">
+		<bind name="startDateExist" value="startDate!=null and !startDate.equals('')"></bind>
+		<bind name="endDateExist" value="endDate!=null and !endDate.equals('')"></bind>
+		<include refid="topNheader"></include>
+		SELECT t.tag_name, COUNT(*) AS count
+		FROM board b
+		JOIN board_tag t ON b.board_no = t.board_no
+		<where>
+			<choose>
+				<when test="!startDateExist and !endDateExist">
+					and b.board_time >= sysdate-7
+				</when>
+				<when test="startDateExist and !endDateExist">
+					and b.board_time >= to_date(#{startDate}||' '||'00:00:00', 'YYYY-MM-DD HH24:MI:SS') 
+				</when>
+				<when test="startDateExist and endDateExist">
+					AND b.board_time between
+						to_date(#{startDate}||' '||'00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+						and
+						to_date(#{endDate}||' '||'23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+				</when>
+				<otherwise>
+					and
+					<![CDATA[
+					b.board_time<=to_date(#{endDate}||' '||'23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+					]]>
+				</otherwise>
+			</choose>
+		</where>
+		GROUP BY t.tag_name
+		ORDER BY count desc
+		<include refid="topNfooter"></include>
+	</select>
+<!-- 통계 관련 sql 끝 -->
 </mapper>

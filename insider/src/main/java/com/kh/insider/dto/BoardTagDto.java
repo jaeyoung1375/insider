@@ -3,7 +3,8 @@ package com.kh.insider.dto;
 import lombok.Data;
 
 @Data
-public class TagFollow {
+public class BoardTagDto {
+	private int boardTagNo;
 	private String tagName;
-	private	long memberNo;
+	private int boardNo;
 }

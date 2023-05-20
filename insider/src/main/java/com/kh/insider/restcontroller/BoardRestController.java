@@ -21,6 +21,8 @@ import com.kh.insider.service.BoardSearchService;
 import com.kh.insider.vo.BoardLikeVO;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
+import com.kh.insider.vo.BoardTagStatsResponseVO;
+import com.kh.insider.vo.BoardTagStatsSearchVO;
 import com.kh.insider.vo.BoardTimeStatsResponseVO;
 import com.kh.insider.vo.BoardTimeStatsSearchVO;
 
@@ -115,9 +117,14 @@ public class BoardRestController {
 	}
 	
 	//통계자료 반환
-	@PostMapping("/boardTime/")
-	public List<BoardTimeStatsResponseVO> getStats(@RequestBody BoardTimeStatsSearchVO boardTimeStatsSearchVO){
+	@PostMapping("/stats/boardTime")
+	public List<BoardTimeStatsResponseVO> getTimeStats(@RequestBody BoardTimeStatsSearchVO boardTimeStatsSearchVO){
 		return boardRepo.getBoardTimeStats(boardTimeStatsSearchVO);
+	}
+	//통계자료 반환
+	@PostMapping("/stats/boardTag")
+	public List<BoardTagStatsResponseVO> getTagStats(@RequestBody BoardTagStatsSearchVO boardTagStatsSearchVO){
+		return boardRepo.getBoardTagStats(boardTagStatsSearchVO);
 	}
 	
 }
