@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -7,44 +9,215 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DM 테스트</title>
+    <title>Insider DM</title>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
-  
+
 <style>
-	.message {
-		border-bottom: 1px solid gray;
-		padding: 10px;
+	.room-image {
+	    min-width:50px;
+	    width:100%;
+	}
+	@media screen and (max-width:576px) {
+	    .room-image {
+	    display: none;
+	    }
+	}
+	.message-wrapper {
+        background-color: white;
+        overflow: hidden;
+    }
+	.message-wrapper > .message {
+	    display: flex;
+	    font-size: 17.5px;
+	    margin-top: 0.65em;
+	}
+	.message-wrapper > .message > .profile-wrapper {
+	    min-width: 45px;
+	    max-width: 45px;
+	}
+	.message-wrapper > .message > .profile-wrapper > img {
+	    border-radius: 50%;
+	    width:100%;
+	}
+	.message-wrapper > .message > .content-wrapper {
+	    flex-grow: 1;
+	    display: flex;
+	    flex-direction: column;
+	    padding: 0 0.5em;
+	}
+	.message-wrapper > .message > .content-wrapper > .content-header {
+	    font-size: 0.90em;
+	    padding-right: 0.3em;
+	    padding-left: 0.3em;
+	    color: #3c6382;
+	}
+	.message-wrapper > .message > .content-wrapper > .content-body {
+	    display: flex;
+	    font-weight: normal;
+	    padding-top: 0.35em;
+	    align-items: flex-end;
+	}
+	.message-wrapper > .message > .content-wrapper > .content-body > .message-wrapper {
+	    background-color: rgba(239, 239, 239);
+	    font-size: 0.85em;
+	    border-radius: 1.5em;
+	    max-width: 500px;
+	    word-break: break-all;
+	    padding-top: 0.35em;
+		padding-bottom: 0.35em;
+		padding-left: 0.9em;
+		padding-right: 0.9em;
+	}
+	.message-wrapper > .message > .content-wrapper > .content-body > .info-wrapper {
+	    min-width: 50px;
+	}
+	.message-wrapper > .message > .content-wrapper > .content-body > .info-wrapper > .time-wrapper {
+	    font-size: 0.5em;
+	    padding: 0 0.25em;
+	}
+	.message-wrapper > .message > .content-wrapper > .content-body > .info-wrapper > .number-wrapper {
+	    font-size: 0.5em;
+	    padding: 0 0.35em;
+	    color: orange;
+	    font-weight: bold;
+	}
+	.message-wrapper > .message > .content-wrapper > .content-footer {
+	    padding-top: 0.05em;
+	    align-items: flex-end;
+	}
+	.message-wrapper > .message > .content-wrapper > .content-footer > .heart {
+	    display: inline-block;
+	    padding-left: 0.75em;
+	}
+	.message-wrapper > .message > .content-wrapper > .content-footer > .heart-number {
+	    display: inline-block;
+	    padding-left: 0.28em;
+	    font-size: 0.7em;
+	    color: #c23616;
+	}
+	
+	.message-wrapper > .message.my > .content-wrapper > .content-header {
+	    text-align: right;
+	}
+	.message-wrapper > .message.my > .content-wrapper > .content-body {
+	    flex-direction: row-reverse;
+	}
+	.message-wrapper > .message.my > .content-wrapper > .content-body > .message-wrapper {
+	    background-color: rgba(75, 161, 255);
+	    color: white;
+	}
+	.message-wrapper > .message.my > .content-wrapper > .content-body > .info-wrapper > .time-wrapper {
+	    text-align: right;
+	    padding-right: 0.45em;
+	}
+	.message-wrapper > .message.my > .content-wrapper > .content-body > .info-wrapper > .number-wrapper {
+	    text-align: right;
+	    padding-right: 0.45em;
+	}
+	.message-wrapper > .message.my > .content-wrapper > .content-footer {
+	    text-align: right;
+	}
+	.message-wrapper > .message.my > .content-wrapper > .content-footer > .heart {
+	    padding-left: 0.65em;
+	}
+	.message-wrapper > .message.my > .content-wrapper > .content-footer >.heart-number {
+	    padding-left: 0.28em;
+	    font-size: 0.7em;
+	    padding-right: 1.1em;
+	    color: #c23616;
 	}
 </style>
+
 </head>
 <body>
 
-    <div id="app">
-    
-        <h1>DM 테스트</h1>
-        <p>회원 닉네임 : {{memberNick}}</p>
-        
-        <hr>
-        
-        <input type="text" v-model="text" v-on:input="text=$event.target.value">
-        <button v-on:click="sendMessage">전송</button>
-        
-        <hr>
-        
-        <div class="message-wrapper">
-            <div class="message" v-for="(message, index) in messageList" :key="message.no">
-                <div>
-                	{{message.memberNick}}
-                	<div v-if="message.memberNick == memberNick">(본인)</div>
-                </div>
-                <div>{{message.content}}</div>
-                <div>{{timeFormat(message.time)}}</div>
-                <i class="fa-solid fa-x" v-on:click="deleteMessage(index)"></i>
-            </div>
-        </div>
-        
-    </div>
+	<div id="app">
+	
+		<div class="container-fluid">
+			<div class="row">
+				<div class="row mt-3" style="width:1000px;margin-bottom:0;margin-left:7px; margin-right:0px;height:70px;">
+					<!-- 로그인한 회원 프로필 -->
+					<div class="card col-3" style="width:290px;border-radius:0;padding-bottom:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
+						<div style="padding-left: 0.4em;">
+							<a href="#"   style="color: black; text-decoration: none;">
+							<img src="https://via.placeholder.com/45x45?text=P" style="border-radius: 50%; position:absolute; top:0.75em" >
+								<span style="padding-left:3.5em; word-wrap:normal;">
+										${sessionScope.memberNick}
+								</span>
+							</a>
+						</div>
+						<span style="position:absolute; top:21px; right:0; margin-right:30px;">
+							<i class="fa-regular fa-pen-to-square fa-lg" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="chooseDmList"></i>
+						</span>
+					</div>
+					
+					<!-- 채팅방 이름 -->
+					<div class="card col-8" style="border-radius:0;border-left:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
+						채팅방 이름
+						<span style="position:absolute; top:21px; right:0; margin-right:30px;">
+							<i class="fa-solid fa-circle-info fa-xl" style="cursor:pointer; color: #b2bec3"></i>
+						</span>
+					</div>
+				</div>
+				
+				<div class="row" style="width:1000px;margin-left:7px; margin-right:100px; margin-top:0; height:70vh">
+					<!-- 채팅방 목록 -->
+					<div class="card col-3" style="width:290px;border-radius:0;border-top:none;padding:0;">
+						<div class="card-body" style="padding:0;padding-top:10px;">
+							<div class="dmRoom"  v-for="(dmRoom, index) in dmRoomList" :key="dmRoom.roomNo">
+						      <div>
+						          {{dmRoom}}
+						      </div>
+						    </div>
+						</div>
+					</div>
+					
+					<!-- 채팅창 -->
+					<div class="card col-8" style="border-radius:0;border-top:none;border-left:0;padding-right:0;">
+						<div class="card-body" style="padding:0;">
+					        <div class="message-wrapper">
+					            <div class="message" v-for="(message, index) in messageList" :key="message.no" :class="{my:checkMyMessage(index)}">
+					                <div class="profile-wrapper" v-if="!checkMyMessage(index)">
+                                			<img src="https://via.placeholder.com/100x100?text=P" width="100%" v-if="!checkSameTime(index)">
+					                </div>
+					                
+					                <div class="content-wrapper">
+						                <div class="content-header" v-if="!checkSameTime(index)">
+						                	{{message.memberNick}}
+						                </div>
+						                <div class="content-body">
+							                <div class="message-wrapper">{{message.content}}</div>
+							                <div class="info-wrapper">
+							                	<div class="number-wrapper">13</div>
+							                	<div class="time-wrapper" v-if="calculateDisplay(index)">{{timeFormat(message.time)}}</div>
+							                </div>
+						                	<i class="fa-solid fa-x fa-xs" v-on:click="deleteMessage(index)" style="padding-bottom: 0.51em;"></i>
+						                </div>
+						                <div class="content-footer">
+						                	<div class=heart><i class="fa-solid fa-heart fa-xs" style="color: #c23616;"></i></div>
+							                <div class=heart-number>23</div>
+						                </div>
+						            </div>
+						            
+					            </div>
+					        </div>
+					        
+					        <div class="row justify-content-between" style="margin-top:10px;margin-bottom:10px;padding-left:calc(var(--bs-gutter-x) * .5);padding-right:calc(var(--bs-gutter-x) * .5);height:38px;">
+						        <!-- 입력창 -->
+						        <input type="text" v-model="text" v-on:input="text=$event.target.value" placeholder="메세지 입력" style="border-radius: 3rem;width:75%;">
+						        <button v-on:click="sendMessage" style="border-radius: 3rem; width:25%;">전송</button>
+					        </div>
+	        
+						</div>
+					</div>
+					
+				</div>
+				
+			</div>
+		</div>
 
+	</div>
+    
 	<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
@@ -61,6 +234,7 @@
                     memberNick:"${sessionScope.memberNick}",//나의 아이디
                     memberNo:"${sessionScope.memberNo}",
                     socket:null,//웹소켓 연결 객체
+                    dmRoomList:[],//채팅방 목록
                 };
             },
             methods:{
@@ -88,6 +262,11 @@
 				        };
 				    });
 				},
+				//채팅방 목록 불러오기
+				//async loadRoomList(){
+				//	const resp = await axios.get("${pageContext.request.contextPath}/rest/roomList/"+roomNo;)
+				//	this.dmRoomList.push(...resp.data);
+				//},
 			    connect(){
             		const url = "${pageContext.request.contextPath}/ws/channel";
             		this.socket = new SockJS(url);
@@ -132,11 +311,34 @@
             	//메세지 삭제
             	deleteMessage(index) {
             	    const messageNo = this.messageList[index].messageNo;
-            	    //console.log("messageNo: " + messageNo);
             	    const data = { type: 3, messageNo: messageNo, memberNo: this.memberNo };
             	    this.socket.send(JSON.stringify(data));
             	    this.loadMessage();
             	},
+            	//디자인 - 시간
+                checkSameTime(index) {
+                    if(index == 0) return false;
+                    const before = this.messageList[index-1];
+                    const current = this.messageList[index];
+                    
+                    if(before.memberNick != current.memberNick) return false;
+                    if(this.timeFormat(before.time) != this.timeFormat(current.time)) return false;
+                    return true;
+               },
+               //디자인 - 프로필
+               calculateDisplay(index) {
+                    if(index + 1 == this.messageList.length) return true;
+                    const after = this.messageList[index+1];
+                    const current = this.messageList[index];
+                    if(current.memberNick != after.memberNick) return true;
+                    if(this.timeFormat(current.time) != this.timeFormat(after.time)) return true;
+                    return false;
+               },
+               //디자인 - 본인 메세지
+               checkMyMessage(index) {
+                    if(this.memberNick == this.messageList[index].memberNick) return true;
+                    return false;
+               },
             },
             computed:{ 
             	jsonText() {
@@ -151,5 +353,6 @@
             }
         }).mount("#app");
     </script>
+    
 </body>
 </html>
