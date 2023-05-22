@@ -91,12 +91,6 @@ public class BoardController {
         return "redirect:/";
     }
     
-//	// 임시 파일 업로드 주소
-//    @GetMapping("/upload")
-//    public String upload(){
-//        return "board/upload";
-//    }
-//    
 // // 파일 업로드 & 다른 테이블 연계
 // 	 @PostMapping("/upload")
 // 	 public String upload(
@@ -316,6 +310,17 @@ public class BoardController {
 		return "redirect:/";
     }
     
+	//게시글 삭제하기
+	@GetMapping("/delete")
+	public String delete(RedirectAttributes attr, @RequestParam int boardNo, HttpSession session) {
+		
+		boardAttachService.delete(boardNo);
+		
+		Integer memberNo = (Integer)session.getAttribute("login");
+		attr.addAttribute("memberNo", memberNo);
+		
+		return "redirect:/board/list";
+	}
     
     
     //비동기

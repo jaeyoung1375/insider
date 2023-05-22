@@ -51,31 +51,7 @@ public class AttachmentRestController {
 		dir.mkdirs();
 	}
 	
-//	//업로드
-//	@PostMapping("/insert")
-//	public AttachmentDto upload(@RequestParam MultipartFile attach) throws IllegalStateException, IOException {
-//		if(!attach.isEmpty()) {//파일이 있을 경우
-//			//번호 생성
-//			int attachmentNo = attachmentRepo.sequence();
-//			
-//			//파일 저장(저장 위치는 임시로 생성)
-//			File target = new File(dir, String.valueOf(attachmentNo));//파일명=시퀀스
-//			attach.transferTo(target);
-//			
-//			//DB 저장
-//			attachmentRepo.insert(AttachmentDto.builder()
-//							.attachmentNo(attachmentNo)
-//							.attachmentName(attach.getOriginalFilename())
-//							.attachmentType(attach.getContentType())
-//							.attachmentSize(attach.getSize())
-//						.build());
-//			
-//			return attachmentRepo.selectOne(attachmentNo);//DTO를 반환
-//		}
-//		
-//		return null;//또는 예외 발생
-//	}
-//	
+
 //	//다운로드
 //	@GetMapping("/download/{attachmentNo}")
 //	public ResponseEntity<ByteArrayResource> download(
