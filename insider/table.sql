@@ -72,10 +72,11 @@ create table report (
 report_no number primary key,
 member_no REFERENCES member(member_no) on delete cascade,
 report_content varchar2(300) not null,
+report_member_no NUMBER NOT NULL,
 report_table_no number not null,
 report_table varchar2(30) check(report_table IN ('member', 'reply', 'board', 'dm_message', 'etc')) not null,
 report_time date default sysdate not null,
-report_check number(1) DEFAULT 0 NOT NULL CHECK (report_check IN (0, 1, 2))
+report_check number(1) DEFAULT 0 NOT NULL CHECK (report_check IN (0, 1, 2, 3))
 );
 create sequence report_seq;
 
@@ -90,3 +91,68 @@ CREATE SEQUENCE member_profile_seq;
 CREATE VIEW member_with_profile as
 SELECT M.*, P.attachment_no FROM MEMBER M 
 LEFT OUTER JOIN member_profile P ON M.member_no=P.member_no;
+
+--태그 관련 테이블 생성
+CREATE TABLE tag(
+tag_name varchar2(60) PRIMARY KEY,
+tag_follow NUMBER DEFAULT 0 NOT NULL check(tag_follow>=0)
+);
+
+CREATE TABLE board_tag(
+board_tag_no NUMBER PRIMARY KEY,
+tag_name references tag(tag_name),
+board_no REFERENCES board(board_no)
+);
+CREATE SEQUENCE board_tag_seq;
+
+CREATE TABLE tag_follow(
+tag_name REFERENCES tag(tag_name),
+member_no REFERENCES member(MEMBER_no),
+PRIMARY key(tag_name, member_no)
+);
+
+--보드에 멤버닉, 어태치먼트 넘버 추가
+CREATE OR REPLACE VIEW board_with_nick as
+SELECT b.*, m.attachment_no, m.member_nick FROM board b
+inner JOIN MEMBER_WITH_PROFILE m ON b.member_no=m.member_no;
+
+--신고 현황관리 view 생성
+CREATE VIEW report_management as
+SELECT rc.*, m.member_name, m.member_nick, m.attachment_no from 
+(SELECT r.report_member_no, r.report_table_no, r.report_table, r.report_check, count(*) FROM report r
+GROUP BY r.report_member_no, r.report_table_no, r.report_table, r.report_check) rc
+INNER JOIN member_with_profile m ON rc.report_member_no=m.member_no;
+
+--차단 테이블
+CREATE TABLE block(
+member_no REFERENCES member(member_no) ON delete CASCADE,
+block_no REFERENCES member(member_no) ON delete CASCADE,
+PRIMARY KEY(member_no, block_no)
+);
+
+--팔로우 테이블
+CREATE TABLE follow(
+member_no REFERENCES member(member_no) ON DELETE CASCADE,
+follow_follower REFERENCES member(member_no) ON DELETE CASCADE,
+follow_time DATE DEFAULT sysdate NOT NULL,
+follow_allow number(1) DEFAULT 1 NOT NULL,
+PRIMARY key(member_no, follow_follower)
+);
+
+--멤버 member_join 칼럼 추가
+alter TABLE MEMBER ADD member_join DATE DEFAULT sysdate;
+UPDATE MEMBER SET member_join=sysdate;
+ALTER TABLE MEMBER MODIFY member_join NOT NULL;
+
+--차단자, 팔로우, 팔로워 뷰 추가
+CREATE OR REPLACE VIEW follow_With_Profile as
+SELECT f.*, m.member_name, m.member_nick, m.attachment_no FROM follow f
+inner JOIN member_with_profile m ON f.FOLLOW_FOLLOWER = m.MEMBER_NO;
+
+CREATE OR REPLACE VIEW follower_With_Profile as
+SELECT f.*, m.member_name, m.member_nick, m.attachment_no FROM follow f
+inner JOIN member_with_profile m ON f.member_no = m.MEMBER_NO;
+
+CREATE OR REPLACE VIEW Block_With_Profile as
+SELECT b.*, m.member_name, m.member_nick, m.attachment_no FROM block b
+inner JOIN member_with_profile m ON b.BLOCK_NO = m.MEMBER_NO;

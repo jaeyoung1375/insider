@@ -7,8 +7,9 @@ import lombok.Data;
 @Data
 public class ReportDto {
 	private int reportNo;
-	private int memberNo;
+	private long memberNo;
 	private String reportContent;
+	private long reportMemberNo;
 	private int reportTableNo;
 	private String reportTable;
 	private Date reportTime;

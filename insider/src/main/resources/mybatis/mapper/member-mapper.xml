@@ -47,20 +47,123 @@
 		select * from member where member_email = #{memberEmail}
 	</select>
 	
+	<select id="findByNickName" resultType="MemberDto">
+		select * from member where member_nick = #{memberNick}
+	</select>
+	
+	
+	<!-- 이메일 중복 확인 -->
+	<select id="isEmailDuplicated" resultType="int">
+		select count(*) from member where member_email = #{memberEmail}
+	</select>
+	
+	<!-- 닉네임 중복 확인 -->
+	<select id="isNickDuplicated" resultType="int">
+		select count(*) from member where member_nick = #{memberNick}
+	</select>
+	
+	<update id="updateTempPassword">
+		update member set member_password = #{memberPassword} where member_email = #{memberEmail}
+	</update>
+	
+	
 	<!-- 회원정보 수정(패스워드 x)-->
 	<update id="update">
 		update member set member_name=#{memberName}, member_email=#{memberEmail}, 
 		member_post=#{memberPost}, member_basic_addr=#{memberBasicAddr}, member_msg=#{memberMsg},
 		member_detail_addr=#{memberDetailAddr}, member_tel=#{memberTel}, member_gender=#{memberGender}
-		, member_birth=#{memberBirth} where member_no=#{memberNo} 
+		, member_birth=#{memberBirth}, member_lat=#{memberLat}, member_lon=#{memberLon} where member_no=#{memberNo} 
 	</update>
 	<!-- 회원정보 수정(패스워드)-->
 	<update id="changePassword">
-		update member set member_password=#{memberPassword} where member_no=#{memberNo}
+		update member set member_password=#{memberPassword} where member_email=#{memberEmail}
 	</update>
 	<!-- 로그인 시각 갱신 -->
 	<update id="updateLoginTime">
 		update member set member_login = sysdate where member_no = #{memberNo}
 	</update>
+	
+	<!-- 닉네임 조회 -->
+	<select id="nick" resultType="String" parameterType="Long">
+		select member_nick from member where member_no = #{memberNo}
+	</select>
+	<!-- SQL 구문 조각 생성 -->
+	<sql id="topNheader">
+		select * from (
+		select rownum rn, TMP.*from(
+	</sql>
+	<sql id="topNfooter">
+		)TMP
+		)where rn between #{begin} and #{end}
+	</sql>
+	
+	
+	<!-- 통계 -->
+	<select id="memberStats" resultType="memberStatsResponseVO">
+		<include refid="topNheader"></include>
+		WITH all_parts AS (
+			<choose>
+				<when test="col.equals('days')">
+					SELECT TRUNC(SYSDATE) - LEVEL + 1 AS date_part
+					FROM dual
+					<![CDATA[
+					CONNECT BY LEVEL <= TRUNC(SYSDATE) - TO_DATE('2023-01-01', 'YYYY-MM-DD') + 1
+					]]>
+				</when>
+				<otherwise>
+					SELECT ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -LEVEL + 1) AS date_part
+					FROM dual
+					<![CDATA[
+					CONNECT BY LEVEL <= MONTHS_BETWEEN(TRUNC(SYSDATE, 'MM'), TO_DATE('2023-01', 'YYYY-MM')) + 1
+					]]>
+				</otherwise>
+			</choose>
+		)
+		SELECT TO_CHAR(
+			all_parts.date_part,
+			<choose>
+				<when test="col.equals('days')">
+					'MM/DD'
+				</when>
+				<otherwise>
+					'YY/MM'
+				</otherwise>
+			</choose>
+		) AS col, NVL(COUNT(member.${stat}), 0) AS count
+		FROM all_parts
+			<choose>
+				<when test="col.equals('days')">
+					LEFT JOIN member ON all_parts.date_part = TRUNC(member.${stat})
+				</when>
+				<otherwise>
+					LEFT JOIN member ON TO_CHAR(all_parts.date_part, 'YYYY-MM') = TO_CHAR(member.${stat}, 'YYYY-MM')
+				</otherwise>
+			</choose>
+		GROUP BY all_parts.date_part
+		ORDER BY ${order}
+		<include refid="topNfooter"></include>
+	</select>
+	<!-- 통계 누적 데이터 출력 -->
+	<select id="memberStatsCumulative" resultType="memberStatsResponseVO">
+		<include refid="topNheader"></include>
+		SELECT
+			<choose>
+				<when test="col.equals('days')">
+					TO_CHAR(TRUNC(${stat}), 'MM/DD') AS col,
+					SUM(COUNT(*)) OVER (ORDER BY TRUNC(${stat}) ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS count
+					FROM member
+					GROUP BY TRUNC(${stat})
+					ORDER BY TRUNC(${stat}) desc
+				</when>
+				<otherwise>
+					TO_CHAR(${stat}, 'MM'), 'YY/MM') AS col,
+					SUM(COUNT(*)) OVER (ORDER BY TRUNC(${stat}, 'MM') ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS count
+					FROM member
+					GROUP BY TO_CHAR(TRUNC(${stat}, 'MM'), 'YY/MM'), TRUNC(${stat}, 'MM')
+					ORDER BY TRUNC(${stat}, 'MM') desc
+				</otherwise>
+			</choose>
+		<include refid="topNfooter"></include>
+	</select>
 	
 </mapper>

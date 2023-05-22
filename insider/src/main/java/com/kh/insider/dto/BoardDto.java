@@ -7,12 +7,13 @@ import lombok.Data;
 @Data
 public class BoardDto {
 
+
 	public int boardNo;
-	public int memberNo;
+	public long memberNo;
 	public String boardContent;
 	public int boardLike;
-	public int boardLat;
-	public int boardLon;
+	public double boardLat;
+	public double boardLon;
 	public Date boardTime;
 	public int boardReply;
 	public int boardReplyValid;
@@ -21,5 +22,7 @@ public class BoardDto {
 	public int boardHide;
 	public int boardKid;
 	public int boardSize;
-	public String boardMemberNick;
+	
+	// 조인 할 컬럼
+	public int attachmentNo;
 }

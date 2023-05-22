@@ -33,6 +33,21 @@ public class MemberRepoImpl implements MemberRepo{
 	public MemberDto findByEmail(String memberEmail) {
 		return sqlSession.selectOne("member.findByEmail",memberEmail);
 	}
+	
+	@Override
+	public MemberDto findByNickName(String memberNick) {
+		return sqlSession.selectOne("member.findByNickName",memberNick);
+	}
+	
+	@Override
+	public int isEmailDuplicated(String memberEmail) throws Exception{		
+		return sqlSession.selectOne("member.isEmailDuplicated",memberEmail);
+	}
+	
+	@Override
+	public int isNickDuplicated(String memberNick) throws Exception {
+		return sqlSession.selectOne("member.isNickDuplicated",memberNick);
+	}
 
 	@Override
 	public void update(MemberDto memberDto) {
@@ -49,19 +64,28 @@ public class MemberRepoImpl implements MemberRepo{
 	}
 
 	@Override
-	public void updateLoginTime(long memberNo) {
+	public void updateLoginTime(Long memberNo) {
 		sqlSession.update("member.updateLoginTime",memberNo);
 	}
-	//단일조회
+	//memberNo 단일조회
 	@Override
 	public MemberDto findByNo(long memberNo) {
 		return sqlSession.selectOne("member.findByNo", memberNo);
 	}
-
+	//비밀번호 변경
 	@Override
 	public void changePassword(MemberDto memberDto) {
 		sqlSession.update("member.changePassword", memberDto);
 	}
 
+	//닉네임(boardController에서 닉네임 받아오기)
+	@Override
+	public String nick(long memberNo) {
+		return sqlSession.selectOne("member.nick",memberNo);
+	}
+	@Override
+	public void updateTempPassword(MemberDto dto) {
+		sqlSession.update("member.updateTempPassword",dto);
+	}
 	
 }
