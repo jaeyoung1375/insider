@@ -98,6 +98,7 @@
 	
 	.message-wrapper > .message.my > .content-wrapper > .content-header {
 	    text-align: right;
+	    padding-right: 0.6em;
 	}
 	.message-wrapper > .message.my > .content-wrapper > .content-body {
 	    flex-direction: row-reverse;
@@ -147,7 +148,7 @@
 							</a>
 						</div>
 						<span style="position:absolute; top:21px; right:0; margin-right:30px;">
-							<i class="fa-regular fa-pen-to-square fa-lg" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="chooseDmList"></i>
+							<i class="fa-regular fa-pen-to-square fa-lg" style="cursor:pointer;" @click="fetchFollowerList(); showModal();"></i>
 						</span>
 					</div>
 					
@@ -164,11 +165,7 @@
 					<!-- 채팅방 목록 -->
 					<div class="card col-3" style="width:290px;border-radius:0;border-top:none;padding:0;">
 						<div class="card-body" style="padding:0;padding-top:10px;">
-							<div class="dmRoom"  v-for="(dmRoom, index) in dmRoomList" :key="dmRoom.roomNo">
-						      <div>
-						          {{dmRoom}}
-						      </div>
-						    </div>
+							채팅방 목록
 						</div>
 					</div>
 					
@@ -215,26 +212,58 @@
 				
 			</div>
 		</div>
-
+		
+		<!-- 회원 목록을 모달창으로 불러오기 -->
+		<div class="modal fade" tabindex="-1" id="memberListModal" data-bs-backdrop="static" ref="memberListModal">
+		  <div class="modal-dialog modal-dialog-scrollable" style="width:350px;">
+		    <div class="modal-content" style="align-content: center;flex-wrap: wrap;">
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="memberListModalLabel">메세지 보내기</h5>
+		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		      </div>
+		      <div class="modal-body">
+		        <div style="margin-bottom:10px;">
+		          <input type="text" placeholder="검색" v-model="keyword" class="form-control me-sm-2">
+		        </div>
+		        <div v-for="(member,index) in dmMemberList" :key="index" style="margin-top:20px;position:relative;">
+		          <img src="https://via.placeholder.com/40x40?text=P" style="border-radius: 50%; position:absolute; top:0.3em" >
+		          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+		          <br>
+		          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+		          <span style="position:absolute;right:0;top:10px;">
+		            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="roomSearch(member.memberNo,index)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
+		              채팅
+		            </button>
+		          </span>
+		        </div>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
 	</div>
     
 	<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/ko.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/vue@3.2.36"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+
     <script>
         Vue.createApp({
             data(){
                 return {
                     text:"",//사용자가 입력하는 내용
                     messageList:[],//채팅 기록
-                    memberNick:"${sessionScope.memberNick}",//나의 아이디
+                    memberNick:"${sessionScope.memberNick}",
                     memberNo:"${sessionScope.memberNo}",
                     socket:null,//웹소켓 연결 객체
-                    dmRoomList:[],//채팅방 목록
+                    dmMemberList:[],//팔로워 회원 목록
+                    modal:null, //modal 제어
+ 
                 };
             },
             methods:{
@@ -246,7 +275,8 @@
             	    try {
             	        const resp = await axios.get(url);
             	        this.messageList = resp.data.map(msg => JSON.parse(msg.messageContent));
-            	    } catch (err) {
+            	    } 
+            	    catch (err) {
             	        console.error("메세지를 불러올 수 없습니다.");
             	    }
             	},
@@ -262,11 +292,15 @@
 				        };
 				    });
 				},
-				//채팅방 목록 불러오기
-				//async loadRoomList(){
-				//	const resp = await axios.get("${pageContext.request.contextPath}/rest/roomList/"+roomNo;)
-				//	this.dmRoomList.push(...resp.data);
-				//},
+				//모달창
+				showModal(){
+                    if(this.modal == null) return;
+                    this.modal.show();
+                },
+                hideModal(){
+                    if(this.modal == null) return;
+                    this.modal.hide();
+                },
 			    connect(){
             		const url = "${pageContext.request.contextPath}/ws/channel";
             		this.socket = new SockJS(url);
@@ -339,6 +373,17 @@
                     if(this.memberNick == this.messageList[index].memberNick) return true;
                     return false;
                },
+               //팔로워 회원 목록
+               async fetchFollowerList() {
+            	   const url = "${pageContext.request.contextPath}/rest/dmMemberList";
+            	    try {
+            	      const resp = await axios.get(url);
+            	      this.dmMemberList.splice(0, this.dmMemberList.length, ...resp.data); //중복 방지
+            	    } 
+            	    catch (error) {
+            	      console.error(error);
+            	    }
+            	},
             },
             computed:{ 
             	jsonText() {
@@ -348,9 +393,13 @@
             created(){
             	//웹소켓 연결 코드
             	this.connect();
-            	// 메시지 불러오기
+            	//메시지 불러오기
                 this.loadMessage();
-            }
+            },
+            //Bootstrap modal 인스턴스를 초기화하고 저장
+            mounted(){
+                this.modal = new bootstrap.Modal(this.$refs.memberListModal);
+            },
         }).mount("#app");
     </script>
     

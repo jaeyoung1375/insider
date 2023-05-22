@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="dmMemberList">
+
+	<!-- 팔로워 회원 목록 -->
+	<select id="chooseDm" resultType="DmMemberListDto">
+        select * from (
+        	select * from (
+	        	select m.member_no, m.member_nick, m.member_name, mp.attachment_no from follow f
+	        
+	        	inner join member m on f.follow_follower = m.member_no
+	        	left outer join member_profile mp on mp.member_no = m.member_no
+	        
+	        	where f.member_no = #{memberNo}
+        	) order by dbms_random.value
+        <![CDATA[
+        )where rownum <= 10
+        ]]>
+	</select>
+	
+</mapper>

@@ -12,6 +12,7 @@
 		where room_no=#{roomNo} and message_no 
 		not in(select message_no from dm_message_deleted 
 		where member_no=#{memberNo})
+		order by message_no asc
 	</select>
 
 </mapper>
