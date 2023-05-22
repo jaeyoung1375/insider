@@ -116,6 +116,8 @@ public class BoardRestController {
 		return boardLikeRepo.check(boardLikeDto);
 	}
 	
+
+
 	//통계자료 반환
 	@PostMapping("/stats/boardTime")
 	public List<BoardTimeStatsResponseVO> getTimeStats(@RequestBody BoardTimeStatsSearchVO boardTimeStatsSearchVO){

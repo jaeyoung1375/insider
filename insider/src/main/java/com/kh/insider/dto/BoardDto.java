@@ -22,4 +22,7 @@ public class BoardDto {
 	public int boardHide;
 	public int boardKid;
 	public int boardSize;
+	
+	// 조인 할 컬럼
+	public int attachmentNo;
 }

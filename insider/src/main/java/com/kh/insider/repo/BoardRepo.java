@@ -29,6 +29,8 @@ public interface BoardRepo {
 	
 	// 전체 게시물 개수
 	int getTotalPostCount(Long MemberNo);
+	// 마이페이지 전체 게시물 조회
+	List<BoardDto> getTotalMyPost(long memberNo);
 	
 	//신고수 추가
 	void addReport(int boardNo);

@@ -85,6 +85,10 @@ public class BoardRepoImpl implements BoardRepo {
 
 
 	@Override
+	public List<BoardDto> getTotalMyPost(long memberNo) {
+		return sqlSession.selectList("board.getTotalMyPost",memberNo);
+	}
+	
 	public List<BoardTimeStatsResponseVO> getBoardTimeStats(BoardTimeStatsSearchVO boardTimeStatsSearchVO) {
 		return sqlSession.selectList("board.timeStats", boardTimeStatsSearchVO);
 	}
