@@ -507,6 +507,7 @@
 			async loadMember(){
 				const resp = await axios.get(contextPath+"/rest/member/"+memberNo);
 				Object.assign(this.member, resp.data);
+				this.getGps();
 			},
 			
 			//프로필 사진 변경 누르면 실행
@@ -623,6 +624,39 @@
 				const newURL = `?`+queryParams.toString();
 				//쿼리 히스토리 저장
 				window.history.pushState({ query: queryParams.toString() }, '', newURL);
+			},
+			//gps 얻기
+			getGps(){
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(this.showGps, this.showError);
+				} 
+				else {
+				// 브라우저가 Geolocation을 지원하지 않는 경우 처리할 로직
+					console.log("Geolocation is not supported by this browser.");
+				}
+			},
+			showGps(position){
+				// 위치 정보 가져오기 성공 시 처리할 로직
+				console.log(position.coords.latitude)
+				this.member.memberLat = position.coords.latitude;
+				this.member.memberLon = position.coords.longitude;
+			},
+			showError(error) {
+				// 위치 정보 가져오기 실패 시 처리할 로직
+				switch (error.code) {
+					case error.PERMISSION_DENIED:
+						console.log("User denied the request for Geolocation.");
+						break;
+					case error.POSITION_UNAVAILABLE:
+						console.log("Location information is unavailable.");
+						break;
+					case error.TIMEOUT:
+						console.log("The request to get user location timed out.");
+						break;
+					case error.UNKNOWN_ERROR:
+						console.log("An unknown error occurred.");
+						break;
+				}
 			},
 		},
 		created(){
