@@ -825,9 +825,9 @@
 			},
 			setting:{
 				deep:true,
-				handler(){
+				handler : _.throttle(function(){
 					this.saveSetting();
-				},
+				}, 1000)
 			},
 		},
 		updated(){
