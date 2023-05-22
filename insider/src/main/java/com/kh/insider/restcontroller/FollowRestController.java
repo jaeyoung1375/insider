@@ -31,7 +31,7 @@ public class FollowRestController {
 //	}
 	
 	//팔로우/언팔로우 작업 후 팔로우 여부 반환(true = follow 된 상태)
-	@GetMapping("/{followerNo}")
+	@PostMapping("/{followerNo}")
 	public boolean follow(@PathVariable long followerNo, HttpSession session) {
 		long memberNo = (long)session.getAttribute("memberNo");
 		FollowDto followDto = new FollowDto();
@@ -59,7 +59,7 @@ public class FollowRestController {
 //		return followRepo.selectOne(followDto);
 //	}
 	
-	@GetMapping("/check")
+	@PostMapping("/check")
 	public List<Long> followcheck(
 			HttpSession session) {
 		long memberNo = (Long)session.getAttribute("memberNo");

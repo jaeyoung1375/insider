@@ -154,7 +154,7 @@
 	 				</foreach>
 	 			</if>
 	 		</where>
-	 		order by board_no asc
+	 		order by board_no desc
 	 	<include refid="topNfooter"></include>	
 	</select>
 
