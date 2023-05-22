@@ -451,8 +451,19 @@
 				</div>
 				<div class="modal-body">
 				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
-					<div class="row">
-						<div class="col">
+					<div class="row" v-for="(block, index) in blockList" :key="index">
+						<div class="col-8">
+							<div class="row">
+								<div class="col-3">
+									프로필
+								</div>
+								<div class="col-9">
+									{{block.memberName}}, {{block.memberNick}}
+								</div>
+							</div>
+						</div>
+						<div class="col-4">
+							<span @click="removeBlockList(block.blockNo, index)">차단 해제</span>
 						</div>
 					</div>
 				</div>
@@ -769,6 +780,9 @@
 			},
 			/*------------------------차단계정 관리------------------------*/
  			showBlockModal(){
+				if(this.blockList.length==0){
+					this.getBlockList();
+				}
 				if(this.blockModal==null) return;
 				this.blockModal.show();
 			},
@@ -779,13 +793,16 @@
 			async getBlockList(){
 				const resp = await axios.get(contextPath+"/rest/block/");
 				this.blockList = [...resp.data];
-			}
+			},
+			async removeBlockList(blockNo, index){
+				const resp = await axios.delete(contextPath+"/rest/block/"+blockNo);
+				this.blockList.splice(index,1);
+			},
 		},
 		created(){
 			//세팅데이터 로드
 			this.loadMember();
 			this.loadSetting();
-			this.getBlockList();
 		},
 		mounted(){
 			//모달 선언
