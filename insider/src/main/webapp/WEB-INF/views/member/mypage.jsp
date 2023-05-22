@@ -71,14 +71,14 @@
                            <span style="font-weight: bold;">${totalPostCount}</span>
                         </span>
                      </div>
-                     <div class="col-6">
+                     <div class="col-6" @click="followerModalShow">
                         <span>팔로워
-                        <span style="font-weight: bold;">612만</span>
+                        <span style="font-weight: bold;">${totalFollowerCount}</span>
                          </span>
                      </div>
-                     <div class="col-6">
+                     <div class="col-6" @click="followModalShow">
                         <span>팔로우
-                        <span style="font-weight: bold;">234</span>
+                        <span style="font-weight: bold;">${totalFollowCount}</span>
                          </span>
                      </div>
                   </div>   
@@ -278,6 +278,63 @@
                 </div>      
             </div>
         </div>
+        
+        
+          <div class="modal" tabindex="-1" role="dialog" id="followerModal"
+                            data-bs-backdrop="static"
+                            ref="followerModal" @click.self="followerModalHide">
+            <div class="modal-dialog" role="document">
+                   <div class="modal-content">
+                       <div class="modal-header text-center" style="display:flex; justify-content: center;">
+							<h5 class="modal-title">팔로워</h5>
+                       </div>
+                       <div class="modal-body">
+                     		<c:forEach items="${followerList}" var="followerList">
+                     			<div>
+                     				<img src="${pageContext.request.contextPath}/rest/attachment/download/${followerList.attachmentNo}" width="40" height="40">
+                     				<a href="${pageContext.request.contextPath}/member/${followerList.memberNick}">${followerList.memberNick}</a>
+                     				<button class="float-end">팔로우</button>
+                     			</div>
+                     			
+                     		</c:forEach>
+                       </div>
+                       
+                   
+                 
+                        <button type="button" class="btn"
+                                data-bs-dismiss="modal" style="color:red;">취소</button>
+                   
+                </div>      
+            </div>
+        </div>
+        
+          <div class="modal" tabindex="-1" role="dialog" id="followModal"
+                            data-bs-backdrop="static"
+                            ref="followModal" @click.self="followModalHide">
+            <div class="modal-dialog" role="document">
+                   <div class="modal-content">
+                       <div class="modal-header text-center" style="display:flex; justify-content: center;">
+							<h5 class="modal-title">팔로우</h5>
+                       </div>
+                       <div class="modal-body">
+                     		<c:forEach items="${followList}" var="followList">
+                     			<div>
+                     				<img src="${pageContext.request.contextPath}/rest/attachment/download/${followList.attachmentNo}" width="40" height="40">
+                     				<a href="${pageContext.request.contextPath}/member/${followList.memberNick}">${followList.memberNick}</a>
+                     				<button class="float-end">팔로우</button>
+                     			</div>
+                     			
+                     		</c:forEach>
+                       </div>
+                       
+                   
+                 
+                        <button type="button" class="btn"
+                                data-bs-dismiss="modal" style="color:red;">취소</button>
+                   
+                </div>      
+            </div>
+        </div>
         <!-- Modal 창 영역 끝 -->
       
       
@@ -299,6 +356,8 @@
             blockModal : null,
             blockResultModal : null,
             myOptionModal : null,
+            followerModal : null,
+            followModal : null,
             reportContentList:[],
             reportBoardNo:"",
             member:{
@@ -373,6 +432,22 @@
                  if(this.myOptionModal == null) return;
                   this.myOptionModal.hide();  
               },
+              followerModalShow(){
+            	  if(this.followerModal == null) return;
+                  this.followerModal.show();    
+              },
+              followerModalHide(){
+                  if(this.followerModal == null) return;
+                   this.followerModal.hide();  
+               },
+               followModalShow(){
+             	  if(this.followModal == null) return;
+                   this.followModal.show();    
+               },
+               followModalHide(){
+                   if(this.followModal == null) return;
+                    this.followModal.hide();  
+                },
               
               accountView(){
                  this.addtionModal.hide();
@@ -420,6 +495,8 @@
             this.blockModal = new bootstrap.Modal(this.$refs.blockModal);
             this.blockResultModal = new bootstrap.Modal(this.$refs.blockResultModal);
             this.myOptionModal = new bootstrap.Modal(this.$refs.myOptionModal);
+            this.followerModal = new bootstrap.Modal(this.$refs.followerModal);
+            this.followModal = new bootstrap.Modal(this.$refs.followModal);
             
       },
    }).mount("#app");

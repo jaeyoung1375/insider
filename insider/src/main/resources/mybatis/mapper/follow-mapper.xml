@@ -17,12 +17,13 @@
 		select * from followwithprofile where member_no=#{memberNo}
 	</select>
 	
+
 	<select id="getFollowNo" resultType="long">
 		select follow_follower from follow where member_no=#{memberNo}
 	</select>
 	
 	<select id="getFollowerList" resultType="followerWithProfileDto">
-		select * from followwithprofile where follow_follower=#{memberNo}
+		select * from followerwithprofile where follow_follower=#{memberNo}
 	</select>
 	<update id="changeAllow">
 		update follow set follow_allow=1 where member_no=#{memberNo} and follow_follower=#{followFollower}
@@ -38,7 +39,7 @@
 	
 	<!-- 팔로우 한 수 반환 -->
 	<select id="followNumber" resultType="int">
-		select count(*) from follow where memberNo=#{memberNo}
+		select count(*) from follow where member_no=#{memberNo}
 	</select>
 	
 	<select id="selectOne" resultType="followDto">
