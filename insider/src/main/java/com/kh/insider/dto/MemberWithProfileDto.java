@@ -11,8 +11,8 @@ public class MemberWithProfileDto {
 	private String memberPassword;
 	private String memberEmail;
 	private Date memberLogin;
-	private int memberLat;
-	private int memberLon;
+	private double memberLat;
+	private double memberLon;
 	private String memberPost;
 	private String memberBasicAddr;
 	private String memberDetailAddr;

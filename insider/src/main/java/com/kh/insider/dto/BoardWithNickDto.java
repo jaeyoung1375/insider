@@ -11,8 +11,8 @@ public class BoardWithNickDto {
 	public long memberNo;
 	public String boardContent;
 	public int boardLike;
-	public int boardLat;
-	public int boardLon;
+	public double boardLat;
+	public double boardLon;
 	public Date boardTime;
 	public int boardReply;
 	public int boardReplyValid;

@@ -11,6 +11,7 @@ public interface BlockRepo {
 	List<BlockDto> selectListBlocked(long memberNo);
 	BlockDto selectOne(BlockDto blockDto);
 	
+	//사용자가 차단한 리스트를 반환
 	List<BlockWithProfileDto> getBlockList(long memberNo);
 	void delete(BlockDto blockDto);
 }
