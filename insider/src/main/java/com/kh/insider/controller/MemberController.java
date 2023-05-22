@@ -149,6 +149,23 @@ public class MemberController {
       return "/member/mypage";
    }
    
+   @GetMapping("/totalFollowCount")
+   @ResponseBody
+   public int totalFollowCount(@RequestParam("memberNick") String memberNick) {
+       MemberDto findMember = memberRepo.findByNickName(memberNick);
+       int totalFollowCount = followRepo.getFollowNumber(findMember.getMemberNo());
+       return totalFollowCount;
+   }
+   
+   @GetMapping("/totalFollowerCount")
+   @ResponseBody
+   public int totalFollowerCount(@RequestParam("memberNick") String memberNick) {
+       MemberDto findMember = memberRepo.findByNickName(memberNick);
+       int totalFollowerCount = followRepo.getFollowerNumber(findMember.getMemberNo());
+       return totalFollowerCount;
+   }
+   
+   
    @GetMapping("/emailCheck")
    @ResponseBody
    public String isEmailDuplicated(@RequestParam String memberEmail) throws Exception {

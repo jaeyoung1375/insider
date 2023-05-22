@@ -15,6 +15,7 @@
          text-decoration: none;
          color:black;
       }
+   
 </style>
 
       <div id="app" class="container-fluid">
@@ -49,7 +50,7 @@
               </c:when>
               <c:otherwise> <!-- 본인 프로필이 아니라면 -->
                     <div class="col-5">
-               <button class="btn btn-primary">팔로우</button>
+               <button class="btn btn-primary" @click="follow(${memberDto.memberNo})">팔로우</button>
                </div>
                <div class="col-5"  style=" width:70%;">
                <button class="btn btn-secondary">메시지 보내기</button>
@@ -73,12 +74,12 @@
                      </div>
                      <div class="col-6" @click="followerModalShow">
                         <span>팔로워
-                        <span style="font-weight: bold;">${totalFollowerCount}</span>
+                        <span style="font-weight: bold;">{{totalFollowerCnt}}</span>
                          </span>
                      </div>
                      <div class="col-6" @click="followModalShow">
                         <span>팔로우
-                        <span style="font-weight: bold;">${totalFollowCount}</span>
+                        <span style="font-weight: bold;">{{totalFollowCnt}}</span>
                          </span>
                      </div>
                   </div>   
@@ -91,7 +92,7 @@
                for aespa 💙
                #aespastyles_ (member)
                est june 2020 ✨ | twitter:
-               twitter.com/aespastyles?s=21            
+               twitter.com/aespastyles?s=21      
                </span>
                </div>
                
@@ -293,7 +294,7 @@
                      			<div>
                      				<img src="${pageContext.request.contextPath}/rest/attachment/download/${followerList.attachmentNo}" width="40" height="40">
                      				<a href="${pageContext.request.contextPath}/member/${followerList.memberNick}">${followerList.memberNick}</a>
-                     				<button class="float-end">팔로우</button>
+                     				<button class="float-end" v-if="followCheckIf(${memberDto.memberNo})">팔로우</button>
                      			</div>
                      			
                      		</c:forEach>
@@ -359,7 +360,9 @@
             followerModal : null,
             followModal : null,
             reportContentList:[],
-            reportBoardNo:"",
+            followCheckList:[],
+            reportBoardNo:"",  
+            memberNick : "${memberDto.memberNick}",
             member:{
                memberNo:"",
                memberName:"",
@@ -375,6 +378,8 @@
                memberBirth:"",
                attachmentNo:"",
             },
+            totalFollowCnt: 0,
+            totalFollowerCnt: 0,
          };
       },
       computed: {
@@ -478,12 +483,74 @@
             const resp = await axios.post(contextPath+"/rest/attachment/upload/profile", formData);
             this.member.attachmentNo = resp.data;
          },
-            
          
+         //팔로우
+         async follow(followNo) {
+         	//const loginNo = sessionStorage.getItem('memberNo');
+         	//console.log(followNo);
+         	const resp = await axios.post("${pageContext.request.contextPath}/rest/follow/"+followNo);
+         	//if(loginNo == this.boardList.boardWithNickDto.memberNo)
+         	await this.followCheck();
+         	this.totalFollowerCount();
+         	
+         },
+         
+      
+         
+         // 팔로우 v-if 여부체크 함수
+        	followCheckIf(index){
+         	
+        		return !this.followCheckList.includes(${memberDto.memberNo});
+         },
+         
+      	 //팔로우 여부 체크
+         async followCheck() {
+         	const resp = await axios.post("${pageContext.request.contextPath}/rest/follow/check");
+         	//const newData = {followFollower : this.loginMemberNo};
+         	const newData = memberNo;
+         	//const newData=0;
+         	//console.log(newData);
+         	//console.log(newData);
+         	//console.log(this.loginMemberNo)
+         	this.followCheckList.push(...resp.data);
+         	this.followCheckList.push(parseInt(newData));
+         	
+         	console.log(this.followCheckList)
+         	//console.log(this.boardList);
+         	//console.log(this.boardList[0]);
+         	//const check = this.followCheckList.some(followFollower => followFollower === this.boardList[0].boardWithNickDto.memberNo)
+         	//console.log(check);
+         },
+         
+         // 팔로우 총 개수 
+         async totalFollowCount() {
+        	    const resp = await axios.get("totalFollowCount", {
+        	        params: {
+        	            memberNick: this.memberNick
+        	        }
+        	    });
+        	    this.totalFollowCnt = resp.data;
+        	    console.log("총: " + this.totalFollowCnt);
+        	},
+        	
+        	 // 팔로워 총 개수 
+            async totalFollowerCount() {
+           	    const resp = await axios.get("totalFollowerCount", {
+           	        params: {
+           	            memberNick: this.memberNick
+           	        }
+           	    });
+           	    this.totalFollowerCnt = resp.data;
+           	    console.log("총: " + this.totalFollowerCnt);
+           	},
+        
       },
       created(){
-         //데이터 불러오는 영역
+         //데이터 불러오는 영역   
          this.loadMember();
+         this.followCheck();
+         this.totalFollowCount();
+         this.totalFollowerCount();
       },
       watch:{
          //감시영역
