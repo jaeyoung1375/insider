@@ -87,6 +87,12 @@
 			<result column="board_no" property="boardNo"/>
 			<result column="attachment_no" property="attachmentNo"/>
 		</collection>
+		<collection property="boardTagList" javaType="java.util.List" ofType="BoardTagDto"
+				select="boardListTreeSelectTag" column="board_no">
+			<result column="board_tag_no" property="boardTagNo"/>
+			<result column="board_no" property="boardNo"/>
+			<result column="tag_Name" property="tagName"/>
+		</collection>
 	</resultMap>
 	
 	
@@ -100,6 +106,9 @@
 	<!-- 서브구문 -->
 	<select id="boardListTreeSelectSub" resultType="boardAttachmentDto">
 		select * from board_attachment where board_no = #{boardNo}
+	</select>
+	<select id="boardListTreeSelectTag" resultType="boardTagDto">
+		select * from board_tag where board_no=#{boardNo} order by board_tag_no asc
 	</select>
 	
 	<!-- 계층형 조회 메인 구문 팔로우, 차단 구현 -->
@@ -160,9 +169,93 @@
 		select count(*) from board where member_no = #{memberNo}
 	</select>
 	
+
 	<!-- 추후 코드 수정 예정 -5/19 재영 -->
 	<select id="getTotalMyPost" resultType="boardDto">
 	select A.*, B.attachment_no from board A inner join board_attachment B on A.board_no = B.board_no where member_no = #{memberNo}
 	</select>
 	
+
+<!-- 통계 관련 sql -->
+	<!-- 게시물 생성 통계 -->
+	<select id="timeStats" resultType="boardTimeStatsResponseVO">
+		<include refid="topNheader"></include>
+		WITH all_parts AS (
+			<choose>
+				<when test="col.equals('days')">
+					SELECT TRUNC(SYSDATE) - LEVEL + 1 AS date_part
+					FROM dual
+					<![CDATA[
+					CONNECT BY LEVEL <= TRUNC(SYSDATE) - TO_DATE('2023-01-01', 'YYYY-MM-DD') + 1
+					]]>
+				</when>
+				<otherwise>
+					SELECT ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -LEVEL + 1) AS date_part
+					FROM dual
+					<![CDATA[
+					CONNECT BY LEVEL <= MONTHS_BETWEEN(TRUNC(SYSDATE, 'MM'), TO_DATE('2023-01', 'YYYY-MM')) + 1
+					]]>
+				</otherwise>
+			</choose>
+		)
+		SELECT TO_CHAR(
+			all_parts.date_part,
+			<choose>
+				<when test="col.equals('days')">
+					'MM/DD'
+				</when>
+				<otherwise>
+					'YY/MM'
+				</otherwise>
+			</choose>
+		) AS col, NVL(COUNT(board.board_time), 0) AS count
+		FROM all_parts
+			<choose>
+				<when test="col.equals('days')">
+					LEFT JOIN board ON all_parts.date_part = TRUNC(board.board_time)
+				</when>
+				<otherwise>
+					LEFT JOIN board ON TO_CHAR(all_parts.date_part, 'YYYY-MM') = TO_CHAR(board.board_time, 'YYYY-MM')
+				</otherwise>
+			</choose>
+		GROUP BY all_parts.date_part
+		ORDER BY ${order}
+		<include refid="topNfooter"></include>
+	</select>
+	
+	<select id="boardTagStats" resultType="boardTagStatsResponseVO">
+		<bind name="startDateExist" value="startDate!=null and !startDate.equals('')"></bind>
+		<bind name="endDateExist" value="endDate!=null and !endDate.equals('')"></bind>
+		<include refid="topNheader"></include>
+		SELECT t.tag_name, COUNT(*) AS count
+		FROM board b
+		JOIN board_tag t ON b.board_no = t.board_no
+		<where>
+			<choose>
+				<when test="!startDateExist and !endDateExist">
+					and b.board_time >= sysdate-7
+				</when>
+				<when test="startDateExist and !endDateExist">
+					and b.board_time >= to_date(#{startDate}||' '||'00:00:00', 'YYYY-MM-DD HH24:MI:SS') 
+				</when>
+				<when test="startDateExist and endDateExist">
+					AND b.board_time between
+						to_date(#{startDate}||' '||'00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+						and
+						to_date(#{endDate}||' '||'23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+				</when>
+				<otherwise>
+					and
+					<![CDATA[
+					b.board_time<=to_date(#{endDate}||' '||'23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+					]]>
+				</otherwise>
+			</choose>
+		</where>
+		GROUP BY t.tag_name
+		ORDER BY count desc
+		<include refid="topNfooter"></include>
+	</select>
+<!-- 통계 관련 sql 끝 -->
+
 </mapper>

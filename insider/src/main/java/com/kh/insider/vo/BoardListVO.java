@@ -3,6 +3,7 @@ package com.kh.insider.vo;
 import java.util.List;
 
 import com.kh.insider.dto.BoardAttachmentDto;
+import com.kh.insider.dto.BoardTagDto;
 import com.kh.insider.dto.BoardWithNickDto;
 
 import lombok.Data;
@@ -11,5 +12,5 @@ import lombok.Data;
 public class BoardListVO {
 	private BoardWithNickDto boardWithNickDto;
 	private List<BoardAttachmentDto> boardAttachmentList;
-	private Integer likeCount;
+	private List<BoardTagDto> boardTagList;
 }

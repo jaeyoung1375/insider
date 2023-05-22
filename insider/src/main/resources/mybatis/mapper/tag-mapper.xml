@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tag">
+	<insert id="insert">
+		insert into tag(tag_name) values(#{tagName})
+	</insert>
+	<update id="updateFollow">
+		update tag set tag_follow=#{tagFollow} where tag_name=#{tagName}
+	</update>
+	<select id="selectOne" resultType="tagDto">
+		select * from tag where tag_name=#{tagName}
+	</select>
+	<select id="selectList" resultType="tagDto">
+		select * from tag
+	</select>
+</mapper>

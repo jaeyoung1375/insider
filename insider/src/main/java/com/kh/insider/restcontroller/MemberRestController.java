@@ -98,4 +98,8 @@ public class MemberRestController {
 	public List<MemberStatsResponseVO> getStats(@RequestBody MemberStatsSearchVO memberStatsSearchVO){
 		return memberStatsRepo.selectList(memberStatsSearchVO);
 	}
+	@PostMapping("/stats/cumulative/")
+	public List<MemberStatsResponseVO> getCumulative(@RequestBody MemberStatsSearchVO memberStatsSearchVO){
+		return memberStatsRepo.selectListCumulative(memberStatsSearchVO);
+	}
 }

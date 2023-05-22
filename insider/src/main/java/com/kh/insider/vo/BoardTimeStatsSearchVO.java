@@ -3,8 +3,7 @@ package com.kh.insider.vo;
 import lombok.Data;
 
 @Data
-public class MemberStatsSearchVO {
-	private String stat="member_login";
+public class BoardTimeStatsSearchVO {
 	private String col="days";
 	private String order="all_parts.date_part DESC";
 	

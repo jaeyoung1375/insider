@@ -6,6 +6,10 @@ import com.kh.insider.dto.BoardDto;
 import com.kh.insider.vo.BoardAttachmentVO;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
+import com.kh.insider.vo.BoardTagStatsResponseVO;
+import com.kh.insider.vo.BoardTagStatsSearchVO;
+import com.kh.insider.vo.BoardTimeStatsResponseVO;
+import com.kh.insider.vo.BoardTimeStatsSearchVO;
 
 public interface BoardRepo {
 	List<BoardDto> selectListPaging(int page);
@@ -30,6 +34,11 @@ public interface BoardRepo {
 	
 	//신고수 추가
 	void addReport(int boardNo);
+	
+	//게시물 생성 통계
+	List<BoardTimeStatsResponseVO> getBoardTimeStats(BoardTimeStatsSearchVO boardTimeStatsSearchVO);
 
 	void delete(int boardNo);
+	//태그 생성 통계
+	List<BoardTagStatsResponseVO> getBoardTagStats(BoardTagStatsSearchVO boardTagStatsSearchVO);
 }

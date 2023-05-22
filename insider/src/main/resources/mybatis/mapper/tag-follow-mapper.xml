@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tagFollow">
+	<insert id="insert">
+		insert into tag_follow(tag_name, member_no) values(#{tagName}, #{memberNo})
+	</insert>
+	<select id="selectList" resultType="tagFollowDto">
+		select * from tag_follow where member_no = #{memberNo}
+	</select>
+	<select id="countFromMember" resultType="int">
+		select count(*) from tag_follow where member_no=#{memberNo}
+	</select>
+	<select id="countFromTag" resultType="int">
+		select count(*) from tag_follow where tag_name=#{tagName}
+	</select>
+	<delete id="delete">
+		delete tag_follow where member_no=#{memberNo} and tag_name=#{tagName}
+	</delete>
+</mapper>

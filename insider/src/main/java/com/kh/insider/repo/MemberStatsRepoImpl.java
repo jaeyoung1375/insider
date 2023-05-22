@@ -18,6 +18,11 @@ public class MemberStatsRepoImpl implements MemberStatsRepo{
 	public List<MemberStatsResponseVO> selectList(MemberStatsSearchVO memberStatsSearchVO) {
 		return sqlSession.selectList("member.memberStats", memberStatsSearchVO);
 	}
+
+	@Override
+	public List<MemberStatsResponseVO> selectListCumulative(MemberStatsSearchVO memberStatsSearchVO) {
+		return sqlSession.selectList("member.memberStatsCumulative", memberStatsSearchVO);
+	}
 	
 
 }
