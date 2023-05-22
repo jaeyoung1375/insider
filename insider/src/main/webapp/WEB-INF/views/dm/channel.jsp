@@ -215,7 +215,7 @@
 		
 		<!-- 회원 목록을 모달창으로 불러오기 -->
 		<div class="modal fade" tabindex="-1" id="memberListModal" data-bs-backdrop="static" ref="memberListModal">
-		  <div class="modal-dialog modal-dialog-scrollable" style="width:350px;">
+		  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down" style="width:350px;">
 		    <div class="modal-content" style="align-content: center;flex-wrap: wrap;">
 		      <div class="modal-header">
 		        <h5 class="modal-title" id="memberListModalLabel">메세지 보내기</h5>
@@ -223,9 +223,9 @@
 		      </div>
 		      <div class="modal-body">
 		        <div style="margin-bottom:10px;">
-		          <input type="text" placeholder="검색" v-model="keyword" class="form-control me-sm-2">
+		          <input type="text" placeholder="검색" v-model="keyword" class="form-control me-sm-2" @input="keyword = $event.target.value">
 		        </div>
-		        <div v-for="(member,index) in dmMemberList" :key="index" style="margin-top:20px;position:relative;">
+		        <div v-if="searchDmList.length==0"  v-for="(member,index) in dmMemberList" :key="index" style="margin-top:20px;position:relative;">
 		          <img src="https://via.placeholder.com/40x40?text=P" style="border-radius: 50%; position:absolute; top:0.3em" >
 		          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
 		          <br>
@@ -236,6 +236,18 @@
 		            </button>
 		          </span>
 		        </div>
+		        <div v-if="searchDmList.length>0"  v-for="(member,index) in searchDmList" :key="index" style="margin-top:20px;position:relative;">
+		          <img src="https://via.placeholder.com/40x40?text=P" style="border-radius: 50%; position:absolute; top:0.3em" >
+		          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+		          <br>
+		          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+		          <span style="position:absolute;right:0;top:10px;">
+		            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="roomSearch(member.memberNo,index)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
+		              채팅
+		            </button>
+		          </span>
+		        </div>
+		        
 		      </div>
 		    </div>
 		  </div>
@@ -261,8 +273,12 @@
                     memberNick:"${sessionScope.memberNick}",
                     memberNo:"${sessionScope.memberNo}",
                     socket:null,//웹소켓 연결 객체
-                    dmMemberList:[],//팔로워 회원 목록
                     modal:null, //modal 제어
+                    dmMemberList:[],//팔로워 회원 목록
+                    
+                    //차단한 회원을 제외한 전체 회원 검색
+                    searchDmList:[],
+                    keyword:"",
  
                 };
             },
@@ -378,12 +394,38 @@
             	   const url = "${pageContext.request.contextPath}/rest/dmMemberList";
             	    try {
             	      const resp = await axios.get(url);
-            	      this.dmMemberList.splice(0, this.dmMemberList.length, ...resp.data); //중복 방지
+            	      this.dmMemberList.splice(0); //전체삭제
+	                  this.dmMemberList.push(...resp.data);
             	    } 
             	    catch (error) {
             	      console.error(error);
             	    }
             	},
+                //차단한 회원을 제외한 전체 회원 검색
+				async chooseDmSearch() {
+				    const url = "${pageContext.request.contextPath}/rest/dmMemberSearch";
+				    try {
+				        const resp = await axios.get(url, {
+				            params: {
+				                keyword: this.keyword
+				            }
+				        });
+				        this.searchDmList.splice(0); //전체삭제
+	                    this.searchDmList.push(...resp.data);
+				    } catch (error) {
+				        console.error(error);
+				    }
+				},
+            },
+            watch:{
+            	//검색
+            	keyword:_.throttle(function(){
+        			if(this.keyword=="") {
+        				this.searchDmList = [];
+        				return;
+        			}
+        			this.chooseDmSearch();
+        		}, 200)
             },
             computed:{ 
             	jsonText() {

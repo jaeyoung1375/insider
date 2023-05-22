@@ -9,4 +9,7 @@ public interface DmMemberListRepo {
 	//팔로워 회원 목록
 	List<DmMemberListDto> chooseDm(long memberNo);
 	
+	//차단한 회원을 제외한 전체 회원 목록
+	List<DmMemberListDto>  dmMemberSearch(long memberNo, String keyword);
+	
 }

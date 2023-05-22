@@ -8,16 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.DmMemberListDto;
 import com.kh.insider.dto.DmMessageNickDto;
 import com.kh.insider.repo.DmMemberListRepo;
 import com.kh.insider.repo.DmMessageNickRepo;
-import com.kh.insider.repo.DmRoomRepo;
-import com.kh.insider.repo.DmRoomUserRepo;
-import com.kh.insider.repo.DmUnreadUserRepo;
-import com.kh.insider.repo.MemberRepo;
 
 @RestController
 @RequestMapping("/rest")
@@ -45,5 +42,14 @@ public class DmRestController {
     	long memberNo = (Long) session.getAttribute("memberNo");
         return dmMemberListRepo.chooseDm(memberNo);
     }
+    
+    //차단한 회원을 제외한 전체 회원 목록
+	@GetMapping("/dmMemberSearch")
+	public List<DmMemberListDto> dmMemberSearch(
+				HttpSession session,
+				@RequestParam String keyword){
+		long memberNo = (Long) session.getAttribute("memberNo");
+		return dmMemberListRepo.dmMemberSearch(memberNo, keyword);
+	}
 	
 }

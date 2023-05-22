@@ -21,5 +21,14 @@ public class DmMemberListRepoImpl implements DmMemberListRepo{
 	public List<DmMemberListDto> chooseDm(long memberNo) {
 		return sqlSession.selectList("dmMemberList.chooseDm", memberNo);
 	}
+
+	//차단한 회원을 제외한 전체 회원 목록
+	@Override
+	public List<DmMemberListDto> dmMemberSearch(long memberNo, String keyword) {
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("keyword", keyword);
+		param.put("memberNo", memberNo);
+		return sqlSession.selectList("dmMemberList.dmMemberSearch", param);
+	}
 	
 }
