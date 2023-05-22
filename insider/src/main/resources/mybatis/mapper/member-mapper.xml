@@ -143,5 +143,27 @@
 		ORDER BY ${order}
 		<include refid="topNfooter"></include>
 	</select>
+	<!-- 통계 누적 데이터 출력 -->
+	<select id="memberStatsCumulative" resultType="memberStatsResponseVO">
+		<include refid="topNheader"></include>
+		SELECT
+			<choose>
+				<when test="col.equals('days')">
+					TO_CHAR(TRUNC(${stat}), 'MM/DD') AS col,
+					SUM(COUNT(*)) OVER (ORDER BY TRUNC(${stat}) ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS count
+					FROM member
+					GROUP BY TRUNC(${stat})
+					ORDER BY TRUNC(${stat}) desc
+				</when>
+				<otherwise>
+					TO_CHAR(${stat}, 'MM'), 'YY/MM') AS col,
+					SUM(COUNT(*)) OVER (ORDER BY TRUNC(${stat}, 'MM') ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS count
+					FROM member
+					GROUP BY TO_CHAR(TRUNC(${stat}, 'MM'), 'YY/MM'), TRUNC(${stat}, 'MM')
+					ORDER BY TRUNC(${stat}, 'MM') desc
+				</otherwise>
+			</choose>
+		<include refid="topNfooter"></include>
+	</select>
 	
 </mapper>

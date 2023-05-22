@@ -29,11 +29,15 @@
 	display:none;
 	cursor:default
 }
+.admin-menu-bar{
+	position:fixed;
+	left:0;
+}
 </style>
-<div class="container-fluid mt-4" id="app">
-	<div class="row">
+<div id="app">
+	<div class="row admin-menu-bar">
 	<!------------------------------ 좌측 사이드 메뉴바 ---------------------------->
-		<div class="col-md-4">
+		<div class="col">
 			<div class="row admin-menu" @click="changeAdminMenu(1)" :class="{'selected':adminMenu==1}">
 				<div class="col">
 					<h2>회원 관리</h2>
@@ -60,8 +64,11 @@
 				</div>
 			</div>
 		</div>
+	</div>
 	<!--------------------------- 회원 관리 시작 --------------------------->
-		<div class="col-md-8" v-show="adminMenu==1">
+	<div class="container-fluid mt-4">
+	<div class="row">
+		<div class="col" v-show="adminMenu==1">
 			<div class="row">
 				<div class="col">
 					<h1>회원관리</h1>
@@ -259,7 +266,7 @@
 		</div>
 	<!--------------------------- 회원 관리 끝--------------------------->
 	<!--------------------------- 신고 관리 시작 --------------------------->
-		<div class="col-md-8" v-show="adminMenu==2">
+		<div class="col" v-show="adminMenu==2">
 			<div class="row">
 				<div class="col">
 					<h1>신고관리</h1>
@@ -298,7 +305,7 @@
 		</div>
 	<!--------------------------- 신고 관리 끝 --------------------------->
 	<!--------------------------- 회원 통계 --------------------------->
-		<div class="col-md-8" v-show="adminMenu==3">
+		<div class="col" v-show="adminMenu==3">
 			<div class="row">
 				<div class="col">
 					<h1>회원 통계</h1>
@@ -335,6 +342,9 @@
 					<canvas ref="loginChart"></canvas>
 				</div>
 			</div>
+			
+			<!-- 가입자 수 퉁계 -->
+			
 			<div class="row">
 				<div class="col">
 					<h3>가입자 수 통계</h3>
@@ -366,23 +376,120 @@
 					<canvas ref="joinChart"></canvas>
 				</div>
 			</div>
+			
+			<!-- 누적 통계 -->
+			
+			<div class="row">
+				<div class="col">
+					<h3>누적 통계</h3>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<input type="radio" value="member_join" v-model="memberCumulativeSearch.stat" :checked="memberCumulativeSearch.stat=='member_join'" />가입자
+					<input type="radio" value="member_login" v-model="memberCumulativeSearch.stat" :checked="memberCumulativeSearch.stat=='member_login'" />접속자
+				</div>
+				<div class="col">
+					<button type="button" class="btn btn-secondary" @click="getMemberCumulativeStats()">검색</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col" style="position:relative">
+					<canvas ref="cumulativeChart"></canvas>
+				</div>
+			</div>
 		</div>
 	<!--------------------------- 게시물 통계 --------------------------->
-		<div class="col-md-8" v-show="adminMenu==4">
+		<div class="col" v-show="adminMenu==4">
 			<div class="row">
 				<div class="col">
 					<h1>게시물 통계</h1>
 				</div>
 			</div>
+			
+			<!-- 게시물 수 통계 -->
+			<div class="row">
+				<div class="col">
+					<h3>게시물 수 통계</h3>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<input type="radio" value="days" v-model="boardTimeSearch.col" :checked="boardTimeSearch.col=='days'" />일별
+					<input type="radio" value="months" v-model="boardTimeSearch.col" :checked="boardTimeSearch.col=='months'" />월별
+				</div>
+				<div class="col">
+					<select class="form-control" v-model="boardTimeSearch.order">
+						<option value="all_parts.date_part DESC">날짜별 정렬</option>
+						<option value="count desc">많은 순</option>
+					</select>
+				</div>
+				<div class="col">
+					<button type="button" class="btn btn-secondary" @click="getBoardTimeStats(true)">검색</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col" style="position:relative">
+					<div class="chart-arrow-left" :class="{'chart-disabled':!boardTimeChartLeft}">
+						<i class="fa-solid fa-chevron-left" @click="boardTimeStatsPrev"></i>
+					</div>
+					<div class="chart-arrow-right" :class="{'chart-disabled':boardTimeSearch.page==1}">
+						<i class="fa-solid fa-chevron-right" @click="boardTimeStatsNext"></i>
+					</div>
+					<canvas ref="boardTimeChart"></canvas>
+				</div>
+			</div>
+			<!-- 게시물 태그 수 통계 -->
+			<div class="row">
+				<div class="col">
+					<h3>태그 통계</h3>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-10">
+					<div class="row">
+						<div class="col">
+							<span>기간설정 </span>
+						</div>
+						<div class="col-4">
+							<input class="form-control" type="date" v-model="boardTagSearch.startDate">
+						</div>
+						<div class="col">
+							<span> 부터 </span>
+						</div>
+						<div class="col-4">
+							<input class="form-control" type="date" v-model="boardTagSearch.endDate">
+						</div>
+						<div class="col">
+							<span> 까지</span>
+						</div>
+					</div>
+				</div>
+				<div class="col-2">
+					<button type="button" class="btn btn-secondary" @click="getBoardTagStats(true)">검색</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col" style="position:relative">
+					<div class="chart-arrow-left" :class="{'chart-disabled':boardTagSearch.page==1}">
+						<i class="fa-solid fa-chevron-left" @click="boardTagStatsPrev"></i>
+					</div>
+					<div class="chart-arrow-right" :class="{'chart-disabled':!boardTagChartRight}">
+						<i class="fa-solid fa-chevron-right" @click="boardTagStatsNext"></i>
+					</div>
+					<canvas ref="boardTagChart"></canvas>
+				</div>
+			</div>
 		</div>
 	<!--------------------------- 조회 통계 --------------------------->
-		<div class="col-md-8" v-show="adminMenu==5">
+		<div class="col" v-show="adminMenu==5">
 			<div class="row">
 				<div class="col">
 					<h1>조회 통계</h1>
 				</div>
 			</div>
 		</div>
+	</div>
 	</div>
 	<!-- ---------------------------------신고 내용 관리 모달-------------------------- -->
 	<div class="modal" tabindex="-1" role="dialog" id="reportContentModal" data-bs-backdrop="static" ref="reportContentModal">
@@ -445,6 +552,9 @@
 	//chartJS 변수 선언
 	let loginChart;
 	let joinChart;
+	let cumulativeChart;
+	let boardTimeChart;
+	let boardTagChart;
 	Vue.createApp({
 		data() {
 			return {
@@ -470,7 +580,7 @@
 				reportContentListEdit:[],
 				reportList:[],
 				reportSocket:null,
-				/*---------------------------통계 데이터 --------------------------- */
+				/*---------------------------회원 통계 데이터 --------------------------- */
 				memberLoginSearch:{
 					stat:"member_login",
 					col:"days",
@@ -483,6 +593,11 @@
 					order:"all_parts.date_part DESC",
 					page:1,
 				},
+				memberCumulativeSearch:{
+					stat:"member_join",
+					col:"days",
+					page:1,
+				},
 				memberLoginList:{
 					col:[],
 					count:[],
@@ -491,10 +606,33 @@
 					col:[],
 					count:[],
 				},
-				loginChart:null,
-				joinChart:null,
+				memberCumulativeList:{
+					col:[],
+					count:[],
+				},
 				loginChartLeft:true,
 				joinChartLeft:true,
+				/*---------------------------게시물 통계 데이터 --------------------------- */
+				boardTimeSearch:{
+					col:"days",
+					order:"all_parts.date_part DESC",
+					page:1,
+				},
+				boardTagSearch:{
+					startDate:"",
+					endDate:"",
+					page:1,
+				},
+				boardTimeList:{
+					col:[],
+					count:[],
+				},
+				boardTagList:{
+					tagName:[],
+					count:[],
+				},
+				boardTimeChartLeft:true,
+				boardTagChartRight:true,
 			};
 		},
 		computed: {
@@ -735,6 +873,48 @@
 					},
 				});
 			},
+			async getMemberCumulativeStats(buttonClick){
+				if(buttonClick){
+					this.memberCumulativeSearch.page=1;
+				}
+				const resp = await axios.post(contextPath+"/rest/member/stats/cumulative/", this.memberCumulativeSearch);
+				this.memberCumulativeList.col = _.map(resp.data, 'col');
+				this.memberCumulativeList.count = _.map(resp.data, 'count');
+				if(this.memberCumulativeList.col[0]==null){
+					this.memberCumulativeList.col.splice(0, 1);
+					this.memberCumulativeList.count.splice(0, 1);
+				}
+				//차트 초기화
+				if(cumulativeChart!=null) {
+					cumulativeChart.destroy();
+				}
+				cumulativeChart = this.$refs.cumulativeChart;
+				
+				cumulativeChart = new Chart(cumulativeChart, {
+					type: "bar",
+					data: {
+						labels: this.memberCumulativeList.col.reverse(),
+						datasets: [
+							{
+								label: "가입자 수(명)",
+								data: this.memberCumulativeList.count.reverse(),
+								borderWidth: 1,
+								backgroundColor: [
+									"navy",
+								],
+								borderColor: [
+									"navy",
+								],
+							},
+						],
+					},
+					options: {
+						scales: {
+							y: {beginAtZero: true,},
+						},
+					},
+				});
+			},
 			//차트 좌우버튼 클릭시
 			loginStatsPrev(){
 				this.memberLoginSearch.page++;
@@ -752,6 +932,123 @@
 				this.memberJoinSearch.page--;
 				this.getMemberJoinStats();
 			},
+		/*------------------------------ 멤버통계 끝 ------------------------------*/
+		/*------------------------------ 게시물통계통계 시작 ------------------------------*/
+			async getBoardTimeStats(buttonClick){
+				if(buttonClick){
+					this.boardTimeSearch.page=1;
+				}
+				const resp = await axios.post(contextPath+"/rest/board/stats/boardTime", this.boardTimeSearch)
+				this.boardTimeChartLeft=true;
+				if(this.boardTimeSearch.col=='days'){
+					if(resp.data.length<31){
+						this.boardTimeChartLeft=false;
+					}
+				}
+				else{
+					if(resp.data.length<12){
+						this.boardTimeChartLeft=false;
+					}
+				}
+				this.boardTimeList.col = _.map(resp.data, 'col');
+				this.boardTimeList.count = _.map(resp.data, 'count');
+				if(this.boardTimeSearch.order=='all_parts.date_part DESC'){
+					this.boardTimeList.col.reverse();
+					this.boardTimeList.count.reverse();
+				}
+				//캔버스 사용 초기화
+				if(boardTimeChart!=null) {
+					boardTimeChart.destroy();
+				}
+				boardTimeChart = this.$refs.boardTimeChart;
+				
+				boardTimeChart = new Chart(boardTimeChart, {
+					type: "bar",
+					data: {
+						labels: this.boardTimeList.col,
+						datasets: [
+							{
+								label: "생성 개수",
+								data: this.boardTimeList.count,
+								borderWidth: 1,
+								backgroundColor: [
+									"navy",
+								],
+								borderColor: [
+									"navy",
+								],
+							},
+						],
+					},
+					options: {
+						scales: {
+							y: {beginAtZero: true,},
+						},
+					},
+				});
+			},
+			async getBoardTagStats(buttonClick){
+				if(buttonClick){
+					this.boardTagSearch.page=1;
+				}
+				const resp = await axios.post(contextPath+"/rest/board/stats/boardTag", this.boardTagSearch)
+				this.boardTagChartRight=true;
+				if(resp.data.length<15){
+					this.boardTagChartRight=false;
+				}
+				this.boardTagList.tagName = _.map(resp.data, 'tagName');
+				this.boardTagList.count = _.map(resp.data, 'count');
+				//캔버스 사용 초기화
+				if(boardTagChart!=null) {
+					boardTagChart.destroy();
+				}
+				boardTagChart = this.$refs.boardTagChart;
+				
+				boardTagChart = new Chart(boardTagChart, {
+					type: "bar",
+					data: {
+						labels: this.boardTagList.tagName,
+						datasets: [
+							{
+								label: "생성 개수",
+								data: this.boardTagList.count,
+								borderWidth: 1,
+								backgroundColor: [
+									"navy",
+								],
+								borderColor: [
+									"navy",
+								],
+							},
+						],
+					},
+					options: {
+						scales: {
+							y: {beginAtZero: true,},
+						},
+					},
+				});
+			},
+			//차트 좌우버튼 클릭시
+			boardTimeStatsPrev(){
+				this.boardTimeSearch.page++;
+				this.getBoardTimeStats();
+			},
+			boardTimeStatsNext(){
+				this.boardTimeSearch.page--;
+				this.getBoardTimeStats();
+			},
+			boardTagStatsPrev(){
+				this.boardTagSearch.page--;
+				this.getBoardTagStats();
+			},
+			boardTagStatsNext(){
+				this.boardTagSearch.page++;
+				this.getBoardTagStats();
+			},
+		
+		/*------------------------------ 게시물통계통계 끝 ------------------------------*/
+
 		},
 		created(){
 			//데이터 불러오는 영역
@@ -760,7 +1057,9 @@
 			this.connectReportServer();
 			this.getMemberLoginStats();
 			this.getMemberJoinStats();
-
+			this.getMemberCumulativeStats();
+			this.getBoardTimeStats();
+			this.getBoardTagStats();
 		},
 		watch:{
 			//감시영역
