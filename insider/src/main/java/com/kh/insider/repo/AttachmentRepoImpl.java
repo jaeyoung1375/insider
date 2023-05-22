@@ -22,10 +22,10 @@ public class AttachmentRepoImpl implements AttachmentRepo{
 	    return sqlSession.selectOne("attachment.sequence");
 	}
 
-//	@Override
-//	public void insert(AttachmentDto attachmentDto) {
-//	    sqlSession.insert("attachment.insert", attachmentDto);
-//	}
+	@Override
+	public void insert(AttachmentDto attachmentDto) {
+	    sqlSession.insert("attachment.insert", attachmentDto);
+	}
 
 
 	@Override

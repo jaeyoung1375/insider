@@ -134,6 +134,27 @@
  		display:none;
  	}
  	
+	.modal {
+	  display: none;
+	  position: fixed;
+	  z-index: 1;
+	  left: 0;
+	  top: 0;
+	  width: 100%;
+	  height: 100%;
+	  overflow: auto;
+	  background-color: rgba(0, 0, 0, 0.5);
+	}
+	
+	.modal-content {
+	  background-color: #fefefe;
+	  margin: 15% auto;
+	  padding: 20px;
+	  border: 1px solid #888;
+	  width: 100%;
+	  max-width: 100%;
+	}
+	 	
 </style>
 
 
@@ -157,22 +178,33 @@
 // });
 
 
-//내용 글자 수 카운트
+
 $(function(){
 
-// 	$("#contentCheck").on("input",function(){
-// 		const size = $(this).val().length;
-		
-// 		if(size <= 1000){
-// 			const target = $(this).next().children(".length").children(".count");
-// 			target.text(size);
-// 		}
-		
-// 		if(size > 1000){
-// 			$(this).val($(this).val().substring(0, 1000));
-// 		}
-		
-// 	});
+	$(document).ready(function() {
+		  // Show the modal on page load
+		  $('#modalForm').css('display', 'block');
+
+		  // Disable modal closing when clicking outside the modal content
+		  $('.modal-dialog').on('click', function(event) {
+		    event.stopPropagation();
+		  });
+
+		  // Close the modal when the cancel button is clicked
+		  $('.cancel').on('click', function() {
+		    $('#modalForm').css('display', 'none');
+		  });
+
+		  // Close the modal when the close button is clicked
+		  $('.close').on('click', function() {
+		    $('#modalForm').css('display', 'none');
+		  });
+		});
+
+
+
+	
+	
 $(document).ready(function() {
     $('#summernote').summernote({
         toolbar: false,
@@ -195,12 +227,8 @@ $(document).ready(function() {
     });
 });
 
-
-
-	
-	
-	
 	$(".cancel").click(function(){
+		 event.stopPropagation(); 
 		const text = confirm("게시물을 삭제하시겠어요?\n지금 나가면 수정 내용이 저장되지 않습니다.");
 		
 		if(text){
@@ -208,7 +236,6 @@ $(document).ready(function() {
 		}
 	});
 		
-
 	
 	$(".form-submit").submit(function(e){
 	
@@ -239,8 +266,6 @@ $(document).ready(function() {
 			$("#memberTag").attr("disabled", true);
 		}
 		
-		
-		
 	});
 	
 		//멀티 페이지
@@ -269,9 +294,6 @@ $(document).ready(function() {
 			$(".page").hide();
 			$(".page").eq(index).show();
 		}
-		
-		
-	
 });
 
 
@@ -279,16 +301,10 @@ $(document).ready(function() {
 
 <!------------------------------------------------------------------------------------->
 
+<div id="modalForm" class="modal">
+
+
 <div id="app" class="vue-container">
-
-<!-- <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"> -->
-<!--   <div class="modal-dialog" role="document"> -->
-<!--     <div class="modal-content"> -->
-<!--       <div class="modal-header"> -->
-<!--         <h4 class="modal-title" id="myModalLabel">이미지 & 동영상 업로드</h4> -->
-<!--       </div> -->
-<!--       <div class="modal-body"> -->
-
 
 <form action="insert" method="post" enctype="multipart/form-data" class="form-submit">
 
@@ -472,6 +488,8 @@ $(document).ready(function() {
 	
 
 </form>
+
+</div>
 
 </div>
 

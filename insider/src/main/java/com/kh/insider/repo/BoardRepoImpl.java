@@ -12,6 +12,10 @@ import com.kh.insider.dto.BoardDto;
 import com.kh.insider.vo.BoardAttachmentVO;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
+import com.kh.insider.vo.BoardTagStatsResponseVO;
+import com.kh.insider.vo.BoardTagStatsSearchVO;
+import com.kh.insider.vo.BoardTimeStatsResponseVO;
+import com.kh.insider.vo.BoardTimeStatsSearchVO;
 
 @Repository
 public class BoardRepoImpl implements BoardRepo {
@@ -80,6 +84,12 @@ public class BoardRepoImpl implements BoardRepo {
 	}
 
 
+	@Override
+	public List<BoardTimeStatsResponseVO> getBoardTimeStats(BoardTimeStatsSearchVO boardTimeStatsSearchVO) {
+		return sqlSession.selectList("board.timeStats", boardTimeStatsSearchVO);
+	}
+
+
 
 //	@Override
 //	public void connect(int boardNo, int attachmentNo) {
@@ -93,6 +103,12 @@ public class BoardRepoImpl implements BoardRepo {
 	@Override
 	public void delete(int boardNo) {
 		sqlSession.delete("board.delete", boardNo);		
+	}
+
+
+	@Override
+	public List<BoardTagStatsResponseVO> getBoardTagStats(BoardTagStatsSearchVO boardTagStatsSearchVO) {
+		return sqlSession.selectList("board.boardTagStats", boardTagStatsSearchVO);
 	}
 
 }

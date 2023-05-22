@@ -66,8 +66,8 @@ public class AttachmentController {
 	public ResponseEntity<ByteArrayResource> download(
 			@PathVariable int fileName) throws IOException {
 		
-//		//DB 조회
-		AttachmentDto attachmentDto = attachmentRepo.selectOne(fileName);
+		//DB 조회
+//		AttachmentDto attachmentDto = attachmentRepo.selectOne(fileName);
 
 		//파일 찾기
 		File dir = new File("D:/upload");
@@ -81,16 +81,16 @@ public class AttachmentController {
 		//헤더와 바디를 설정하며 ResponseEntity를 만들어 반환
 		return ResponseEntity.ok()
 			.contentType(MediaType.APPLICATION_OCTET_STREAM)
-//			.contentLength(target.length())
-			.contentLength(attachmentDto.getAttachmentSize())
+			.contentLength(target.length())
+//			.contentLength(attachmentDto.getAttachmentSize())
 			.header(HttpHeaders.CONTENT_ENCODING, 
 										StandardCharsets.UTF_8.name())
 			.header(HttpHeaders.CONTENT_DISPOSITION,
 				ContentDisposition.attachment()
 							.filename(
-//									"reply.png", StandardCharsets.UTF_8
-									attachmentDto.getAttachmentName(),
-									StandardCharsets.UTF_8
+									"reply.png", StandardCharsets.UTF_8
+//									attachmentDto.getAttachmentName(),
+//									StandardCharsets.UTF_8
 							).build().toString()
 			)
 			.body(resource);

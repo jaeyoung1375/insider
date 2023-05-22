@@ -9,7 +9,7 @@ import com.kh.insider.dto.AttachmentDto;
 public interface AttachmentRepo {
 
     int sequence();
-//    void insert(AttachmentDto attachmentDto);
+    void insert(AttachmentDto attachmentDto);
     int save(MultipartFile attach) throws IllegalStateException, IOException;
 //    int save(List <MultipartFile> attach) throws IllegalStateException, IOException;
     AttachmentDto selectOne(int attachmentNo);
