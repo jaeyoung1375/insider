@@ -98,7 +98,7 @@
 	
 	.message-wrapper > .message.my > .content-wrapper > .content-header {
 	    text-align: right;
-	    padding-right: 0.6em;
+	    padding-right: 0.5em;
 	}
 	.message-wrapper > .message.my > .content-wrapper > .content-body {
 	    flex-direction: row-reverse;
@@ -165,7 +165,13 @@
 					<!-- 채팅방 목록 -->
 					<div class="card col-3" style="width:290px;border-radius:0;border-top:none;padding:0;">
 						<div class="card-body" style="padding:0;padding-top:10px;">
-							채팅방 목록
+						<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo">
+						    <h5>
+						    <a :href="'channel?room=' + room.roomNo" style="color: black; text-decoration: none;">
+							    {{room.roomName}}
+							</a>
+						    </h5>
+						</div>
 						</div>
 					</div>
 					
@@ -215,13 +221,13 @@
 		
 		<!-- 회원 목록을 모달창으로 불러오기 -->
 		<div class="modal fade" tabindex="-1" id="memberListModal" data-bs-backdrop="static" ref="memberListModal">
-		  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down" style="width:350px;">
+		  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down" style="width:400px; margin: 0; position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);">
 		    <div class="modal-content" style="align-content: center;flex-wrap: wrap;">
-		      <div class="modal-header">
-		        <h5 class="modal-title" id="memberListModalLabel">메세지 보내기</h5>
+		      <div class="modal-header" style="width:300px;">
+		        <h4 class="modal-title" id="memberListModalLabel" style="font-weight: bold; color: #222f3e;">메세지 보내기</h4>
 		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 		      </div>
-		      <div class="modal-body">
+		      <div class="modal-body" style="width:300px;">
 		        <div style="margin-bottom:10px;">
 		          <input type="text" placeholder="검색" v-model="keyword" class="form-control me-sm-2" @input="keyword = $event.target.value">
 		        </div>
@@ -231,7 +237,7 @@
 		          <br>
 		          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 		          <span style="position:absolute;right:0;top:10px;">
-		            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="roomSearch(member.memberNo,index)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
+		            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="createChatRoom"  data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close" >
 		              채팅
 		            </button>
 		          </span>
@@ -242,7 +248,7 @@
 		          <br>
 		          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 		          <span style="position:absolute;right:0;top:10px;">
-		            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="roomSearch(member.memberNo,index)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
+		            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.85em;" @click="createChatRoom" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
 		              채팅
 		            </button>
 		          </span>
@@ -271,7 +277,6 @@
                     text:"",//사용자가 입력하는 내용
                     messageList:[],//채팅 기록
                     memberNick:"${sessionScope.memberNick}",
-                    memberNo:"${sessionScope.memberNo}",
                     socket:null,//웹소켓 연결 객체
                     modal:null, //modal 제어
                     dmMemberList:[],//팔로워 회원 목록
@@ -279,6 +284,9 @@
                     //차단한 회원을 제외한 전체 회원 검색
                     searchDmList:[],
                     keyword:"",
+                    
+                    memberNo: memberNo,
+                    dmRoomList: [], //채팅방 목록
  
                 };
             },
@@ -318,9 +326,10 @@
                     this.modal.hide();
                 },
 			    connect(){
-            		const url = "${pageContext.request.contextPath}/ws/channel";
+            		const url = "${pageContext.request.contextPath}/ws/dm";
             		this.socket = new SockJS(url);
             		
+            		//this = view이므로 개조 (this가 웹소켓이어야 사용 가능)
             		const app = this;
             		this.socket.onopen = function(){
             			app.openHandler();
@@ -415,7 +424,16 @@
 				    } catch (error) {
 				        console.error(error);
 				    }
-				},
+				},			
+				//채팅방 목록
+				async fetchDmRoomList(){
+				    try {
+				        const resp = await axios.get("${pageContext.request.contextPath}/rest/dmRoomList");
+				        this.dmRoomList.push(...resp.data);
+				    } catch (error) {
+				        console.error(error); 
+				    }
+				},		
             },
             watch:{
             	//검색
@@ -437,11 +455,19 @@
             	this.connect();
             	//메시지 불러오기
                 this.loadMessage();
+            	//채팅방 목록
+            	this.fetchDmRoomList();
             },
-            //Bootstrap modal 인스턴스를 초기화하고 저장
-            mounted(){
-                this.modal = new bootstrap.Modal(this.$refs.memberListModal);
-            },
+			mounted(){
+				//Bootstrap modal 인스턴스를 초기화하고 저장
+				this.modal = new bootstrap.Modal(this.$refs.memberListModal);
+					    
+				//검색창 초기화
+			    $('#memberListModal').on('hidden.bs.modal', () => {
+			    	this.keyword = '';
+			        this.searchDmList = [];
+			    });
+	          },
         }).mount("#app");
     </script>
     

@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.DmMemberListDto;
 import com.kh.insider.dto.DmMessageNickDto;
+import com.kh.insider.dto.DmRoomUserProfileDto;
 import com.kh.insider.repo.DmMemberListRepo;
 import com.kh.insider.repo.DmMessageNickRepo;
+import com.kh.insider.repo.DmRoomUserProfileRepo;
 
 @RestController
 @RequestMapping("/rest")
@@ -25,6 +27,10 @@ public class DmRestController {
 	
 	@Autowired
 	DmMemberListRepo dmMemberListRepo;
+	
+	@Autowired
+	DmRoomUserProfileRepo dmRoomUserProfileRepo;
+	
 	
 	//메세지 리스트
 	@GetMapping("/message/{roomNo}")
@@ -38,7 +44,7 @@ public class DmRestController {
 
 	//팔로워 회원 목록
     @GetMapping("/dmMemberList")
-    public List<DmMemberListDto> chooseDm(HttpSession session) {
+    public List<DmMemberListDto> followMemberList(HttpSession session) {
     	long memberNo = (Long) session.getAttribute("memberNo");
         return dmMemberListRepo.chooseDm(memberNo);
     }
@@ -51,5 +57,12 @@ public class DmRestController {
 		long memberNo = (Long) session.getAttribute("memberNo");
 		return dmMemberListRepo.dmMemberSearch(memberNo, keyword);
 	}
+	
+	//로그인 회원이 참여중인 채팅방 목록
+	@GetMapping("/dmRoomList")
+	public List<DmRoomUserProfileDto> findRoomsById (HttpSession session){
+		long memberNo = (Long) session.getAttribute("memberNo");
+		return dmRoomUserProfileRepo.findRoomsById(memberNo);
+	}	
 	
 }
