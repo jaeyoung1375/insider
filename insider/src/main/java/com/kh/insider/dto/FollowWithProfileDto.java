@@ -10,7 +10,7 @@ public class FollowWithProfileDto {
 	private long followFollower;
 	private Date followTime;
 	private int followAllow;
-	private long memberName;
+	private String memberName;
 	private String memberNick;
 	private int attachmentNo;
 }
