@@ -2,9 +2,6 @@ package com.kh.insider.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -22,21 +19,17 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.insider.configuration.FileUploadProperties;
-import com.kh.insider.dto.AttachmentDto;
 import com.kh.insider.dto.BoardDto;
+import com.kh.insider.dto.BoardTagDto;
 import com.kh.insider.dto.MemberDto;
-import com.kh.insider.repo.AttachmentRepo;
-import com.kh.insider.repo.BoardAttachmentRepo;
-import com.kh.insider.repo.BoardRepo;
+import com.kh.insider.dto.TagDto;
+import com.kh.insider.repo.BoardTagRepo;
 import com.kh.insider.repo.MemberProfileRepo;
 import com.kh.insider.repo.MemberRepo;
+import com.kh.insider.repo.TagRepo;
 import com.kh.insider.service.BoardAttachService;
 
 import lombok.extern.slf4j.Slf4j;
-import net.bramp.ffmpeg.FFmpeg;
-import net.bramp.ffmpeg.FFmpegExecutor;
-import net.bramp.ffmpeg.FFprobe;
-import net.bramp.ffmpeg.builder.FFmpegBuilder;
 
 @Slf4j
 @Controller
@@ -54,17 +47,16 @@ public class BoardController {
 	}
 	
 	@Autowired
-	private AttachmentRepo attachmentRepo;
-	@Autowired
-	private BoardRepo boardRepo;
-	@Autowired
-	private BoardAttachmentRepo boardAttachmentRepo;
-	@Autowired
 	private MemberRepo memberRepo;
 	@Autowired
 	private MemberProfileRepo memberProfileRepo;
 	@Autowired
+	private TagRepo tagRepo;
+	@Autowired
+	private BoardTagRepo boardTagRepo;
+	@Autowired
 	private BoardAttachService boardAttachService;
+
 	
 	@GetMapping("/list")
 	public String list() {
@@ -284,12 +276,15 @@ public class BoardController {
 							RedirectAttributes attr,
 							@RequestParam(value="boardAttachment", required=false) List<MultipartFile> boardAttachment,
 							Model model,
-							@ModelAttribute MemberDto memberDto) throws IllegalStateException, IOException {
+							@ModelAttribute TagDto tagDto,
+							@ModelAttribute MemberDto memberDto,
+							@ModelAttribute BoardTagDto boardTagDto
+    		) throws IllegalStateException, IOException {
     	Long memberNo = (Long)session.getAttribute("memberNo");
     	
 		boardDto.setMemberNo(memberNo);
 		log.debug("boardAttachment:{}", boardAttachment);
-		boardAttachService.insert(boardDto, boardAttachment);
+		boardAttachService.insert(boardDto, tagDto, boardTagDto, boardAttachment);
 		attr.addAttribute("memberNo",memberNo);
 		return "redirect:/";
     }

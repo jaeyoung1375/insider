@@ -232,9 +232,6 @@
 						<div class="col" @click="showReportMenuModal">
 							<h1>신고</h1>
 						</div>
-						<div class="col" @click="delete">
-							<h1>게시물삭제</h1>
-						</div>
 					</div>
 				</div>
 				<div class="modal-footer">
