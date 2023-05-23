@@ -336,7 +336,7 @@ $(document).ready(function() {
 		      <div>
 		      	
 		      	<!-- 1-1. 사진 첨부전, 업로드 버튼 영역 -->
-			      <div :class="{'hidefile':files.length>0}">
+			      <div :class="{'hidefile':files.length > 0}">
 				      <div class="card-body text-center" style="margin-top: 20%;">
 				        <h1 class="card-title" ><i class="fa-regular fa-images"></i></h1>
 				        <p class="card-text fs-5">사진을 선택하세요.</p>
@@ -356,7 +356,7 @@ $(document).ready(function() {
 				        	<img :src="file.preview"/>
 				        </div>
 				        <div class="file-preview-wrapper-upload">
-				        	<div class="image-box" v-show="files.length < 5">
+				        	<div class="image-box" v-show="files.length <5">
 						        <label for="upload2" class="input-uploadPlus">
 						        	<i class="fa-solid fa-plus fa-3x"></i>
 						        </label>
@@ -523,42 +523,43 @@ $(document).ready(function() {
     },
 
     //methods : 애플리케이션 내에서 언제든 호출 가능한 코드 집합이 필요한 경우 작성한다.
-    methods:{
-    	
-    	imageUpload(){
-    		
-    		let num = -1;
-    		for(let i = 0; i < this.$refs.files.files.length; i++){
-    			this.files = [
-    				...this.files,
-    				{
-    					file: this.$refs.files.files[i],
-    					preview: URL.createObjectURL(this.$refs.files.files[i]),
-    					number: i
-    				}
-    			];
-    			num = i;
-    		}
-    		this.uploadImageIndex = num + 1;
-    	},
-    	
-    	imageAddUpload(){
-    		
-    		let num = -1;
-    		for(let i = 0; i < this.$refs.files2.files.length; i++){
-    			this.files = [
-    				...this.files,
-    				{
-    					file: this.$refs.files2.files[i],
-    					preview: URL.createObjectURL(this.$refs.files2.files[i]),
-    					number: i + this.uploadImageIndex
-    				}
-    			];
-    			num = i;
-    		}
-    		this.uploadImageIndex = this.uploadImageIndex + num + 1;
-    		
-    	},
+     methods: {
+    	 imageUpload(){
+     		
+     		let num = -1;
+     		for(let i = 0; i < this.$refs.files.files.length; i++){
+     			this.files = [
+     				...this.files,
+     				{
+     					file: this.$refs.files.files[i],
+     					preview: URL.createObjectURL(this.$refs.files.files[i]),
+     					number: i
+     				}
+     			];
+     			num = i;
+     		}
+     		this.uploadImageIndex = num + 1;
+     	},
+     	
+     	imageAddUpload(){
+     		
+     		let num = -1;
+     		for(let i = 0; i < this.$refs.files2.files.length; i++){
+     			this.files = [
+     				...this.files,
+     				{
+     					file: this.$refs.files2.files[i],
+     					preview: URL.createObjectURL(this.$refs.files2.files[i]),
+     					number: i + this.uploadImageIndex
+     				}
+     			];
+     			num = i;
+     		}
+     		this.uploadImageIndex = this.uploadImageIndex + num + 1;
+        
+      },
+      
+      
     	fileDeleteButton(e){
     		const name = e.target.getAttribute('name');
     		this.files = this.files.filter(data => data.number != Number(name));

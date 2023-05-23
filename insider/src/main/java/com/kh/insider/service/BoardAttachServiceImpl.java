@@ -16,6 +16,9 @@ import com.kh.insider.repo.BoardAttachmentRepo;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.vo.PaginationVO;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class BoardAttachServiceImpl implements BoardAttachService{
 
@@ -29,15 +32,17 @@ public class BoardAttachServiceImpl implements BoardAttachService{
 	@Transactional
 	@Override
 	public void insert(BoardDto boardDto, List<MultipartFile> boardAttachment) throws IllegalStateException, IOException {
-		BoardDto newDto = boardRepo.insert(boardDto);
+//		BoardDto newDto = boardRepo.insert(boardDto);
+		boardRepo.insert(boardDto);
 		if (boardAttachment != null) {
 		for(MultipartFile file : boardAttachment) {
 			int attachmentNo = attachmentRepo.save(file);
 			boardAttachmentRepo.insert(BoardAttachmentDto.builder()
-					.boardNo(newDto.getBoardNo())
+					.boardNo(boardDto.getBoardNo())
 					.attachmentNo(attachmentNo)
 					.build());
 			}
+		log.debug("사진 갯수:{}", boardAttachment.size());
 		}
 	}
 	@Transactional

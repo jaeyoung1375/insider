@@ -13,20 +13,8 @@ public class BoardAttachmentRepoImpl implements BoardAttachmentRepo{
 
 	@Autowired
 	private SqlSession sqlSession;
+	
 
-//	@Override
-//	public void insert(BoardAttachmentDto boardAttachmentDto) {
-//		int sequence = sqlSession.selectOne("board_attachment.sequence");
-//		boardAttachmentDto.setBoardAttachmentNo(sequence);
-//		
-//		sqlSession.insert("board_attachment.insert", boardAttachmentDto);
-//	}
-	
-//	@Override
-//	public int boardAttachSeq() {
-//		return sqlSession.selectOne("boardAttachment.boardAttachSeq");
-//	}
-	
 	@Override
 	public void insert(BoardAttachmentDto boardAttachmentDto) {
 		int sequence = sqlSession.selectOne("boardAttachment.sequence");
@@ -35,13 +23,14 @@ public class BoardAttachmentRepoImpl implements BoardAttachmentRepo{
 	}
 
 	@Override
-	public List<BoardAttachmentDto> selectList(int boardNo) {
-		return sqlSession.selectList("boardAttachment.list", boardNo);
-	}
-
-	@Override
 	public void delete(int boardNo) {
 		sqlSession.delete("board_attachment.delete", boardNo);
+	}
+
+
+	@Override
+	public List<BoardAttachmentDto> selectList(int boardNo) {
+		return sqlSession.selectList("boardAttach.list", boardNo);
 	}
 
 }
