@@ -87,7 +87,7 @@
                                 <div class="p-2"><img class="profile" :src="profileUrl(index)"></div>
                                 <div class="p-2" style="margin-top: 8px;"><h4><b style="font-size: 15px;">{{board.boardWithNickDto.memberNick}} · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
                                 <div v-if="followCheckIf(index)" @click="follow(board.boardWithNickDto.memberNo)" class="p-2 me-5" style="margin-top: 8px;"><h4><b style="font-size: 15px; color:blue; cursor: pointer;">팔로우</b></h4></div>
-<!--                                 <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> -->
+                                 <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> 
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
 
                                 <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo)"></i></div>
@@ -136,7 +136,7 @@
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲멘트▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼댓글 모달창 열기▼▼▼▼▼▼▼▼▼▼▼▼▼-->
              			<div class="p-1">
-             				<h6 @click="showBoardModal(board.boardNo)">댓글 더보기</h6>             
+             				<h6 @click="detailViewOn">댓글 더보기</h6>             
              			</div>           
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲댓글 모달창 열기▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼댓글입력창▼▼▼▼▼▼▼▼▼▼▼▼▼-->
@@ -159,6 +159,49 @@
     </div>
     
 <!-- ---------------------------------댓글 모달-------------------------- -->
+<div v-if="detailView" class="container-fluid fullscreen active beforeanimation" :class="{'animation':animation}" @click="detailViewOn" style="position: fixed; z-index:100;">
+	<div>
+		<i class="fa-solid fa-x fa-2xl" style="position: absolute; right: 30px; top: 40px; cursor: pointer;"></i>
+	</div>
+	<div class="row center-position" style="width: 80%;">
+		<div class="col-6 offset-1" style="padding-right: 0; padding-left: 0;" @click.stop>
+			<div :id="'carouselExampleIndicators'+index" class="carousel slide">
+                
+                <div class="carousel-indicators">
+                  <button v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#carouselExampleIndicators'+index" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
+                </div>
+               
+                <div class="carousel-inner">
+                  <div  v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
+                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,index)"> 
+                  </div>
+                </div>
+               
+                <button class="carousel-control-prev" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button  class="carousel-control-next" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+                
+           </div>   
+		</div>
+		<div class="col-4 board-detail-card" style="padding-left: 0; max-height: 30rem;" @click.stop>
+			<div>hello</div>
+		</div>
+		
+	</div>
+	
+</div>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  <div class="modal" tabindex="-1" role="dialog" id="modal03" 
                             data-bs-backdrop="static" ref="modal03">
             <div class="modal-dialog" role="document">
@@ -263,6 +306,9 @@ Vue.createApp({
 			reportContentList:[],
 			reportBoardData:[],
 			/*----------------------신고----------------------*/
+			
+			//상세보기
+			detailView:false,
 			boardModal:null,
         };
     },
@@ -369,13 +415,13 @@ Vue.createApp({
         async follow(followNo) {
         	//const loginNo = sessionStorage.getItem('memberNo');
         	//console.log(followNo);
-        	const resp = await axios.get("${pageContext.request.contextPath}/rest/follow/"+followNo);
-        	return resp.data;
+        	const resp = await axios.post("${pageContext.request.contextPath}/rest/follow/"+followNo);
         	//if(loginNo == this.boardList.boardWithNickDto.memberNo)
-        	this.followCheck();
-        	//this.loadList();
+        	await this.followCheck();
+        	//await this.loadList();
         	//this.followCheckIf(index) = false;
         	//console.log(this.followCheckIf(index));
+        	//return resp.data;
         },
         
         /* //팔로우 여부 체크
@@ -392,17 +438,17 @@ Vue.createApp({
         
      	 //팔로우 여부 체크
         async followCheck() {
-        	const resp = await axios.get("${pageContext.request.contextPath}/rest/follow/check");
+        	const resp = await axios.post("${pageContext.request.contextPath}/rest/follow/check");
         	//const newData = {followFollower : this.loginMemberNo};
         	const newData = memberNo;
         	//const newData=0;
-        	console.log(newData);
+        	//console.log(newData);
         	//console.log(newData);
         	//console.log(this.loginMemberNo)
         	this.followCheckList.push(...resp.data);
         	this.followCheckList.push(parseInt(newData));
         	
-        	console.log(this.followCheckList)
+        	//console.log(this.followCheckList)
         	//console.log(this.boardList);
         	//console.log(this.boardList[0]);
         	//const check = this.followCheckList.some(followFollower => followFollower === this.boardList[0].boardWithNickDto.memberNo)
@@ -418,6 +464,12 @@ Vue.createApp({
         	if(this.boardModal==null) return;
         	this.boardModal.hide();
         },
+        
+        
+        detailViewOn(index) {
+        	this.detailView = true;	
+        },
+        
         
         /*----------------------신고----------------------*/
         //신고 모달 show, hide
@@ -487,8 +539,8 @@ Vue.createApp({
     },
     created(){
     	//this.loginMemberNo =  "${sessionScope.memberNo}";        
-    	this.loadList();
     	this.followCheck();
+    	this.loadList();
         //this.likeChecked(boardNo);
     },
 }).mount("#app");
