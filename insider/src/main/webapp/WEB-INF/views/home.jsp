@@ -181,20 +181,20 @@
     
 <!-- ---------------------------------추가 메뉴 모달-------------------------- -->
 	<div class="modal" tabindex="-1" role="dialog" id="additionalMenuModal" data-bs-backdrop="static" ref="additionalMenuModal">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
-				<div class="modal-body">
+				<div class="modal-body p-0">
 				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
-					<div class="row">
-						<div class="col" @click="showReportMenuModal">
-							<h1>신고</h1>
+					<div class="row p-2" @click="showReportMenuModal">
+						<div class="col d-flex justify-content-center align-items-center" style="color:#dc3545;">
+							<h5 style="font-weight:bold">신고</h5>
 						</div>
 					</div>
-				</div>
-				<div class="modal-footer">
-					<div class="row" @click="hideAdditionalMenuModal">
-						<div class="col">
-							<h1>취소</h1>
+					<!-- 메뉴 구분선 -->
+					<hr class="m-0">
+					<div class="row p-2" @click="hideAdditionalMenuModal">
+						<div class="col d-flex justify-content-center align-items-center">
+							<h5>취소</h5>
 						</div>
 					</div>
 				</div>
