@@ -42,9 +42,8 @@
             </form>          
                <div style="display:flex; justify-content: space-between; flex-direction: column; align-items: center;" >
                 <div class="row mb-3">
-            <a href="https://kauth.kakao.com/oauth/authorize?client_id=f32aed858ba7f7223af2f0954ddd3854&redirect_uri=   
-         http://localhost:8080/kakao/login&
-         response_type=code&scope=account_email&prompt=login">
+            <a href="https://kauth.kakao.com/oauth/authorize?client_id=f32aed858ba7f7223af2f0954ddd3854&redirect_uri=	
+http://localhost:8080/kakao/login&response_type=code&prompt=login">
                 <img src="/static/image/social/kakao_login.png">
             </a>
             </div>
