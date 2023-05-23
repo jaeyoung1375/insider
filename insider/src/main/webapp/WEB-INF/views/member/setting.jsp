@@ -126,7 +126,7 @@
 					<hr>
 					<div class="row mt-5">
 						<div class="col">
-							<h5 @click="showPasswordCheckModal" style="cursor:default">비밀번호 변경</h5>
+							<h5 @click="showPasswordCheckModal" style="cursor:pointer">비밀번호 변경</h5>
 						</div>
 					</div>
 				</div>
@@ -334,7 +334,7 @@
 					<div class="row">
 						<div class="col">
 							<input type="radio" :value="0" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==0">
-							<span>전체 공개</span>
+							<span class="ms-1">전체 공개</span>
 						</div>
 					</div>
 					<div class="row">
@@ -344,7 +344,8 @@
 					</div>
 					<div class="row">
 						<div class="col">
-							<input type="radio" :value="1" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==1"><span>친구추천 불가</span>
+							<input type="radio" :value="1" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==1">
+							<span class="ms-1">친구추천 불가</span>
 						</div>
 					</div>
 					<div class="row">
@@ -354,7 +355,8 @@
 					</div>
 					<div class="row">
 						<div class="col">
-							<input type="radio" :value="2" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==2"><span>친구에게만 공개</span>
+							<input type="radio" :value="2" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==2">
+							<span class="ms-1">친구에게만 공개</span>
 						</div>
 					</div>
 					<div class="row">
@@ -364,7 +366,8 @@
 					</div>
 					<div class="row">
 						<div class="col">
-							<input type="radio" :value="3" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==3"><span>비공개 계정</span>
+							<input type="radio" :value="3" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==3">
+							<span class="ms-1">비공개 계정</span>
 						</div>
 					</div>
 					<div class="row">
@@ -380,7 +383,7 @@
 					</div>
 					<div class="row">
 						<div class="col">
-							<span @click="showBlockModal">차단한 계정 확인하고 관리하기</span>
+							<span @click="showBlockModal" style="cursor:pointer">차단한 계정 확인하고 관리하기</span>
 						</div>
 					</div>
 				</div>
@@ -402,27 +405,27 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col">
+						<div class="col p-3">
 							<input type="radio" :value="0" v-model.number="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==0">
-							<span>모든 사람</span>
+							<span class="ms-1">모든 사람</span>
 						</div>
 					</div>
 					<div class="row">
-						<div class="col">
+						<div class="col p-3">
 							<input type="radio" :value="1" v-model.number="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==1"> 
-							<span>내가 팔로우 하는 사람</span>
+							<span class="ms-1">내가 팔로우 하는 사람</span>
 						</div>
 					</div>
 					<div class="row">
-						<div class="col">
+						<div class="col p-3">
 							<input type="radio" :value="2" v-model.number="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==2"> 
-							<span>내 팔로워</span>
+							<span class="ms-1">내 팔로워</span>
 						</div>
 					</div>
 					<div class="row">
-						<div class="col">
+						<div class="col p-3">
 							<input type="radio" :value="3" v-model.number="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==3"> 
-							<span>내가 팔로우 하는 사람 및 내 팔로워</span>
+							<span class="ms-1">내가 팔로우 하는 사람 및 내 팔로워</span>
 						</div>
 					</div>
 				</div>
@@ -432,7 +435,7 @@
 
 <!-- ---------------------------------비밀번호 확인 모달-------------------------- -->
 	<div class="modal" tabindex="-1" role="dialog" id="passwordModal" data-bs-backdrop="static" ref="passwordCheckModal">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title">비밀번호 변경</h5>
@@ -449,7 +452,9 @@
 					</div>
 					<div class="row">
 						<div class="col">
-							<input class="form-control rounded" placeholder="비밀번호 입력" type="password" v-model="password">
+							<input class="form-control rounded" placeholder="비밀번호 입력" type="password" v-model="password" :class="{'is-invalid':!passwordCheck}">
+							<div class="invalid-feedback">올바른 비밀번호를 입력하세요</div>
+							<div v-show="passwordCheck">&nbsp</div>
 						</div>
 					</div>
 				</div>
@@ -463,7 +468,7 @@
 	
 	<!-- ---------------------------------비밀번호 변경 모달-------------------------- -->
 	<div class="modal" tabindex="-1" role="dialog" id="changePasswordModal" data-bs-backdrop="static" ref="passwordChangeModal">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title">비밀번호 변경</h5>
@@ -481,11 +486,15 @@
 					<div class="row">
 						<div class="col">
 							<input class="form-control rounded" placeholder="비밀번호 입력" type="password" v-model="newPassword">
+							<div class="invalid-feedback">올바른 비밀번호를 입력하세요</div>
+							<div v-show="passwordCheck">&nbsp</div>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col">
 							<input class="form-control rounded" placeholder="비밀번호 확인" type="password" v-model="newPasswordCheck">
+							<div class="invalid-feedback">올바른 비밀번호를 입력하세요</div>
+							<div v-show="passwordCheck">&nbsp</div>
 						</div>
 					</div>
 				</div>
@@ -499,7 +508,7 @@
 
 	<!-- ---------------------------------차단 관리 모달-------------------------- -->
 	<div class="modal" tabindex="-1" role="dialog" id="blockModal" data-bs-backdrop="static" ref="blockModal">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title">차단유저 관리</h5>
@@ -575,8 +584,11 @@
 					isWatchLike:this.settingWatchLike==1,
 				},
 				password:"",
+				passwordCheck:true,
 				newPassword:"",
 				newPasswordCheck:"",
+				
+				/* ------------지도------------ */
 				mapContainer:null,
 				options:null,
 				map:null,
@@ -685,6 +697,7 @@
 				if(this.passwordCheckModal==null) return;
 				this.passwordCheckModal.hide();
 				this.password="";
+				this.passwordCheck=true;
 			},
  			showPasswordChangeModal(){
 				if(this.passwordChangeModal==null) return;
@@ -710,9 +723,10 @@
 				if(resp.data){
 					this.hidePasswordCheckModal();
 					this.showPasswordChangeModal();
+					this.passwordCheck=true;
 				}
 				else{
-					alert("비밀번호를 다시 입력하세요");
+					this.passwordCheck=false;
 					this.password="";
 				}
 			},
@@ -861,6 +875,7 @@
 			//세팅데이터 로드
 			this.loadMember();
 			this.loadSetting();
+			this.getGps();
 		},
 		mounted(){
 			//모달 선언
