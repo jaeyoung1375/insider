@@ -90,7 +90,7 @@
                                  <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> 
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
 
-                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo)"></i></div>
+                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo, board.boardWithNickDto.memberNo)"></i></div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲ID▲▲▲▲▲▲▲▲▲▲▲▲▲-->
@@ -277,6 +277,11 @@
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-body">
+					<div class="row mb-2">
+						<div class="col d-flex justify-content-center align-items-center">
+							<i class="fa-regular fa-circle-check" style="color:#198754; font-size:10em"></i>
+						</div>
+					</div>
 					<div class="row">
 						<div class="col d-flex justify-content-center align-items-center">
 							<h5 class="modal-title" style="font-weight:bold; text-align:center">알려주셔서 고맙습니다</h5>
@@ -284,12 +289,17 @@
 					</div>
 					<div class="row">
 						<div class="col d-flex justify-content-center align-items-center">
-							<span>회원님의 소중한 의견은 Insider 커뮤니티를 안전하게 유지하는 데 도움이 됩니다.</span>
+							<span>회원님의 소중한 의견은 Insider 커뮤니티를</span>
 						</div>
 					</div>
 					<div class="row">
-						<div class="col d-flex p-3">
-							<h5 style="margin:0;">님 차단</h5>
+						<div class="col d-flex justify-content-center align-items-center">
+							<span> 안전하게 유지하는 데 도움이 됩니다.</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col d-flex p-3" @click="blockUser" style="color:#dc3545; cursor:pointer">
+							<h5 style="margin:0;">{{reportBoardData[2]}}님 차단</h5>
 						</div>
 					</div>
 				</div>
@@ -500,10 +510,10 @@ Vue.createApp({
         
         /*----------------------신고----------------------*/
         //신고 모달 show, hide
-		showAdditionalMenuModal(boardNo, memberNo){
+		showAdditionalMenuModal(boardNo, reportMemberNo){
 			if(this.additionalMenuModal==null) return;
 			this.additionalMenuModal.show();
-			this.reportBoardData=[boardNo, memberNo];
+			this.reportBoardData=[boardNo, reportMemberNo];
 		},
 		hideAdditionalMenuModal(){
 			if(this.additionalMenuModal==null) return;
@@ -543,11 +553,18 @@ Vue.createApp({
 			}
 			const resp = await axios.post(contextPath+"/rest/report/", data)
 			this.hideReportMenuModal();
-			console.log(resp.data);
-			if(resp.data==null){
+			if(resp.data.length!=0){
+				this.reportBoardData[2] = resp.data.memberNick;
 				this.showBlockModal();
 			}
-		}
+		},
+		//차단
+		async blockUser(){
+			const resp = await axios.put(contextPath+"/rest/block/"+this.reportBoardData[1]);
+			if(resp.data){
+				this.hideBlockModal();
+			}
+		},
 		/*----------------------신고----------------------*/
     },
     watch: {

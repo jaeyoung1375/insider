@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,22 +23,15 @@ public class BlockRestController {
 	@Autowired
 	private BlockRepo blockRepo;
 	
-	@PostMapping("/")
-	public boolean block(@RequestBody long blockNo, HttpSession session) {
+	@PutMapping("/{blockNo}")
+	public boolean block(@PathVariable long blockNo, HttpSession session) {
 		long memberNo = (long)session.getAttribute("memberNo");
 		BlockDto blockDto = new BlockDto();
 		blockDto.setMemberNo(memberNo);
 		blockDto.setBlockNo(blockNo);
 		
-		BlockDto checkDto = blockRepo.selectOne(blockDto);
-		if(checkDto==null) {
-			blockRepo.insert(blockDto);
-			return true;
-		}
-		else {
-			blockRepo.delete(blockDto);
-			return false;
-		}
+		blockRepo.insert(blockDto);
+		return true;
 	}
 	@GetMapping("/")
 	public List<BlockWithProfileDto> blockList(HttpSession session) {
