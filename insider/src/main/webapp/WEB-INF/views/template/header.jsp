@@ -44,6 +44,29 @@
 	.navbar-light .navbar-nav .nav-link {
 		color: black;
 	}
+	
+	.alarm-window {
+		  position: fixed;
+		  bottom: 0;
+		  left: 0;
+		  width: 100%;
+		  height: 100px; /* Adjust the height as needed */
+		  background-color: #f1f1f1;
+		  overflow-y: scroll;
+		  display: none;
+	}	
+	
+/* 	 .card-text{ */
+/*         font-size: 0.8em; */
+/*      } */
+	    
+/*     .show { */
+/*     	display:block!important; */
+/*      } */
+	    
+/*     .showAlram{ */
+/*     	display:block!important; */
+/*      } */
 
 </style>
 <body>
@@ -62,9 +85,12 @@
 								<a class="nav-link" href="${pageContext.request.contextPath}/search"><i class="fa-regular fa-solid fa-magnifying-glass" style="font-size: 45px;"></i></a>
 							</li>
 						<!-- 알림 -->
-							<li class="nav-item mt-2">
-								<a class="nav-link" href="#"><i class="fa-regular fa-heart"></i></a>
-							</li>
+						<li class="nav-item mt-2">
+						  <a class="nav-link" @click="toggleAlarmWindow"><i class="fa-regular fa-heart"></i></a>
+						  <div class="alarm-window" v-show="alarmWindowVisible">
+						    <h4>안녕 난 알림창이야</h4>
+						  </div>
+						</li>
 						<!-- dm -->
 							<li class="nav-item mt-2">
 								<a class="nav-link" href="#"><i class="fa-regular fa-message mt-1" style="font-size: 45px;"></i></a>
@@ -98,7 +124,7 @@
 				</div>
 			</aside>
 		</header>
-
+</main>
 	
 <script>
 
@@ -106,6 +132,12 @@
 		data() {
 			return {
 				sideMenu:false,
+				alarmWindowVisible: false
+				
+// 				  alramList:[],
+//                   noticeValue:false,
+//                   chatAlram:false,
+//                   rocketAlram:false,
 			};
 		},
 		computed: {
@@ -120,7 +152,11 @@
 				else{
 					this.sideMenu=true;
 				}
-			}
+			},
+			
+			toggleAlarmWindow(){
+				this.alarmWindowVisible = !this.alarmWindowVisible;
+			},
 		},
 		created(){
 			//데이터 불러오는 영역
