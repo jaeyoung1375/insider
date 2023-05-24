@@ -13,11 +13,8 @@
   	</insert>
   	
   	<!-- 댓글 조회 -->
-  	<select id="selectList">
-  		select r.*, m.member_nick from reply r
-  		join member m on r.reply_member_no = m.member_no
-  		where r.reply_origin = #{replyOrigin}
-  		order by r.reply_no asc
+  	<select id="selectList" resultType="ReplyDto">
+  		select * from reply_with_nick where reply_origin = #{replyOrigin}
   	</select>
   	
   	<!-- 댓글 삭제 -->
