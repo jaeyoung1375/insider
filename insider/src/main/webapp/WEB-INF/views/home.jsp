@@ -92,13 +92,12 @@
      }
      
     .card-scroll{
-        overflow-y: auto;
-        -ms-overflow-style: none;
-	}
-		  
-    .card-scroll ::-webkit-scrollbar {
+        	overflow-y: auto;
+        	-ms-overflow-style: none;
+		}        
+    .card-scroll::-webkit-scrollbar {
 		    display: none;
-	}
+	} 
      
 
 
@@ -173,9 +172,9 @@
                         <div class="p-1">
                             <div class="d-flex">
 <!--                                 <div class="p-2"><img src="/static/image/emoticon.png"></div> -->
-                                <div class="p-1"><input class="form-control" type="text" placeholder="댓글 달기..."
-                                                        style="border: 2px solid white; width: 18em;"></div>
-                                <div class="p-2 flex-grow-1"><h5 style="color: dodgerblue" href="#">게시</h5></div>
+                                <div class="p-1"><input class="form-control" type="text" placeholder="댓글 달기..." v-model="replyContent" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(index),detailViewOn(index)"
+                                                        style="border: 2px solid white; width: 24em;"></div>
+                                <div class="p-2 flex-grow-1"><h5 style="color: dodgerblue" @click="replyInsert(index),detailViewOn(index)">게시</h5></div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲댓글입력창▲▲▲▲▲▲▲▲▲▲▲▲▲-->
@@ -223,9 +222,24 @@
            			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardList[detailIndex].boardWithNickDto.memberNick"><b>{{boardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
            		</div>
 				
-				<div class="card-body"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
+				<div class="card-body card-scroll"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
 					<p class="card-text" style="margin-left: 0.5em;">{{boardList[detailIndex].boardWithNickDto.boardContent}}</p>
+					
+					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" style="position: relative;">
+						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="color:black;text-decoration:none; position:relative;">
+							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="35" height="35" style="border-radius: 70%;position:absolute; margin-top:4px; margin-left: 4px">
+							<img v-else src="https://via.placeholder.com/30x30?text=profile" style="border-radius: 70%;position:absolute;top:10%;">
+							
+							<p style="padding-left: 2.9em; margin-bottom: 1px; font-size: 0.9em; font-weight: bold;" >{{replyList[index].memberNick}}</p>							
+						</a>
+						<p style="padding-left:2.9em;margin-bottom:4px;font-size:0.9em;">{{replyList[index].replyContent}}</p>
+					</div>
+					
+					<div v-else class="card-text" style="position: relative;">
+						<p>첫 댓글을 작성해보세요</p>
+					</div>
+					
 					
 				</div>
 				<hr style="margin-top: 0; margin-bottom: 0;">
@@ -243,12 +257,12 @@
 				</div>
 				
 				<div class="input-group">
-					<input type="text" class="form-control" placeholder="댓글 달기.." style="border: none;" aria-label="Recipient's username" aria-describedby="button-addon2">
-					<button class="btn btn-outline-light" type="button" id="button-addon2" style="border-top-right-radius: 0!important;">작성</button>
+					<input type="text" class="form-control" placeholder="댓글 달기.." v-model="replyContent" style="border: none;" aria-label="Recipient's username" aria-describedby="button-addon2" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(detailIndex)">
+					<button class="btn" type="button" id="button-addon2" style="border-top-right-radius: 0!important;" @click="replyInsert(detailIndex)">작성</button>
 				</div>
 								        	
         	</div>
-			<button @click="detailView = false">닫기</button>
+			<button @click="closeDetail()">닫기</button>
         </div>
 	</div>
 </div>
@@ -350,6 +364,7 @@ Vue.createApp({
 			detailView:false,
 			detailIndex:"",
 			replyList:[],
+			replyContent:"",
 // 			boardModal:null,
         };
     },
@@ -403,7 +418,7 @@ Vue.createApp({
         //로그인한 회원이 좋아요 눌렀는지 확인
         async likeChecked(boardNo) {
         	const resp = await axios.post("${pageContext.request.contextPath}/rest/board/check", {boardNo:boardNo});
-
+			
         	//console.log(resp.data);
         	return resp.data;
         },
@@ -499,15 +514,33 @@ Vue.createApp({
         //댓글 조회
         async replyLoad(index) {
         	const resp = await axios.get("${pageContext.request.contextPath}/rest/reply/"+ this.boardList[index].boardWithNickDto.boardNo);
-        	if(resp.data>0){
-        		this.replyList.push(resp.data);
-        	}
+        	console.log(resp);
+        	console.log(resp.data);
+        	this.replyList.push(...resp.data);
+			console.log(this.replyList);
+        		
+        		//         	if(resp.data>0){
+//         	}
         },
         
         //댓글 등록
         async replyInsert(index) {
-        	const resp = await axios.post("${pageContext.request.contextPath}/rest/reply/")
-        	this.replyLoad(index);	
+        	  const boardNo = this.boardList[index].boardWithNickDto.boardNo;
+        	  
+        	  const requestData = {
+        	    replyOrigin: boardNo,
+        	    replyContent: this.replyContent
+        	  };
+        	  this.replyList = [];
+        	  this.replyContent='';
+				
+        	  try {
+        	    const response = await axios.post(`${pageContext.request.contextPath}/rest/reply/`, requestData);
+        	    this.replyLoad(index);
+        	  } 
+        	  catch (error) {
+        	    console.error(error);
+        	  }
         },
         
         //댓글 삭제
@@ -516,10 +549,17 @@ Vue.createApp({
         	this.replyLoad(index);
         },
         
+        //상세보기 모달창 열기
         detailViewOn(index) {
         	this.detailView = true;
         	this.detailIndex = index;
         	this.replyLoad(index);
+        },
+        
+        //상세보기 모달창 닫기
+        closeDetail() {
+        	this.detailView = false;
+        	this.replyList = [];
         },
         
         
