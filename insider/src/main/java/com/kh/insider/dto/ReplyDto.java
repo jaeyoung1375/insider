@@ -15,5 +15,7 @@ public class ReplyDto {
 	private int replyLike;
 	private Date replyTime;
 	private int replyReport;
-	private String replyMemberNick;
+	
+	private String memberNick;
+	private int attachmentNo;
 }
