@@ -98,8 +98,18 @@
     .card-scroll::-webkit-scrollbar {
 		    display: none;
 	} 
-     
-
+    
+    
+	.moreText{
+			display:inline-block!important;
+		}
+	.moreContent{
+		height: auto!important;
+	    overflow: auto!important;
+	    width: auto!important;
+	    white-space: normal!important;
+	    text-overflow: inherit!important;
+	}
 
 </style>
 <div id="app">
@@ -160,12 +170,20 @@
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼멘트▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-1">
                             <h4 class="mt-2"><b>좋아요 {{boardLikeCount[index]}}개</b></h4>
-                            <h4><a class="btn btn-none" style="padding: 0 0 0 0" :href="'${pageContext.request.contextPath}/member/'+board.boardWithNickDto.memberNick"><b>{{board.boardWithNickDto.memberNick}}</b></a></h4><h6>{{board.boardWithNickDto.boardContent}}</h6>
+                            <h4><a class="btn btn-none" style="padding: 0 0 0 0" :href="'${pageContext.request.contextPath}/member/'+board.boardWithNickDto.memberNick"><b>{{board.boardWithNickDto.memberNick}}</b></a></h4>
+                            <p style="height: 20px;overflow: hidden;width: 200px;white-space: nowrap;text-overflow: ellipsis;margin-bottom:5px;">
+                            	<span class="textHide">{{board.boardWithNickDto.boardContent}}
+                            	<br v-if="boardList[index].boardTagList.length > 0"><br v-if="boardList[index].boardTagList.length > 0">
+                            	<a href="#" v-for="(tag, index3) in boardList[index].boardTagList" :key="index3">\#{{tag.tagName}}</a>
+                            	</span>
+                            </p>                            
+                            
+                            <h6 style="cursor: pointer; color:gray;">더 보기</h6>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲멘트▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼댓글 모달창 열기▼▼▼▼▼▼▼▼▼▼▼▼▼-->
              			<div class="p-1">
-             				<h6 @click="detailViewOn(index)">댓글 더보기</h6>             
+             				<h6 @click="detailViewOn(index)" style="cursor: pointer; color:gray;">댓글 보기</h6>             
              			</div>           
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲댓글 모달창 열기▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼댓글입력창▼▼▼▼▼▼▼▼▼▼▼▼▼-->
@@ -224,7 +242,10 @@
 				
 				<div class="card-body card-scroll"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
-					<p class="card-text" style="margin-left: 0.5em;">{{boardList[detailIndex].boardWithNickDto.boardContent}}</p>
+					<p class="card-text" style="margin-left: 0.5em;">{{boardList[detailIndex].boardWithNickDto.boardContent}}
+					<br v-if="boardList[detailIndex].boardTagList.length > 0"><br v-if="boardList[detailIndex].boardTagList.length > 0">
+                            	<a href="#" v-for="(tag, index3) in boardList[detailIndex].boardTagList" :key="index3">\#{{tag.tagName}}</a>
+					</p>
 					
 					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" style="position: relative;">
 						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="color:black;text-decoration:none; position:relative;">
@@ -396,6 +417,10 @@ Vue.createApp({
 			reportContentList:[],
 			reportBoardData:[],
 			/*----------------------신고----------------------*/
+			
+			//게시물 내용 더보기
+			showMore:false,
+			showMoreText:"더 보기",
 			
 			//상세보기 및 댓글
 			detailView:false,
@@ -599,6 +624,24 @@ Vue.createApp({
         	this.replyList = [];
         },
         
+//         //게시물 길이 확인
+// 		boardTextCheck(index) {
+//         	if(this.boardList[index].boardWithNickDto.boardContent.length > 30){
+//         		return this.showMore = true;
+//         	}
+//         },        
+        
+//         //게시물 내용 더보기
+//         toggleShowMore(index) {
+//        	 this.showMore = !this.showMore;
+//        	    if (this.showMore) {
+//        	      this.showMoreText = "접기";
+//        	    } else {
+//        	      this.showMoreText = "더 보기";
+//        	    }
+       	  
+//         },
+        
         
         /*----------------------신고----------------------*/
         //신고 모달 show, hide
@@ -686,6 +729,25 @@ Vue.createApp({
 		this.reportMenuModal = new bootstrap.Modal(this.$refs.reportMenuModal);
 		this.blockModal = new bootstrap.Modal(this.$refs.blockModal);
 		this.boardModal = new bootstrap.Modal(this.$refs.modal03);
+    },
+    updated(){
+    	console.log($(".textHide").width());
+    	console.log($(".textHide").height());
+    	$(".textHide").each(function(){
+    		if($(this).width()>200||$(this).height()>21){
+        		$(this).parent("p").next("h6").addClass("moreText");
+    		}
+    	});
+    	$(".moreText").unbind("click");
+    	$(".moreText").click(function(){
+    		//console.log("실행횟수");
+    		if($(this).prev("p").hasClass("moreContent")){
+    			$(this).prev("p").removeClass("moreContent");
+    		}else{
+        		$(this).prev("p").addClass("moreContent");
+    		}
+    		
+    	});
     },
     created(){
     	//this.loginMemberNo =  "${sessionScope.memberNo}";        
