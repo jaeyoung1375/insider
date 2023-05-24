@@ -7,8 +7,8 @@
 <mapper namespace="dmUser">
 
 	<insert id="enter">
-		insert into dm_user(member_no, room_no, join_time)
-		values(#{memberNo}, #{roomNo}, sysdate)	
+		insert into dm_user(member_no, room_no, join_time, read_time)
+		values(#{memberNo}, #{roomNo}, sysdate, #{readTime})	
 	</insert>
 	
 	<select id="find" resultType="DmUserDto">
@@ -26,4 +26,15 @@
 	    where member_no = #{memberNo} and room_no = #{roomNo}
 	</delete>
 
+	<!-- 읽은 시간 수정 -->
+	<update id="updateReadTime">
+		update dm_user
+		set read_time=#{readTime}
+		where member_no=#{memberNo} and room_no=#{roomNo}
+	</update>
+	
+	<!-- 읽은 시간 데이터 리스트 반환 -->
+	<select id="selectReadTime" resultType="long">
+		select read_time from dm_user where room_no=#{roomNo}
+	</select>
 </mapper>

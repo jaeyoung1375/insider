@@ -191,7 +191,7 @@
 						                <div class="content-body">
 							                <div class="message-wrapper">{{message.content}}</div>
 							                <div class="info-wrapper">
-							                	<div class="number-wrapper">13</div>
+							                	<div class="number-wrapper">{{unreadCount[index]}}</div>
 							                	<div class="time-wrapper" v-if="calculateDisplay(index)">{{timeFormat(message.time)}}</div>
 							                </div>
 						                	<i class="fa-solid fa-x fa-xs" v-on:click="deleteMessage(index)" style="padding-bottom: 0.51em;"></i>
@@ -289,6 +289,10 @@
                     //memberNo: memberNo,
                     dmRoomList: [], //채팅방 목록
                     isRoomJoin:false,
+                    //채팅방 참가자 시간 정보 리스트
+                    userTimeList:[],
+                    //읽지 않은 수
+                    unreadCount:[],
                 };
             },
             methods:{
@@ -363,7 +367,16 @@
             		console.log("연결 중 오류가 발생했습니다.");
             	},
             	messageHandler(e){
-            		this.messageList.push(JSON.parse(e.data));
+            		const message = JSON.parse(e.data);
+            		
+            		//리스트 형태(시간정보 배열) 일때
+            		if(message.length>0){
+            			this.userTimeList=[...message];
+            		}
+            		//메세지 일 때
+            		else{
+	            		this.messageList.push(message);
+            		}
             	},
             	sendMessage() {
             		if(this.text.length == 0) return;
@@ -439,7 +452,7 @@
 				    } catch (error) {
 				        console.error(error); 
 				    }
-				},		
+				},
             },
             watch:{
             	//검색
@@ -449,7 +462,23 @@
         				return;
         			}
         			this.chooseDmSearch();
-        		}, 200)
+        		}, 200),
+        		userTimeList:{
+        			deep:true,
+        			handler:function(){
+	            		let joiner = this.userTimeList.length;
+	            		for(let j=0; j<this.messageList.length; j++){
+		            		let count=0;
+		            		for(let i=0; i<this.userTimeList.length; i++){
+		            			let timeTemp=this.messageList[j].time
+		            			if(this.userTimeList[i]>=timeTemp){
+		            				count++;
+		            			}
+		            		}
+		            		this.unreadCount[j]= joiner-count;
+	            		}
+        			}
+        		}
             },
             computed:{ 
             	jsonText() {
