@@ -67,7 +67,7 @@
 							</li>
 						<!-- dm -->
 							<li class="nav-item mt-2">
-								<a class="nav-link" href="#"><i class="fa-regular fa-message mt-1" style="font-size: 45px;"></i></a>
+								<a class="nav-link" href="${pageContext.request.contextPath}/dm/channel"><i class="fa-regular fa-message mt-1" style="font-size: 45px;"></i></a>
 							</li>
 						<!-- 게시물작성 -->
 							<li class="nav-item mt-2">
