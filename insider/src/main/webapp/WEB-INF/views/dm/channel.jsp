@@ -177,7 +177,7 @@
 					
 					<!-- 채팅창 -->
 					<div class="card col-8" style="border-radius:0;border-top:none;border-left:0;padding-right:0;">
-						<div class="card-body" style="padding:0;">
+						<div class="card-body" style="padding:0;" v-show="isRoomJoin">
 					        <div class="message-wrapper">
 					            <div class="message" v-for="(message, index) in messageList" :key="message.no" :class="{my:checkMyMessage(index)}">
 					                <div class="profile-wrapper" v-if="!checkMyMessage(index)">
@@ -277,6 +277,7 @@
                     text:"",//사용자가 입력하는 내용
                     messageList:[],//채팅 기록
                     memberNick:"${sessionScope.memberNick}",
+                    memberNo:"${sessionScope.memberNo}",
                     socket:null,//웹소켓 연결 객체
                     modal:null, //modal 제어
                     dmMemberList:[],//팔로워 회원 목록
@@ -285,15 +286,20 @@
                     searchDmList:[],
                     keyword:"",
                     
-                    memberNo: memberNo,
+                    //memberNo: memberNo,
                     dmRoomList: [], //채팅방 목록
- 
+                    isRoomJoin:false,
                 };
             },
             methods:{
             	// 메세지 불러오는 함수
             	async loadMessage() {
             	    const roomNo = new URLSearchParams(location.search).get("room");
+            	    if(roomNo==null){
+            	    	this.isRoomJoin=false;
+            	    	return;
+            	    }
+            	    this.isRoomJoin=true;
             	    const url = "${pageContext.request.contextPath}/rest/message/"+roomNo;
 
             	    try {
@@ -346,7 +352,7 @@
             	},
             	openHandler(){
             		const room = new URLSearchParams(location.search).get("room");
-                    const data = { type:2, room: room };
+                    const data = { type:2, room:room };
                     this.socket.send(JSON.stringify(data));
                     console.log("서버에 연결되었습니다.");
             	},
@@ -398,7 +404,7 @@
                     if(this.memberNick == this.messageList[index].memberNick) return true;
                     return false;
                },
-               //팔로워 회원 목록
+               //팔로우 회원 목록
                async fetchFollowerList() {
             	   const url = "${pageContext.request.contextPath}/rest/dmMemberList";
             	    try {
@@ -425,7 +431,7 @@
 				        console.error(error);
 				    }
 				},			
-				//채팅방 목록
+				//로그인한 회원의 채팅방 목록
 				async fetchDmRoomList(){
 				    try {
 				        const resp = await axios.get("${pageContext.request.contextPath}/rest/dmRoomList");
@@ -455,7 +461,7 @@
             	this.connect();
             	//메시지 불러오기
                 this.loadMessage();
-            	//채팅방 목록
+            	//로그인한 회원의 채팅방 목록
             	this.fetchDmRoomList();
             },
 			mounted(){
