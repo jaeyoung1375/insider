@@ -49,6 +49,9 @@ public class AttachmentController {
 	// 파일 경로 받아오기 
 	@Autowired
 	private FileUploadProperties fileuploadProperties;
+	
+	@Autowired
+	private AttachmentRepo attachmentRepo;
 
 	private File dir;
 	@PostConstruct
@@ -56,19 +59,14 @@ public class AttachmentController {
 		dir = new File(fileuploadProperties.getPath());
 	} 
     
-    @GetMapping("/test")
-    public String test01(){
-        return "attachment/test";
-    }
-
 	// 첨부파일 조회
 	@GetMapping("/download")
 	@ResponseBody
 	public ResponseEntity<ByteArrayResource> download(
 			@PathVariable int fileName) throws IOException {
 		
-//		//DB 조회
-//		AttachmentDto attachmentDto = attachmentRepo.selectOne(attachmentRepo);
+		//DB 조회
+//		AttachmentDto attachmentDto = attachmentRepo.selectOne(fileName);
 
 		//파일 찾기
 		File dir = new File("D:/upload");
@@ -83,12 +81,15 @@ public class AttachmentController {
 		return ResponseEntity.ok()
 			.contentType(MediaType.APPLICATION_OCTET_STREAM)
 			.contentLength(target.length())
+//			.contentLength(attachmentDto.getAttachmentSize())
 			.header(HttpHeaders.CONTENT_ENCODING, 
 										StandardCharsets.UTF_8.name())
 			.header(HttpHeaders.CONTENT_DISPOSITION,
 				ContentDisposition.attachment()
 							.filename(
 									"reply.png", StandardCharsets.UTF_8
+//									attachmentDto.getAttachmentName(),
+//									StandardCharsets.UTF_8
 							).build().toString()
 			)
 			.body(resource);
