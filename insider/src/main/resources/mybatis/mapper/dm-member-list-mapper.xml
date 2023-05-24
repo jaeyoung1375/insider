@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="dmMemberList">
+
+	<!-- 팔로워 회원 목록 -->
+	<select id="chooseDm" resultType="DmMemberListDto">
+        select * from (
+        	select * from (
+	        	select m.member_no, m.member_nick, m.member_name, mp.attachment_no from follow f
+	        
+	        	inner join member m on f.follow_follower = m.member_no
+	        	left outer join member_profile mp on mp.member_no = m.member_no
+	        
+	        	where f.member_no = #{memberNo}
+        	) order by dbms_random.value
+        <![CDATA[
+        )where rownum <= 10
+        ]]>
+	</select>
+	
+	<!-- 차단한 회원을 제외한 전체 회원 목록 -->
+	<select id="dmMemberSearch" resultType="DmMemberListDto">
+		select m.member_no, m.member_nick, m.member_name, mp.attachment_no from (
+	        select * from member where member_no != #{memberNo}
+	        minus
+	        select m.* from member m left outer join block b on b.member_no = m.member_no where b.block_no = #{memberNo} 
+	        minus
+	        select m.* from member m left outer join block b on b.block_no = m.member_no where b.member_no = #{memberNo}
+	    ) m left outer join member_profile mp on m.member_no = mp.member_no
+	    where instr(member_nick, #{keyword}) > 0
+	    union
+	    select m.member_no, m.member_nick, m.member_name, mp.attachment_no from (
+	        select * from member where member_no != #{memberNo}
+	        minus
+	        select m.* from member m left outer join block b on b.member_no = m.member_no where b.block_no = #{memberNo} 
+	        minus
+	        select m.* from member m left outer join block b on b.block_no = m.member_no where b.member_no = #{memberNo}
+    	) m left outer join member_profile mp on m.member_no = mp.member_no
+    	where instr(member_name, #{keyword}) > 0
+	</select>
+    
+</mapper>
