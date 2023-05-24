@@ -129,7 +129,7 @@
                                  <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> 
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
 
-                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo)"></i></div>
+                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo, board.boardWithNickDto.memberNo)"></i></div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲ID▲▲▲▲▲▲▲▲▲▲▲▲▲-->
@@ -373,7 +373,7 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col d-flex p-3" @click="blockUser" style="color:#dc3545; cursor:pointer">
+						<div class="col d-flex p-3" @click="blockUser" style="color:#dc3545; cursor:pointer" v-if="reportBoardData[2]!=null && reportBoardData[2].length>0">
 							<h5 style="margin:0;">{{reportBoardData[2]}}님 차단</h5>
 						</div>
 					</div>
@@ -695,8 +695,8 @@ Vue.createApp({
 			this.hideReportMenuModal();
 			if(resp.data.length!=0){
 				this.reportBoardData[2] = resp.data.memberNick;
-				this.showBlockModal();
 			}
+			this.showBlockModal();
 		},
 		//차단
 		async blockUser(){
