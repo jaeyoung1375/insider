@@ -44,20 +44,54 @@ public class FollowRestController {
 		if(checkDto==null) {
 			followRepo.insert(followDto);
 			return true;
-		}
-		else {
-			followRepo.delete(followDto);
+		}else {
 			return false;
 		}
+		
 	}
 	
+//	@PostMapping("/unFollow")
+//	public boolean unFollow( @RequestParam long followFollower, HttpSession session) {
+//		
+//		FollowDto followDto = new FollowDto();
+//		long memberNo = (long)session.getAttribute("memberNo");
+//		followDto.setMemberNo(memberNo);
+//		followDto.setFollowFollower(followFollower);
+//		
+//		FollowDto checkDto = followRepo.selectOne(followDto);
+//		if(checkDto != null) {
+//			followRepo.delete(followDto);
+//			return true;
+//		}else {
+//			return false;
+//		}
+//	}
+//	
+	
 	@PostMapping("/unFollow")
-	public boolean unFollow( @RequestParam long followFollower, HttpSession session) {
+	public boolean unFollow(@RequestParam long followFollower, HttpSession session) {
 		
 		FollowDto followDto = new FollowDto();
 		long memberNo = (long)session.getAttribute("memberNo");
 		followDto.setMemberNo(memberNo);
 		followDto.setFollowFollower(followFollower);
+		
+		FollowDto checkDto = followRepo.selectOne(followDto);
+		if(checkDto != null) {
+			followRepo.delete(followDto);
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	@PostMapping("/myUnFollow")
+	public boolean myUnFollow(@RequestParam long memberNo, HttpSession session) {
+		
+		FollowDto followDto = new FollowDto();
+		
+		followDto.setMemberNo(memberNo);
+		followDto.setFollowFollower((long)session.getAttribute("memberNo"));
 		
 		FollowDto checkDto = followRepo.selectOne(followDto);
 		if(checkDto != null) {
