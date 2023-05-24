@@ -134,6 +134,27 @@
  		display:none;
  	}
  	
+	.modal {
+	  display: none;
+	  position: fixed;
+	  z-index: 1;
+	  left: 0;
+	  top: 0;
+	  width: 100%;
+	  height: 100%;
+	  overflow: auto;
+	  background-color: rgba(0, 0, 0, 0.5);
+	}
+	
+	.modal-content {
+	  background-color: #fefefe;
+	  margin: 15% auto;
+	  padding: 20px;
+	  border: 1px solid #888;
+	  width: 100%;
+	  max-width: 100%;
+	}
+	 	
 </style>
 
 
@@ -157,22 +178,33 @@
 // });
 
 
-//내용 글자 수 카운트
+
 $(function(){
 
-// 	$("#contentCheck").on("input",function(){
-// 		const size = $(this).val().length;
-		
-// 		if(size <= 1000){
-// 			const target = $(this).next().children(".length").children(".count");
-// 			target.text(size);
-// 		}
-		
-// 		if(size > 1000){
-// 			$(this).val($(this).val().substring(0, 1000));
-// 		}
-		
-// 	});
+	$(document).ready(function() {
+		  // Show the modal on page load
+		  $('#modalForm').css('display', 'block');
+
+		  // Disable modal closing when clicking outside the modal content
+		  $('.modal-dialog').on('click', function(event) {
+		    event.stopPropagation();
+		  });
+
+		  // Close the modal when the cancel button is clicked
+		  $('.cancel').on('click', function() {
+		    $('#modalForm').css('display', 'none');
+		  });
+
+		  // Close the modal when the close button is clicked
+		  $('.close').on('click', function() {
+		    $('#modalForm').css('display', 'none');
+		  });
+		});
+
+
+
+	
+	
 $(document).ready(function() {
     $('#summernote').summernote({
         toolbar: false,
@@ -195,12 +227,8 @@ $(document).ready(function() {
     });
 });
 
-
-
-	
-	
-	
 	$(".cancel").click(function(){
+		 event.stopPropagation(); 
 		const text = confirm("게시물을 삭제하시겠어요?\n지금 나가면 수정 내용이 저장되지 않습니다.");
 		
 		if(text){
@@ -208,7 +236,6 @@ $(document).ready(function() {
 		}
 	});
 		
-
 	
 	$(".form-submit").submit(function(e){
 	
@@ -225,12 +252,14 @@ $(document).ready(function() {
 		}
 		
 		
-		if($(".content").val() == "" || $("#hashtag").val() != ""){
-			$("#hashtag").attr("disabled", false);
-		}
-		else{
-			$("#hashtag").attr("disabled", true);
-		}
+		if ($(".content").val() == "" || $("#tagName").val() != "") {
+
+		    $("#tagName").attr("disabled", false);
+
+		    tagBoardDto.tagName = $("#tagName").val();
+		  } else {
+		    $("#tagName").attr("disabled", true);
+		  }
 		
 		if($(".content").val() == "" || $("#memberTag").val() != ""){
 			$("#memberTag").attr("disabled", false);
@@ -238,8 +267,6 @@ $(document).ready(function() {
 		else{
 			$("#memberTag").attr("disabled", true);
 		}
-		
-		
 		
 	});
 	
@@ -269,9 +296,6 @@ $(document).ready(function() {
 			$(".page").hide();
 			$(".page").eq(index).show();
 		}
-		
-		
-	
 });
 
 
@@ -279,16 +303,10 @@ $(document).ready(function() {
 
 <!------------------------------------------------------------------------------------->
 
+<div id="modalForm" class="modal">
+
+
 <div id="app" class="vue-container">
-
-<!-- <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"> -->
-<!--   <div class="modal-dialog" role="document"> -->
-<!--     <div class="modal-content"> -->
-<!--       <div class="modal-header"> -->
-<!--         <h4 class="modal-title" id="myModalLabel">이미지 & 동영상 업로드</h4> -->
-<!--       </div> -->
-<!--       <div class="modal-body"> -->
-
 
 <form action="insert" method="post" enctype="multipart/form-data" class="form-submit">
 
@@ -320,7 +338,7 @@ $(document).ready(function() {
 		      <div>
 		      	
 		      	<!-- 1-1. 사진 첨부전, 업로드 버튼 영역 -->
-			      <div :class="{'hidefile':files.length>0}">
+			      <div :class="{'hidefile':files.length > 0}">
 				      <div class="card-body text-center" style="margin-top: 20%;">
 				        <h1 class="card-title" ><i class="fa-regular fa-images"></i></h1>
 				        <p class="card-text fs-5">사진을 선택하세요.</p>
@@ -340,7 +358,7 @@ $(document).ready(function() {
 				        	<img :src="file.preview"/>
 				        </div>
 				        <div class="file-preview-wrapper-upload">
-				        	<div class="image-box" v-show="files.length < 5">
+				        	<div class="image-box" v-show="files.length <5">
 						        <label for="upload2" class="input-uploadPlus">
 						        	<i class="fa-solid fa-plus fa-3x"></i>
 						        </label>
@@ -432,7 +450,7 @@ $(document).ready(function() {
 
 					    	
 					    	<div class="row mt-4">
-					    		<input type="text" name="hashtagName" class="form-control" placeholder="#해시태그" id="hashtag" autocomplete="off">
+					    		<input type="text" name="tagName" class="form-control" placeholder="#해시태그" id="tagName" autocomplete="off">
 					    	</div>
 					    	
 					    	<div class="row mt-4">
@@ -475,6 +493,8 @@ $(document).ready(function() {
 
 </div>
 
+</div>
+
 
 
 
@@ -505,42 +525,43 @@ $(document).ready(function() {
     },
 
     //methods : 애플리케이션 내에서 언제든 호출 가능한 코드 집합이 필요한 경우 작성한다.
-    methods:{
-    	
-    	imageUpload(){
-    		
-    		let num = -1;
-    		for(let i = 0; i < this.$refs.files.files.length; i++){
-    			this.files = [
-    				...this.files,
-    				{
-    					file: this.$refs.files.files[i],
-    					preview: URL.createObjectURL(this.$refs.files.files[i]),
-    					number: i
-    				}
-    			];
-    			num = i;
-    		}
-    		this.uploadImageIndex = num + 1;
-    	},
-    	
-    	imageAddUpload(){
-    		
-    		let num = -1;
-    		for(let i = 0; i < this.$refs.files2.files.length; i++){
-    			this.files = [
-    				...this.files,
-    				{
-    					file: this.$refs.files2.files[i],
-    					preview: URL.createObjectURL(this.$refs.files2.files[i]),
-    					number: i + this.uploadImageIndex
-    				}
-    			];
-    			num = i;
-    		}
-    		this.uploadImageIndex = this.uploadImageIndex + num + 1;
-    		
-    	},
+     methods: {
+    	 imageUpload(){
+     		
+     		let num = -1;
+     		for(let i = 0; i < this.$refs.files.files.length; i++){
+     			this.files = [
+     				...this.files,
+     				{
+     					file: this.$refs.files.files[i],
+     					preview: URL.createObjectURL(this.$refs.files.files[i]),
+     					number: i
+     				}
+     			];
+     			num = i;
+     		}
+     		this.uploadImageIndex = num + 1;
+     	},
+     	
+     	imageAddUpload(){
+     		
+     		let num = -1;
+     		for(let i = 0; i < this.$refs.files2.files.length; i++){
+     			this.files = [
+     				...this.files,
+     				{
+     					file: this.$refs.files2.files[i],
+     					preview: URL.createObjectURL(this.$refs.files2.files[i]),
+     					number: i + this.uploadImageIndex
+     				}
+     			];
+     			num = i;
+     		}
+     		this.uploadImageIndex = this.uploadImageIndex + num + 1;
+        
+      },
+      
+      
     	fileDeleteButton(e){
     		const name = e.target.getAttribute('name');
     		this.files = this.files.filter(data => data.number != Number(name));

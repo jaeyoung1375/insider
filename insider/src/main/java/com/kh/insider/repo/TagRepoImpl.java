@@ -14,8 +14,8 @@ public class TagRepoImpl implements TagRepo{
 	private SqlSession sqlSession;
 
 	@Override
-	public void insert(TagDto tagDto) {
-		sqlSession.insert("tag.insert", tagDto);
+	public void insert(String tagName) {
+		sqlSession.insert("tag.insert", tagName);
 	}
 
 	@Override
