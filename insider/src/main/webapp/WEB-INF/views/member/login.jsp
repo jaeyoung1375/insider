@@ -1,6 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ page import="com.kh.insider.configuration.*" %>
+<%@ page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
+<%@ page import="org.springframework.context.ApplicationContext" %>
+<%
+// ApplicationContext를 가져옵니다.
+ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(application);
+
+// KakaoLoginProperties 빈을 가져옵니다.
+KakaoLoginProperties kakaoProperties = context.getBean(KakaoLoginProperties.class);
+GoogleLoginProperties googleProperties = context.getBean(GoogleLoginProperties.class);
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -42,17 +53,13 @@
             </form>          
                <div style="display:flex; justify-content: space-between; flex-direction: column; align-items: center;" >
                 <div class="row mb-3">
-            <a href="https://kauth.kakao.com/oauth/authorize?client_id=f32aed858ba7f7223af2f0954ddd3854&redirect_uri=   
-         http://localhost:8080/kakao/login&
-         response_type=code&scope=account_email&prompt=login">
+            <a href="https://kauth.kakao.com/oauth/authorize?client_id=<%=kakaoProperties.getClientId()%>&redirect_uri=	
+<%=kakaoProperties.getRedirectUri()%>&response_type=code&prompt=login">
                 <img src="/static/image/social/kakao_login.png">
             </a>
             </div>
              <div class="row mb-3">
-             <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=197694978566-bljc0eo7lnf071parv36ntrenp3g69eb.apps.googleusercontent.com&
-            redirect_uri=http://localhost:8080/google/login&response_type=code
-            &scope=email%20profile%20openid
-            &access_type=offline&prompt=login">
+            <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=<%=googleProperties.getClient_id()%>&redirect_uri=<%=googleProperties.getRedirect_uri()%>&response_type=code&scope=email%20profile%20openid&access_type=offline&prompt=login">
                 <img src="/static/image/social/google_login.png">
             </a>
             </div>
