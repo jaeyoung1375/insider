@@ -5,14 +5,9 @@
 	//const memberNo = "${sessionScope.memberNo}";
 </script>
 <style>
-	P {
-            display: flex;
-            margin: 5px auto auto auto;
-            max-width: 650px;
-            width: 90%;
-            border: 2px solid black;
-            height: 1000px
-        }
+	p .card-text {
+  		margin: 0 0 4px;
+	}
 
     b {
         font-size: 15px;
@@ -72,6 +67,41 @@
 	display: none;
 	}
 	
+	
+	 .fullscreen{
+            position:fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 99999;
+            
+            background-color: rgba(0, 0, 0, 0.2);
+/*             display: none; */
+      }
+
+     .fullscreen > .fullscreen-container{
+         position: absolute;
+         left: 50%;
+         top: 50%;
+         
+         width: 1200px;
+         height: 700px;
+         
+         transform: translate(-50%, -50%);
+     }
+     
+    .card-scroll{
+        overflow-y: auto;
+        -ms-overflow-style: none;
+	}
+		  
+    .card-scroll ::-webkit-scrollbar {
+		    display: none;
+	}
+     
+
+
 </style>
 <div id="app">
 	<div class="container" style="margin-top: 20px; max-width: 1000px">
@@ -84,8 +114,8 @@
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼ID▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div style="padding: 8px 8px 4px 8px;">
                             <div class="d-flex">
-                                <div class="p-2"><img class="profile" :src="profileUrl(index)"></div>
-                                <div class="p-2" style="margin-top: 8px;"><h4><b style="font-size: 15px;">{{board.boardWithNickDto.memberNick}} · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
+                                <div class="p-2"><a style="padding: 0 0 0 0" :href="'${pageContext.request.contextPath}/member/'+board.boardWithNickDto.memberNick"><img class="profile" :src="profileUrl(index)"></a></div>
+                                <div class="p-2" style="margin-top: 8px;"><h4><a class="btn btn-none" style="padding: 0 0 0 0" :href="'${pageContext.request.contextPath}/member/'+board.boardWithNickDto.memberNick"><b>{{board.boardWithNickDto.memberNick}}</b></a><b>  · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
                                 <div v-if="followCheckIf(index)" @click="follow(board.boardWithNickDto.memberNo)" class="p-2 me-5" style="margin-top: 8px;"><h4><b style="font-size: 15px; color:blue; cursor: pointer;">팔로우</b></h4></div>
                                  <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> 
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
@@ -131,12 +161,12 @@
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼멘트▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-1">
                             <h4 class="mt-2"><b>좋아요 {{boardLikeCount[index]}}개</b></h4>
-                            <h4><b>{{board.boardWithNickDto.memberNick}}</b></h4><h6>{{board.boardWithNickDto.boardContent}}</h6>
+                            <h4><a class="btn btn-none" style="padding: 0 0 0 0" :href="'${pageContext.request.contextPath}/member/'+board.boardWithNickDto.memberNick"><b>{{board.boardWithNickDto.memberNick}}</b></a></h4><h6>{{board.boardWithNickDto.boardContent}}</h6>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲멘트▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼댓글 모달창 열기▼▼▼▼▼▼▼▼▼▼▼▼▼-->
              			<div class="p-1">
-             				<h6 @click="detailViewOn">댓글 더보기</h6>             
+             				<h6 @click="detailViewOn(index)">댓글 더보기</h6>             
              			</div>           
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲댓글 모달창 열기▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼댓글입력창▼▼▼▼▼▼▼▼▼▼▼▼▼-->
@@ -158,42 +188,69 @@
     
     </div>
     
-<!-- ---------------------------------댓글 모달-------------------------- -->
-<div v-if="detailView" class="container-fluid fullscreen active beforeanimation" :class="{'animation':animation}" @click="detailViewOn" style="position: fixed; z-index:100;">
-	<div>
-		<i class="fa-solid fa-x fa-2xl" style="position: absolute; right: 30px; top: 40px; cursor: pointer;"></i>
-	</div>
-	<div class="row center-position" style="width: 80%;">
-		<div class="col-6 offset-1" style="padding-right: 0; padding-left: 0;" @click.stop>
-			<div :id="'carouselExampleIndicators'+index" class="carousel slide">
-                
+<!-- ---------------------------------게시물 상세보기 모달-------------------------- -->
+
+<div v-if="detailView" class="container-fluid fullscreen">
+	<div class="row fullscreen-container">
+		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
+			<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
                 <div class="carousel-indicators">
-                  <button v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#carouselExampleIndicators'+index" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
+                  <button v-for="(attach, index2) in boardList[detailIndex].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
                 </div>
                
                 <div class="carousel-inner">
-                  <div  v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
-                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,index)"> 
+                  <div  v-for="(attach, index2) in boardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
+                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" style="width:700px; height:700px;"> 
                   </div>
                 </div>
                
-                <button class="carousel-control-prev" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="prev">
+                <button class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="prev">
                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Previous</span>
                 </button>
-                <button  class="carousel-control-next" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="next">
+                <button  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="next">
                   <span class="carousel-control-next-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Next</span>
                 </button>
                 
-           </div>   
+           </div>
 		</div>
-		<div class="col-4 board-detail-card" style="padding-left: 0; max-height: 30rem;" @click.stop>
-			<div>hello</div>
-		</div>
-		
+           
+        <div class="col-4" style="padding-left: 0;">
+        	<div class="card bg-light" style="border-radius:0; max-height: 700px">
+           		<div class="card-header">
+	           		<img class="profile" :src="profileUrl(detailIndex)">
+           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardList[detailIndex].boardWithNickDto.memberNick"><b>{{boardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
+           		</div>
+				
+				<div class="card-body"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
+					<h5 class="card-title"></h5>
+					<p class="card-text" style="margin-left: 0.5em;">{{boardList[detailIndex].boardWithNickDto.boardContent}}</p>
+					
+				</div>
+				<hr style="margin-top: 0; margin-bottom: 0;">
+				
+				<div class="card-body"  style="height:110px; padding-top: 0px; padding-left: 0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
+					<h5 class="card-title"></h5>
+					<p class="card-text" style="margin: 0 0 4px 0">
+						<i :class="{'fa-heart': true, 'like':isLiked[detailIndex],'ms-2':true, 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}" @click="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
+						&nbsp;
+						<i class="fa-regular fa-message mb-1" style="font-size: 25px; "></i>
+					</p>
+					<p class="card-text" style="margin: 0 0 4px 0"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount[detailIndex]}}개</b></p>
+					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(boardList[detailIndex].boardWithNickDto.boardTimeAuto)}}</p>
+					
+				</div>
+				
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="댓글 달기.." style="border: none;" aria-label="Recipient's username" aria-describedby="button-addon2">
+					<button class="btn btn-outline-light" type="button" id="button-addon2" style="border-top-right-radius: 0!important;">작성</button>
+				</div>
+								        	
+        	</div>
+			<button @click="detailView = false">닫기</button>
+        </div>
 	</div>
-	
 </div>
  
  
@@ -201,24 +258,6 @@
  
  
  
- 
- <div class="modal" tabindex="-1" role="dialog" id="modal03" 
-                            data-bs-backdrop="static" ref="modal03">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">제목</h5>
-                    </div>
-                    <div class="modal-body">
-                        <!-- 모달에서 표시할 실질적인 내용 구성 -->
-                        <p>본문 내용</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="hideBoardModal">닫기</button>
-                    </div>
-                </div>
-            </div>
-         </div>   
 
     
     
@@ -307,9 +346,11 @@ Vue.createApp({
 			reportBoardData:[],
 			/*----------------------신고----------------------*/
 			
-			//상세보기
+			//상세보기 및 댓글
 			detailView:false,
-			boardModal:null,
+			detailIndex:"",
+			replyList:[],
+// 			boardModal:null,
         };
     },
     //데이터 실시간 계산 영역
@@ -455,19 +496,30 @@ Vue.createApp({
         	//console.log(check);
         },
        
-        
-        showBoardModal(boardNo) {
-        	if(this.boardModal==null) return;
-        	this.boardModal.show();
-        },
-        hideBoardModal() {
-        	if(this.boardModal==null) return;
-        	this.boardModal.hide();
+        //댓글 조회
+        async replyLoad(index) {
+        	const resp = await axios.get("${pageContext.request.contextPath}/rest/reply/"+ this.boardList[index].boardWithNickDto.boardNo);
+        	if(resp.data>0){
+        		this.replyList.push(resp.data);
+        	}
         },
         
+        //댓글 등록
+        async replyInsert(index) {
+        	const resp = await axios.post("${pageContext.request.contextPath}/rest/reply/")
+        	this.replyLoad(index);	
+        },
+        
+        //댓글 삭제
+        async replyDelete(index) {
+        	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList.replyNo)
+        	this.replyLoad(index);
+        },
         
         detailViewOn(index) {
-        	this.detailView = true;	
+        	this.detailView = true;
+        	this.detailIndex = index;
+        	this.replyLoad(index);
         },
         
         
@@ -535,7 +587,7 @@ Vue.createApp({
          //추가메뉴, 신고 모달 선언
 		this.additionalMenuModal = new bootstrap.Modal(this.$refs.additionalMenuModal);
 		this.reportMenuModal = new bootstrap.Modal(this.$refs.reportMenuModal);
-		this.boardModal = new bootstrap.Modal(this.$refs.modal03);
+		//this.boardModal = new bootstrap.Modal(this.$refs.modal03);
     },
     created(){
     	//this.loginMemberNo =  "${sessionScope.memberNo}";        

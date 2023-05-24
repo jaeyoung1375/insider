@@ -37,12 +37,12 @@ public class ReplyRestController {
 	
 	//댓글 등록
 	@PostMapping("/")
-	public void write(HttpSession session,@ModelAttribute ReplyDto replyDto) {
+	public void write(HttpSession session) {
 		//작성자 설정
 		long memberNo = (long) session.getAttribute("member");
 		MemberDto memberDto = memberRepo.findByNo(memberNo);
 		String memberNick = memberDto.getMemberNick();
-		
+		ReplyDto replyDto = new ReplyDto();
 		//회원 번호 및 회원 닉네임 설정
 		replyDto.setReplyMemberNo(memberNo);
 		replyDto.setReplyMemberNick(memberNick);
@@ -53,8 +53,9 @@ public class ReplyRestController {
 	
 	//댓글 삭제
 	@DeleteMapping("/{replyNo}")
-	public void delete(@PathVariable int replyNo, @ModelAttribute ReplyDto replyDto ) {
+	public void delete(@PathVariable int replyNo) {
 		//Dto에서 멤버 닉네임 삭제
+		ReplyDto replyDto = new ReplyDto();
 		replyDto = replyRepo.selectOne(replyNo);
 		replyDto.setReplyMemberNick(null);
 		
