@@ -25,6 +25,11 @@
 	    delete from dm_user 
 	    where member_no = #{memberNo} and room_no = #{roomNo}
 	</delete>
+	
+	<!-- 특정 채팅방에 참여한 모든 회원 조회 -->
+	<select id="findUsersByRoomNo" resultType="DmUserDto">
+	  SELECT * FROM dm_user WHERE room_no = #{roomNo}
+	</select>
 
 	<!-- 읽은 시간 수정 -->
 	<update id="updateReadTime">
