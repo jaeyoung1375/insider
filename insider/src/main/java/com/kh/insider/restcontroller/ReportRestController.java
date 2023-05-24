@@ -43,6 +43,9 @@ public class ReportRestController {
 	public MemberWithProfileDto insert(@RequestBody ReportDto reportDto, HttpSession session) throws IOException {
 		//true : 최초신고, false : 신고내용 갱신
 		long memberNo = (Long)session.getAttribute("memberNo");
+		if(memberNo==reportDto.getReportMemberNo()) {
+			return null;
+		}
 		reportDto.setMemberNo(memberNo);
 		
 		//기존에 리포트를 한 상태인지 확인

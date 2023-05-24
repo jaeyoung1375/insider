@@ -83,32 +83,32 @@
 				</div>
 				<hr>
 			<!-- 검색창 시작 -->
-				<div class="row">
+				<div class="row mb-4">
 					<div class="row">
-						<div class="col-2">
+						<div class="col-2 d-flex align-items-center">
 							<span>이름</span>
 						</div>
-						<div class="col-4">
+						<div class="col-4 p-0">
 							<input class="form-control" v-model="memberSearchOption.memberName">
 						</div>
-						<div class="col-2">
+						<div class="col-2 d-flex align-items-center">
 							<span>닉네임</span>
 						</div>
-						<div class="col-4">
+						<div class="col-4 p-0">
 							<input class="form-control" v-model="memberSearchOption.memberNick">
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-2">
+						<div class="col-2 d-flex align-items-center">
 							<span>이메일</span>
 						</div>
-						<div class="col-4">
+						<div class="col-4 p-0">
 							<input class="form-control" v-model="memberSearchOption.memberEmail">
 						</div>
-						<div class="col-2">
+						<div class="col-2 d-flex align-items-center">
 							<span>로그인 기록</span>
 						</div>
-						<div class="col-4">
+						<div class="col-4 p-0">
 							<select class="form-control" v-model="memberSearchOption.searchLoginDays">
 								<option value="">선택</option>
 								<option value="1">1일전</option>
@@ -119,16 +119,16 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-2">
+						<div class="col-2 d-flex align-items-center">
 							<span>주소</span>
 						</div>
-						<div class="col-4">
+						<div class="col-4 p-0">
 							<input class="form-control" v-model="memberSearchOption.memberAddress">
 						</div>
-						<div class="col-2">
+						<div class="col-2 d-flex align-items-center">
 							<span>성별</span>
 						</div>
-						<div class="col-4">
+						<div class="col-4 p-0">
 							<select class="form-control" v-model="memberSearchOption.memberGender">
 								<option value="">선택</option>
 								<option value="0">남성</option>
@@ -137,15 +137,15 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-2">
+						<div class="col-2 d-flex align-items-center">
 							<span>팔로우</span>
 						</div>
-						<div class="col-4">
+						<div class="col-4 p-0">
 							<div class="row">
 								<div class="col-5">
 									<input class="form-control" v-model="memberSearchOption.memberMinFollow">
 								</div>
-								<div class="col-2">
+								<div class="col-2 d-flex align-items-center justify-content-center">
 									<span>~</span>
 								</div>
 								<div class="col-5">
@@ -153,15 +153,15 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-2">
+						<div class="col-2 d-flex align-items-center">
 							<span>신고</span>
 						</div>
-						<div class="col-4">
+						<div class="col-4 p-0">
 							<div class="row">
 								<div class="col-5">
 									<input class="form-control" v-model="memberSearchOption.memberMinReport">
 								</div>
-								<div class="col-2">
+								<div class="col-2 d-flex align-items-center justify-content-center">
 									<span>~</span>
 								</div>
 								<div class="col-5">
@@ -171,15 +171,15 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-2">
+						<div class="col-2 d-flex align-items-center">
 							<span>생일</span>
 						</div>
-						<div class="col-10">
+						<div class="col-10 p-0">
 							<div class="row">
 								<div class="col-5">
 									<input type="date" class="form-control" v-model="memberSearchOption.memberBeginBirth">
 								</div>
-								<div class="col-2">
+								<div class="col-2 d-flex align-items-center justify-content-center">
 									<span>~</span>
 								</div>
 								<div class="col-5">
@@ -189,60 +189,61 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col">
+						<div class="col-2 d-flex align-items-center">
 							<span>정렬 순서</span>
 						</div>
-						<div class="col">
+						<div class="col p-0">
 							<select class="form-control" v-model="memberOrderList[0]">
 								<option value="" selected>팔로워(선택)</option>
 								<option value="member_follow asc">팔로워 적은순</option>
 								<option value="member-follow desc">팔로워 많은순</option>
 							</select>
 						</div>
-						<div class="col">
+						<div class="col p-0">
 							<select class="form-control" v-model="memberOrderList[1]">
 								<option value="" selected>신고수(선택)</option>
 								<option value="member_report asc">신고수 적은순</option>
 								<option value="member_report desc">신고수 많은순</option>
 							</select>
 						</div>
-						<div class="col">
+						<div class="col p-0">
 							<select class="form-control" v-model="memberOrderList[2]">
 								<option value="" selected>로그인(선택)</option>
 								<option value="member_login desc">최근 접속자</option>
 								<option value="member_login asc">접속 기간 긴 순</option>
 							</select>
 						</div>
-						<div class="col">
-							<button type="button" class="btn btn-secondary" @click="resetMemberSearchOption">초기화</button>
-							<button type="button" class="btn btn-primary" @click="getListWithSearchOption">검색</button>
+						<div class="col p-0">
+							<button type="button" class="col-6 btn btn-secondary" @click="resetMemberSearchOption">초기화</button>
+							<button type="button" class="col-6 btn btn-primary" @click="getListWithSearchOption">검색</button>
 						</div>
 					</div>
 				</div>
-				<hr>
 			<!-- 검색창 끝 -->
 			<!-- 테이블 시작 -->
 				<div class="row">
 					<div class="col">
 						<table class="table">
 							<thead>
-								<tr>
-									<th>프로필</th>
-									<th>이름</th>
-									<th>닉네임</th>
-									<th>이메일</th>
-									<th>신고</th>
-									<th>팔로우</th>
+								<tr style="border-top:1px solid lightgray">
+									<th style="vertical-align:middle; width:8%">프로필</th>
+									<th style="vertical-align:middle; width:20%">이름</th>
+									<th style="vertical-align:middle; width:20%">닉네임</th>
+									<th style="vertical-align:middle; width:30%">이메일</th>
+									<th style="vertical-align:middle; width:8.666666%; text-align:center">팔로우</th>
+									<th style="vertical-align:middle; width:6.666666%; text-align:center">신고</th>
+									<th style="vertical-align:middle; width:6.666666%">관리</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr v-for="(member, index) in memberList" :key="member.memberNo">
-									<td><img src="">프로필</td>
-									<td>{{member.memberName}}</td>
-									<td>{{member.memberNick}}</td>
-									<td>{{member.memberEmail}}</td>
-									<td>{{member.memberReport}}</td>
-									<td>{{member.memberFollow}}</td>
+									<td><img class="rounded-circle" :src="'${pageContext.request.contextPath}'+member.imageURL" width="50" height="50"></td>
+									<td style="vertical-align:middle">{{member.memberName}}</td>
+									<td style="vertical-align:middle">{{member.memberNick}}</td>
+									<td style="vertical-align:middle">{{member.memberEmail}}</td>
+									<td style="vertical-align:middle; text-align:center">{{member.memberFollow}}</td>
+									<td style="vertical-align:middle; text-align:center">{{member.memberReport}}</td>
+									<td style="vertical-align:middle">관리</td>
 								</tr>
 							</tbody>
 						</table>
@@ -278,9 +279,10 @@
 			<div class="col" v-show="adminMenu==2">
 				<div class="row">
 					<div class="col">
-						<h1>신고관리</h1>
+						<h2>신고관리</h2>
 					</div>
 				</div>
+				<hr>
 				<div class="row">
 					<div class="col">
 						<h3 @click="showReportContentModal">신고 내용 관리</h3>
@@ -317,27 +319,31 @@
 			<div class="col" v-show="adminMenu==3">
 				<div class="row">
 					<div class="col">
-						<h1>회원 통계</h1>
+						<h2>회원 통계</h2>
+					</div>
+				</div>
+				<hr>
+				<div class="row mt-4">
+					<div class="col">
+						<h4 class="m-0">방문자 수 통계</h4>
 					</div>
 				</div>
 				<div class="row">
-					<div class="col">
-						<h3>방문자 수 통계</h3>
+					<div class="col-6"></div>
+					<div class="col-2 d-flex align-items-center">
+						<input type="radio" value="days" v-model="memberLoginSearch.col" :checked="memberLoginSearch.col=='days'" />
+						<span class="ms-1">일별</span>
+						<input class="ms-2" type="radio" value="months" v-model="memberLoginSearch.col" :checked="memberLoginSearch.col=='months'" />
+						<span class="ms-1">월별</span>
 					</div>
-				</div>
-				<div class="row">
-					<div class="col">
-						<input type="radio" value="days" v-model="memberLoginSearch.col" :checked="memberLoginSearch.col=='days'" />일별
-						<input type="radio" value="months" v-model="memberLoginSearch.col" :checked="memberLoginSearch.col=='months'" />월별
-					</div>
-					<div class="col">
+					<div class="col-3 p-0">
 						<select class="form-control" v-model="memberLoginSearch.order">
 							<option value="all_parts.date_part DESC">날짜별 정렬</option>
 							<option value="count desc">많은 순</option>
 						</select>
 					</div>
-					<div class="col">
-						<button type="button" class="btn btn-secondary" @click="getMemberLoginStats(true)">검색</button>
+					<div class="col-1 p-0">
+						<button type="button" class="btn btn-secondary w-100" @click="getMemberLoginStats(true)">검색</button>
 					</div>
 				</div>
 				<div class="row">
@@ -351,27 +357,30 @@
 						<canvas ref="loginChart"></canvas>
 					</div>
 				</div>
-				
+				<hr>
 				<!-- 가입자 수 퉁계 -->
 				
-				<div class="row">
+				<div class="row mt-4">
 					<div class="col">
-						<h3>가입자 수 통계</h3>
+						<h4 class="m-0">가입자 수 통계</h4>
 					</div>
 				</div>
 				<div class="row">
-					<div class="col">
-						<input type="radio" value="days" v-model="memberJoinSearch.col" :checked="memberJoinSearch.col=='days'" />일별
-						<input type="radio" value="months" v-model="memberJoinSearch.col" :checked="memberJoinSearch.col=='months'" />월별
+					<div class="col-6"></div>
+					<div class="col-2 d-flex align-items-center">
+						<input type="radio" value="days" v-model="memberJoinSearch.col" :checked="memberJoinSearch.col=='days'" />
+						<span class="ms-1">일별</span>
+						<input class="ms-2" type="radio" value="months" v-model="memberJoinSearch.col" :checked="memberJoinSearch.col=='months'" />
+						<span class="ms-1">월별</span>
 					</div>
-					<div class="col">
+					<div class="col-3 p-0">
 						<select class="form-control" v-model="memberJoinSearch.order">
 							<option value="all_parts.date_part DESC">날짜별 정렬</option>
 							<option value="count desc">많은 순</option>
 						</select>
 					</div>
-					<div class="col">
-						<button type="button" class="btn btn-secondary" @click="getMemberJoinStats(true)">검색</button>
+					<div class="col-1 p-0">
+						<button type="button" class="btn btn-secondary w-100" @click="getMemberJoinStats(true)">검색</button>
 					</div>
 				</div>
 				<div class="row">
@@ -385,20 +394,23 @@
 						<canvas ref="joinChart"></canvas>
 					</div>
 				</div>
-				
+				<hr>
 				<!-- 누적 통계 -->
 				
-				<div class="row">
+				<div class="row mt-4">
 					<div class="col">
-						<h3>누적 통계</h3>
+						<h4 class="m-0">누적 통계</h4>
 					</div>
 				</div>
 				<div class="row">
-					<div class="col">
-						<input type="radio" value="member_join" v-model="memberCumulativeSearch.stat" :checked="memberCumulativeSearch.stat=='member_join'" />가입자
-						<input type="radio" value="member_login" v-model="memberCumulativeSearch.stat" :checked="memberCumulativeSearch.stat=='member_login'" />접속자
+					<div class="col-8"></div>
+					<div class="col-3 d-flex align-items-center justify-content-center">
+						<input type="radio" value="member_join" v-model="memberCumulativeSearch.stat" :checked="memberCumulativeSearch.stat=='member_join'" />
+						<span class="ms-1">가입자</span>
+						<input class="ms-2" type="radio" value="member_login" v-model="memberCumulativeSearch.stat" :checked="memberCumulativeSearch.stat=='member_login'" />
+						<span class="ms-1">접속자</span>
 					</div>
-					<div class="col">
+					<div class="col-1 p-0">
 						<button type="button" class="btn btn-secondary" @click="getMemberCumulativeStats()">검색</button>
 					</div>
 				</div>
@@ -412,29 +424,32 @@
 			<div class="col" v-show="adminMenu==4">
 				<div class="row">
 					<div class="col">
-						<h1>게시물 통계</h1>
+						<h2>게시물 통계</h2>
 					</div>
 				</div>
-				
+				<hr>
 				<!-- 게시물 수 통계 -->
-				<div class="row">
+				<div class="row mt-4">
 					<div class="col">
-						<h3>게시물 수 통계</h3>
+						<h4 class="m-0">게시물 수 통계</h4>
 					</div>
 				</div>
 				<div class="row">
-					<div class="col">
-						<input type="radio" value="days" v-model="boardTimeSearch.col" :checked="boardTimeSearch.col=='days'" />일별
-						<input type="radio" value="months" v-model="boardTimeSearch.col" :checked="boardTimeSearch.col=='months'" />월별
+					<div class="col-6"></div>
+					<div class="col-2 d-flex align-items-center">
+						<input type="radio" value="days" v-model="boardTimeSearch.col" :checked="boardTimeSearch.col=='days'" />
+						<span class="ms-1">일별</span>
+						<input class="ms-2" type="radio" value="months" v-model="boardTimeSearch.col" :checked="boardTimeSearch.col=='months'" />
+						<span class="ms-1">월별</span>
 					</div>
-					<div class="col">
+					<div class="col-3 p-0">
 						<select class="form-control" v-model="boardTimeSearch.order">
 							<option value="all_parts.date_part DESC">날짜별 정렬</option>
 							<option value="count desc">많은 순</option>
 						</select>
 					</div>
-					<div class="col">
-						<button type="button" class="btn btn-secondary" @click="getBoardTimeStats(true)">검색</button>
+					<div class="col-1 p-0">
+						<button type="button" class="btn btn-secondary w-100" @click="getBoardTimeStats(true)">검색</button>
 					</div>
 				</div>
 				<div class="row">
@@ -448,34 +463,35 @@
 						<canvas ref="boardTimeChart"></canvas>
 					</div>
 				</div>
+				<hr>
 				<!-- 게시물 태그 수 통계 -->
-				<div class="row">
+				<div class="row mt-4">
 					<div class="col">
-						<h3>태그 통계</h3>
+						<h4 class="m-0">태그 통계</h4>
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-10">
+					<div class="col-11">
 						<div class="row">
-							<div class="col">
+							<div class="col-2 d-flex align-items-center justify-content-center">
 								<span>기간설정 </span>
 							</div>
 							<div class="col-4">
 								<input class="form-control" type="date" v-model="boardTagSearch.startDate">
 							</div>
-							<div class="col">
+							<div class="col-1 d-flex align-items-center justify-content-center">
 								<span> 부터 </span>
 							</div>
 							<div class="col-4">
 								<input class="form-control" type="date" v-model="boardTagSearch.endDate">
 							</div>
-							<div class="col">
+							<div class="col-1 d-flex align-items-center">
 								<span> 까지</span>
 							</div>
 						</div>
 					</div>
-					<div class="col-2">
-						<button type="button" class="btn btn-secondary" @click="getBoardTagStats(true)">검색</button>
+					<div class="col-1 p-0">
+						<button type="button" class="btn btn-secondary w-100" @click="getBoardTagStats(true)">검색</button>
 					</div>
 				</div>
 				<div class="row">
@@ -494,9 +510,10 @@
 			<div class="col" v-show="adminMenu==5">
 				<div class="row">
 					<div class="col">
-						<h1>조회 통계</h1>
+						<h2>조회 통계</h2>
 					</div>
 				</div>
+				<hr>
 			</div>
 		</div>
 	</div>
