@@ -103,6 +103,16 @@
 	 		order by board_no asc
 	 	<include refid="topNfooter"></include>	
 	</select>
+	
+	<!-- 마이페이지 무한스크롤 구현 -->
+	<select id="myPageSelectPaging" resultMap="boardListVO">
+		<include refid="topNheader"></include>
+	 		select * from board_with_nick where member_nick = #{memberNick}
+	 		order by board_no asc
+	 	<include refid="topNfooter"></include>	
+	</select>
+	
+	
 	<!-- 서브구문 -->
 	<select id="boardListTreeSelectSub" resultType="boardAttachmentDto">
 		select * from board_attachment where board_no = #{boardNo}

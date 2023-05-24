@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.BoardDto;
+import com.kh.insider.dto.BoardWithNickDto;
 import com.kh.insider.vo.BoardAttachmentVO;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
@@ -113,6 +114,15 @@ public class BoardRepoImpl implements BoardRepo {
 	@Override
 	public List<BoardTagStatsResponseVO> getBoardTagStats(BoardTagStatsSearchVO boardTagStatsSearchVO) {
 		return sqlSession.selectList("board.boardTagStats", boardTagStatsSearchVO);
+	}
+
+
+	@Override
+	public List<BoardWithNickDto> myPageSelectListPaging(int page, String memberNick) {
+		int end = page * 10;
+		int begin = end -9;
+		Map param = Map.of("begin",begin, "end",end, "memberNick",memberNick);
+		return sqlSession.selectList("board.myPageSelectPaging",param);
 	}
 
 }
