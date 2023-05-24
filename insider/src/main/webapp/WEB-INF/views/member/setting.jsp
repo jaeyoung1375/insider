@@ -14,9 +14,7 @@
 .selected{
 	box-shadow: -3px 0 0 rgba(0, 0, 0, 0.2);
 }
-.no-margin{
-	margin:0;
-}
+
 .menu-bar{
 	border-top:1px solid lightgray;
 	border-left:1px solid lightgray;
@@ -39,32 +37,32 @@
 				<div class="col">
 					<div class="row setting-menu" @click="changePage(0)" :class="{'selected':page==0}">
 						<div class="col">
-							<h5 class="no-margin">개인정보 변경</h5>
+							<h5 class="m-0">개인정보 변경</h5>
 						</div>
 					</div>
 					<div class="row setting-menu" @click="changePage(1)" :class="{'selected':page==1}">
 						<div class="col">
-							<h5 class="no-margin">프로필 편집</h5>
+							<h5 class="m-0">프로필 편집</h5>
 						</div>
 					</div>
 					<div class="row setting-menu" @click="changePage(2)" :class="{'selected':page==2}">
 						<div class="col">
-							<h5 class="no-margin">푸시 알림</h5>
+							<h5 class="m-0">푸시 알림</h5>
 						</div>
 					</div>
 					<div class="row setting-menu" @click="changePage(3)" :class="{'selected':page==3}">
 						<div class="col">
-							<h5 class="no-margin">내가 볼 수 있는 내용</h5>
+							<h5 class="m-0">내가 볼 수 있는 내용</h5>
 						</div>
 					</div>
 					<div class="row setting-menu" @click="changePage(4)" :class="{'selected':page==4}">
 						<div class="col">
-							<h5 class="no-margin">공개 범위</h5>
+							<h5 class="m-0">공개 범위</h5>
 						</div>
 					</div>
 					<div class="row setting-menu" @click="changePage(5)" :class="{'selected':page==5}">
 						<div class="col">
-							<h5 class="no-margin">소통 방법</h5>
+							<h5 class="m-0">소통 방법</h5>
 						</div>
 					</div>
 				</div>

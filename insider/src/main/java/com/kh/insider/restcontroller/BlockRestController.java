@@ -26,6 +26,7 @@ public class BlockRestController {
 	@PutMapping("/{blockNo}")
 	public boolean block(@PathVariable long blockNo, HttpSession session) {
 		long memberNo = (long)session.getAttribute("memberNo");
+		if(blockNo==memberNo) return false;
 		BlockDto blockDto = new BlockDto();
 		blockDto.setMemberNo(memberNo);
 		blockDto.setBlockNo(blockNo);
