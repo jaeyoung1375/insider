@@ -453,7 +453,11 @@ Vue.createApp({
             if(this.loading == true) return; //로딩중이면
             if(this.finish == true) return; //다 불러왔으면
             this.loading = true;
-
+			
+            console.log("test");
+            console.log("test");
+            console.log("test");
+            console.log("test")
             const resp = await axios.get("${pageContext.request.contextPath}/rest/board/page/"+ this.page);
             //console.log(resp.data);
             //console.log(resp.data[0].boardLike);
