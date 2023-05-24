@@ -332,7 +332,7 @@
                     this.modal.hide();
                 },
 			    connect(){
-            		const url = "${pageContext.request.contextPath}/ws/dm";
+            		const url = "${pageContext.request.contextPath}/ws/channel";
             		this.socket = new SockJS(url);
             		
             		//this = view이므로 개조 (this가 웹소켓이어야 사용 가능)
