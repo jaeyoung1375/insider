@@ -2,6 +2,7 @@ package com.kh.insider.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -284,12 +285,61 @@ public class BoardController {
     	
 		boardDto.setMemberNo(memberNo);
 		log.debug("boardAttachment:{}", boardAttachment);
-		boardAttachService.insert(boardDto, tagDto, boardTagDto, boardAttachment);
+		boardAttachService.insert(boardDto,boardAttachment);
+		
+		 // 해시태그 저장
+		if(tagDto.getTagName() != null) {
+			String inputTagName = tagDto.getTagName();
+			String[] array = inputTagName.split("#");
+			List<String> tagList = new ArrayList<>();
+			for(String s : array) {
+				if(s!=null && s.length()>0) {
+					s=s.trim();
+					s=s.replace("#","");
+					if(s.length()>0) {
+						tagList.add(s);
+					}
+				}
+			}
+			
+			for(int i = 0; i < tagList.size(); i++) {
+				String tagName = tagList.get(i);
+				TagDto tagDtoFind = tagRepo.selectOne(tagName);
+				log.debug("태그디티오:{}",tagDtoFind);
+				if(tagDtoFind == null) {
+					tagRepo.insert(tagName);
+				}
+					
+				BoardTagDto newBoardTagDto = new BoardTagDto();
+				newBoardTagDto.setBoardTagNo(boardTagDto.getBoardTagNo());
+				newBoardTagDto.setBoardNo(boardDto.getBoardNo());
+				newBoardTagDto.setTagName(tagName);
+				boardTagRepo.insert(newBoardTagDto);
+			}
+		}
 		attr.addAttribute("memberNo",memberNo);
 		return "redirect:/";
     }
-//    
-//    
+    
+	//게시글 삭제하기
+	@GetMapping("/delete")
+	public String delete(RedirectAttributes attr, @RequestParam int boardNo, HttpSession session) {
+		
+		boardAttachService.delete(boardNo);
+		
+		Integer memberNo = (Integer)session.getAttribute("login");
+		attr.addAttribute("memberNo", memberNo);
+		
+		return "redirect:/board/list";
+	}
+    
+    
+    //비동기
+    @GetMapping("/rest")
+    public String rest() {
+    	return "/board/rest";
+    }
+    
 // 	// 파일업로드 글 쓸때 사용, 
 // 	@PostMapping("/insert")
 // 	public String insert(@RequestParam List<MultipartFile> boardAttachment) throws IllegalStateException, IOException, InterruptedException {
@@ -411,114 +461,6 @@ public class BoardController {
 // 		}
 // 		return "redirect:/";
 // 	}
-    
-    // 코드 병합(실패)
-//    @PostMapping("/insert")
-//    public String insert(@ModelAttribute BoardDto boardDto, 
-//                         HttpSession session, 
-//                         RedirectAttributes attr,
-//                         @RequestParam(value="boardAttachment", required=false) List<MultipartFile> boardAttachment,
-//                         Model model,
-//                         @ModelAttribute MemberDto memberDto) throws IllegalStateException, IOException, InterruptedException {
-//        Long memberNo = (Long)session.getAttribute("memberNo");
-//        
-//        boardDto.setMemberNo(memberNo);
-//        log.debug("boardAttach={}", boardAttachment);
-//        boardAttachService.insert(boardDto, boardAttachment);
-//        attr.addAttribute("memberNo", memberNo);
-//        
-//        for(MultipartFile file : boardAttachment) {
-//            System.out.println(file.isEmpty());
-//            System.out.println("name = " + file.getName());
-//            System.out.println("original file name = " + file.getOriginalFilename());
-//            System.out.println("content type = " + file.getContentType());
-//            System.out.println("size = " + file.getSize());
-//            
-//            if(!file.isEmpty()) {
-//                String contentType = file.getContentType();
-//                String fileType = null;
-//                
-//                int attachmentNo = attachmentRepo.sequence();
-//                
-//                if(contentType.contains("video")) {
-//                    fileType = contentType.replaceAll("video/","");
-//                    System.out.println("비디오입니다. 파일확장자는 "+fileType+" 입니다.");
-//                    File target = new File(dir, String.valueOf(attachmentNo)+"."+fileType);
-//                    file.transferTo(target);
-//                    
-//                    FFmpeg ffmpeg = new FFmpeg("src/main/resources/ffmpeg/bin/ffmpeg");
-//                    FFprobe ffprobe = new FFprobe("src/main/resources/ffmpeg/bin/ffprobe");
-//                    
-//                    String originFile = dir + "\\" + String.valueOf(attachmentNo) + "." + fileType;
-//                    Path filePath = Paths.get(originFile);
-//                    String videoFile = dir + "\\" + String.valueOf(attachmentNo);
-//                    
-//                    FFmpegBuilder builder = new FFmpegBuilder()
-//                        .setInput(originFile)
-//                        .overrideOutputFiles(true)
-//                        .addOutput(videoFile)
-//                        .setFormat(fileType)
-//                        .setVideoCodec("libx264")
-//                        .disableSubtitle()
-//                        .setAudioChannels(1)
-//                        .setStrict(FFmpegBuilder.Strict.EXPERIMENTAL)
-//                        .done();
-//                    
-//                    FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
-//                    executor.createJob(builder).run();
-//                    
-//                    Files.deleteIfExists(filePath);
-//                    
-//                    Path path = Paths.get(videoFile);
-//                    long videoSize = Files.size(path);
-//                    
-//                    attachmentRepo.insert(AttachmentDto.builder()
-//                        .attachmentNo(attachmentNo)
-//                        .attachmentName(file.getOriginalFilename())
-//                        .attachmentType(contentType)
-//                        .attachmentSize(videoSize)
-//                        .build());
-//                }
-//                else if(contentType.contains("image")) {
-//                    fileType = contentType.replaceAll("image/","");
-//                    System.out.println("사진입니다. 파일확장자는 "+fileType+" 입니다.");
-//                    File target = new File(dir, String.valueOf(attachmentNo));
-//                    file.transferTo(target);
-//                    
-//                    attachmentRepo.insert(AttachmentDto.builder()
-//                        .attachmentNo(attachmentNo)
-//                        .attachmentName(file.getOriginalFilename())
-//                        .attachmentType(contentType)
-//                        .attachmentSize(file.getSize())
-//                        .build());
-//                }
-//            }
-//        }
-//        
-//        return "redirect:/";
-//    }
-
-    
-    
-    
-	//게시글 삭제하기
-	@GetMapping("/delete")
-	public String delete(RedirectAttributes attr, @RequestParam int boardNo, HttpSession session) {
-		
-		boardAttachService.delete(boardNo);
-		
-		Integer memberNo = (Integer)session.getAttribute("login");
-		attr.addAttribute("memberNo", memberNo);
-		
-		return "redirect:/board/list";
-	}
-    
-    
-    //비동기
-    @GetMapping("/rest")
-    public String rest() {
-    	return "/board/rest";
-    }
 
 
 }

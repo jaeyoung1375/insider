@@ -252,12 +252,14 @@ $(document).ready(function() {
 		}
 		
 		
-		if($(".content").val() == "" || $("#hashtag").val() != ""){
-			$("#hashtag").attr("disabled", false);
-		}
-		else{
-			$("#hashtag").attr("disabled", true);
-		}
+		if ($(".content").val() == "" || $("#tagName").val() != "") {
+
+		    $("#tagName").attr("disabled", false);
+
+		    tagBoardDto.tagName = $("#tagName").val();
+		  } else {
+		    $("#tagName").attr("disabled", true);
+		  }
 		
 		if($(".content").val() == "" || $("#memberTag").val() != ""){
 			$("#memberTag").attr("disabled", false);
@@ -448,7 +450,7 @@ $(document).ready(function() {
 
 					    	
 					    	<div class="row mt-4">
-					    		<input type="text" name="hashtagName" class="form-control" placeholder="#해시태그" id="hashtag" autocomplete="off">
+					    		<input type="text" name="tagName" class="form-control" placeholder="#해시태그" id="tagName" autocomplete="off">
 					    	</div>
 					    	
 					    	<div class="row mt-4">

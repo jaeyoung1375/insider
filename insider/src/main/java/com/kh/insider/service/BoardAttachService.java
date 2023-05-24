@@ -13,7 +13,7 @@ import com.kh.insider.vo.PaginationVO;
 
 public interface BoardAttachService {
 	
-void insert(BoardDto boardDto,TagDto tagDto, BoardTagDto boardTagDto, List<MultipartFile> boardAttachment) throws IllegalStateException, IOException;
+void insert(BoardDto boardDto,List<MultipartFile> boardAttachment) throws IllegalStateException, IOException;
 	
 void delete(int boardNo);
 }
