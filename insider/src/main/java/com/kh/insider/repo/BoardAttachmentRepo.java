@@ -11,6 +11,7 @@ public interface BoardAttachmentRepo {
 //	int boardAttachSeq();
 	//등록
 	void insert(BoardAttachmentDto boardAttachmentDto);
+//	void insert(List<BoardAttachmentDto> boardAttachmentDtos);
 	//목록
 	List<BoardAttachmentDto> selectList(int boardNo);
 	//삭제

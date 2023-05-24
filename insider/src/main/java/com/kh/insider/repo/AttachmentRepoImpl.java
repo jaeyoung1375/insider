@@ -57,5 +57,29 @@ public class AttachmentRepoImpl implements AttachmentRepo{
 		
 		return attachmentNo;
 	}
+	
+//	@Override
+//	public List<Integer> save(List<MultipartFile> attachments) throws IllegalStateException, IOException {
+//	    List<Integer> attachmentNumbers = new ArrayList<>();
+//
+//	    for (MultipartFile attach : attachments) {
+//	        int attachmentNo = sqlSession.selectOne("attachment.sequence");
+//
+//	        String fileName = String.valueOf(attachmentNo);
+//	        File target = new File(directory, fileName);
+//	        attach.transferTo(target);
+//
+//	        sqlSession.insert("attachment.insert", AttachmentDto.builder()
+//	                .attachmentNo(attachmentNo)
+//	                .attachmentName(attach.getOriginalFilename())
+//	                .attachmentType(attach.getContentType())
+//	                .attachmentSize(attach.getSize())
+//	                .build());
+//
+//	        attachmentNumbers.add(attachmentNo);
+//	    }
+//
+//	    return attachmentNumbers;
+//	}
 
 }

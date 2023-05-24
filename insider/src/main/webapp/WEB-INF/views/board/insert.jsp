@@ -405,7 +405,7 @@ $(document).ready(function() {
 		      			
 		      			<div id="carouselExampleIndicators" class="carousel slide" data-bs-interval="false">
 								  <div class="carousel-indicators">
-								    <button v-for="(file, index) in files" :key="index" type="button" data-bs-target="#carouselExampleIndicators" :data-bs-slide-to="index" :class="{'active':index==0}" :aria-current="index==0" :aria-label="'Slide'+(index+1)"></button>
+								    <button v-for="(file, index) in files" :key="index" type="button" data-bs-target="#carouselExampleIndicators" :data-bs-slide-to="index" :class="{'active':index===0}" :aria-current="index===0" :aria-label="'Slide'+(index+1)"></button>
 								  </div>
 								  
 								  <div class="carousel-inner" >
@@ -454,7 +454,7 @@ $(document).ready(function() {
 					    	</div>
 					    	
 					    	<div class="row mt-4">
-					    		<input type="text" name="memberNick" class="form-control" placeholder="@사람태그" id="memberTag" autocomplete="off">
+					    		<input type="text" name="memberNick" class="form-control" placeholder="@친구태그" id="memberTag" autocomplete="off">
 					    	</div>
 					    	
 					    	
@@ -525,43 +525,33 @@ $(document).ready(function() {
     },
 
     //methods : 애플리케이션 내에서 언제든 호출 가능한 코드 집합이 필요한 경우 작성한다.
-     methods: {
-    	 imageUpload(){
-     		
-     		let num = -1;
-     		for(let i = 0; i < this.$refs.files.files.length; i++){
-     			this.files = [
-     				...this.files,
-     				{
-     					file: this.$refs.files.files[i],
-     					preview: URL.createObjectURL(this.$refs.files.files[i]),
-     					number: i
-     				}
-     			];
-     			num = i;
-     		}
-     		this.uploadImageIndex = num + 1;
-     	},
-     	
-     	imageAddUpload(){
-     		
-     		let num = -1;
-     		for(let i = 0; i < this.$refs.files2.files.length; i++){
-     			this.files = [
-     				...this.files,
-     				{
-     					file: this.$refs.files2.files[i],
-     					preview: URL.createObjectURL(this.$refs.files2.files[i]),
-     					number: i + this.uploadImageIndex
-     				}
-     			];
-     			num = i;
-     		}
-     		this.uploadImageIndex = this.uploadImageIndex + num + 1;
-        
-      },
-      
-      
+    methods: {
+  imageUpload() {
+    for (let i = 0; i < Math.min(this.$refs.files.files.length, 5); i++) {
+      this.files = [
+        ...this.files,
+        {
+          file: this.$refs.files.files[i],
+          preview: URL.createObjectURL(this.$refs.files.files[i]),
+          number: this.files.length
+        }
+      ];
+    }
+  },
+
+  imageAddUpload() {
+    const maxFiles = 5 - this.files.length;
+    for (let i = 0; i < Math.min(this.$refs.files2.files.length, maxFiles); i++) {
+      this.files = [
+        ...this.files,
+        {
+          file: this.$refs.files2.files[i],
+          preview: URL.createObjectURL(this.$refs.files2.files[i]),
+          number: this.files.length
+        }
+      ];
+    }
+  }, 
     	fileDeleteButton(e){
     		const name = e.target.getAttribute('name');
     		this.files = this.files.filter(data => data.number != Number(name));
