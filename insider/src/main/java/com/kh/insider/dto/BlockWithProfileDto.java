@@ -6,7 +6,7 @@ import lombok.Data;
 public class BlockWithProfileDto {
 	private long memberNo;
 	private long blockNo;
-	private long memberName;
+	private String memberName;
 	private String memberNick;
 	private int attachmentNo;
 }

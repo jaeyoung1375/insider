@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.ReplyDto;
 import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.repo.ReplyRepo;
@@ -37,15 +38,12 @@ public class ReplyRestController {
 	
 	//댓글 등록
 	@PostMapping("/")
-	public void write(HttpSession session,@ModelAttribute ReplyDto replyDto) {
+	public void write(HttpSession session, @RequestBody ReplyDto replyDto
+			) {
 		//작성자 설정
-		long memberNo = (long) session.getAttribute("member");
-		MemberDto memberDto = memberRepo.findByNo(memberNo);
-		String memberNick = memberDto.getMemberNick();
-		
+		long memberNo = (Long) session.getAttribute("memberNo");	
 		//회원 번호 및 회원 닉네임 설정
 		replyDto.setReplyMemberNo(memberNo);
-		replyDto.setReplyMemberNick(memberNick);
 		
 		//등록
 		replyRepo.insert(replyDto);
@@ -53,10 +51,9 @@ public class ReplyRestController {
 	
 	//댓글 삭제
 	@DeleteMapping("/{replyNo}")
-	public void delete(@PathVariable int replyNo, @ModelAttribute ReplyDto replyDto ) {
+	public void delete(@PathVariable int replyNo) {
 		//Dto에서 멤버 닉네임 삭제
-		replyDto = replyRepo.selectOne(replyNo);
-		replyDto.setReplyMemberNick(null);
+		
 		
 		//댓글삭제
 		replyRepo.delete(replyNo);

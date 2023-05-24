@@ -12,9 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.insider.dto.BlockDto;
+import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.dto.ReportDto;
 import com.kh.insider.dto.ReportManagementDto;
+import com.kh.insider.repo.BlockRepo;
 import com.kh.insider.repo.BoardRepo;
+import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.ReportManagementRepo;
 import com.kh.insider.repo.ReportRepo;
 import com.kh.insider.service.AdminReportService;
@@ -30,12 +34,21 @@ public class ReportRestController {
 	private BoardRepo boardRepo;
 	@Autowired
 	private AdminReportService adminReportService;
+	@Autowired
+	private MemberWithProfileRepo memberWithProfileRepo;
+	@Autowired
+	private BlockRepo blockRepo;
 	
 	@PostMapping("/")
-	public boolean insert(@RequestBody ReportDto reportDto, HttpSession session) throws IOException {
+	public MemberWithProfileDto insert(@RequestBody ReportDto reportDto, HttpSession session) throws IOException {
 		//true : 최초신고, false : 신고내용 갱신
 		long memberNo = (Long)session.getAttribute("memberNo");
+		if(memberNo==reportDto.getReportMemberNo()) {
+			return null;
+		}
 		reportDto.setMemberNo(memberNo);
+		
+		//기존에 리포트를 한 상태인지 확인
 		ReportDto checkReportDto = reportRepo.seletcOne(reportDto);
 		if(checkReportDto==null) {
 			reportRepo.insert(reportDto);
@@ -47,11 +60,20 @@ public class ReportRestController {
 			}
 			//최신 현황을 admin report 게시판으로 전송
 			adminReportService.sendDataToAllCilients();
-			return true;
 		}
 		else {
 			reportRepo.update(reportDto);
-			return false;
+		}
+		
+		//차단 여부 확인 후 차단할 멤버 정보 반환
+		BlockDto blockDto = new BlockDto();
+		blockDto.setMemberNo(memberNo);
+		blockDto.setBlockNo(reportDto.getReportMemberNo());
+		if(blockRepo.selectOne(blockDto)==null) {
+			return memberWithProfileRepo.selectOne(reportDto.getReportMemberNo());
+		}
+		else {
+			return null;
 		}
 	}
 	

@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.insider.dto.DmMemberListDto;
 import com.kh.insider.dto.DmMessageNickDto;
 import com.kh.insider.dto.DmRoomUserProfileDto;
+import com.kh.insider.dto.DmUserDto;
 import com.kh.insider.repo.DmMemberListRepo;
 import com.kh.insider.repo.DmMessageNickRepo;
 import com.kh.insider.repo.DmRoomUserProfileRepo;
+import com.kh.insider.repo.DmUserRepo;
 
 @RestController
 @RequestMapping("/rest")
@@ -31,6 +33,8 @@ public class DmRestController {
 	@Autowired
 	DmRoomUserProfileRepo dmRoomUserProfileRepo;
 	
+	@Autowired
+	private DmUserRepo dmUserRepo;
 	
 	//메세지 리스트
 	@GetMapping("/message/{roomNo}")
@@ -39,6 +43,14 @@ public class DmRestController {
 			HttpSession session) {
 		long memberNo = (Long) session.getAttribute("memberNo");
 		long messageSender = (Long) session.getAttribute("memberNo");
+		
+		//채팅방 읽은 정보 수정
+		DmUserDto dmUserDto = new DmUserDto();
+		dmUserDto.setReadTime(System.currentTimeMillis());
+		dmUserDto.setMemberNo(memberNo);
+		dmUserDto.setRoomNo(roomNo);
+		dmUserRepo.updateReadTime(dmUserDto);
+		
 		return dmMessageNickRepo.getUndeletedMessages(messageSender, roomNo, memberNo);
 	}
 
