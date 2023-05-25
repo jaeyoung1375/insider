@@ -3,6 +3,7 @@ package com.kh.insider.repo;
 import java.util.List;
 
 import com.kh.insider.dto.BoardDto;
+import com.kh.insider.dto.BoardWithNickDto;
 import com.kh.insider.vo.BoardAttachmentVO;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
@@ -13,6 +14,8 @@ import com.kh.insider.vo.BoardTimeStatsSearchVO;
 
 public interface BoardRepo {
 	List<BoardDto> selectListPaging(int page);
+	
+	List<BoardWithNickDto> myPageSelectListPaging(int page, String memberNick);
 
 	int sequence();
 	

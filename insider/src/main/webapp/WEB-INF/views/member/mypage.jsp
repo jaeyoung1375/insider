@@ -18,6 +18,9 @@
       .hide{
       	display:none;
       }
+      body{
+      	height:10000vh;
+      }
 
 
    
@@ -337,7 +340,6 @@
         </div>
         <!-- Modal 창 영역 끝 -->
       
-      
       </div> <!-- vue 끝 -->
       
       
@@ -351,6 +353,7 @@
          return {
         	 //▼▼▼▼▼▼▼▼▼▼▼▼▼무한 페이징▼▼▼▼▼▼▼▼▼▼▼▼▼
              percent:0,
+             page : 1,
              //안전장치
              loading:false,
              finish:false,
@@ -367,6 +370,7 @@
             followCheckList:[],
             myFollowerList: [],
             myFollowList: [],
+            myBoardList : [],
             reportBoardNo:"",  
             memberNo : "${memberDto.memberNo}",
             memberNick : "${memberDto.memberNick}",
@@ -652,12 +656,20 @@
            		 
            	}, 
            	
-         
+           	// 마이페이지 게시물 목록 불러오기
+           	async boardList(){
+           		const resp = await axios.get("/rest/member/page/"+this.page,{
+           			params : {           
+           				memberNick : this.memberNick
+           			},
+           		});
+           		this.myBoardList.push(...resp.data);
+           		
+           		console.log(this.myBoardList);
+           		
+           	},
            	
-        
-      
-        
-        
+
       },
       created(){
          //데이터 불러오는 영역   
@@ -666,10 +678,16 @@
          this.totalFollowCount();
          this.totalFollowerCount();
          this.followerList();
-         this.followList();       
+         this.followList();  
+         this.boardList();
       },
       watch:{
-    	
+    	// percent가 변하면 percent의 값을 읽어와서 80% 이상인지 판정
+    	percent(){
+    		if(this.percent >= 80){
+    			console.log("데이터를 불러올 때가 됨");
+    		}
+    	}
       },
       mounted(){   
 
@@ -679,7 +697,23 @@
             this.blockResultModal = new bootstrap.Modal(this.$refs.blockResultModal);
             this.myOptionModal = new bootstrap.Modal(this.$refs.myOptionModal);
             this.followerModal = new bootstrap.Modal(this.$refs.followerModal);
-            this.followModal = new bootstrap.Modal(this.$refs.followModal);                 
+            this.followModal = new bootstrap.Modal(this.$refs.followModal);
+            
+            window.addEventListener("scroll", _.throttle(()=>{
+            	//console.log("스크롤 이벤트");
+            	
+            	// 스크롤은 몇 % 위치에 있는가?를 알고 싶다면 
+           		// - 전체 문서의 높이(document.body.clientHeight)
+           		// - 현재 스크롤의 위치 (window.scrollY)
+           		// - 브라우저의 높이 (window.innerHeight)
+            	const height = document.body.clientHeight - window.innerHeight;
+            	const current = window.scrollY;
+           		const percent = (current / height) * 100;
+           		//console.log("percent = " + Math.round(percent));
+           		
+           		// data의 percent를 계산된 값으로 갱신
+           		this.percent = Math.round(percent);
+            },250));
       },
    }).mount("#app");
 </script>

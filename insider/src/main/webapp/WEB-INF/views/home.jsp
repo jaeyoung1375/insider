@@ -129,7 +129,7 @@
                                  <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> 
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
 
-                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo, board.boardWithNickDto.memberNo)"></i></div>
+                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo)"></i></div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲ID▲▲▲▲▲▲▲▲▲▲▲▲▲-->
@@ -296,6 +296,7 @@
 
     
     
+    
 <!-- ---------------------------------추가 메뉴 모달-------------------------- -->
 	<div class="modal" tabindex="-1" role="dialog" id="additionalMenuModal" data-bs-backdrop="static" ref="additionalMenuModal">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
@@ -383,7 +384,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 </div>
   소셜유저 : ${sessionScope.socialUser}		
   회원번호 : ${sessionScope.memberNo}		
@@ -452,7 +453,11 @@ Vue.createApp({
             if(this.loading == true) return; //로딩중이면
             if(this.finish == true) return; //다 불러왔으면
             this.loading = true;
-
+			
+            console.log("test");
+            console.log("test");
+            console.log("test");
+            console.log("test")
             const resp = await axios.get("${pageContext.request.contextPath}/rest/board/page/"+ this.page);
             //console.log(resp.data);
             //console.log(resp.data[0].boardLike);
@@ -728,7 +733,7 @@ Vue.createApp({
 		this.additionalMenuModal = new bootstrap.Modal(this.$refs.additionalMenuModal);
 		this.reportMenuModal = new bootstrap.Modal(this.$refs.reportMenuModal);
 		this.blockModal = new bootstrap.Modal(this.$refs.blockModal);
-		this.boardModal = new bootstrap.Modal(this.$refs.modal03);
+		//this.boardModal = new bootstrap.Modal(this.$refs.modal03);
     },
     updated(){
     	console.log($(".textHide").width());
