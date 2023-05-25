@@ -3,10 +3,11 @@ package com.kh.insider.dto;
 import lombok.Data;
 
 @Data
-public class BlockWithProfileDto {
+public class DmMemberListDto {
+
 	private long memberNo;
-	private long blockNo;
-	private String memberName;
 	private String memberNick;
+	private String memberName;
 	private int attachmentNo;
+	
 }

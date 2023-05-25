@@ -2,371 +2,430 @@
     pageEncoding="UTF-8"%>
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 <style>
+.setting-menu{
+	border:1px solid rgba(0,0,0,0);
+	cursor:default;
+	padding:1.5em;
+}
+.setting-menu:hover{
+	box-shadow: -3px 0 0 rgba(0, 0, 0, 0.1);
+	background-color: rgba(0, 0, 0, 0.01);
+}
 .selected{
-	border:1px solid black
+	box-shadow: -3px 0 0 rgba(0, 0, 0, 0.2);
+}
+
+.menu-bar{
+	border-top:1px solid lightgray;
+	border-left:1px solid lightgray;
+	border-bottom:1px solid lightgray;
+}
+.select-option-box{
+	border:1px solid lightgray;
+	padding:3em;
+}
+.detail-option{
+	text-align: right;
+	font-weight:bold;
 }
 </style>
 <div class="container-fluid mt-4" id="app">
 	<div class="row">
 	<!-- 좌측 사이드 메뉴바 -->
 		<div class="col-md-4">
-			<div class="row setting-menu" @click="changePage(0)" :class="{'selected':page==0}">
+			<div class="row menu-bar">
 				<div class="col">
-					<h2>개인정보 변경</h2>
-				</div>
-			</div>
-			<div class="row setting-menu" @click="changePage(1)" :class="{'selected':page==1}">
-				<div class="col">
-					<h2>프로필 편집</h2>
-				</div>
-			</div>
-			<div class="row setting-menu" @click="changePage(2)" :class="{'selected':page==2}">
-				<div class="col">
-					<h2>푸시 알림</h2>
-				</div>
-			</div>
-			<div class="row setting-menu" @click="changePage(3)" :class="{'selected':page==3}">
-				<div class="col">
-					<h2>내가 볼 수 있는 내용</h2>
-				</div>
-			</div>
-			<div class="row setting-menu" @click="changePage(4)" :class="{'selected':page==4}">
-				<div class="col">
-					<h2>공개 범위</h2>
-				</div>
-			</div>
-			<div class="row setting-menu" @click="changePage(5)" :class="{'selected':page==5}">
-				<div class="col">
-					<h2>소통 방법</h2>
+					<div class="row setting-menu" @click="changePage(0)" :class="{'selected':page==0}">
+						<div class="col">
+							<h5 class="m-0">개인정보 변경</h5>
+						</div>
+					</div>
+					<div class="row setting-menu" @click="changePage(1)" :class="{'selected':page==1}">
+						<div class="col">
+							<h5 class="m-0">프로필 편집</h5>
+						</div>
+					</div>
+					<div class="row setting-menu" @click="changePage(2)" :class="{'selected':page==2}">
+						<div class="col">
+							<h5 class="m-0">푸시 알림</h5>
+						</div>
+					</div>
+					<div class="row setting-menu" @click="changePage(3)" :class="{'selected':page==3}">
+						<div class="col">
+							<h5 class="m-0">내가 볼 수 있는 내용</h5>
+						</div>
+					</div>
+					<div class="row setting-menu" @click="changePage(4)" :class="{'selected':page==4}">
+						<div class="col">
+							<h5 class="m-0">공개 범위</h5>
+						</div>
+					</div>
+					<div class="row setting-menu" @click="changePage(5)" :class="{'selected':page==5}">
+						<div class="col">
+							<h5 class="m-0">소통 방법</h5>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	<!------------------------------------------- 개인정보 변경 ------------------------------------------->
-		<div class="col-md-8" v-show="page==0">
+		<div class="col-md-8 select-option-box" v-show="page==0">
 			<div class="row">
 				<div class="col">
-					<h1>개인정보 변경</h1>
+					<h2>개인정보 변경</h2>
 				</div>
 			</div>
-			<div class="row">
+			<hr>
+			<div class="row p-4">
 				<div class="col">
-					<span>연락처 정보</span>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<input class="form-control" v-model="member.memberEmail">
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<span>생일</span>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<input class="form-control" v-model="member.memberBirth">
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<span>주소</span>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<input type="button" @click="findAddress()" value="우편번호 찾기" /><br />
-				</div>
-				<div class="col">
-					<input class="form-control" v-model="member.memberPost" readonly>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<input class="form-control" v-model="member.memberBasicAddr" readonly>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<input class="form-control" v-model="member.memberDetailAddr">
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<h3 @click="showPasswordCheckModal">비밀번호 변경</h3>
+					<div class="row">
+						<div class="col">
+							<h5>연락처 정보</h5>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col">
+							<input class="form-control" v-model="member.memberEmail">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<h5>생일</h5>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col">
+							<input class="form-control" v-model="member.memberBirth">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<h5>주소</h5>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<input type="button" class="btn btn-secondary" @click="findAddress()" value="우편번호 찾기" /><br />
+						</div>
+						<div class="col">
+							<input class="form-control" v-model="member.memberPost" readonly>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<input class="form-control" v-model="member.memberBasicAddr" readonly>
+						</div>
+					</div>
+					<div class="row mb-5">
+						<div class="col">
+							<input class="form-control" v-model="member.memberDetailAddr">
+						</div>
+					</div>
+					<hr>
+					<div class="row mt-5">
+						<div class="col">
+							<h5 @click="showPasswordCheckModal" style="cursor:pointer">비밀번호 변경</h5>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	<!------------------------------------------- 프로필 편집 ------------------------------------------->
-		<div class="col-md-8" v-show="page==1">
+		<div class="col-md-8 select-option-box" v-show="page==1">
 			<div class="row">
 				<div class="col">
-					<h1>프로필 편집</h1>
+					<h2>프로필 편집</h2>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-3">
-					<img :src="profileUrl" width="100" height="100">
-				</div>
-				<div class="col-9">
-					<div class="row">
-						<div class="col">
-							<span>{{member.memberName}}</span>
+			<hr>
+			<div class="row p-4">
+				<div class="col">
+					<div class="row mb-3">
+						<div class="col-3">
+							<img class="rounded-circle" :src="profileUrl" width="100" height="100">
+						</div>
+						<div class="col-9 d-flex align-items-center">
+							<div class="row">
+								<div class="row">
+									<div class="col">
+										<span>{{member.memberName}}</span>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col">
+										<span @click="openFileInput" style="cursor:default">프로필 사진 변경</span>
+										<input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*" style="display: none;">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-3 detail-option">
+							<span>소개</span>
+						</div>
+						<div class="col-9">
+							<textarea class="form-control" rows="5" v-model="member.memberMsg"></textarea>
 						</div>
 					</div>
 					<div class="row">
-						<div class="col">
-							<span @click="openFileInput">프로필 사진 변경</span>
-							<input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*" style="display: none;">
+						<div class="col-3 detail-option">
+							<span>성별</span>
+						</div>
+						<div class="col-9">
+							<select class="form-control" v-model="member.memberGender">
+								<option :value="0" :selected="member.memberGender==0">남성</option>
+								<option :value="1" :selected="member.memberGender==1">여성</option>
+							</select>
 						</div>
 					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-3">
-					<span>소개</span>
-				</div>
-				<div class="col-9">
-					<input type="text" class="form-control" v-model="member.memberMsg">
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-3">
-					<span>성별</span>
-				</div>
-				<div class="col-9">
-					<select class="form-control" v-model="member.memberGender">
-						<option :value="0" :selected="member.memberGender==0">남성</option>
-						<option :value="1" :selected="member.memberGender==1">여성</option>
-					</select>
 				</div>
 			</div>
 		</div>
 	<!------------------------------------------- 푸시 알림 ------------------------------------------->
-		<div class="col-md-8" v-show="page==2">
+		<div class="col-md-8 select-option-box" v-show="page==2">
 			<div class="row">
 				<div class="col">
-					<h1>푸시 알림</h1>
+					<h2>푸시 알림</h2>
 				</div>
 			</div>
-			<div class="row">
+			<hr>
+			<div class="row p-4">
 				<div class="col">
-					<h2>좋아요 알림</h2>
-				</div>
-				<div class="col">
-					<span>받음</span>
-					<input type="radio" :value="1" v-model.number="setting.settingLikeAlert" v-bind:checked="setting.settingLikeAlert==1">
-				</div>
-				<div class="col">
-					<span>안받음</span>
-					<input type="radio" :value="0" v-model.number="setting.settingLikeAlert" v-bind:checked="setting.settingLikeAlert==0">
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<h2>댓글 알림</h2>
-				</div>
-				<div class="col">
-					<span>받음</span>
-					<input type="radio" :value="1" v-model.number="setting.settingReplyAlert" v-bind:checked="setting.settingReplyAlert==1">
-				</div>
-				<div class="col">
-					<span>안받음</span>
-					<input type="radio" :value="0" v-model.number="setting.settingReplyAlert" v-bind:checked="setting.settingReplyAlert==0">
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<h2>팔로우 알림</h2>
-				</div>
-				<div class="col">
-					<span>받음</span>
-					<input type="radio" :value="1" v-model.number="setting.settingFollowAlert" v-bind:checked="setting.settingFollowAlert==1">
-				</div>
-				<div class="col">
-					<span>안받음</span>
-					<input type="radio" :value="0" v-model.number="setting.settingFollowAlert" v-bind:checked="setting.settingFollowAlert==0">
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<h2>댓글에 좋아요 알림</h2>
-				</div>
-				<div class="col">
-					<span>받음</span>
-					<input type="radio" :value="1" v-model.number="setting.settingReplyLikeAlert" v-bind:checked="setting.settingReplyLikeAlert==1">
-				</div>
-				<div class="col">
-					<span>안받음</span>
-					<input type="radio" :value="0" v-model.number="setting.settingReplyLikeAlert" v-bind:checked="setting.settingReplyLikeAlert==0">
+					<div class="row">
+						<div class="col detail-option p-3">
+							<span>좋아요 알림</span>
+						</div>
+						<div class="col p-3 d-flex justify-content-center align-items-center">
+							<input type="radio" :value="1" v-model.number="setting.settingLikeAlert" v-bind:checked="setting.settingLikeAlert==1" class="me-1">
+							<span>받음</span>
+						</div>
+						<div class="col p-3">
+							<input type="radio" :value="0" v-model.number="setting.settingLikeAlert" v-bind:checked="setting.settingLikeAlert==0" class="me-1">
+							<span>안받음</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col detail-option p-3">
+							<span>댓글 알림</span>
+						</div>
+						<div class="col p-3 d-flex justify-content-center align-items-center">
+							<input type="radio" :value="1" v-model.number="setting.settingReplyAlert" v-bind:checked="setting.settingReplyAlert==1" class="me-1">
+							<span>받음</span>
+						</div>
+						<div class="col p-3">
+							<input type="radio" :value="0" v-model.number="setting.settingReplyAlert" v-bind:checked="setting.settingReplyAlert==0" class="me-1">
+							<span>안받음</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col detail-option p-3">
+							<span>팔로우 알림</span>
+						</div>
+						<div class="col p-3 d-flex justify-content-center align-items-center">
+							<input type="radio" :value="1" v-model.number="setting.settingFollowAlert" v-bind:checked="setting.settingFollowAlert==1" class="me-1">
+							<span>받음</span>
+						</div>
+						<div class="col p-3">
+							<input type="radio" :value="0" v-model.number="setting.settingFollowAlert" v-bind:checked="setting.settingFollowAlert==0" class="me-1">
+							<span>안받음</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col detail-option p-3">
+							<span>댓글에 좋아요 알림</span>
+						</div>
+						<div class="col p-3 d-flex justify-content-center align-items-center">
+							<input type="radio" :value="1" v-model.number="setting.settingReplyLikeAlert" v-bind:checked="setting.settingReplyLikeAlert==1" class="me-1">
+							<span>받음</span>
+						</div>
+						<div class="col p-3">
+							<input type="radio" :value="0" v-model.number="setting.settingReplyLikeAlert" v-bind:checked="setting.settingReplyLikeAlert==0" class="me-1">
+							<span>안받음</span>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	<!------------------------------------------- 내가볼수있는내용 ------------------------------------------->
-		<div class="col-md-8" v-show="page==3">
+		<div class="col-md-8 select-option-box" v-show="page==3">
 			<div class="row">
 				<div class="col">
-					<h1>내가 볼 수 있는 내용</h1>
+					<h2>내가 볼 수 있는 내용</h2>
 				</div>
 			</div>
-			<div class="row">
+			<hr>
+			<div class="row p-4">
 				<div class="col">
-					<h3>좋아요 수 및 조회수 숨기기</h3>
-				</div>
-				<div class="col">
-					<input type="checkbox" @change="watchLike" v-model="setting.isWatchLike">
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<p>다른 게시물에서~</p>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<h3>반경 설정</h3>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<!-- <input type="text" v-model.number="setting.settingDistance"> -->
- 					<input type="range" v-model="setting.settingDistance" min="5" max="300" step="1">
- 				</div>
-				<div class="col">
-					<span>{{setting.settingDistance}}km 이내 게시물을 탐색합니다</span>
-				</div>
- 				<div class="col">
-					<button class="btn btn-primary" @click="settingMap">미리보기</button>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<div id="map" style="width:100%;height:350px;" ref="map"></div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<span>{{currentAddr}}</span>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<h2>동영상 자동재생</h2>
-				</div>
-				<div class="col">
-					<span>자동재생</span>
-					<input type="radio" :value="1" v-model.number="setting.settingVideoAuto" v-bind:checked="setting.settingVideoAuto==1">
-				</div>
-				<div class="col">
-					<span>수동재생</span>
-					<input type="radio" :value="0" v-model.number="setting.settingVideoAuto" v-bind:checked="setting.settingVideoAuto==0">
+					<div class="row">
+						<div class="col-9">
+							<h5>좋아요 수 및 조회수 숨기기</h5>
+						</div>
+						<div class="col-3">
+							<input type="checkbox" @change="watchLike" v-model="setting.isWatchLike">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<p>다른 게시물에서~</p>
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="col">
+							<h5>반경 설정</h5>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-3 d-flex align-items-center">
+		 					<input type="range" v-model="setting.settingDistance" min="5" max="300" step="1">
+		 				</div>
+						<div class="col-6 d-flex align-items-center">
+							<span>{{setting.settingDistance}}km 이내 게시물을 탐색합니다</span>
+						</div>
+		 				<div class="col-3" style="padding:0">
+							<button class="btn btn-primary" @click="settingMap">미리보기</button>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<div id="map" style="width:100%;height:350px;" ref="map"></div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<span>{{currentAddr}}</span>
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="col detail-option p-3">
+							<h5>동영상 자동재생</h5>
+						</div>
+						<div class="col p-3 d-flex justify-content-center">
+							<input type="radio" :value="1" v-model.number="setting.settingVideoAuto" v-bind:checked="setting.settingVideoAuto==1">
+							<span>자동재생</span>
+						</div>
+						<div class="col p-3">
+							<input type="radio" :value="0" v-model.number="setting.settingVideoAuto" v-bind:checked="setting.settingVideoAuto==0">
+							<span>수동재생</span>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	<!------------------------------------------- 내 콘텐츠를 볼수 있는 사람 ------------------------------------------->
-		<div class="col-md-8" v-show="page==4">
+		<div class="col-md-8 select-option-box" v-show="page==4">
 			<div class="row">
 				<div class="col">
-					<h1>내 콘텐츠를 볼 수 있는 사람</h1>
+					<h2>내 콘텐츠를 볼 수 있는 사람</h2>
 				</div>
 			</div>
-			<div class="row">
+			<hr>
+			<div class="row p-4">
 				<div class="col">
-					<h3>계정 공개 범위</h3>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<input type="radio" :value="0" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==0">
-					<span>전체 공개</span>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<p>계정이 공개된 상태인 경우</p>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<input type="radio" :value="1" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==1"><span>친구추천 불가</span>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<p>계정이 공개된 상태인 경우</p>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<input type="radio" :value="2" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==2"><span>친구에게만 공개</span>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<p>계정이 공개된 상태인 경우</p>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<input type="radio" :value="3" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==3"><span>비공개 계정</span>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<p>계정이 공개된 상태인 경우</p>
-				</div>
-			</div>
-			<br>
-			<div class="row">
-				<div class="col">
-					<h3>차단된 계정</h3>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<span @click="showBlockModal">차단한 계정 확인하고 관리하기</span>
+					<div class="row">
+						<div class="col">
+							<h5>계정 공개 범위</h5>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<input type="radio" :value="0" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==0">
+							<span class="ms-1">전체 공개</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<p>계정이 공개된 상태인 경우</p>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<input type="radio" :value="1" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==1">
+							<span class="ms-1">친구추천 불가</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<p>계정이 공개된 상태인 경우</p>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<input type="radio" :value="2" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==2">
+							<span class="ms-1">친구에게만 공개</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<p>계정이 공개된 상태인 경우</p>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<input type="radio" :value="3" v-model.number="setting.settingHide" v-bind:checked="setting.settingHide==3">
+							<span class="ms-1">비공개 계정</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<p>계정이 공개된 상태인 경우</p>
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="col">
+							<h5>차단된 계정</h5>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<span @click="showBlockModal" style="cursor:pointer">차단한 계정 확인하고 관리하기</span>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	<!------------------------------------------- 다른 사람이 나와 소통할 수 있는 방법 ------------------------------------------->
-		<div class="col-md-8" v-show="page==5">
+		<div class="col-md-8 select-option-box" v-show="page==5">
 			<div class="row">
 				<div class="col">
-					<h1>다른 사람이 나와 소통할 수 있는 방법</h1>
+					<h2>다른 사람이 나와 소통할 수 있는 방법</h2>
 				</div>
 			</div>
-			<div class="row">
+			<hr>
+			<div class="row p-4">
 				<div class="col">
-					<h3>댓글관리</h3>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<h3>댓글을 허용할 사람 선택</h3>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<input type="radio" :value="0" v-model.number="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==0">
-					<span>모든 사람</span>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<input type="radio" :value="1" v-model.number="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==1"> 
-					<span>내가 팔로우 하는 사람</span>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<input type="radio" :value="2" v-model.number="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==2"> 
-					<span>내 팔로워</span>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<input type="radio" :value="3" v-model.number="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==3"> 
-					<span>내가 팔로우 하는 사람 및 내 팔로워</span>
+					<div class="row">
+						<div class="col">
+							<h5>댓글을 허용할 사람 선택</h5>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col p-3">
+							<input type="radio" :value="0" v-model.number="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==0">
+							<span class="ms-1">모든 사람</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col p-3">
+							<input type="radio" :value="1" v-model.number="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==1"> 
+							<span class="ms-1">내가 팔로우 하는 사람</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col p-3">
+							<input type="radio" :value="2" v-model.number="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==2"> 
+							<span class="ms-1">내 팔로워</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col p-3">
+							<input type="radio" :value="3" v-model.number="setting.settingAllowReply" v-bind:checked="setting.settingAllowReply==3"> 
+							<span class="ms-1">내가 팔로우 하는 사람 및 내 팔로워</span>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -374,7 +433,7 @@
 
 <!-- ---------------------------------비밀번호 확인 모달-------------------------- -->
 	<div class="modal" tabindex="-1" role="dialog" id="passwordModal" data-bs-backdrop="static" ref="passwordCheckModal">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title">비밀번호 변경</h5>
@@ -391,7 +450,9 @@
 					</div>
 					<div class="row">
 						<div class="col">
-							<input class="form-control rounded" placeholder="비밀번호 입력" type="password" v-model="password">
+							<input class="form-control rounded" placeholder="비밀번호 입력" type="password" v-model="password" :class="{'is-invalid':!passwordCheck}">
+							<div class="invalid-feedback">올바른 비밀번호를 입력하세요</div>
+							<div v-show="passwordCheck">&nbsp</div>
 						</div>
 					</div>
 				</div>
@@ -405,7 +466,7 @@
 	
 	<!-- ---------------------------------비밀번호 변경 모달-------------------------- -->
 	<div class="modal" tabindex="-1" role="dialog" id="changePasswordModal" data-bs-backdrop="static" ref="passwordChangeModal">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title">비밀번호 변경</h5>
@@ -423,11 +484,15 @@
 					<div class="row">
 						<div class="col">
 							<input class="form-control rounded" placeholder="비밀번호 입력" type="password" v-model="newPassword">
+							<div class="invalid-feedback">올바른 비밀번호를 입력하세요</div>
+							<div v-show="passwordCheck">&nbsp</div>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col">
 							<input class="form-control rounded" placeholder="비밀번호 확인" type="password" v-model="newPasswordCheck">
+							<div class="invalid-feedback">올바른 비밀번호를 입력하세요</div>
+							<div v-show="passwordCheck">&nbsp</div>
 						</div>
 					</div>
 				</div>
@@ -441,7 +506,7 @@
 
 	<!-- ---------------------------------차단 관리 모달-------------------------- -->
 	<div class="modal" tabindex="-1" role="dialog" id="blockModal" data-bs-backdrop="static" ref="blockModal">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title">차단유저 관리</h5>
@@ -451,8 +516,19 @@
 				</div>
 				<div class="modal-body">
 				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
-					<div class="row">
-						<div class="col">
+					<div class="row" v-for="(block, index) in blockList" :key="index">
+						<div class="col-8">
+							<div class="row">
+								<div class="col-3">
+									프로필
+								</div>
+								<div class="col-9">
+									{{block.memberName}}, {{block.memberNick}}
+								</div>
+							</div>
+						</div>
+						<div class="col-4">
+							<span @click="removeBlockList(block.blockNo, index)">차단 해제</span>
 						</div>
 					</div>
 				</div>
@@ -506,8 +582,11 @@
 					isWatchLike:this.settingWatchLike==1,
 				},
 				password:"",
+				passwordCheck:true,
 				newPassword:"",
 				newPasswordCheck:"",
+				
+				/* ------------지도------------ */
 				mapContainer:null,
 				options:null,
 				map:null,
@@ -616,6 +695,7 @@
 				if(this.passwordCheckModal==null) return;
 				this.passwordCheckModal.hide();
 				this.password="";
+				this.passwordCheck=true;
 			},
  			showPasswordChangeModal(){
 				if(this.passwordChangeModal==null) return;
@@ -641,9 +721,10 @@
 				if(resp.data){
 					this.hidePasswordCheckModal();
 					this.showPasswordChangeModal();
+					this.passwordCheck=true;
 				}
 				else{
-					alert("비밀번호를 다시 입력하세요");
+					this.passwordCheck=false;
 					this.password="";
 				}
 			},
@@ -769,6 +850,9 @@
 			},
 			/*------------------------차단계정 관리------------------------*/
  			showBlockModal(){
+				if(this.blockList.length==0){
+					this.getBlockList();
+				}
 				if(this.blockModal==null) return;
 				this.blockModal.show();
 			},
@@ -779,13 +863,17 @@
 			async getBlockList(){
 				const resp = await axios.get(contextPath+"/rest/block/");
 				this.blockList = [...resp.data];
-			}
+			},
+			async removeBlockList(blockNo, index){
+				const resp = await axios.delete(contextPath+"/rest/block/"+blockNo);
+				this.blockList.splice(index,1);
+			},
 		},
 		created(){
 			//세팅데이터 로드
 			this.loadMember();
 			this.loadSetting();
-			this.getBlockList();
+			this.getGps();
 		},
 		mounted(){
 			//모달 선언
@@ -808,9 +896,9 @@
 			},
 			setting:{
 				deep:true,
-				handler(){
+				handler : _.throttle(function(){
 					this.saveSetting();
-				},
+				}, 1000)
 			},
 		},
 		updated(){

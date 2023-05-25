@@ -72,11 +72,13 @@
 			<div class="row text-center">
 				<div class="col form-group has-search">
 					<span class="fa-solid fa-search form-control-feedback"></span>
-					<input type="text" class="form-control rounded" placeholder="검색" v-model="searchInput">
+					<input type="text" class="form-control rounded" placeholder="검색" v-model="searchInput" @blur="hideSearchList" @click="showSearchList" >
 				<!-- 추천 검색어 리스트 -->
-					<div class="search-list">
+					<div class="search-list" ref="searchList" v-show="recommandListShow">
 						<div class="row" v-for="(recommand, index) in recommandList" :key="index">
-							{{recommand.name}}
+							<div class='col'>
+								{{recommand.name}}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -103,12 +105,12 @@
 			return {
 				searchInput:"",
 				recommandList:[],
+				recommandListShow:false,
 				boardList:[],
 				page:1,
 				percent:0,
 				loading:false,
 				finish:false,
-				contextPath:contextPath
 			};
 		},
 		computed: {
@@ -122,7 +124,6 @@
 				}
 				const resp = await axios.get(contextPath+"/rest/search/"+this.searchInput);
 				this.recommandList=[...resp.data];
-				console.log(this.recommandList)
 			},
 			async loadList(){
 				if(this.loading||this.finish) return;
@@ -140,8 +141,13 @@
 				const data = {boardNo:boardNo};
 				const resp = await axios.post(contextPath+"/rest/board/like", data);
 				this.boardList[index].boardWithNickDto.boardLike=resp.data.count;
-				console.log(resp.data.count)
-			}
+			},
+			hideSearchList(){
+				this.recommandListShow=false;
+			},
+			showSearchList(){
+				this.recommandListShow=true;
+			},
 		},
 		created(){
 			//데이터 불러오는 영역

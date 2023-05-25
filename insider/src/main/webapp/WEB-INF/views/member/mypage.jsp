@@ -15,6 +15,11 @@
          text-decoration: none;
          color:black;
       }
+      .hide{
+      	display:none;
+      }
+
+
    
 </style>
 
@@ -29,8 +34,7 @@
              <input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*" style="display: none;">
                 </c:when>       
                 <c:otherwise> 
-                  <img style="border-radius: 70%;"
-             width = "150" height="150">
+                  <img style="border-radius: 70%;" width="150" height="150">
                 </c:otherwise>
                 </c:choose>           
             </div>
@@ -50,7 +54,9 @@
               </c:when>
               <c:otherwise> <!-- 본인 프로필이 아니라면 -->
                     <div class="col-5">
-               <button class="btn btn-primary" @click="follow(${memberDto.memberNo})">팔로우</button>
+               <button class="btn btn-primary" @click="follow(${memberDto.memberNo})" v-if="followCheckIf(${memberDto.memberNo})">팔로우</button>
+               <button class="btn btn-secondary" @click="unFollow(${memberDto.memberNo})" v-else>팔로잉</button>
+               
                </div>
                <div class="col-5"  style=" width:70%;">
                <button class="btn btn-secondary">메시지 보내기</button>
@@ -283,56 +289,49 @@
         
           <div class="modal" tabindex="-1" role="dialog" id="followerModal"
                             data-bs-backdrop="static"
-                            ref="followerModal" @click.self="followerModalHide">
+                            ref="followerModal" @click.self="followerModalHide">	
             <div class="modal-dialog" role="document">
                    <div class="modal-content">
                        <div class="modal-header text-center" style="display:flex; justify-content: center;">
 							<h5 class="modal-title">팔로워</h5>
                        </div>
                        <div class="modal-body">
-                     		<c:forEach items="${followerList}" var="followerList">
-                     			<div>
-                     				<img src="${pageContext.request.contextPath}/rest/attachment/download/${followerList.attachmentNo}" width="40" height="40">
-                     				<a href="${pageContext.request.contextPath}/member/${followerList.memberNick}">${followerList.memberNick}</a>
-                     				<button class="float-end" v-if="followCheckIf(${memberDto.memberNo})">팔로우</button>
-                     			</div>
-                     			
-                     		</c:forEach>
-                       </div>
-                       
-                   
-                 
-                        <button type="button" class="btn"
-                                data-bs-dismiss="modal" style="color:red;">취소</button>
-                   
+                     	<div v-for="item in myFollowerList" :key="item.attachmentNo">
+  						 <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="40" height="40">
+						  <a :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
+						  
+						  	<button class="float-end btn btn-primary" @click="follow(item.memberNo)" v-if="followCheckIf(item.memberNo)" :class="{'hide' : item.memberNo == ${memberNo}}">팔로우</button>
+						
+						  <button class="float-end btn btn-secondary" @click="myUnFollower(item.memberNo)" v-if="!followCheckIf(item.memberNo) && ${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}">팔로잉</button>					  
+						  <button class="float-end btn btn-secondary unfollow-button" @click="unFollower(item.memberNo)" v-if="!followCheckIf(item.memberNo) && !${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}">팔로잉</button>
+						 
+						
+						</div>
+                     		
+                       </div>           
+                        <button type="button" class="btn" data-bs-dismiss="modal" style="color:red;">취소</button>
                 </div>      
             </div>
         </div>
         
           <div class="modal" tabindex="-1" role="dialog" id="followModal"
                             data-bs-backdrop="static"
-                            ref="followModal" @click.self="followModalHide">
+                            ref="followModal" @click.self="followModalHide" style="max-height:400px; overflow: auto; overflow-y: hidden;">
             <div class="modal-dialog" role="document">
                    <div class="modal-content">
                        <div class="modal-header text-center" style="display:flex; justify-content: center;">
 							<h5 class="modal-title">팔로우</h5>
                        </div>
                        <div class="modal-body">
-                     		<c:forEach items="${followList}" var="followList">
-                     			<div>
-                     				<img src="${pageContext.request.contextPath}/rest/attachment/download/${followList.attachmentNo}" width="40" height="40">
-                     				<a href="${pageContext.request.contextPath}/member/${followList.memberNick}">${followList.memberNick}</a>
-                     				<button class="float-end">팔로우</button>
-                     			</div>
-                     			
-                     		</c:forEach>
+                     	<div v-for="item in myFollowList" :key="item.attachmentNo">
+  						 <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="40" height="40">
+						  <a :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
+						  <button class="float-end btn btn-primary" @click="follow(item.followFollower)" v-if="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로우</button>
+						  <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-if="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로잉</button>
+						</div>
                        </div>
                        
-                   
-                 
-                        <button type="button" class="btn"
-                                data-bs-dismiss="modal" style="color:red;">취소</button>
-                   
+                        <button type="button" class="btn" data-bs-dismiss="modal" style="color:red;">취소</button>
                 </div>      
             </div>
         </div>
@@ -350,6 +349,11 @@
    Vue.createApp({
       data() {
          return {
+        	 //▼▼▼▼▼▼▼▼▼▼▼▼▼무한 페이징▼▼▼▼▼▼▼▼▼▼▼▼▼
+             percent:0,
+             //안전장치
+             loading:false,
+             finish:false,
             //추가 메뉴 모달 및 신고 모달
             modal : null,
             addtionModal : null,
@@ -358,10 +362,13 @@
             blockResultModal : null,
             myOptionModal : null,
             followerModal : null,
-            followModal : null,
+            followModal : null,          
             reportContentList:[],
             followCheckList:[],
+            myFollowerList: [],
+            myFollowList: [],
             reportBoardNo:"",  
+            memberNo : "${memberDto.memberNo}",
             memberNick : "${memberDto.memberNick}",
             member:{
                memberNo:"",
@@ -438,7 +445,7 @@
                   this.myOptionModal.hide();  
               },
               followerModalShow(){
-            	  if(this.followerModal == null) return;
+            	  if(this.followerModal == null || this.totalFollowerCnt == 0 ) return;
                   this.followerModal.show();    
               },
               followerModalHide(){
@@ -446,7 +453,7 @@
                    this.followerModal.hide();  
                },
                followModalShow(){
-             	  if(this.followModal == null) return;
+             	  if(this.followModal == null || this.totalFollowCnt == 0 ) return;
                    this.followModal.show();    
                },
                followModalHide(){
@@ -491,37 +498,112 @@
          	const resp = await axios.post("${pageContext.request.contextPath}/rest/follow/"+followNo);
          	//if(loginNo == this.boardList.boardWithNickDto.memberNo)
          	await this.followCheck();
-         	this.totalFollowerCount();
          	
+         	this.totalFollowerCount();    
+         	this.totalFollowCount();
+         	this.followerList();
+         	this.followList();
+        
          },
          
-      
-         
+         //팔로워 되있는사람 -> 팔로우 삭제
+      async unFollower(memberNo) {
+		  try {
+		    const response = await axios.post("/rest/follow/unFollow", null, {
+		      params: {
+		        followFollower: memberNo
+		      }
+		    });
+		
+		    if (response.data) {
+		      // 언팔로우 성공 처리
+		      console.log("언팔로우 성공");
+		      this.totalFollowerCount();
+		      this.totalFollowCount();
+		      this.followerList();
+		      this.followList();
+		    } else {
+		      // 언팔로우 실패 처리
+		      console.log("언팔로우 실패");
+		    }
+		  } catch (error) {
+		    // 요청 실패 처리
+		    console.error("언팔로우 요청 실패", error);
+		  }
+		},
+			// 팔로워 되있는 사람 -> 팔로우 삭제 (본인 프로필 일때)
+		   async myUnFollower(memberNo) {
+			  try {
+			    const response = await axios.post("/rest/follow/myUnFollow", null, {
+			      params: {
+			        memberNo: memberNo
+			      }
+			    });
+			
+			    if (response.data) {
+			      // 언팔로우 성공 처리
+			      console.log("언팔로우 성공");
+			      this.totalFollowerCount();
+			      this.totalFollowCount();
+			      this.followerList();
+			      this.followList();
+			    } else {
+			      // 언팔로우 실패 처리
+			      console.log("언팔로우 실패");
+			    }
+			  } catch (error) {
+			    // 요청 실패 처리
+			    console.error("언팔로우 요청 실패", error);
+			  }
+			},
+		
+		
+		
+	     //팔로우 되있는사람 -> 팔로우 삭제
+	      async unFollow(memberNo) {
+			  try {
+			    const response = await axios.post("/rest/follow/unFollow", null, {
+			      params: {
+			        //memberNo: this.memberNo,
+			        followFollower:memberNo
+			      }
+			    });
+			
+			    if (response.data) {
+			      // 언팔로우 성공 처리
+			      console.log("언팔로우 성공");
+			      this.totalFollowCount();
+			      this.totalFollowerCount();
+			      this.followList();
+			      this.followerList();
+			    } else {
+			      // 언팔로우 실패 처리
+			      console.log("언팔로우 실패");
+			    }
+			  } catch (error) {
+			    // 요청 실패 처리
+			    console.error("언팔로우 요청 실패", error);
+			  }
+			},
+		 
          // 팔로우 v-if 여부체크 함수
-        	followCheckIf(index){
+        	followCheckIf(memberNo){
          	
-        		return !this.followCheckList.includes(${memberDto.memberNo});
+        		return !this.followCheckList.includes(memberNo);
          },
-         
+          
       	 //팔로우 여부 체크
          async followCheck() {
          	const resp = await axios.post("${pageContext.request.contextPath}/rest/follow/check");
-         	//const newData = {followFollower : this.loginMemberNo};
+    
          	const newData = memberNo;
-         	//const newData=0;
-         	//console.log(newData);
-         	//console.log(newData);
-         	//console.log(this.loginMemberNo)
+        
+         	 this.followCheckList = resp.data;
          	this.followCheckList.push(...resp.data);
          	this.followCheckList.push(parseInt(newData));
          	
-         	console.log(this.followCheckList)
-         	//console.log(this.boardList);
-         	//console.log(this.boardList[0]);
-         	//const check = this.followCheckList.some(followFollower => followFollower === this.boardList[0].boardWithNickDto.memberNo)
-         	//console.log(check);
-         },
-         
+      
+         },  
          // 팔로우 총 개수 
          async totalFollowCount() {
         	    const resp = await axios.get("totalFollowCount", {
@@ -540,9 +622,41 @@
            	            memberNick: this.memberNick
            	        }
            	    });
-           	    this.totalFollowerCnt = resp.data;
+           	    this.totalFollowerCnt = resp.data;           	    
            	    console.log("총: " + this.totalFollowerCnt);
            	},
+           	
+           	// 본인 팔로워 목록 불러오기
+           	async followerList(){
+           		const resp = await axios.get("/rest/member/followerList",{
+           			params : {
+           				memberNo : this.memberNo
+           			}
+           		});
+           		
+           		this.myFollowerList= resp.data;
+           		console.log("나의 팔로워 리스트 : " +JSON.stringify(this.myFollowerList));
+           		console.log(this.followCheckList); 
+           	},
+         	// 본인 팔로우 목록 불러오기
+         	
+   				async followList(){
+           		const resp = await axios.get("/rest/member/followList",{
+           			params : {
+           				memberNo : this.memberNo
+           			}
+           		});
+           		this.myFollowList= resp.data;
+           		this.followCheck();
+           		console.log("나의 팔로우 리스트 : " +JSON.stringify(this.myFollowList));
+           		 
+           	}, 
+           	
+         
+           	
+        
+      
+        
         
       },
       created(){
@@ -551,20 +665,21 @@
          this.followCheck();
          this.totalFollowCount();
          this.totalFollowerCount();
+         this.followerList();
+         this.followList();       
       },
       watch:{
-         //감시영역
+    	
       },
-      mounted(){
-         
+      mounted(){   
+
             this.modal = new bootstrap.Modal(this.$refs.modal03);
             this.addtionModal = new bootstrap.Modal(this.$refs.addtionModal);
             this.blockModal = new bootstrap.Modal(this.$refs.blockModal);
             this.blockResultModal = new bootstrap.Modal(this.$refs.blockResultModal);
             this.myOptionModal = new bootstrap.Modal(this.$refs.myOptionModal);
             this.followerModal = new bootstrap.Modal(this.$refs.followerModal);
-            this.followModal = new bootstrap.Modal(this.$refs.followModal);
-            
+            this.followModal = new bootstrap.Modal(this.$refs.followModal);                 
       },
    }).mount("#app");
 </script>
