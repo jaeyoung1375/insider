@@ -13,4 +13,6 @@ public class DmUserDto {
 	//private Integer inviterNo;
 	private String memberNick;
 	
+	//안읽은 사람 수 표시를 위한 읽은 시간 입력
+	private long readTime;
 }

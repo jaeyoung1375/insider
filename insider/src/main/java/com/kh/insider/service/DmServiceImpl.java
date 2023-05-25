@@ -3,7 +3,9 @@ package com.kh.insider.service;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -134,6 +136,26 @@ public class DmServiceImpl implements DmService {
 		dmMessageDto.setMessageContent(jsonMessage.getPayload());
 		dmMessageRepo.create(dmMessageDto);
 	}
+	//방 인원에게 데이터 전송하고 읽은 시간 갱신 기능
+	public void broadcastRoom(int roomNo) throws IOException {
+		if(containsRoom(roomNo) == false) return;
+		
+		DmRoomVO dmRoomVO = rooms.get(roomNo);
+		Set<DmUserVO> users = dmRoomVO.getUsers();
+        for (DmUserVO user : users) {
+        	DmUserDto dmUserDto = new DmUserDto();
+        	dmUserDto.setReadTime(System.currentTimeMillis());
+        	dmUserDto.setMemberNo(user.getMemberNo());
+        	dmUserDto.setRoomNo(roomNo);
+        	dmUserRepo.updateReadTime(dmUserDto);
+        }
+		
+        List<Long> timeList = dmUserRepo.selectReadTime(roomNo);
+        String timeJson = mapper.writeValueAsString(timeList);
+        TextMessage timeJsonMessage = new TextMessage(timeJson);
+        
+		dmRoomVO.broadcast(timeJsonMessage);
+	}
 	
 	//- 사용자가 존재하는 방의 번호를 찾는 기능
 	public int findUser(DmUserVO user) {
@@ -204,13 +226,19 @@ public class DmServiceImpl implements DmService {
 			TextMessage jsonMessage = new TextMessage(json);
 			
 			//채팅방으로 메세지 전송
-			 this.broadcastRoom(user, roomNo, jsonMessage, messageNo);
+			this.broadcastRoom(user, roomNo, jsonMessage, messageNo);			 
+			
+			//채팅 참가자 시간 데이터 전송
+			this.broadcastRoom(roomNo);
 		}
 		//입장메세지인 경우
 		else if (receiveVO.getType() == WebSocketConstant.JOIN) {
 			int roomNo = receiveVO.getRoom();
 			this.moveUser(user, roomNo);
 			//this.join(user, roomNo);
+			
+			//채팅 참가자 시간 데이터 전송
+			this.broadcastRoom(roomNo);
 		}
 		
 	    //메시지 삭제

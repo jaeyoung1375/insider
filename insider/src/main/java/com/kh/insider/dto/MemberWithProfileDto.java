@@ -26,4 +26,9 @@ public class MemberWithProfileDto {
 	private Integer attachmentNo;
 	private String memberNick;
 	private Date memberJoin;
+	
+	public String getImageURL() {
+		if(attachmentNo == null) return "https://via.placeholder.com/150x150";
+		else return "/rest/attachment/download/"+attachmentNo;
+	}
 }

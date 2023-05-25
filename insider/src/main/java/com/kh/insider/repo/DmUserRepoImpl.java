@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.DmUserDto;
+import com.kh.insider.vo.DmReadTimeVO;
 
 @Repository
 public class DmUserRepoImpl implements DmUserRepo {
@@ -16,6 +17,7 @@ public class DmUserRepoImpl implements DmUserRepo {
 
 	@Override
 	public void enter(DmUserDto dmUserDto) {
+		dmUserDto.setReadTime(System.currentTimeMillis());
 		sqlSession.insert("dmUser.enter", dmUserDto);
 	}
 
@@ -35,5 +37,16 @@ public class DmUserRepoImpl implements DmUserRepo {
     public void leaveRoom(DmUserDto dmUserDto) {
         sqlSession.delete("dmUser.leaveRoom", dmUserDto);
     }
+
+	@Override
+	public void updateReadTime(DmUserDto dmUserDto) {
+		dmUserDto.setReadTime(System.currentTimeMillis());
+		sqlSession.update("dmUser.updateReadTime", dmUserDto);
+	}
+
+	@Override
+	public List<Long> selectReadTime(int roomNo) {
+		return sqlSession.selectList("dmUser.selectReadTime", roomNo);
+	}
 
 }
