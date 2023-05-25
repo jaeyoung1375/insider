@@ -60,15 +60,18 @@
 					<h5 class="m-0">회원 관리</h5>
 				</div>
 				<div class="admin-menu" @click="changeAdminMenu(2)" :class="{'selected':adminMenu==2}">
-						<h5 class="m-0">신고 관리</h5>
+					<h5 class="m-0">게시물 관리</h5>
 				</div>
 				<div class="admin-menu" @click="changeAdminMenu(3)" :class="{'selected':adminMenu==3}">
-						<h5 class="m-0">회원 통계</h5>
+						<h5 class="m-0">신고 관리</h5>
 				</div>
 				<div class="admin-menu" @click="changeAdminMenu(4)" :class="{'selected':adminMenu==4}">
-						<h5 class="m-0">게시물 통계</h5>
+						<h5 class="m-0">회원 통계</h5>
 				</div>
 				<div class="admin-menu" @click="changeAdminMenu(5)" :class="{'selected':adminMenu==5}">
+						<h5 class="m-0">게시물 통계</h5>
+				</div>
+				<div class="admin-menu" @click="changeAdminMenu(6)" :class="{'selected':adminMenu==6}">
 						<h5 class="m-0">조회 통계</h5>
 				</div>
 			</div>
@@ -232,7 +235,7 @@
 									<th style="vertical-align:middle; width:30%">이메일</th>
 									<th style="vertical-align:middle; width:8.666666%; text-align:center">팔로우</th>
 									<th style="vertical-align:middle; width:6.666666%; text-align:center">신고</th>
-									<th style="vertical-align:middle; width:6.666666%">관리</th>
+									<th style="vertical-align:middle; width:6.666666%">상태</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -243,7 +246,8 @@
 									<td style="vertical-align:middle">{{member.memberEmail}}</td>
 									<td style="vertical-align:middle; text-align:center">{{member.memberFollow}}</td>
 									<td style="vertical-align:middle; text-align:center">{{member.memberReport}}</td>
-									<td style="vertical-align:middle">관리</td>
+									<td style="vertical-align:middle" v-if="member.memberSuspensionStatus==0" @click="showSuspensionModal(index, 0)">정지</td>
+									<td style="vertical-align:middle" v-else @click="showSuspensionModal(index, 1)">일반</td>
 								</tr>
 							</tbody>
 						</table>
@@ -275,8 +279,29 @@
 				</div>
 			</div>
 		<!--------------------------- 회원 관리 끝--------------------------->
-		<!--------------------------- 신고 관리 시작 --------------------------->
+		<!--------------------------- 게시물 관리 시작 --------------------------->
 			<div class="col" v-show="adminMenu==2">
+				<div class="row">
+					<div class="col">
+						<h2>게시물 관리</h2>
+					</div>
+				</div>
+				<hr>
+				<div class="row mt-4">
+					<div class="col">
+						<h4 class="m-0">신고 게시물</h4>
+					</div>
+				</div>
+				<hr>
+				<div class="row mt-4">
+					<div class="col">
+						<h4 class="m-0">신고 게시물 태그</h4>
+					</div>
+				</div>
+			</div>
+		<!--------------------------- 기시물 관리 끝 --------------------------->
+		<!--------------------------- 신고 관리 시작 --------------------------->
+			<div class="col" v-show="adminMenu==3">
 				<div class="row">
 					<div class="col">
 						<h2>신고관리</h2>
@@ -316,7 +341,7 @@
 			</div>
 		<!--------------------------- 신고 관리 끝 --------------------------->
 		<!--------------------------- 회원 통계 --------------------------->
-			<div class="col" v-show="adminMenu==3">
+			<div class="col" v-show="adminMenu==4">
 				<div class="row">
 					<div class="col">
 						<h2>회원 통계</h2>
@@ -421,7 +446,7 @@
 				</div>
 			</div>
 		<!--------------------------- 게시물 통계 --------------------------->
-			<div class="col" v-show="adminMenu==4">
+			<div class="col" v-show="adminMenu==5">
 				<div class="row">
 					<div class="col">
 						<h2>게시물 통계</h2>
@@ -507,7 +532,7 @@
 				</div>
 			</div>
 		<!--------------------------- 조회 통계 --------------------------->
-			<div class="col" v-show="adminMenu==5">
+			<div class="col" v-show="adminMenu==6">
 				<div class="row">
 					<div class="col">
 						<h2>조회 통계</h2>
@@ -515,6 +540,7 @@
 				</div>
 				<hr>
 			</div>
+		<!--------------------------- 조회 통계 끝 --------------------------->
 		</div>
 	</div>
 	<!-- ---------------------------------신고 내용 관리 모달-------------------------- -->
@@ -566,7 +592,81 @@
 		</div>
 	</div>
 	<!-- ---------------------------------신고 내용 관리 모달 끝-------------------------- -->
-
+	<!-- ---------------------------------정지 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="suspensionModal" data-bs-backdrop="static" ref="suspensionModal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">회원 차단</h5>
+					<button type="button" class="btn-close" @click="hideSuspensionModal" aria-label="Close">
+					<span aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="modal-body">
+				    <!-- 이미 정지당한 사람 페이지 -->
+					<div class="row" v-if="suspensionIndex[1]==0">
+						<div class="row">
+							<div class="col">
+								정지 사유 : {{memberList[suspensionIndex[0]].memberSuspensionContent}} 
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
+								기간 : {{memberList[suspensionIndex[0]].memberSuspensionDays}}
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
+								<select class="form-control rounded" v-model="suspensionContent[0]">
+									<option value="" selected>기한(선택)</option>
+									<option value="1">1일</option>
+									<option value="7">7일</option>
+									<option value="30">30일</option>
+									<option value="365">1년</option>
+									<option value="99999">영구</option>
+								</select>
+								<select class="form-control rounded" v-model="suspensionContent[1]">
+									<option value="" selected>내용(선택)</option>>
+									<option class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo">{{report.reportListContent}}</option>
+								</select>						
+							</div>
+						</div>
+					</div>
+					<!-- 일반 사람 페이지 -->
+					<div class="row" v-else>
+						<div class="col">
+							<select class="form-control rounded" v-model="suspensionContent[0]">
+								<option value="" selected>기한(선택)</option>
+								<option value="1">1일</option>
+								<option value="7">7일</option>
+								<option value="30">30일</option>
+								<option value="365">1년</option>
+								<option value="99999">영구</option>
+							</select>
+							<select class="form-control rounded" v-model="suspensionContent[1]">
+								<option value="" selected>내용(선택)</option>>
+								<option class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo">{{report.reportListContent}}</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div class="row">
+						<div class="col" v-if="suspensionIndex[1]==0">
+							<button type="button" class="btn btn-primary" @click="insertSuspension()" :class="{'disabled':suspensionContent[0]=='' || suspensionContent[1]==''}">수정</button>
+							<button type="button" class="btn btn-primary" @click="deleteSuspension()">해제</button>
+							<button type="button" class="btn btn-secondary" @click="hideSuspensionModal">취소</button>
+						</div>
+						<div class="col" v-else>
+							<button type="button" class="btn btn-primary" @click="insertSuspension()" :class="{'disabled':suspensionContent[0]=='' || suspensionContent[1]==''}">정지</button>
+							<button type="button" class="btn btn-secondary" @click="hideSuspensionModal">취소</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ---------------------------------정지 모달 끝-------------------------- -->
 	
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
@@ -598,6 +698,18 @@
 					begin:"", end:"", totalPage:"",	startBlock:"", finishBlock:"", first:false, last:false, prev:false,
 					next:false, nextPage:"", prevPage:"",
 				},
+				/* --------------------------------게시물 데이터-------------------------------- */
+				boardList:[],
+				tagList:[],
+				boardSearchOption:{
+					memberNick:"", boardTimeBegin:"", boardTimeEnd:"", boardMinReport:"", boardMaxReport:"",
+					boardMinLike:"", boardMaxLike:"", boardHide:"", page:1,
+				},
+				boardSearchPagination:{
+					begin:"", end:"", totalPage:"",	startBlock:"", finishBlock:"", first:false, last:false, prev:false,
+					next:false, nextPage:"", prevPage:"",
+				},
+				
 				/*---------------------------신고 데이터 --------------------------- */
 				reportContentModal:null,
 				newReportContent:"",
@@ -659,6 +771,10 @@
 				},
 				boardTimeChartLeft:true,
 				boardTagChartRight:true,
+				/*---------------------------정지 데이터 --------------------------- */
+				suspensionModal:null,
+				suspensionIndex:[],
+				suspensionContent:["",""],
 			};
 		},
 		computed: {
@@ -733,6 +849,14 @@
 				this.memberSearchOption.orderList=orderListParams;
 			},
 			/*------------------------------ 회원관리 끝 ------------------------------*/
+			/*------------------------------ 게시물관리 시작 ------------------------------*/
+			async loadBoardList(){
+				const resp = await axios.get(contextPath+"/rest/board/list", {params:this.boardSearchOption});
+				this.boardList=[...resp.data.boardList];
+				this.boardSearchPagination=resp.data.paginationVO;
+			},
+			
+			/*------------------------------ 게시물관리 끝 ------------------------------*/
 			/*------------------------------ 신고관리 시작 ------------------------------*/
  			showReportContentModal(){
 				if(this.reportContentModal==null) return;
@@ -1074,6 +1198,39 @@
 			},
 		
 		/*------------------------------ 게시물통계통계 끝 ------------------------------*/
+		/*------------------------------ 정지모달 시작 ------------------------------*/
+ 			showSuspensionModal(index, status){
+				if(this.suspensionModal==null) return;
+				this.suspensionModal.show();
+				this.suspensionIndex=[index, status];
+			},
+			hideSuspensionModal(){
+				if(this.suspensionModal==null) return;
+				this.suspensionModal.hide();
+				this.suspensionIndex=[];
+				this.suspensionContent=["",""];
+			},
+			async insertSuspension(days, contents){
+				let data={
+					memberNo:this.memberList[this.suspensionIndex[0]].memberNo,
+					memberSuspensionDays:this.suspensionContent[0],
+					memberSuspensionContent:this.suspensionContent[1]
+				};
+				const resp = await axios.post(contextPath+"/rest/suspension/", data);
+				this.memberList[this.suspensionIndex[0]]=resp.data;
+				this.hideSuspensionModal();
+			},
+			async deleteSuspension(){
+				let data={
+						memberNo:this.memberList[this.suspensionIndex[0]].memberNo,
+				}
+				const resp = await axios.put(contextPath+"/rest/suspension/", data);
+				this.memberList[this.suspensionIndex[0]]=resp.data;
+				this.hideSuspensionModal();
+			}
+			
+		
+		/*------------------------------ 정지모달 끝 ------------------------------*/
 
 		},
 		created(){
@@ -1086,6 +1243,8 @@
 			this.getMemberCumulativeStats();
 			this.getBoardTimeStats();
 			this.getBoardTagStats();
+			this.loadReportContent();
+			this.loadBoardList();
 		},
 		watch:{
 			//감시영역
@@ -1106,6 +1265,7 @@
 			window.addEventListener('popstate', this.initializePageFromQuery);
 			//모달 선언
 			this.reportContentModal = new bootstrap.Modal(this.$refs.reportContentModal);
+			this.suspensionModal = new bootstrap.Modal(this.$refs.suspensionModal);
 		},
 	}).mount("#app");
 </script>

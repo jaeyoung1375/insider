@@ -7,17 +7,19 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kh.insider.dto.BoardDto;
 import com.kh.insider.dto.BoardLikeDto;
 import com.kh.insider.repo.BoardLikeRepo;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.service.BoardSearchService;
+import com.kh.insider.vo.AdminBoardResponseVO;
+import com.kh.insider.vo.AdminBoardSearchVO;
 import com.kh.insider.vo.BoardLikeVO;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
@@ -25,6 +27,7 @@ import com.kh.insider.vo.BoardTagStatsResponseVO;
 import com.kh.insider.vo.BoardTagStatsSearchVO;
 import com.kh.insider.vo.BoardTimeStatsResponseVO;
 import com.kh.insider.vo.BoardTimeStatsSearchVO;
+import com.kh.insider.vo.PaginationVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -110,6 +113,25 @@ public class BoardRestController {
 	@PostMapping("/stats/boardTag")
 	public List<BoardTagStatsResponseVO> getTagStats(@RequestBody BoardTagStatsSearchVO boardTagStatsSearchVO){
 		return boardRepo.getBoardTagStats(boardTagStatsSearchVO);
+	}
+	
+	//관리자페이지 리스트 출력
+	@GetMapping("/list")
+	public AdminBoardResponseVO selectList(@ModelAttribute AdminBoardSearchVO vo){
+		//정렬 리스트 trim
+		vo.refreshOrderList();
+		//전체 게시물 수 반환
+		int count = boardRepo.selectAdminCount(vo);
+		vo.setCount(count);
+		AdminBoardResponseVO responseVO = new AdminBoardResponseVO();
+		responseVO.setBoardList(boardRepo.selectListWithAttach(vo));
+		
+		PaginationVO paginationVO = new PaginationVO();
+		paginationVO.setCount(count);
+		paginationVO.setPage(vo.getPage());
+		
+		responseVO.setPaginationVO(paginationVO);
+		return responseVO;
 	}
 	
 }

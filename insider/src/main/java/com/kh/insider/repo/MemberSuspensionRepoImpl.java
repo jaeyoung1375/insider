@@ -13,7 +13,7 @@ public class MemberSuspensionRepoImpl implements MemberSuspensionRepo{
 
 	@Override
 	public void insert(MemberSuspensionDto memberSuspensionDto) {
-		sqlSession.insert("memberSuspension.insert", memberSuspensionDto);
+		sqlSession.insert("memberSuspension.insert",  memberSuspensionDto);
 	}
 
 	@Override
@@ -28,6 +28,6 @@ public class MemberSuspensionRepoImpl implements MemberSuspensionRepo{
 
 	@Override
 	public void addSuspension(MemberSuspensionDto memberSuspensionDto) {
-		sqlSession.update("memberSuspension.addSuspension", memberSuspensionDto);
+		sqlSession.update("memberSuspension.addSuspension",  memberSuspensionDto);
 	}
 }

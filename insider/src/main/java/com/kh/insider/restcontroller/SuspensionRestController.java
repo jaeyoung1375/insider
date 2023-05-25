@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.MemberSuspensionDto;
+import com.kh.insider.dto.MemberWithSuspensionDto;
 import com.kh.insider.repo.MemberSuspensionRepo;
+import com.kh.insider.repo.MemberWithProfileRepo;
 
 @RestController
 @RequestMapping("/rest/suspension")
@@ -18,21 +20,27 @@ public class SuspensionRestController {
 
 	@Autowired
 	private MemberSuspensionRepo memberSuspensionRepo;
+	@Autowired
+	private MemberWithProfileRepo memberWithProfileRepo;
 	
 	@PostMapping("/")
-	public void insert(@RequestBody MemberSuspensionDto memberSuspensionDto) {
-		memberSuspensionRepo.insert(memberSuspensionDto);
+	public MemberWithSuspensionDto insert(@RequestBody MemberSuspensionDto  memberSuspensionDto) {
+		if(memberSuspensionRepo.selectOne(memberSuspensionDto.getMemberNo())==null) {
+			memberSuspensionRepo.insert(memberSuspensionDto);
+		}
+		else {
+			memberSuspensionRepo.addSuspension(memberSuspensionDto);
+		}
+		return memberWithProfileRepo.suspensionSelectOne(memberSuspensionDto.getMemberNo());
 	}
 	@GetMapping("/{memberNo}")
 	public MemberSuspensionDto selectOne(@PathVariable long memberNo) {
 		return memberSuspensionRepo.selectOne(memberNo);
 	}
 	@PutMapping("/")
-	public void removeSuspension(@RequestBody long memberNo) {
+	public MemberWithSuspensionDto removeSuspension(@RequestBody MemberSuspensionDto memberSuspensionDto) {
+		long memberNo = memberSuspensionDto.getMemberNo();
 		memberSuspensionRepo.removeSuspension(memberNo);
-	}
-	@PutMapping("/add")
-	public void addSuspension(@RequestBody MemberSuspensionDto memberSuspensionDto) {
-		memberSuspensionRepo.addSuspension(memberSuspensionDto);
+		return memberWithProfileRepo.suspensionSelectOne(memberNo);
 	}
 }

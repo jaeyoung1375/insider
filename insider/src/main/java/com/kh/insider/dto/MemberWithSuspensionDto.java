@@ -27,10 +27,11 @@ public class MemberWithSuspensionDto {
 	private String memberNick;
 	private Date memberJoin;
 	
-	private Date memberSuspensionStopDate;
+	private Integer memberSuspensionDays;
 	private Date memberSuspensionLiftDate;
 	private Integer memberSuspensionStatus;
 	private Integer memberSuspensionTimes;
+	private String memberSuspensionContent;
 	
 	public String getImageURL() {
 		if(attachmentNo == null) return "https://via.placeholder.com/150x150";

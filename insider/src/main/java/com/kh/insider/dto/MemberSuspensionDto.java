@@ -7,8 +7,9 @@ import lombok.Data;
 @Data
 public class MemberSuspensionDto {
 	private long memberNo;
-	private Date memberSuspensionStopDate;
+	private int memberSuspensionDays;
 	private Date memberSuspensionLiftDate;
 	private int memberSuspensionStatus;
 	private int memberSuspensionTimes;
+	private String memberSuspensionContent;
 }
