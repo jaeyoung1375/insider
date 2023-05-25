@@ -14,7 +14,7 @@
   	
   	<!-- 댓글 조회 -->
   	<select id="selectList" resultType="ReplyDto">
-  		select * from reply_with_nick where reply_origin = #{replyOrigin}
+  		select * from reply_with_nick where reply_origin = #{replyOrigin} order by reply_no asc
   	</select>
   	
   	<!-- 댓글 삭제 -->
