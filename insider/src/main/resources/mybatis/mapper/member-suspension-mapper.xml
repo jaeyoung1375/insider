@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="memberSuspension">
+	<insert id="insert">
+		insert into member_suspension(member_no, member_suspension_stop_date, member_suspension_lift_date, member_suspension_status, member_suspension_times)
+		values(#{memberNo}, sysdate, #{memberSuspensionLiftDate}, #{memberSuspensionStatus}, 1)
+	</insert>
+	<select id="selectOne" resultType="memberSuspensionDto">
+		select * from member_suspension where member_no=#{memberNo}
+	</select>
+	<update id="removeSuspension">
+		update member_suspension set member_suspension_status=1, member_suspension_lift_date=sysdate where member_no=#{memberNo} and member_suspension_status=0 
+	</update>
+	<update id="addSuspension">
+		update member_suspension set member_suspension_status=0, member_suspension_times=member_suspension_times+1, member_suspension_stop_date=sysdate, member_suspension_lift_date=#{memberSuspensionLiftDate} where member_no=#{memberNo}
+	</update>
+</mapper>

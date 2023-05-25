@@ -303,14 +303,14 @@
 			<div class="modal-content">
 				<div class="modal-body p-0">
 					<div class="row p-3" @click="showReportMenuModal">
-						<div class="col d-flex justify-content-center align-items-center" style="color:#dc3545;">
+						<div class="col d-flex justify-content-center align-items-center" style="color:#dc3545; cursor:pointer">
 							<h5 style="font-weight:bold; margin:0;">신고</h5>
 						</div>
 					</div>
 					<!-- 메뉴 구분선 -->
 					<hr class="m-0">
 					<div class="row p-3" @click="hideAdditionalMenuModal">
-						<div class="col d-flex justify-content-center align-items-center">
+						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
 							<h5 style="margin:0;">취소</h5>
 						</div>
 					</div>
@@ -336,7 +336,7 @@
 						</div>
 					</div>
 					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo" style="border-top:var(--bs-modal-border-width) solid var(--bs-modal-border-color)">
-						<div class="col d-flex p-3" @click="reportContent(report.reportListContent)">
+						<div class="col d-flex p-2" @click="reportContent(report.reportListContent)" style="cursor:pointer">
 							<h5 style="margin:0;">{{report.reportListContent}}</h5>
 						</div>
 					</div>

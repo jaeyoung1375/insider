@@ -13,11 +13,11 @@
 		)where rn between #{begin} and #{end}
 	</sql>
 
-	<select id="selectOne" resultType="memberWithProfileDto">
+	<select id="selectOne" resultType="memberWithSuspensionDto">
 		select * from member_with_profile where member_no=#{memberNo}
 	</select>
 	
-	<select id="selectList" resultType="memberWithProfileDto">
+	<select id="selectList" resultType="memberWithSuspensionDto">
 		<!-- 변수 선언 -->
 		<bind name="memberNoExist" value="memberNo!=null and !memberNo.equals('')"></bind>
 		<bind name="memberNameExist" value="memberName!=null and !memberName.equals('')"></bind>
@@ -36,7 +36,7 @@
 		<bind name="orderListExist" value="orderList!=null and orderList.size()>0"></bind>
 		
 		<include refid="topNheader"></include>
-		select * from member_with_profile
+		select * from member_with_suspension
 		
 		<where>
 		<!-- 회원번호 -->
@@ -156,7 +156,7 @@
 		<bind name="memberMaxFollowExist" value="memberMaxFollow!=null and !memberMaxFollow.equals('')"></bind>
 		<bind name="orderListExist" value="orderList!=null and orderList.size()>0"></bind>
 		
-		select count(*) from member_with_profile
+		select count(*) from member_with_suspension
 		
 		<where>
 		<!-- 회원번호 -->
@@ -249,5 +249,7 @@
 	
 <!-- 통합 통계 -->
 	
-	
+	<select id="suspensionSelectOne" resultType="memberWithSuspensionDto">
+		select * from member_with_suspension where member_no=#{memberNo}
+	</select>
 </mapper>

@@ -6,4 +6,5 @@ import lombok.Data;
 public class TagDto {
 	private String tagName;
 	private int tagFollow;
+	private int tagAvailable;
 }
