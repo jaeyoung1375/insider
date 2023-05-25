@@ -34,7 +34,7 @@
 		<bind name="memberMinFollowExist" value="memberMinFollow!=null and !memberMinFollow.equals('')"></bind>
 		<bind name="memberMaxFollowExist" value="memberMaxFollow!=null and !memberMaxFollow.equals('')"></bind>
 		<bind name="orderListExist" value="orderList!=null and orderList.size()>0"></bind>
-		
+		<bind name="memberSuspensionStatusExist" value="memberSuspensionStatus!=null and !memberSuspensionStatus.equals('')"></bind>
 		<include refid="topNheader"></include>
 		select * from member_with_suspension
 		
@@ -128,6 +128,18 @@
 		 		</when>
 		 		<otherwise></otherwise>
 		 	</choose>
+		<!-- 차단여부 -->
+		 	<choose>
+		 		<when test="memberSuspensionStatusExist and memberSuspensionStatus==0">
+		 			and member_suspension_status=0
+		 		</when>
+		 		<when test="memberSuspensionStatusExist and memberSuspensionStatus==1">
+		 			<![CDATA[
+		 			and member_suspension_status is null or member_suspension_status=1
+		 			]]>
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
 		</where>
 		
 		<if test="orderListExist">
@@ -155,6 +167,7 @@
 		<bind name="memberMinFollowExist" value="memberMinFollow!=null and !memberMinFollow.equals('')"></bind>
 		<bind name="memberMaxFollowExist" value="memberMaxFollow!=null and !memberMaxFollow.equals('')"></bind>
 		<bind name="orderListExist" value="orderList!=null and orderList.size()>0"></bind>
+		<bind name="memberSuspensionStatusExist" value="memberSuspensionStatus!=null and !memberSuspensionStatus.equals('')"></bind>
 		
 		select count(*) from member_with_suspension
 		
@@ -240,6 +253,18 @@
 		 		<when test="memberMaxFollowExist">
 		 			<![CDATA[
 		 			and member_Follow <= #{memberMaxFollow}
+		 			]]>
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
+		<!-- 차단여부 -->
+		 	<choose>
+		 		<when test="memberSuspensionStatusExist and memberSuspensionStatus==0">
+		 			and member_suspension_status=0
+		 		</when>
+		 		<when test="memberSuspensionStatusExist and memberSuspensionStatus==1">
+		 			<![CDATA[
+		 			and member_suspension_status is null or member_suspension_status=1
 		 			]]>
 		 		</when>
 		 		<otherwise></otherwise>

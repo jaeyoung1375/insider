@@ -43,4 +43,32 @@ public class AdminBoardSearchVO {
 		}
 		this.orderList=list;
 	}
+	private Integer tagMinFollow;
+	private Integer tagMaxFollow;
+	private Integer tagAvailable;
+	private int tagPage=1;
+	private int tagSize=20;
+	private int tagCount;
+	private String tagOrderListString;
+	private List<String> tagOrderList;
+	//시작행 번호 계산
+	public int getTagBegin() {
+		return tagPage*tagSize-tagSize+1;
+	}
+	//종료행 번호 계산
+	public int getTagEnd() {
+		return Math.min(tagPage*tagSize, tagCount);
+	}
+	public void refreshTagOrderList() {
+		if(this.tagOrderListString==null || this.tagOrderListString.length()==0)return;
+		String[] temp = tagOrderListString.split(",");
+		List<String> list = new ArrayList<>();
+		for(String str:temp) {
+			if(str.length()>0) {
+				list.add(str);
+			}
+		}
+		this.tagOrderList=list;
+		
+	}
 }

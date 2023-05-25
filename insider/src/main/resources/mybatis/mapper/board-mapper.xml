@@ -171,9 +171,8 @@
 			 		<foreach collection="orderList" open="order by " item="order" separator=",">
 						${order}
 			 		</foreach>
-			 		, board_no asc 
 			 	</when>
-			 	<otherwise>order by board_no asc</otherwise>
+			 	<otherwise>order by board_no desc</otherwise>
 	 		</choose>
 	 	<include refid="topNfooter"></include>	
 	</select>
@@ -296,7 +295,7 @@
 		ORDER BY ${order}
 		<include refid="topNfooter"></include>
 	</select>
-	
+	<!-- 태그 통계 -->
 	<select id="boardTagStats" resultType="boardTagStatsResponseVO">
 		<bind name="startDateExist" value="startDate!=null and !startDate.equals('')"></bind>
 		<bind name="endDateExist" value="endDate!=null and !endDate.equals('')"></bind>

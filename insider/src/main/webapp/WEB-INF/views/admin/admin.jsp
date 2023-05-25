@@ -207,7 +207,7 @@
 						<div class="col-2 d-flex align-items-center">
 							<span>생일</span>
 						</div>
-						<div class="col-10 p-0">
+						<div class="col-6 p-0">
 							<div class="row">
 								<div class="col-5">
 									<input type="date" class="form-control" v-model="memberSearchOption.memberBeginBirth">
@@ -220,6 +220,20 @@
 								</div>
 							</div>
 						</div>
+						<div class="col-4">
+							<div class="row">
+								<div class="col-6 d-flex align-items-center">
+									<span>정지여부</span>
+								</div>
+								<div class="col-6 p-0">
+									<select class="form-control" v-model="memberSearchOption.memberSuspensionStatus">
+										<option value="">전체</option>
+										<option value="0">정지</option>
+										<option value="1">일반</option>
+									</select>
+								</div>
+							</div>
+						</div>
 					</div>
 					<div class="row">
 						<div class="col-2 d-flex align-items-center">
@@ -229,7 +243,7 @@
 							<select class="form-control" v-model="memberOrderList[0]">
 								<option value="" selected>팔로워(선택)</option>
 								<option value="member_follow asc">팔로워 적은순</option>
-								<option value="member-follow desc">팔로워 많은순</option>
+								<option value="member_follow desc">팔로워 많은순</option>
 							</select>
 						</div>
 						<div class="col p-0">
@@ -362,7 +376,7 @@
 					<div class="col-2 d-flex align-items-center">
 						<span>게시일</span>
 					</div>
-					<div class="col-10 p-0">
+					<div class="col-6 p-0">
 						<div class="row">
 							<div class="col-5">
 								<input type="date" class="form-control" v-model="boardSearchOption.boardTimeBegin">
@@ -375,35 +389,49 @@
 							</div>
 						</div>
 					</div>
+					<div class="col-4">
+						<div class="row">
+							<div class="col-6 d-flex align-items-center">
+								<span>숨김여부</span>
+							</div>
+							<div class="col-6 p-0">
+								<select class="form-control" v-model="boardSearchOption.boardHide">
+									<option value="">전체</option>
+									<option value="0">공개</option>
+									<option value="1">숨김</option>
+								</select>
+							</div>
+						</div>
+					</div>
 				</div>
 				<div class="row">
 					<div class="col-2 d-flex align-items-center">
 						<span>정렬 순서</span>
 					</div>
 					<div class="col p-0">
-						<select class="form-control" v-model="boardOrderList[0]">
-							<option value="" selected>팔로워(선택)</option>
-							<option value="member_follow asc">팔로워 적은순</option>
-							<option value="member-follow desc">팔로워 많은순</option>
+						<select class="form-control" v-model="boardOrderList[2]">
+							<option value="" selected>작성(선택)</option>
+							<option value="board_no desc">최근 작성순</option>
+							<option value="board_no asc">오래된순</option>
 						</select>
 					</div>
 					<div class="col p-0">
 						<select class="form-control" v-model="boardOrderList[1]">
 							<option value="" selected>신고수(선택)</option>
-							<option value="member_report asc">신고수 적은순</option>
-							<option value="member_report desc">신고수 많은순</option>
+							<option value="board_report asc">신고수 적은순</option>
+							<option value="board_report desc">신고수 많은순</option>
 						</select>
 					</div>
 					<div class="col p-0">
-						<select class="form-control" v-model="boardOrderList[2]">
-							<option value="" selected>로그인(선택)</option>
-							<option value="member_login desc">최근 접속자</option>
-							<option value="member_login asc">접속 기간 긴 순</option>
+						<select class="form-control" v-model="boardOrderList[0]">
+							<option value="" selected>좋아요(선택)</option>
+							<option value="board_like desc">좋아요 많은순</option>
+							<option value="board_like asc">좋아요 적은순</option>
 						</select>
 					</div>
 					<div class="col p-0">
-						<button type="button" class="col-6 btn btn-secondary" @click="resetMemberSearchOption">초기화</button>
-						<button type="button" class="col-6 btn btn-primary" @click="getListWithSearchOption">검색</button>
+						<button type="button" class="col-6 btn btn-secondary" @click="resetBoardSearchOption">초기화</button>
+						<button type="button" class="col-6 btn btn-primary" @click="getBoardListWithSearchOption">검색</button>
 					</div>
 				</div>
 				<hr>
@@ -838,7 +866,7 @@
 				memberSearchOption:{
 					memberName:"", memberEmail:"", memberNick:"", searchLoginDays:"", memberAddress:"",	memberLevel:"",
 					memberGender:"", memberMinReport:"", memberMaxReport:"", memberBeginBirth:"", memberEndBirth:"",memberMinFollow:"",
-					memberMaxFollow:"",	orderListString:"",	page:1,
+					memberMaxFollow:"",	orderListString:"", memberSuspensionStatus:"", page:1,
 				},
 				memberOrderList:["","",""],
 				memberSearchPagination:{
@@ -850,14 +878,19 @@
 				tagList:[],
 				boardSearchOption:{
 					memberNick:"", boardTimeBegin:"", boardTimeEnd:"", boardMinReport:"", boardMaxReport:"",
-					boardMinLike:"", boardMaxLike:"", boardHide:"", page:1,
+					boardMinLike:"", boardMaxLike:"", boardHide:"",	orderListString:"", page:1,
+					tagPage:1, tagOrderListString:"", tagMinFollow:"", tagMaxFollow:"", tagAvailable:"",
 				},
 				boardOrderList:["","",""],
+				tagOrderList:[""],
 				boardSearchPagination:{
 					begin:"", end:"", totalPage:"",	startBlock:"", finishBlock:"", first:false, last:false, prev:false,
 					next:false, nextPage:"", prevPage:"",
 				},
-				
+				tagSearchPagination:{
+					begin:"", end:"", totalPage:"",	startBlock:"", finishBlock:"", first:false, last:false, prev:false,
+					next:false, nextPage:"", prevPage:"",
+				},
 				/*---------------------------신고 데이터 --------------------------- */
 				reportContentModal:null,
 				newReportContent:"",
@@ -970,6 +1003,8 @@
 				this.memberSearchOption.memberMinFollow="";
 				this.memberSearchOption.memberMaxFollow="";
 				this.memberOrderList=["","",""];
+				this.memberSearchOption.orderListString="";
+				this.memberSearchOption.memberSuspensionStatus="";
 			},
 			//회원 검색 버튼 클릭시
 			async getListWithSearchOption(){
@@ -994,7 +1029,7 @@
 			//orderList 쿼리파라미터 반환
 			makeQueryForOrderList(){
 				const orderListParams = this.memberOrderList.join(',');
-				this.memberSearchOption.orderList=orderListParams;
+				this.memberSearchOption.orderListString=orderListParams;
 			},
 			/*------------------------------ 회원관리 끝 ------------------------------*/
 			/*------------------------------ 게시물관리 시작 ------------------------------*/
@@ -1018,7 +1053,65 @@
 			},
 			makeQueryForBoardOrderList(){
 				const orderListParams = this.boardOrderList.join(',');
-				this.boardSearchOption.orderList=orderListParams;
+				this.boardSearchOption.orderListString=orderListParams;
+			},
+			//회원 리스트 초기화 버튼 클릭시
+			resetBoardSearchOption(){
+				this.boardSearchOption.memberNick="";
+				this.boardSearchOption.boardTimeBegin="";
+				this.boardSearchOption.boardTimeEnd="";
+				this.boardSearchOption.boardMinReport="";
+				this.boardSearchOption.boardMaxReport="";
+				this.boardSearchOption.boardMinLike="";
+				this.boardSearchOption.boardMaxLike="";
+				this.boardSearchOption.boardHide="";
+				this.boardOrderList=["","",""];
+				this.boardSearchOption.orderListString="";
+			},
+			//회원 검색 버튼 클릭시
+			async getBoardListWithSearchOption(){
+				this.boardSearchOption.page=1;
+				const resp = await axios.get(contextPath+"/rest/board/list", {params:this.boardSearchOption});
+				this.boardList=[...resp.data.boardList];
+				this.boardSearchPagination=resp.data.paginationVO;
+			},
+			/*--- 태그리스트 ---*/
+			async loadTagList(){
+				const resp = await axios.get(contextPath+"/rest/tag/", {params:this.boardSearchOption});
+				this.tagList=[...resp.data.tagList];
+				this.tagSearchPagination=resp.data.paginationVO;
+			},
+			//페이지네이션 처음, 이전, 다음 끝 버튼 누를 때
+			tagFirstPage(){
+				if(!this.tagSearchPagination.first) this.tagSearchOption.page=1;
+			},
+			tagPrevPage(){
+				if(this.tagSearchPagination.prev) this.tagSearchOption.page=this.tagSearchPagination.prevPage;
+			},
+			tagNextPage(){
+				if(this.tagSearchPagination.next) this.tagSearchOption.page=this.tagSearchPagination.nextPage;
+			},
+			tagLastPage(){
+				if(!this.tagSearchPagination.last) this.tagSearchOption.page=this.tagSearchPagination.totalPage;
+			},
+			makeQueryForTagOrderList(){
+				const orderListParams = this.tagOrderList.join(',');
+				this.tagSearchOption.tagOrderListString=orderListParams;
+			},
+			//회원 리스트 초기화 버튼 클릭시
+			resetTagSearchOption(){
+				this.boardSearchOption.tagMinFollow="";
+				this.boardSearchOption.tagMaxFollow="";
+				this.boardSearchOption.tagAvailable="";
+				this.tagOrderList=[""];
+				this.boardSearchOption.tagOrderListString="";
+			},
+			//회원 검색 버튼 클릭시
+			async getTagListWithSearchOption(){
+				this.boardSearchOption.tagPage=1;
+				const resp = await axios.get(contextPath+"/rest/tag/", {params:this.boardSearchOption});
+				this.tagList=[...resp.data.tagList];
+				this.tagSearchPagination=resp.data.paginationVO;
 			},
 			/*------------------------------ 게시물관리 끝 ------------------------------*/
 			/*------------------------------ 신고관리 시작 ------------------------------*/
@@ -1409,6 +1502,7 @@
 			this.getBoardTagStats();
 			this.loadReportContent();
 			this.loadBoardList();
+			this.loadTagList();
 		},
 		watch:{
 			//감시영역
@@ -1428,6 +1522,15 @@
 				deep:true,
 				handler(newVal, oldVal) {
 					this.makeQueryForBoardOrderList();
+				}
+			},
+			"boardSearchOption.tagPage":function(newVal, oldVal){
+				this.loadTagList();
+			},
+			tagOrderList:{
+				deep:true,
+				handler(newVal, oldVal) {
+					this.makeQueryForTagOrderList();
 				}
 			},
 		},
