@@ -60,7 +60,7 @@ public class DmServiceImpl implements DmService {
 	//- DmRoom 생성
 	public void createRoom(int roomNo, String memberNick) {
 		if(containsRoom(roomNo)) return;
-		rooms.put(roomNo, new DmRoomVO());
+				rooms.put(roomNo, new DmRoomVO());
 	
 		//방 생성(등록) 코드(DB)
 		boolean isWaitingRoom = roomNo == WebSocketConstant.WAITING_ROOM_NO;
@@ -68,6 +68,7 @@ public class DmServiceImpl implements DmService {
 			DmRoomDto dmRoomDto = new DmRoomDto();
 			dmRoomDto.setRoomNo(roomNo);
 			dmRoomDto.setRoomName(memberNick);
+			dmRoomDto.setRoomType(1);
 			dmRoomRepo.create(dmRoomDto);
 		}
 	}
@@ -102,7 +103,7 @@ public class DmServiceImpl implements DmService {
 		dmUserRepo.enter(userDto);
 	    
 		log.debug("{}님이 {}방으로 참여하였습니다.", user.getMemberNo(), roomNo);
-    }
+  }
 	
 	//사용자 방에서 퇴장
 	public void exit(DmUserVO user, int roomNo) {
@@ -136,8 +137,9 @@ public class DmServiceImpl implements DmService {
 		dmMessageDto.setMessageContent(jsonMessage.getPayload());
 		dmMessageRepo.create(dmMessageDto);
 	}
+	
 	//방 인원에게 데이터 전송하고 읽은 시간 갱신 기능
-	public void broadcastRoom(int roomNo) throws IOException {
+	public void broadcastRoom (int roomNo) throws IOException {
 		if(containsRoom(roomNo) == false) return;
 		
 		DmRoomVO dmRoomVO = rooms.get(roomNo);
@@ -175,8 +177,7 @@ public class DmServiceImpl implements DmService {
 		join(user, roomNo);
 	}
 	
-	
-	
+
 	@Override
 	public void connertHandler(WebSocketSession session) {
 		DmUserVO user = new DmUserVO(session);

@@ -237,7 +237,7 @@
 		          <br>
 		          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 		          <span style="position:absolute;right:0;top:10px;">
-		            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="createChatRoom"  data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close" >
+		            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="createAndEnterRoom"  data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close" >
 		              채팅
 		            </button>
 		          </span>
@@ -248,7 +248,7 @@
 		          <br>
 		          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 		          <span style="position:absolute;right:0;top:10px;">
-		            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.85em;" @click="createChatRoom" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
+		            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.85em;" @click="createAndEnterRoom" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
 		              채팅
 		            </button>
 		          </span>
@@ -286,13 +286,16 @@
                     searchDmList:[],
                     keyword:"",
                     
-                    //memberNo: memberNo,
                     dmRoomList: [], //채팅방 목록
                     isRoomJoin:false,
+                    
                     //채팅방 참가자 시간 정보 리스트
                     userTimeList:[],
                     //읽지 않은 수
                     unreadCount:[],
+                    
+                    //inviteeNo: "",
+                    
                 };
             },
             methods:{
@@ -445,12 +448,44 @@
 				    }
 				},			
 				//로그인한 회원의 채팅방 목록
-				async fetchDmRoomList(){
+				async fetchDmRoomList() {
 				    try {
 				        const resp = await axios.get("${pageContext.request.contextPath}/rest/dmRoomList");
 				        this.dmRoomList.push(...resp.data);
 				    } catch (error) {
 				        console.error(error); 
+				    }
+				},
+				//채팅방 생성 및 입장
+				async createAndEnterRoom() {
+				    try {
+				        const dmRoomVO = await this.createDmRoom();
+
+				        await this.enterRoom(dmRoomVO.roomNo, this.memberNo);
+				    } catch (error) {
+				        console.error(error);
+				    }
+				},
+				async createDmRoom() {
+				    try {
+				        const resp = await axios.post("${pageContext.request.contextPath}/rest/createChatRoom");
+				        const dmRoomVO = resp.data;
+
+				        return dmRoomVO;
+				    } catch (error) {
+				        console.error(error);
+				    }
+				},
+				async enterRoom(roomNo, memberNo) {
+				    try {
+				        const user = {
+				            roomNo,
+				            memberNo
+				        };
+				        await axios.post("${pageContext.request.contextPath}/rest/joinDmRoom", user);
+
+				    } catch (error) {
+				        console.error(error);
 				    }
 				},
             },
@@ -463,6 +498,7 @@
         			}
         			this.chooseDmSearch();
         		}, 200),
+        		//메세지 읽음 표시
         		userTimeList:{
         			deep:true,
         			handler:function(){

@@ -6,17 +6,22 @@ import java.util.Map;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+@JsonIgnoreProperties
 @Data
-//판정기분을 추가(WebSocketSession이 같으면 같은 사용자로 본다.)
+//판정기준을 추가(WebSocketSession이 같으면 같은 사용자로 본다.)
 @EqualsAndHashCode(of= {"session"})
 public class DmUserVO {
 	
 	private WebSocketSession session;
 	private long memberNo;
 	private String memberNick;
+	
+	private int roomNo; //채팅방 입장용
 	
 	//생성자 생성
 	public DmUserVO(WebSocketSession webSocketSession) {
@@ -36,4 +41,8 @@ public class DmUserVO {
 		session.sendMessage(jsonMessage);
 	}
 	
+    // 채팅방 입장을 위한 기본 생성자
+    public DmUserVO() {
+    }
+    
 }

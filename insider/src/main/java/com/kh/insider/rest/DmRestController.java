@@ -7,6 +7,8 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,24 +19,34 @@ import com.kh.insider.dto.DmRoomUserProfileDto;
 import com.kh.insider.dto.DmUserDto;
 import com.kh.insider.repo.DmMemberListRepo;
 import com.kh.insider.repo.DmMessageNickRepo;
+import com.kh.insider.repo.DmRoomRepo;
 import com.kh.insider.repo.DmRoomUserProfileRepo;
 import com.kh.insider.repo.DmUserRepo;
+import com.kh.insider.service.DmServiceImpl;
+import com.kh.insider.vo.DmRoomVO;
+import com.kh.insider.vo.DmUserVO;
 
 @RestController
 @RequestMapping("/rest")
 public class DmRestController {
 
 	@Autowired
-	DmMessageNickRepo dmMessageNickRepo;
+	private DmMessageNickRepo dmMessageNickRepo;
 	
 	@Autowired
-	DmMemberListRepo dmMemberListRepo;
+	private DmMemberListRepo dmMemberListRepo;
 	
 	@Autowired
-	DmRoomUserProfileRepo dmRoomUserProfileRepo;
+	private DmRoomUserProfileRepo dmRoomUserProfileRepo;
 	
 	@Autowired
 	private DmUserRepo dmUserRepo;
+	
+	@Autowired
+	private DmRoomRepo dmRoomRepo;
+	
+	@Autowired
+	private DmServiceImpl dmServiceImpl;
 	
 	//메세지 리스트
 	@GetMapping("/message/{roomNo}")
@@ -77,4 +89,29 @@ public class DmRestController {
 		return dmRoomUserProfileRepo.findRoomsById(memberNo);
 	}	
 	
+	//채팅방 생성
+	@PostMapping("/createChatRoom")
+	public DmRoomVO createRoom(HttpSession session) {
+	    int roomNo = dmRoomRepo.sequence();
+	    String memberNick = (String) session.getAttribute("memberNick");
+
+        dmServiceImpl.createRoom(roomNo, memberNick);
+	    
+	    DmRoomVO dmRoomVO = new DmRoomVO();
+	    dmRoomVO.setRoomNo(roomNo);
+	    dmRoomVO.setRoomName(memberNick);
+		return dmRoomVO;
+	}
+    
+	//채팅 유저 입장
+	@PostMapping("/joinDmRoom")
+	public void joinRoom(@RequestBody DmUserVO user, HttpSession session) {
+	    int roomNo = user.getRoomNo();
+	    String memberNick = (String) session.getAttribute("memberNick");
+
+	    user.setMemberNick(memberNick); 
+
+	    dmServiceImpl.join(user, roomNo);
+	}
+
 }
