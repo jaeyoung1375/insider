@@ -54,6 +54,7 @@ public class MemberController {
    private MemberRepo memberRepo;
    @Autowired
    private MemberService memberService;
+   
    @Autowired
    private SettingRepo settingRepo;
    
@@ -119,6 +120,7 @@ public class MemberController {
       MemberDto findMember = memberRepo.findByNickName(memberNick);
       // 로그인한 사용자
       MemberDto loginUser = (MemberDto)session.getAttribute("socialUser");
+      log.debug("로그인한 사용자:{}", loginUser);
       // 본인 프로필 인지 여부
       boolean isOwner = loginUser.getMemberNick().equals(memberNick);
       // 전체 게시물 개수
