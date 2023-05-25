@@ -50,6 +50,36 @@
 	border:1px solid lightgray;
 	padding:3em;
 }
+.box {
+	position: relative;
+	width: 16.666666%;
+	font-size:1.2em;
+}
+.box::after {
+	display: block;
+	content: "";
+	padding-bottom: 100%;
+}
+.content {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.box:hover{
+	background-color:rgba(34, 34, 34, 0.13);
+}
+.pages {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 1;
+	margin-top:0.5em;
+	margin-right:0.5em;
+	color:lightgray;
+}
 </style>
 <div id="app">
 	<div class="container-fluid mt-4" style="position:relative">
@@ -289,13 +319,130 @@
 				<hr>
 				<div class="row mt-4">
 					<div class="col">
-						<h4 class="m-0">신고 게시물</h4>
+						<h4 class="m-0">게시물</h4>
+					</div>
+				</div>
+				<hr>
+			<!-- 검색창 -->
+				<div class="row">
+					<div class="col-2 d-flex align-items-center">
+						<span>신고</span>
+					</div>
+					<div class="col-4 p-0">
+						<div class="row">
+							<div class="col-5">
+								<input class="form-control" v-model="boardSearchOption.boardMinReport">
+							</div>
+							<div class="col-2 d-flex align-items-center justify-content-center">
+								<span>~</span>
+							</div>
+							<div class="col-5">
+								<input class="form-control" v-model="boardSearchOption.boardMaxReport">
+							</div>
+						</div>
+					</div>
+					<div class="col-2 d-flex align-items-center">
+						<span>좋아요</span>
+					</div>
+					<div class="col-4 p-0">
+						<div class="row">
+							<div class="col-5">
+								<input class="form-control" v-model="boardSearchOption.boardMinLike">
+							</div>
+							<div class="col-2 d-flex align-items-center justify-content-center">
+								<span>~</span>
+							</div>
+							<div class="col-5">
+								<input class="form-control" v-model="boardSearchOption.boardMaxLike">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-2 d-flex align-items-center">
+						<span>게시일</span>
+					</div>
+					<div class="col-10 p-0">
+						<div class="row">
+							<div class="col-5">
+								<input type="date" class="form-control" v-model="boardSearchOption.boardTimeBegin">
+							</div>
+							<div class="col-2 d-flex align-items-center justify-content-center">
+								<span>~</span>
+							</div>
+							<div class="col-5">
+								<input type="date" class="form-control" v-model="boardSearchOption.boardTimeEnd">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-2 d-flex align-items-center">
+						<span>정렬 순서</span>
+					</div>
+					<div class="col p-0">
+						<select class="form-control" v-model="boardOrderList[0]">
+							<option value="" selected>팔로워(선택)</option>
+							<option value="member_follow asc">팔로워 적은순</option>
+							<option value="member-follow desc">팔로워 많은순</option>
+						</select>
+					</div>
+					<div class="col p-0">
+						<select class="form-control" v-model="boardOrderList[1]">
+							<option value="" selected>신고수(선택)</option>
+							<option value="member_report asc">신고수 적은순</option>
+							<option value="member_report desc">신고수 많은순</option>
+						</select>
+					</div>
+					<div class="col p-0">
+						<select class="form-control" v-model="boardOrderList[2]">
+							<option value="" selected>로그인(선택)</option>
+							<option value="member_login desc">최근 접속자</option>
+							<option value="member_login asc">접속 기간 긴 순</option>
+						</select>
+					</div>
+					<div class="col p-0">
+						<button type="button" class="col-6 btn btn-secondary" @click="resetMemberSearchOption">초기화</button>
+						<button type="button" class="col-6 btn btn-primary" @click="getListWithSearchOption">검색</button>
+					</div>
+				</div>
+				<hr>
+			<!-- 검색창 끝 -->
+			<!-- 게시물 출력 -->
+				<div class="row">
+					<div class="box" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)">
+						<img class='content' v-if="board.boardAttachmentList.length>0" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
+						<img class='content' v-else src="${pageContext.request.contextPath}/static/image/noimage.png">
+						<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
+					</div>
+				</div>
+			<!-- 페이지네이션 -->
+				<div class="row mt-4" id="paging">
+					<div class="col d-flex justify-content-center align-items-center">
+						<ul class="pagination">
+							<li class="page-item" @click="boardFirstPage" :class="{disabled:this.boardSearchPagination.first}">
+								<span class="page-link"><i class="fa-solid fa-angles-left"></i></span>
+							</li>
+							<li class="page-item" @click="boardPrevPage" :class="{disabled:!this.boardSearchPagination.prev}">
+								<span class="page-link"><i class="fa-solid fa-angle-left"></i></span>
+							</li>
+							<li class="page-item" v-for="index in (boardSearchPagination.finishBlock-boardSearchPagination.startBlock+1)" :key="index"
+								 :class="{active:(index+boardSearchPagination.startBlock-1)==boardSearchOption.page}">
+								<span class="page-link" @click="boardSearchOption.page=index+boardSearchPagination.startBlock-1">{{index+boardSearchPagination.startBlock-1}}</span>
+							</li>
+							<li class="page-item" @click="boardNextPage" :class="{disabled:!this.boardSearchPagination.next}">
+								<span class="page-link"><i class="fa-solid fa-angle-right"></i></span>
+							</li>
+							<li class="page-item" @click="boardLastPage" :class="{disabled:this.boardSearchPagination.last}">
+								<span class="page-link"><i class="fa-solid fa-angles-right"></i></span>
+							</li>
+						</ul>
 					</div>
 				</div>
 				<hr>
 				<div class="row mt-4">
 					<div class="col">
-						<h4 class="m-0">신고 게시물 태그</h4>
+						<h4 class="m-0">게시물 태그</h4>
 					</div>
 				</div>
 			</div>
@@ -705,6 +852,7 @@
 					memberNick:"", boardTimeBegin:"", boardTimeEnd:"", boardMinReport:"", boardMaxReport:"",
 					boardMinLike:"", boardMaxLike:"", boardHide:"", page:1,
 				},
+				boardOrderList:["","",""],
 				boardSearchPagination:{
 					begin:"", end:"", totalPage:"",	startBlock:"", finishBlock:"", first:false, last:false, prev:false,
 					next:false, nextPage:"", prevPage:"",
@@ -855,7 +1003,23 @@
 				this.boardList=[...resp.data.boardList];
 				this.boardSearchPagination=resp.data.paginationVO;
 			},
-			
+			//페이지네이션 처음, 이전, 다음 끝 버튼 누를 때
+			boardFirstPage(){
+				if(!this.boardSearchPagination.first) this.boardSearchOption.page=1;
+			},
+			boardPrevPage(){
+				if(this.boardSearchPagination.prev) this.boardSearchOption.page=this.boardSearchPagination.prevPage;
+			},
+			boardNextPage(){
+				if(this.boardSearchPagination.next) this.boardSearchOption.page=this.boardSearchPagination.nextPage;
+			},
+			boardLastPage(){
+				if(!this.boardSearchPagination.last) this.boardSearchOption.page=this.boardSearchPagination.totalPage;
+			},
+			makeQueryForBoardOrderList(){
+				const orderListParams = this.boardOrderList.join(',');
+				this.boardSearchOption.orderList=orderListParams;
+			},
 			/*------------------------------ 게시물관리 끝 ------------------------------*/
 			/*------------------------------ 신고관리 시작 ------------------------------*/
  			showReportContentModal(){
@@ -1255,6 +1419,15 @@
 				deep:true,
 				handler(newVal, oldVal) {
 					this.makeQueryForOrderList();
+				}
+			},
+			"boardSearchOption.page":function(newVal, oldVal){
+				this.loadBoardList();
+			},
+			boardOrderList:{
+				deep:true,
+				handler(newVal, oldVal) {
+					this.makeQueryForBoardOrderList();
 				}
 			},
 		},
