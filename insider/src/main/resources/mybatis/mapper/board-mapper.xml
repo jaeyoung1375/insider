@@ -182,7 +182,9 @@
 
 	<!-- 추후 코드 수정 예정 -5/19 재영 -->
 	<select id="getTotalMyPost" resultType="boardDto">
+	<include refid="topNheader"></include>
 	select A.*, B.attachment_no from board A inner join board_attachment B on A.board_no = B.board_no where member_no = #{memberNo}
+		<include refid="topNfooter"></include>	
 	</select>
 	
 

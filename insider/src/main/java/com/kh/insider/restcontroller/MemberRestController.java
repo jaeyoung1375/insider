@@ -131,7 +131,8 @@ public class MemberRestController {
 		
 	// 마이페이지 게시물 목록
 	@GetMapping("/page/{page}")
-	public List<BoardWithNickDto> paging(@PathVariable int page, @RequestParam String memberNick){
-		return boardRepo.myPageSelectListPaging(page, memberNick);
+	public List<BoardDto> paging(@PathVariable int page, @RequestParam int memberNo){
+		
+		return boardRepo.myPageSelectListPaging(page, memberNo);
 	}
 }

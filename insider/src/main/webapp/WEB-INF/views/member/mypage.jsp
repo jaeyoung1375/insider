@@ -18,9 +18,27 @@
       .hide{
       	display:none;
       }
-      body{
-      	height:10000vh;
-      }
+   	.profile-container {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-preview {
+  position: absolute;
+  margin-left :30px;
+  top: 50px;
+  left: 0;
+  width: 400px;
+  height: 400px;
+  background-color: white;
+  border: 1px solid gray;
+  padding: 10px;
+}
+
+.profile-container:hover .profile-preview {
+  display: block; 
+}
+     
 
 
    
@@ -109,41 +127,37 @@
             </div>
             <hr>
      <!-- 게시물 시작 -->
-<div class="position-absolute mt-5 start-50 translate-middle-x media-width" style="display: flex; flex-direction: column; width: 770px;"> 
-   <c:if test="${getTotalMyPost.size() == 0 && !isOwner}">
-    <div class="mt-5" style="display: flex;flex-direction: column; justify-content: center; align-items: center;">    
+<div class="position-absolute mt-5 start-50 translate-middle-x media-width" style="display: flex; flex-direction: column; width: 770px; height:700px;"> 
+ 
+    <div class="mt-5" style="display: flex;flex-direction: column; justify-content: center; align-items: center;" v-if="myBoardList.length == 0 && !isOwner">    
    <i class="fa-solid fa-camera fa-2xl" style="font-size:100px;"></i>
    <h2 class="mt-5">게시물 없음</h2>
    </div>
-   </c:if>
-   <c:if test="${getTotalMyPost.size() == 0 && isOwner}">
-   <div class="mt-5" style="display: flex;flex-direction: column; justify-content: center; align-items: center;">    
+   
+
+   <div class="mt-5" style="display: flex;flex-direction: column; justify-content: center; align-items: center;" v-if="myBoardList.length == 0 && isOwner">    
    <i class="fa-solid fa-camera fa-2xl" style="font-size:100px;"></i>
    <h2 class="mt-5">사진 공유</h2>
    <p>사진을 공유하면 회원님의 프로필에 표시됩니다.</p>
+  
    </div>
-   </c:if>
    
    
 
-    <div style="margin-bottom:10px;display: flex;flex-direction: row; width: 100%;">    
-        <c:forEach items="${getTotalMyPost}" var="list" varStatus="status">
-            <div class="media-height" style="margin-right: 10px; position:relative;">
-                <img src="/rest/attachment/download/${list.attachmentNo}" style="width:100%; height:250px;">
-                <i class="fa-solid fa-note-sticky fa-lg" style="color:white;position:absolute;right:0;top:20px;"></i>
-                <div class="imgHover" style="cursor:pointer;position:absolute;background-color:#22222221;left:0;right:0;top:0;bottom:0;opacity:0;color:white;">
-                    <i class="fa-solid fa-heart fa-lg" style="position:absolute;top:50%;left:25%;">${list.boardLike}</i>
-                    <i class="fa-regular fa-comment fa-lg" style="position:absolute;top:50%;left:50%;">${list.boardReply}</i>
-                </div>
-            </div>
-            <!-- 한 줄에 3개 이미지가 출력되었을 때 줄 바꿈 처리 -->
-            <c:if test="${status.index % 3 == 2}">
-                </div>
-                <div style="margin-bottom:10px;display: flex;flex-direction: row; width: 100%;">
-            </c:if>
-            
-        </c:forEach>
-       
+    <div style="margin-bottom:10px;display: flex; width: 110%;"> 
+    	 <div style="margin-bottom:10px;display: flex;flex-wrap:wrap; width: 100%;">
+	    	<div v-for="(board,index) in myBoardList" :key="board.boardNo" style="margin-right: 10px;">
+    		 <div class="media-height" style="margin-right: 10px; position:relative;">
+    		 	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + board.attachmentNo" style="width:100%; height:250px;">
+    		 	 <i class="fa-solid fa-note-sticky fa-lg" style="color:white;position:absolute;right:0;top:20px;"></i>
+    		 	  <div class="imgHover" style="cursor:pointer;position:absolute;background-color:#22222221;left:0;right:0;top:0;bottom:0;opacity:0;color:white;">
+    		 	   <i class="fa-solid fa-heart fa-lg" style="position:absolute;top:50%;left:25%;">{{board.boardLike}}</i>
+    		 	     <i class="fa-regular fa-comment fa-lg" style="position:absolute;top:50%;left:50%;">{{board.boardReply}}</i> 	    		 	 	    
+    		 	  </div> 
+    		 </div>  
+    	</div>
+     
+    	</div>
     </div>
     
 </div>
@@ -303,8 +317,7 @@
   						 <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="40" height="40">
 						  <a :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
 						  
-						  	<button class="float-end btn btn-primary" @click="follow(item.memberNo)" v-if="followCheckIf(item.memberNo)" :class="{'hide' : item.memberNo == ${memberNo}}">팔로우</button>
-						
+						  <button class="float-end btn btn-primary" @click="follow(item.memberNo)" v-if="followCheckIf(item.memberNo)" :class="{'hide' : item.memberNo == ${memberNo}}">팔로우</button>
 						  <button class="float-end btn btn-secondary" @click="myUnFollower(item.memberNo)" v-if="!followCheckIf(item.memberNo) && ${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}">팔로잉</button>					  
 						  <button class="float-end btn btn-secondary unfollow-button" @click="unFollower(item.memberNo)" v-if="!followCheckIf(item.memberNo) && !${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}">팔로잉</button>
 						 
@@ -319,25 +332,61 @@
         
           <div class="modal" tabindex="-1" role="dialog" id="followModal"
                             data-bs-backdrop="static"
-                            ref="followModal" @click.self="followModalHide" style="max-height:400px; overflow: auto; overflow-y: hidden;">
-            <div class="modal-dialog" role="document">
-                   <div class="modal-content">
-                       <div class="modal-header text-center" style="display:flex; justify-content: center;">
-							<h5 class="modal-title">팔로우</h5>
-                       </div>
-                       <div class="modal-body">
-                     	<div v-for="item in myFollowList" :key="item.attachmentNo">
-  						 <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="40" height="40">
-						  <a :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
-						  <button class="float-end btn btn-primary" @click="follow(item.followFollower)" v-if="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로우</button>
-						  <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-if="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로잉</button>
-						</div>
-                       </div>
-                       
-                        <button type="button" class="btn" data-bs-dismiss="modal" style="color:red;">취소</button>
-                </div>      
-            </div>
+                            ref="followModal" @click.self="followModalHide">
+             <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center" style="display:flex; justify-content: center;">
+        <h5 class="modal-title">팔로우</h5>
+      </div>
+      <div class="modal-body">
+        <div v-for="item in myFollowList" :key="item.attachmentNo">
+         <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="40" height="40" @mouseover="profileHover(item)">
+          <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave">
+                  <!-- 프로필 미리보기 내용 -->
+                   <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" style="border-radius:25px;">
+                    <a :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
+                    <p>{{item.memberName}}</p>
+                    <hr>
+                    <div class="col-7" style="display: flex; margin-left: 10px;">
+                    	<div class="col-6">
+                    		<span>게시물 <span style="font-weight: bold;">44</span></span>
+                    	</div>
+                    	<div class="col-6">
+                    		<span>팔로워 <span style="font-weight: bold;">1</span></span>
+                    	</div>
+                    	<div class="col-6">
+<!--                     		<span>팔로우 <span style="font-weight: bold;">{{getTotalFollowCount(item.memberNick)}}</span></span> -->
+							<span>팔로우 <span style="font-weight: bold;">{{followCounts}}</span></span>
+                    	</div>
+                    </div>
+                    <div class="col-6">
+                    	<div style="display:flex;">
+                    	   <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="127" height="150" style="margin-right:3px;">
+                    	   <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="127" height="150" style="margin-right:3px;">
+                    	   <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="127" height="150" style="margin-right:3px;">
+                    	 </div>
+                    </div>
+                    <div class="col-9" style="display:flex; justify-content: space-between; margin-left:20px;">
+                  	 <button class="btn btn-primary" @click="follow(item.followFollower)" v-if="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로우</button>
+                  	 <button class="btn btn-primary">메시지 보내기</button>
+          			<button class="btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-if="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" >팔로잉</button>
+                    </div>
+          </div>
+          <a :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
+          <button class="float-end btn btn-primary" @click="follow(item.followFollower)" v-if="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로우</button>
+          <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-if="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로잉</button>
         </div>
+      </div>
+      <button type="button" class="btn" data-bs-dismiss="modal" style="color:red;">취소</button>
+    </div>
+  </div>
+</div>
+      
+        
+       
+        
+        
+        
         <!-- Modal 창 영역 끝 -->
       
       </div> <!-- vue 끝 -->
@@ -357,6 +406,8 @@
              //안전장치
              loading:false,
              finish:false,
+             isOwner : false,
+             showProfilePreview : false,
             //추가 메뉴 모달 및 신고 모달
             modal : null,
             addtionModal : null,
@@ -365,12 +416,15 @@
             blockResultModal : null,
             myOptionModal : null,
             followerModal : null,
-            followModal : null,          
+            followModal : null,  
+            followerHoverModal : null,
+            selectedItem: null,
             reportContentList:[],
             followCheckList:[],
             myFollowerList: [],
             myFollowList: [],
             myBoardList : [],
+            followCounts: 0,
             reportBoardNo:"",  
             memberNo : "${memberDto.memberNo}",
             memberNick : "${memberDto.memberNick}",
@@ -402,6 +456,20 @@
                return "https://via.placeholder.com/100x100?text=profile";
             }
          },
+         async getFollowCount() {
+             return async (memberNick) => {
+               if (!this.followCounts[memberNick]) {
+                 const resp = await axios.get("totalFollowCount", {
+                   params: {
+                     memberNick: memberNick,
+                   },
+                 });
+                 this.followCounts[memberNick] = resp.data;
+               }
+               return this.followCounts[memberNick];
+             };
+           },
+         
          
       },
       methods: {
@@ -463,6 +531,10 @@
                followModalHide(){
                    if(this.followModal == null) return;
                     this.followModal.hide();  
+                },
+                followerHoverModalShow(){
+                	if(this.followerHoverModal == null) return;
+                	this.followerHoverModal.show();
                 },
               
               accountView(){
@@ -572,7 +644,6 @@
 			        followFollower:memberNo
 			      }
 			    });
-			
 			    if (response.data) {
 			      // 언팔로우 성공 처리
 			      console.log("언팔로우 성공");
@@ -616,9 +687,9 @@
         	        }
         	    });
         	    this.totalFollowCnt = resp.data;
-        	    console.log("총: " + this.totalFollowCnt);
         	},
         	
+        	        	
         	 // 팔로워 총 개수 
             async totalFollowerCount() {
            	    const resp = await axios.get("totalFollowerCount", {
@@ -627,8 +698,19 @@
            	        }
            	    });
            	    this.totalFollowerCnt = resp.data;           	    
-           	    console.log("총: " + this.totalFollowerCnt);
            	},
+           	
+           	
+            async getTotalFollowCount(memberNick) {
+           	    const resp = await axios.get("totalFollowCount", {
+           	      params: {
+           	        memberNick: memberNick
+           	      }
+           	    });
+           	    //console.log(this.followCounts);
+           	 	return this.followCounts = resp.data;
+           	 	//return resp.data;
+           	  },
            	
            	// 본인 팔로워 목록 불러오기
            	async followerList(){
@@ -658,16 +740,38 @@
            	
            	// 마이페이지 게시물 목록 불러오기
            	async boardList(){
+           	  if(this.loading == true) return; //로딩중이면
+              if(this.finish == true) return; //다 불러왔으면
+              this.loading = true;
+              
            		const resp = await axios.get("/rest/member/page/"+this.page,{
            			params : {           
-           				memberNick : this.memberNick
+           				memberNo : this.memberNo
            			},
            		});
-           		this.myBoardList.push(...resp.data);
            		
+           		this.myBoardList.push(...resp.data);
+           		this.page++;
+           		
+           		if(resp.data < 5) this.finish = true;
+           	
+           	
            		console.log(this.myBoardList);
            		
+           		this.loading = false;
+           		
            	},
+           	checkOwnerShip(){
+           		this.isOwner = this.memberNo == ${memberNo};
+           	},
+            profileHover(item) {
+                this.selectedItem = item; // 선택한 항목의 정보 저장
+                // 다른 작업 처리
+              },
+              profileLeave() {
+                this.selectedItem = {}; // 프로필 미리보기 숨김
+                // 다른 작업 처리
+              },
            	
 
       },
@@ -680,17 +784,20 @@
          this.followerList();
          this.followList();  
          this.boardList();
+         //this.getTotalFollowCount();
+
       },
       watch:{
     	// percent가 변하면 percent의 값을 읽어와서 80% 이상인지 판정
     	percent(){
     		if(this.percent >= 80){
-    			console.log("데이터를 불러올 때가 됨");
+    			this.boardList();
     		}
-    	}
+    	},
+    	
       },
       mounted(){   
-
+			this.checkOwnerShip();
             this.modal = new bootstrap.Modal(this.$refs.modal03);
             this.addtionModal = new bootstrap.Modal(this.$refs.addtionModal);
             this.blockModal = new bootstrap.Modal(this.$refs.blockModal);
@@ -698,6 +805,7 @@
             this.myOptionModal = new bootstrap.Modal(this.$refs.myOptionModal);
             this.followerModal = new bootstrap.Modal(this.$refs.followerModal);
             this.followModal = new bootstrap.Modal(this.$refs.followModal);
+            this.followerHoverModal = new bootstrap.Modal(this.$refs.followerHoverModal);
             
             window.addEventListener("scroll", _.throttle(()=>{
             	//console.log("스크롤 이벤트");
@@ -706,9 +814,10 @@
            		// - 전체 문서의 높이(document.body.clientHeight)
            		// - 현재 스크롤의 위치 (window.scrollY)
            		// - 브라우저의 높이 (window.innerHeight)
-            	const height = document.body.clientHeight - window.innerHeight;
-            	const current = window.scrollY;
-           		const percent = (current / height) * 100;
+            const height = document.documentElement.scrollHeight - window.innerHeight;
+			const current = window.scrollY;
+			const percent = (current / height) * 100;
+
            		//console.log("percent = " + Math.round(percent));
            		
            		// data의 percent를 계산된 값으로 갱신
