@@ -13,10 +13,12 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kh.insider.dto.DmInvitationDto;
 import com.kh.insider.dto.DmMessageDeletedDto;
 import com.kh.insider.dto.DmMessageDto;
 import com.kh.insider.dto.DmRoomDto;
 import com.kh.insider.dto.DmUserDto;
+import com.kh.insider.repo.DmInvitationRepo;
 import com.kh.insider.repo.DmMessageDeletedRepo;
 import com.kh.insider.repo.DmMessageRepo;
 import com.kh.insider.repo.DmRoomRepo;
@@ -45,6 +47,8 @@ public class DmServiceImpl implements DmService {
 	@Autowired
 	private DmMessageDeletedRepo dmMessageDeletedRepo;
 	
+	@Autowired
+	private DmInvitationRepo dmInvitationRepo;
 
 	//여러 개의 방을 관리할 저장소
 	Map<Integer, DmRoomVO> rooms = Collections.synchronizedMap(new HashMap<>());
@@ -60,8 +64,8 @@ public class DmServiceImpl implements DmService {
 	//- DmRoom 생성
 	public void createRoom(int roomNo, String memberNick) {
 		if(containsRoom(roomNo)) return;
-				rooms.put(roomNo, new DmRoomVO());
-	
+			rooms.put(roomNo, new DmRoomVO());
+				
 		//방 생성(등록) 코드(DB)
 		boolean isWaitingRoom = roomNo == WebSocketConstant.WAITING_ROOM_NO;
 		if(!isWaitingRoom && dmRoomRepo.find(roomNo) == null) {
@@ -72,7 +76,7 @@ public class DmServiceImpl implements DmService {
 			dmRoomRepo.create(dmRoomDto);
 		}
 	}
-	
+
 	//- DmRoom 제거
 	public void deleteRoom(int roomNo) {
 		rooms.remove(roomNo);
@@ -256,6 +260,26 @@ public class DmServiceImpl implements DmService {
         dmMessageDeletedDto.setMessageNo(messageNo);
         dmMessageDeletedRepo.insertDeleteMessage(dmMessageDeletedDto);
 	}
-		
+	
+	//회원 초대
+	public void inviteUserToRoom(DmUserVO inviter, int roomNo, long inviteeNo) {
+	    //초대 받은 회원을 그룹 채팅에 추가
+	    DmUserDto inviteeDto = new DmUserDto();
+	    inviteeDto.setRoomNo(roomNo);
+	    inviteeDto.setMemberNo(inviteeNo);
+	    
+	    //이미 존재하는 회원은 초대 불가
+	    boolean isJoin = dmUserRepo.check(inviteeDto);
+		if(isJoin) return;
+	    dmUserRepo.enter(inviteeDto);
+
+	    //dm_invitation 테이블에 DB저장 
+	    DmInvitationDto dmInvitationDto = new DmInvitationDto();
+	    dmInvitationDto.setInviterNo(inviter.getMemberNo());
+	    dmInvitationDto.setInviteeNo(inviteeNo);
+	    dmInvitationDto.setRoomNo(roomNo);
+	    dmInvitationRepo.createInvitation(dmInvitationDto); 
+	}
+	
 	
 }

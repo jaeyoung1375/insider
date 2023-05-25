@@ -11,8 +11,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-@JsonIgnoreProperties
 @Data
+@JsonIgnoreProperties
 //판정기준을 추가(WebSocketSession이 같으면 같은 사용자로 본다.)
 @EqualsAndHashCode(of= {"session"})
 public class DmUserVO {
@@ -22,6 +22,7 @@ public class DmUserVO {
 	private String memberNick;
 	
 	private int roomNo; //채팅방 입장용
+	private long inviteeNo; //초대 받은 회원
 	
 	//생성자 생성
 	public DmUserVO(WebSocketSession webSocketSession) {

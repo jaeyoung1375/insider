@@ -237,7 +237,7 @@
 		          <br>
 		          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 		          <span style="position:absolute;right:0;top:10px;">
-		            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="createAndEnterRoom"  data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close" >
+		            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="createRoomAndInvite(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close" >
 		              채팅
 		            </button>
 		          </span>
@@ -248,7 +248,7 @@
 		          <br>
 		          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 		          <span style="position:absolute;right:0;top:10px;">
-		            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.85em;" @click="createAndEnterRoom" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
+		            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.85em;" @click="createRoomAndInvite(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
 		              채팅
 		            </button>
 		          </span>
@@ -294,7 +294,10 @@
                     //읽지 않은 수
                     unreadCount:[],
                     
-                    //inviteeNo: "",
+                    //초대
+                    inviterNo: "",
+                    roomNo:"",
+                    inviteeNo:"",
                     
                 };
             },
@@ -456,36 +459,34 @@
 				        console.error(error); 
 				    }
 				},
-				//채팅방 생성 및 입장
-				async createAndEnterRoom() {
+				//채팅방 생성 및 입장, 초대
+				async createRoomAndInvite(memberNo) {
 				    try {
-				        const dmRoomVO = await this.createDmRoom();
-
-				        await this.enterRoom(dmRoomVO.roomNo, this.memberNo);
-				    } catch (error) {
-				        console.error(error);
-				    }
-				},
-				async createDmRoom() {
-				    try {
-				        const resp = await axios.post("${pageContext.request.contextPath}/rest/createChatRoom");
-				        const dmRoomVO = resp.data;
-
-				        return dmRoomVO;
-				    } catch (error) {
-				        console.error(error);
-				    }
-				},
-				async enterRoom(roomNo, memberNo) {
-				    try {
+				        // 방 생성
+				        const dmRoomVO = await axios.post("${pageContext.request.contextPath}/rest/createChatRoom");
+				        const roomNo = dmRoomVO.data.roomNo;
+				        
+				        // 방 입장
 				        const user = {
 				            roomNo,
-				            memberNo
+				            memberNo: this.memberNo
 				        };
 				        await axios.post("${pageContext.request.contextPath}/rest/joinDmRoom", user);
 
+				        // 초대자의 정보를 설정
+				        const invite = {
+				            inviterNo: this.memberNo,
+				            roomNo: roomNo,
+				            inviteeNo: memberNo
+				        };
+
+				        // 초대 실행
+				        const inviteUrl = "${pageContext.request.contextPath}/rest/inviteUser";
+				        await axios.post(inviteUrl, invite);
+
+				        console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
 				    } catch (error) {
-				        console.error(error);
+				        console.error("방 생성, 입장, 초대 중 오류가 발생했습니다.", error);
 				    }
 				},
             },

@@ -48,6 +48,7 @@ public class DmRestController {
 	@Autowired
 	private DmServiceImpl dmServiceImpl;
 	
+	
 	//메세지 리스트
 	@GetMapping("/message/{roomNo}")
 	public List<DmMessageNickDto> roomMessage (
@@ -108,10 +109,22 @@ public class DmRestController {
 	public void joinRoom(@RequestBody DmUserVO user, HttpSession session) {
 	    int roomNo = user.getRoomNo();
 	    String memberNick = (String) session.getAttribute("memberNick");
-
+	    
 	    user.setMemberNick(memberNick); 
-
 	    dmServiceImpl.join(user, roomNo);
 	}
+	
+	//유저 초대
+	@PostMapping("/inviteUser")
+	public void inviteUserToRoom(@RequestBody DmUserVO inviter, HttpSession session) {
+		long inviterNo = (Long) session.getAttribute("memberNo");
+		int roomNo = inviter.getRoomNo();
+		long inviteeNo = inviter.getInviteeNo();
+
+		inviter.setMemberNo(inviterNo);
+		inviter.setRoomNo(roomNo);
+		dmServiceImpl.inviteUserToRoom(inviter, roomNo, inviteeNo);
+	}
+
 
 }
