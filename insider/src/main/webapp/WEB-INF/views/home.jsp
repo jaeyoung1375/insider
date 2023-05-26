@@ -117,15 +117,52 @@
 	.childShow{
 		display: none;
 	}
-
+	
 </style>
-<div id="app">
+
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        // Check if dark mode is enabled
+        if (localStorage.getItem("darkmode") == 'on') {
+            // Apply dark mode styles specific to home.jsp
+            document.body.dataset.darkmode = 'on';
+            document.body.style.backgroundColor = '#222';
+            document.body.style.color = '#fff';
+
+            var containers = document.getElementsByClassName('container');
+            for (var i = 0; i < containers.length; i++) {
+                containers[i].style.backgroundColor = '#333';
+                containers[i].style.border = '1px solid #555';
+            }
+
+            var headings = document.getElementsByClassName('heading');
+            for (var i = 0; i < headings.length; i++) {
+                headings[i].style.color = '#fff';
+            }
+            
+            var containers = document.getElementsByTagName('a'); // Change to the appropriate tag for your headings
+            for (var i = 0; i < containers.length; i++) {
+            	containers[i].style.color = 'white';
+            }
+
+
+            var buttons = document.getElementsByClassName('btn');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].style.backgroundColor = '#555';
+                buttons[i].style.color = '#fff';
+                buttons[i].style.border = 'none';
+            }
+        }
+    });
+</script>
+
+<div id="app"class="darkmode">
 	<div class="container" style="margin-top: 20px; max-width: 1000px">
         <div class="row" v-for="(board, index) in boardList" :key="board.boardNo">
             <!--●●●●●●●●●●●●●●피드공간●●●●●●●●●●●●●●●●●●●●●●-->
             <div class="col" style="max-width: 620px; margin: 0 auto;">
                 <!--피드001-->
-                <div class="head_feed bg-white" style="border: 0.5px solid #b4b4b4; border-radius: 10px;">
+                <div class="head_feed" style="border: 0.5px solid #b4b4b4; border-radius: 10px;">
                     <div class="d-flex flex-column">
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼ID▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div style="padding: 8px 8px 4px 8px;">
@@ -136,7 +173,7 @@
                                  <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> 
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
 
-                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo)"></i></div>
+                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo, board.boardWithNickDto.memberNo)"></i></div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲ID▲▲▲▲▲▲▲▲▲▲▲▲▲-->
@@ -257,7 +294,7 @@
 					
 					
 					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
-						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="color:black;text-decoration:none; position:relative;">
+						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="text-decoration:none; position:relative;">
 							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="42" height="42" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
 							<img v-else src="https://via.placeholder.com/42x42?text=profile" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
 							
@@ -320,14 +357,14 @@
 			<div class="modal-content">
 				<div class="modal-body p-0">
 					<div class="row p-3" @click="showReportMenuModal">
-						<div class="col d-flex justify-content-center align-items-center" style="color:#dc3545;">
+						<div class="col d-flex justify-content-center align-items-center" style="color:#dc3545; cursor:pointer">
 							<h5 style="font-weight:bold; margin:0;">신고</h5>
 						</div>
 					</div>
 					<!-- 메뉴 구분선 -->
 					<hr class="m-0">
 					<div class="row p-3" @click="hideAdditionalMenuModal">
-						<div class="col d-flex justify-content-center align-items-center">
+						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
 							<h5 style="margin:0;">취소</h5>
 						</div>
 					</div>
@@ -353,7 +390,7 @@
 						</div>
 					</div>
 					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo" style="border-top:var(--bs-modal-border-width) solid var(--bs-modal-border-color)">
-						<div class="col d-flex p-3" @click="reportContent(report.reportListContent)">
+						<div class="col d-flex p-2" @click="reportContent(report.reportListContent)" style="cursor:pointer">
 							<h5 style="margin:0;">{{report.reportListContent}}</h5>
 						</div>
 					</div>
@@ -390,7 +427,7 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col d-flex p-3" @click="blockUser" style="color:#dc3545; cursor:pointer">
+						<div class="col d-flex p-3" @click="blockUser" style="color:#dc3545; cursor:pointer" v-if="reportBoardData[2]!=null && reportBoardData[2].length>0">
 							<h5 style="margin:0;">{{reportBoardData[2]}}님 차단</h5>
 						</div>
 					</div>
@@ -772,8 +809,8 @@ Vue.createApp({
 			this.hideReportMenuModal();
 			if(resp.data.length!=0){
 				this.reportBoardData[2] = resp.data.memberNick;
-				this.showBlockModal();
 			}
+			this.showBlockModal();
 		},
 		//차단
 		async blockUser(){

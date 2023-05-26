@@ -24,6 +24,9 @@
 	<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 	<!-- jquery cdn -->
 	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+	<!-- SockJS라이브러리 의존성 추가  -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+
 </head>
 <style>
 	main{
@@ -65,7 +68,99 @@
         }
 	
 	
+        html, body{
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .wrap{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        body[data-darkmode=on] {
+            background-color: #1e1f21;
+            color: #e8e8e8 !important;
+        }
+        /* Darkmode Toggle */
+        body[data-darkmode=on] .darkmode > .inner{
+            background-color: rgba(255,255,255,0.25);
+        }
+        .darkmode > .inner{
+            position: relative;
+            display: inline-flex;
+            padding: 5px;
+            border-radius: 1.5em;
+            background-color: rgba(0,0,0,0.1);
+        }
+        .darkmode label {
+            cursor: pointer;
+        }
+        .darkmode label:first-of-type{
+            padding: 5px 5px 5px 10px;
+            border-radius: 50% 0 0 50%;
+        }
+        .darkmode label:last-of-type{
+            padding: 5px 10px 5px 5px;
+            border-radius: 0 50% 50% 0;
+        }
+        .darkmode i{
+            font-size: 1.5em;
+            color: #aaa;
+        }
+        .darkmode input[type=radio]{
+            display: none;
+        }
+        .darkmode input[type=radio]:checked + label > i {
+            color: #fff;
+            transition: all 0.35s ease-in-out;
+        }
+        .darkmode .darkmode-bg{
+            width: 39px;
+            height: 34px;
+            position: absolute;
+            left: 5px;
+            border-radius: 50px 15px 15px 50px;
+            z-index: -1;
+            transition: all 0.35s ease-in-out;
+            background-color: #03a9f4;
+        }
+        #toggle-radio-dark:checked ~ .darkmode-bg{
+            border-radius: 15px 50px 50px 15px;
+            top: 5px;
+            left: 44px;
+        }
 </style>
+
+ <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            //다크모드 토글
+            if(document.querySelector('.darkmode')){
+                if(localStorage.getItem("darkmode") == 'on'){
+                    //다크모드 켜기
+                    document.body.dataset.darkmode='on';
+                    document.querySelector('#toggle-radio-dark').checked = true;
+                }
+                //다크모드 이벤트 핸들러
+                document.querySelector('.darkmode').addEventListener("click", e=>{
+                    if(e.target.classList.contains('todark')){
+                        document.body.dataset.darkmode='on';
+                        localStorage.setItem("darkmode", "on");
+                    }else if(e.target.classList.contains('tolight')){
+                        document.body.dataset.darkmode='off';
+                        localStorage.setItem("darkmode", "off");
+                    }
+                },false);
+            }else{
+                localStorage.removeItem("darkmode");
+            }
+
+        })
+    </script>
+
 
 <body>
 	<main>
@@ -74,7 +169,15 @@
 				<div class="container-fluid">
 					<a class="navbar-brand" href="${pageContext.request.contextPath}/"><img src="${pageContext.request.contextPath}/static/image/logo.png" width="50" height="50"></a>
 					<a href="${pageContext.request.contextPath}/" class="logo">insider</a>
-    
+    				<div class="wrap">
+			        	<div class="darkmode">
+			            	<div class="inner">
+			                	<input type="radio" name="toggle" id="toggle-radio-light" checked><label for="toggle-radio-light" class="tolight"><i class="fas fa-sun tolight"></i></label>
+			                	<input type="radio" name="toggle" id="toggle-radio-dark"><label for="toggle-radio-dark" class="todark"><i class="fas fa-moon todark"></i></label>
+			                	<div class="darkmode-bg"></div>
+			            	</div>
+			        	</div>
+			    	</div>
 					<div class="collapse navbar-collapse justify-content-end" id="navbarColor03">
 						<ul class="navbar-nav">
 						<!-- 검색 -->
@@ -371,7 +474,7 @@
     		socket.onmessage = (event) => {
     			var data = JSON.parse(event.data);//json을 객체로 복구
     			console.log("메세지가 올텐데요");
-    			console.log(data.who);
+    			console.log(data.memberNo);
     			console.log(${login});
     			if(data.who==${login}&&data.dmType==3){
     				console.log("알람 수신 (채팅)");
