@@ -15,11 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.insider.dto.BoardDto;
+import com.kh.insider.dto.BoardWithNickDto;
 import com.kh.insider.dto.FollowWithProfileDto;
 import com.kh.insider.dto.FollowerWithProfileDto;
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.dto.SettingDto;
+import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.FollowRepo;
 import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.repo.MemberStatsRepo;
@@ -42,6 +45,8 @@ public class MemberRestController {
 	private MemberRepo memberRepo;
 	@Autowired
 	private FollowRepo followRepo;
+	@Autowired
+	private BoardRepo boardRepo;
 	
 	
 	//멤버정보 불러오기
@@ -97,4 +102,19 @@ public class MemberRestController {
 			List<FollowWithProfileDto> followList = followRepo.getFollowList(memberNo);
 			return followList;
 		}
+		
+	// 마이페이지 게시물 목록
+	@GetMapping("/page/{page}")
+	public List<BoardDto> paging(@PathVariable int page, @RequestParam int memberNo){
+		
+		return boardRepo.myPageSelectListPaging(page, memberNo);
+	}
+	
+	@GetMapping("/postList")
+	public List<BoardDto> postList(@RequestParam long memberNo){
+		
+		List<BoardDto> getTotalPost = boardRepo.getTotalMyPost(memberNo);
+		System.out.println(getTotalPost);
+		return getTotalPost;
+	}
 }
