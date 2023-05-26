@@ -102,13 +102,20 @@
     
 	.moreText{
 			display:inline-block!important;
-		}
+	}
 	.moreContent{
 		height: auto!important;
 	    overflow: auto!important;
 	    width: auto!important;
 	    white-space: normal!important;
 	    text-overflow: inherit!important;
+	}
+	
+	.childReply{
+		padding-left: 35px;
+	}
+	.childShow{
+		display: none;
 	}
 
 </style>
@@ -249,18 +256,22 @@
 					</p>
 					
 					
-					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" style="position: relative;">
+					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
 						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="color:black;text-decoration:none; position:relative;">
-							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="40" height="40" style="border-radius: 70%;position:absolute; margin-top:4px; margin-left: 4px">
-							<img v-else src="https://via.placeholder.com/40x40?text=profile" style="border-radius: 70%;position:absolute; margin-top:4px; margin-left: 4px">
+							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="42" height="42" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
+							<img v-else src="https://via.placeholder.com/42x42?text=profile" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
 							
 							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; font-weight: bold;">{{replyList[index].memberNick}}</p>							
 						</a>
 						<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em;">{{replyList[index].replyContent}}</p>
-						<p style="padding-left:4.0em;margin-bottom:4px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp;  
-							<a style="cursor: pointer;">답글 달기</a>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+						<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp;  
+							<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 							<i v-if="replyList[index].replyMemberNo == loginMemberNo" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="margin-top:2px; color:red; cursor: pointer;"></i>
 						</p>
+						
+<!-- 						<p v-if="replyList[index].replyParent == 0"> -->
+<!-- 							<span @click="showReReply(reply.replyNo, index)" style="cursor:pointer; padding-left:4em; font-size:0.8em; color:gray;">{{replyStatus(index)}}</span> -->
+<!-- 						</p> -->
 					</div>
 					
 					<div v-else class="card-text" style="position: relative;">
@@ -284,7 +295,7 @@
 				</div>
 				
 				<div class="input-group">
-					<input type="text" class="form-control" placeholder="댓글 달기.." v-model="replyContent" style="border: none;" aria-label="Recipient's username" aria-describedby="button-addon2" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(detailIndex)">
+					<input ref="replyInput" type="text" class="form-control" :placeholder="placeholder" v-model="replyContent" style="border: none;" aria-label="Recipient's username" aria-describedby="button-addon2" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(detailIndex)">
 					<button class="btn" type="button" id="button-addon2" style="border-top-right-radius: 0!important;" @click="replyInsert(detailIndex)">작성</button>
 				</div>
 								        	
@@ -433,7 +444,9 @@ Vue.createApp({
 			detailView:false,
 			detailIndex:"",
 			replyList:[],
+			replyParent:0,
 			replyContent:"",
+			placeholder:"댓글 입력..",
 // 			boardModal:null,
         };
     },
@@ -590,7 +603,8 @@ Vue.createApp({
         	  
         	  const requestData = {
         	    replyOrigin: boardNo,
-        	    replyContent: this.replyContent
+        	    replyContent: this.replyContent,
+        	    replyParent : this.replyParent
         	  };
         	  this.replyContent='';
         	  
@@ -609,6 +623,75 @@ Vue.createApp({
         	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList[index].replyNo);
         	this.replyLoad(index2);
         },
+        
+        //대댓글
+        reReply(replyNo) {
+        	if(replyNo==this.replyParent){
+        		this.replyParent = 0;
+        		this.placeholder = "댓글 입력.."
+        	}
+        	else{
+        		this.replyParent = replyNo;
+        		this.placeholder = "답글 입력..";
+        		this.$refs.replyInput.focus();
+        	}
+        },
+        
+      	//대댓글 펼치기
+        showReReply(replyNo,index){
+      		const arrayIndex = [];
+      	 	const tmp = index+1;
+      	  	if(index!=this.replyList.length){
+      		  	//console.log(replyNo);
+          	  	while(true){
+          		  	if(this.replyList[tmp]==null) break;
+          		  	if(this.replyList[tmp].replyParent==replyNo){
+	         			  //console.log(tmp);
+	         			  arrayIndex.push(tmp);
+	         			  tmp++;
+	         		  }
+          		  	else if(this.replyList[tmp].replyParent==-1||this.replyList[tmp].replyParent==0) break;
+	         	  }
+	         	  
+          	  	if(arrayIndex.length >= 1){
+	             	  for(var i = 0; i<arrayIndex.length; i++){
+	             		  this.replyList[arrayIndex[i]].replyParent = -1;
+	             	  }
+	             	 //console.log("-1만들기");
+	             	 return;
+	         	  }
+	         	  
+	         	  while(true){
+	         		  if(this.replyList[tmp]==null) break;
+	         		  if(this.replyList[tmp].replyParent==-1){
+	         			  //console.log(tmp);
+	         			  arrayIndex.push(tmp);
+	         			  tmp++;
+	         		  }else if(this.replyList[tmp]==null||this.replyList[tmp].replyParent==0) break;
+	         	  }
+	         	  
+	         	  for(var i = 0; i<arrayIndex.length; i++){
+	         		  this.replyList[arrayIndex[i]].replyParent = replyNo;
+	         	  }
+	         	  //console.log("+만들기");
+	     	  }
+	     	  console.log(arrayIndex);
+	        },
+         
+         //대댓글 숨기기 보기 상태변경
+         replyStatus(index){
+				if(index==this.replyList.length) return;
+      	   		if(this.replyList[index+1]!=null&&this.replyList[index+1].replyParent>0){
+		      		   return "답글 보기";
+		      	}
+      	   		else if(this.replyList[index+1]!=null&&this.replyList[index+1].replyParent==0){
+		      		   return "";
+		      	   }
+      	   		else if(this.replyList[index+1]!=null&&this.replyList[index+1].replyParent<0){
+		      		   return "답글 숨기기";
+		      	   }
+      	  
+         },
         
         //상세보기 모달창 열기
         detailViewOn(index) {
