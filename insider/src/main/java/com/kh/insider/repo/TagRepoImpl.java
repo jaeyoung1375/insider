@@ -45,4 +45,10 @@ public class TagRepoImpl implements TagRepo{
 		return sqlSession.selectOne("tag.tagCountListCount", vo);
 	}
 
+	@Override
+	public int updateAvailable(TagDto tagDto) {
+		sqlSession.update("tag.updateAvailable", tagDto);
+		return tagDto.getTagAvailable();
+	}
+
 }

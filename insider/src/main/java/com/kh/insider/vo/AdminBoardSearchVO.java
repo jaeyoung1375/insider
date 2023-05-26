@@ -46,6 +46,8 @@ public class AdminBoardSearchVO {
 	private Integer tagMinFollow;
 	private Integer tagMaxFollow;
 	private Integer tagAvailable;
+	private Integer tagMinCount;
+	private Integer tagMaxCount;
 	private int tagPage=1;
 	private int tagSize=20;
 	private int tagCount;

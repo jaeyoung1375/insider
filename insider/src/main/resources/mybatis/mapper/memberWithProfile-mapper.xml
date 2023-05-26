@@ -13,7 +13,7 @@
 		)where rn between #{begin} and #{end}
 	</sql>
 
-	<select id="selectOne" resultType="memberWithSuspensionDto">
+	<select id="selectOne" resultType="memberWithProfileDto">
 		select * from member_with_profile where member_no=#{memberNo}
 	</select>
 	

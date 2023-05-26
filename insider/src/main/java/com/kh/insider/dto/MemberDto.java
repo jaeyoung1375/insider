@@ -17,8 +17,8 @@ public class MemberDto {
 	private String memberEmail;
 	 @DateTimeFormat(pattern = "E MMM dd HH:mm:ss z yyyy")
 	private Date memberLogin;
-	private double memberLat;
-	private double memberLon;
+	private Double memberLat;
+	private Double memberLon;
 	private String memberPost;
 	private String memberBasicAddr;
 	private String memberDetailAddr;

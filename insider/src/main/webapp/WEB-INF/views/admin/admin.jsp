@@ -467,10 +467,147 @@
 						</ul>
 					</div>
 				</div>
-				<hr>
+			<!-- 게시물 태그 시작 -->
 				<div class="row mt-4">
 					<div class="col">
 						<h4 class="m-0">게시물 태그</h4>
+					</div>
+				</div>
+				<hr>
+			<!-- 태그 검색창 -->
+				<div class="row">
+					<div class="col-2 d-flex align-items-center">
+						<span>팔로우</span>
+					</div>
+					<div class="col-4 p-0">
+						<div class="row">
+							<div class="col-5">
+								<input class="form-control" v-model="boardSearchOption.tagMinFollow">
+							</div>
+							<div class="col-2 d-flex align-items-center justify-content-center">
+								<span>~</span>
+							</div>
+							<div class="col-5">
+								<input class="form-control" v-model="boardSearchOption.tagMaxFollow">
+							</div>
+						</div>
+					</div>
+					<div class="col-2 d-flex align-items-center">
+						<span>태그수</span>
+					</div>
+					<div class="col-4 p-0">
+						<div class="row">
+							<div class="col-5">
+								<input class="form-control" v-model="boardSearchOption.tagMinCount">
+							</div>
+							<div class="col-2 d-flex align-items-center justify-content-center">
+								<span>~</span>
+							</div>
+							<div class="col-5">
+								<input class="form-control" v-model="boardSearchOption.tagMaxCount">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-2 d-flex align-items-center">
+						<span>사용가능여부</span>
+					</div>
+					<div class="col-2 p-0">
+						<select class="form-control" v-model="boardSearchOption.tagAvailable">
+							<option value="">전체</option>
+							<option value="1">사용가능</option>
+							<option value="0">사용불가</option>
+						</select>
+					</div>
+					<div class="col-2 d-flex align-items-center">
+						<span>정렬 순서</span>
+					</div>
+					<div class="col p-0">
+						<select class="form-control" v-model="tagOrderList[1]">
+							<option value="" selected>태그수(선택)</option>
+							<option value="count desc">태그 많은순</option>
+							<option value="count asc">태그 적은순</option>
+						</select>
+					</div>
+					<div class="col p-0">
+						<select class="form-control" v-model="tagOrderList[0]">
+							<option value="" selected>팔로우(선택)</option>
+							<option value="tag_follow desc">팔로우 많은순</option>
+							<option value="tag_follow asc">팔로우 적은순</option>
+						</select>
+					</div>
+					<div class="col p-0">
+						<button type="button" class="col-6 btn btn-secondary" @click="resetTagSearchOption">초기화</button>
+						<button type="button" class="col-6 btn btn-primary" @click="getTagListWithSearchOption">검색</button>
+					</div>
+				</div>
+			<!-- 태그 리스트 -->
+				<div class="row mt-4">
+					<div class="col-6 p-0">
+						<table class="table">
+							<thead>
+								<tr>
+									<th style="width:40%; text-align:center">이름</th>
+									<th style="width:20%; text-align:center">팔로우</th>
+									<th style="width:20%; text-align:center">태그수</th>
+									<th style="width:20%; text-align:center">관리</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="(tag, index) in tagFirstHalfList">
+									<td style="text-align:center">{{tag.tagName}}</td>
+									<td style="text-align:center">{{tag.tagFollow}}</td>
+									<td style="text-align:center">{{tag.count}}</td>
+									<td style="text-align:center; cursor:pointer" v-if="tag.tagAvailable==1" @click="changeTagAvailable(tag.tagName, index)">사용가능</td>
+									<td style="text-align:center; cursor:pointer" v-else @click="changeTagAvailable(tag.tagName, index)">사용불가</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="col-6 p-0">
+						<table class="table">
+							<thead>
+								<tr>
+									<th style="width:40%; text-align:center">이름</th>
+									<th style="width:20%; text-align:center">팔로우</th>
+									<th style="width:20%; text-align:center">태그수</th>
+									<th style="width:20%; text-align:center">관리</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="(tag, index) in tagSecondHalfList">
+									<td style="text-align:center">{{tag.tagName}}</td>
+									<td style="text-align:center">{{tag.tagFollow}}</td>
+									<td style="text-align:center">{{tag.count}}</td>
+									<td style="text-align:center; cursor:pointer" v-if="tag.tagAvailable==1" @click="changeTagAvailable(tag.tagName, index+Math.ceil(tagList.length/2))">사용가능</td>
+									<td style="text-align:center; cursor:pointer" v-else @click="changeTagAvailable(tag.tagName, index+Math.ceil(tagList.length/2))">사용불가</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			<!-- 페이지네이션 -->
+				<div class="row mt-4" id="paging">
+					<div class="col d-flex justify-content-center align-items-center">
+						<ul class="pagination">
+							<li class="page-item" @click="tagFirstPage" :class="{disabled:this.tagSearchPagination.first}">
+								<span class="page-link"><i class="fa-solid fa-angles-left"></i></span>
+							</li>
+							<li class="page-item" @click="tagPrevPage" :class="{disabled:!this.tagSearchPagination.prev}">
+								<span class="page-link"><i class="fa-solid fa-angle-left"></i></span>
+							</li>
+							<li class="page-item" v-for="index in (tagSearchPagination.finishBlock-tagSearchPagination.startBlock+1)" :key="index"
+								 :class="{active:(index+tagSearchPagination.startBlock-1)==boardSearchOption.tagPage}">
+								<span class="page-link" @click="boardSearchOption.tagPage=index+tagSearchPagination.startBlock-1">{{index+tagSearchPagination.startBlock-1}}</span>
+							</li>
+							<li class="page-item" @click="tagNextPage" :class="{disabled:!this.tagSearchPagination.next}">
+								<span class="page-link"><i class="fa-solid fa-angle-right"></i></span>
+							</li>
+							<li class="page-item" @click="tagLastPage" :class="{disabled:this.tagSearchPagination.last}">
+								<span class="page-link"><i class="fa-solid fa-angles-right"></i></span>
+							</li>
+						</ul>
 					</div>
 				</div>
 			</div>
@@ -879,10 +1016,10 @@
 				boardSearchOption:{
 					memberNick:"", boardTimeBegin:"", boardTimeEnd:"", boardMinReport:"", boardMaxReport:"",
 					boardMinLike:"", boardMaxLike:"", boardHide:"",	orderListString:"", page:1,
-					tagPage:1, tagOrderListString:"", tagMinFollow:"", tagMaxFollow:"", tagAvailable:"",
+					tagPage:1, tagOrderListString:"", tagMinFollow:"", tagMaxFollow:"", tagAvailable:"", tagMinCount:"", tagMaxCount:"",
 				},
 				boardOrderList:["","",""],
-				tagOrderList:[""],
+				tagOrderList:["",""],
 				boardSearchPagination:{
 					begin:"", end:"", totalPage:"",	startBlock:"", finishBlock:"", first:false, last:false, prev:false,
 					next:false, nextPage:"", prevPage:"",
@@ -960,6 +1097,12 @@
 		},
 		computed: {
 			//계산영역
+			tagFirstHalfList(){
+				return this.tagList.slice(0, Math.ceil(this.tagList.length/2));
+			},
+			tagSecondHalfList(){
+				return this.tagList.slice(Math.ceil(this.tagList.length/2));
+			}
 		},
 		methods: {
 			//메소드영역
@@ -983,7 +1126,7 @@
 			/*------------------------------ 회원관리 시작 ------------------------------*/
 			//회원 리스트 출력
 			async loadMemberList(){
-				const resp = await axios.get(contextPath+"/rest/member/list", {params:this.memberSearchOption});
+				const resp = await axios.get(contextPath+"/rest/admin/member/list", {params:this.memberSearchOption});
 				this.memberList=[...resp.data.memberList];
 				this.memberSearchPagination=resp.data.paginationVO;
 			},
@@ -1009,7 +1152,7 @@
 			//회원 검색 버튼 클릭시
 			async getListWithSearchOption(){
 				this.memberSearchOption.page=1;
-				const resp = await axios.get(contextPath+"/rest/member/list", {params:this.memberSearchOption});
+				const resp = await axios.get(contextPath+"/rest/admin/member/list", {params:this.memberSearchOption});
 				this.memberList=[...resp.data.memberList];
 				this.memberSearchPagination=resp.data.paginationVO;
 			},
@@ -1034,7 +1177,7 @@
 			/*------------------------------ 회원관리 끝 ------------------------------*/
 			/*------------------------------ 게시물관리 시작 ------------------------------*/
 			async loadBoardList(){
-				const resp = await axios.get(contextPath+"/rest/board/list", {params:this.boardSearchOption});
+				const resp = await axios.get(contextPath+"/rest/admin/board/list", {params:this.boardSearchOption});
 				this.boardList=[...resp.data.boardList];
 				this.boardSearchPagination=resp.data.paginationVO;
 			},
@@ -1071,47 +1214,54 @@
 			//회원 검색 버튼 클릭시
 			async getBoardListWithSearchOption(){
 				this.boardSearchOption.page=1;
-				const resp = await axios.get(contextPath+"/rest/board/list", {params:this.boardSearchOption});
+				const resp = await axios.get(contextPath+"/rest/admin/board/list", {params:this.boardSearchOption});
 				this.boardList=[...resp.data.boardList];
 				this.boardSearchPagination=resp.data.paginationVO;
 			},
 			/*--- 태그리스트 ---*/
 			async loadTagList(){
-				const resp = await axios.get(contextPath+"/rest/tag/", {params:this.boardSearchOption});
+				const resp = await axios.get(contextPath+"/rest/admin/tag/list", {params:this.boardSearchOption});
 				this.tagList=[...resp.data.tagList];
 				this.tagSearchPagination=resp.data.paginationVO;
 			},
 			//페이지네이션 처음, 이전, 다음 끝 버튼 누를 때
 			tagFirstPage(){
-				if(!this.tagSearchPagination.first) this.tagSearchOption.page=1;
+				if(!this.tagSearchPagination.first) this.boardSearchOption.tagPage=1;
 			},
 			tagPrevPage(){
-				if(this.tagSearchPagination.prev) this.tagSearchOption.page=this.tagSearchPagination.prevPage;
+				if(this.tagSearchPagination.prev) this.boardSearchOption.tagPage=this.tagSearchPagination.prevPage;
 			},
 			tagNextPage(){
-				if(this.tagSearchPagination.next) this.tagSearchOption.page=this.tagSearchPagination.nextPage;
+				if(this.tagSearchPagination.next) this.boardSearchOption.tagPage=this.tagSearchPagination.nextPage;
 			},
 			tagLastPage(){
-				if(!this.tagSearchPagination.last) this.tagSearchOption.page=this.tagSearchPagination.totalPage;
+				if(!this.tagSearchPagination.last) this.boardSearchOption.tagPage=this.tagSearchPagination.totalPage;
 			},
 			makeQueryForTagOrderList(){
 				const orderListParams = this.tagOrderList.join(',');
-				this.tagSearchOption.tagOrderListString=orderListParams;
+				this.boardSearchOption.tagOrderListString=orderListParams;
 			},
 			//회원 리스트 초기화 버튼 클릭시
 			resetTagSearchOption(){
 				this.boardSearchOption.tagMinFollow="";
 				this.boardSearchOption.tagMaxFollow="";
 				this.boardSearchOption.tagAvailable="";
-				this.tagOrderList=[""];
+				this.boardSearchOption.tagMinCount="";
+				this.boardSearchOption.tagMaxCount="";
+				this.tagOrderList=["",""];
 				this.boardSearchOption.tagOrderListString="";
 			},
 			//회원 검색 버튼 클릭시
 			async getTagListWithSearchOption(){
 				this.boardSearchOption.tagPage=1;
-				const resp = await axios.get(contextPath+"/rest/tag/", {params:this.boardSearchOption});
+				const resp = await axios.get(contextPath+"/rest/admin/tag/list", {params:this.boardSearchOption});
 				this.tagList=[...resp.data.tagList];
 				this.tagSearchPagination=resp.data.paginationVO;
+			},
+			async changeTagAvailable(tagName, index){
+				const data={tagName:tagName}
+				const resp = await axios.put(contextPath+"/rest/tag/", data)
+				this.tagList[index].tagAvailable=resp.data;
 			},
 			/*------------------------------ 게시물관리 끝 ------------------------------*/
 			/*------------------------------ 신고관리 시작 ------------------------------*/
@@ -1178,7 +1328,7 @@
 				if(buttonClick){
 					this.memberLoginSearch.page=1;
 				}
-				const resp = await axios.post(contextPath+"/rest/member/stats/", this.memberLoginSearch)
+				const resp = await axios.post(contextPath+"/rest/admin/stats/member", this.memberLoginSearch)
 				this.loginChartLeft=true;
 				if(this.memberLoginSearch.col=='days'){
 					if(resp.data.length<31){
@@ -1231,7 +1381,7 @@
 				if(buttonClick){
 					this.memberJoinSearch.page=1;
 				}
-				const resp = await axios.post(contextPath+"/rest/member/stats/", this.memberJoinSearch);
+				const resp = await axios.post(contextPath+"/rest/admin/stats/member/", this.memberJoinSearch);
 				this.joinChartLeft=true;
 				if(this.memberJoinSearch.col=='days'){
 					if(resp.data.length<31){
@@ -1284,7 +1434,7 @@
 				if(buttonClick){
 					this.memberCumulativeSearch.page=1;
 				}
-				const resp = await axios.post(contextPath+"/rest/member/stats/cumulative/", this.memberCumulativeSearch);
+				const resp = await axios.post(contextPath+"/rest/admin/stats/cumulative/", this.memberCumulativeSearch);
 				this.memberCumulativeList.col = _.map(resp.data, 'col');
 				this.memberCumulativeList.count = _.map(resp.data, 'count');
 				if(this.memberCumulativeList.col[0]==null){
@@ -1345,7 +1495,7 @@
 				if(buttonClick){
 					this.boardTimeSearch.page=1;
 				}
-				const resp = await axios.post(contextPath+"/rest/board/stats/boardTime", this.boardTimeSearch)
+				const resp = await axios.post(contextPath+"/rest/admin/stats/boardTime", this.boardTimeSearch)
 				this.boardTimeChartLeft=true;
 				if(this.boardTimeSearch.col=='days'){
 					if(resp.data.length<31){
@@ -1398,7 +1548,7 @@
 				if(buttonClick){
 					this.boardTagSearch.page=1;
 				}
-				const resp = await axios.post(contextPath+"/rest/board/stats/boardTag", this.boardTagSearch)
+				const resp = await axios.post(contextPath+"/rest/admin/stats/boardTag", this.boardTagSearch)
 				this.boardTagChartRight=true;
 				if(resp.data.length<15){
 					this.boardTagChartRight=false;

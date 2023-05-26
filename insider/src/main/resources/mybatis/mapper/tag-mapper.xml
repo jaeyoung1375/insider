@@ -16,6 +16,7 @@
 	<insert id="insert">
 		insert into tag(tag_name) values(#{tagName})
 	</insert>
+	<!-- 태그 팔로우 수 추가 -->
 	<update id="updateFollow">
 		update tag set tag_follow=#{tagFollow} where tag_name=#{tagName}
 	</update>
@@ -25,6 +26,10 @@
 	<select id="selectList" resultType="tagDto">
 		select * from tag
 	</select>
+	<!-- 태그 사용상테 업데이트 -->
+	<update id="updateAvailable">
+		update tag set tag_available=#{tagAvailable} where tag_name=#{tagName}
+	</update>
 	
 <!-- 조건검색 태그 리스트 -->
 	<select id="tagCountList" resultType="tagCountVO">
@@ -40,6 +45,8 @@
 		<bind name="tagMinFollowExist" value="tagMinFollow!=null and !tagMinFollow.equals('')"></bind>
 		<bind name="tagMaxFollowExist" value="tagMaxFollow!=null and !tagMaxFollow.equals('')"></bind>
 		<bind name="tagAvailableExist" value="tagAvailable!=null and !tagAvailable.equals('')"></bind>
+		<bind name="tagMinCountExist" value="tagMinCount!=null and !tagMinCount.equals('')"></bind>
+		<bind name="tagMaxCountExist" value="tagMaxCount!=null and !tagMaxCount.equals('')"></bind>
 		<include refid="topNheader"></include>
 		SELECT t.*, bts.count FROM tag t INNER JOIN (
 		SELECT bt.tag_name, COUNT(*) AS count
@@ -119,11 +126,22 @@
 		 		<otherwise></otherwise>
 		 	</choose>
 		 	<choose>
-		 		<when test="tagAvailableExist and tagAvailable==1">
-		 			and tag_available=1
+		 		<when test="tagMinCountExist and tagMaxCountExist">
+		 			and count between #{tagMinCount} and #{tagMaxCount}
 		 		</when>
-		 		<when test="tagAvailableExist and tagAvailable==0">
-		 			and tag_available=0
+		 		<when test="tagMinCountExist">
+		 			and count >= #{tagMinCount}
+		 		</when>
+		 		<when test="tagMaxCountExist">
+		 			<![CDATA[
+		 			and count <= #{tagMaxCount}
+		 			]]>
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
+		 	<choose>
+		 		<when test="tagAvailableExist">
+		 			and tag_available=#{tagAvailable}
 		 		</when>
 		 		<otherwise></otherwise>
 		 	</choose>
