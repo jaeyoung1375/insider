@@ -51,6 +51,7 @@
 		select * from member where member_nick = #{memberNick}
 	</select>
 	
+
 	
 	<!-- 이메일 중복 확인 -->
 	<select id="isEmailDuplicated" resultType="int">

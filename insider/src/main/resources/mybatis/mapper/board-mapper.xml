@@ -176,6 +176,16 @@
 	 		</choose>
 	 	<include refid="topNfooter"></include>	
 	</select>
+	
+	<!-- 마이페이지 무한스크롤 구현 -->
+	<select id="myPageSelectPaging" resultMap="boardListVO">
+		<include refid="topNheader"></include>
+	 		select * from board_with_nick where member_nick = #{memberNick}
+	 		order by board_no asc
+	 	<include refid="topNfooter"></include>	
+	</select>
+	
+	
 	<!-- 서브구문 -->
 	<select id="boardListTreeSelectSub" resultType="boardAttachmentDto">
 		select * from board_attachment where board_no = #{boardNo}
@@ -245,6 +255,13 @@
 
 	<!-- 추후 코드 수정 예정 -5/19 재영 -->
 	<select id="getTotalMyPost" resultType="boardDto">
+	<include refid="topNheader"></include>
+	select A.*, B.attachment_no from board A inner join board_attachment B on A.board_no = B.board_no where member_no = #{memberNo}
+		<include refid="topNfooter"></include>	
+	</select>
+	
+	<!-- 추후 코드 수정 예정 -5/26 재영 -->
+	<select id="getTotalMyPost2" resultType="boardDto">
 	select A.*, B.attachment_no from board A inner join board_attachment B on A.board_no = B.board_no where member_no = #{memberNo}
 	</select>
 	
