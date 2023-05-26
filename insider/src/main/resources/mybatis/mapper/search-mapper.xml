@@ -3,7 +3,7 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="search">
-	<select id="selectList" resultType="searchDto">
-		select * from search where instr(name, #{searchInput})>0 or instr(nick, #{searchInput})>0
+	<select id="selectList" resultType="searchComplexDto">
+		select * from search_complex where instr(name, #{searchInput})>0 or instr(nick, #{searchInput})>0
 	</select>
 </mapper>

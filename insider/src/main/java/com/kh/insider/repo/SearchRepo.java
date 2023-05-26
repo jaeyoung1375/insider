@@ -2,8 +2,8 @@ package com.kh.insider.repo;
 
 import java.util.List;
 
-import com.kh.insider.dto.SearchDto;
+import com.kh.insider.dto.SearchComplexDto;
 
 public interface SearchRepo {
-	List<SearchDto> selectList(String searchInput);
+	List<SearchComplexDto> selectList(String searchInput);
 }

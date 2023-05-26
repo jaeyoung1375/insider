@@ -833,11 +833,8 @@
 			searchAddrFromCoords(coords, callback) {
 			    // 좌표로 행정동 주소 정보를 요청합니다
 			    this.geocoder.coord2RegionCode(this.member.memberLon, this.member.memberLat, callback);
-			    console.log(this.geocoder)
 			},
 			displayCenterInfo(result, status) {
-				console.log(status)
-				console.log(result)
 			    if (status === kakao.maps.services.Status.OK) {
 			        for(var i = 0; i < result.length; i++) {
 			            // 행정동의 region_type 값은 'H' 이므로

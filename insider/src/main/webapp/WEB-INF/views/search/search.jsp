@@ -21,7 +21,7 @@
 	position:absolute;
 	padding-left: 3.3rem;
 	z-index:100;
-	width:100%;
+	width:500px;
 	background-color:white;
 }
 .box {
@@ -67,24 +67,41 @@
 .box:hover .like-comment{
 	display:block;
 }
+/* 드롭다운 메뉴 */
+
 </style>
 <div class="container-fluid mt-4" id="app">
 	<div class="row">
 		<div class="offset-md-2 col-md-8">
 		<!-- 검색창 -->
-			<div class="row text-center">
-				<div class="col form-group has-search">
-					<span class="fa-solid fa-search form-control-feedback"></span>
-					<input type="text" class="form-control rounded" placeholder="검색" v-model="searchInput" @blur="hideSearchList" @click="showSearchList" >
-				<!-- 추천 검색어 리스트 -->
-					<div class="search-list" ref="searchList" v-show="recommandListShow">
-						<div class="row" v-for="(recommand, index) in recommandList" :key="index">
-							<div class='col'>
-								{{recommand.name}}
-							</div>
-						</div>
+			<div class="text-center">
+				<div class="row">
+					<div class="col form-group has-search">
+						<span class="fa-solid fa-search form-control-feedback"></span>
+						<input type="text" class="form-control rounded" placeholder="검색" v-model="searchInput" @blur="hideSearchList" @click="showSearchList" >
 					</div>
 				</div>
+			<!-- 추천 검색어 리스트 -->
+				<ul class="dropdown-menu" :style="{ width: dropdownWidth }" aria-labelledby="dropdownMenu2" :class="{'show':recommandListShow}">
+					<li v-for="(recommand, index) in recommandList" :key="index">
+						<div class="dropdown-item">
+							<div class="row" v-if="recommand.nick==null" @click="moveToTagDetail">
+								<div class="col p-2 ms-2">
+									# {{recommand.name}}
+								</div>
+							</div>
+							<div class="row" v-else  @click="moveToMemberDetail">
+								<div class="col-3">
+									<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+recommand.imageURL">
+								</div>
+								<div class="col-9">
+									<div class="ms-2">{{recommand.nick}}</div>
+									<div class="ms-2">{{recommand.name}}</div>
+								</div>
+							</div>
+						</div>
+					</li>
+				</ul>
 			</div>
 			
 		<!-- 리스트 -->
@@ -150,6 +167,13 @@
 			},
 			showSearchList(){
 				this.recommandListShow=true;
+				this.dropdownWidth = `${inputWidth}px`;
+			},
+			async moveToTagDetail(){
+				
+			},
+			async moveToMemberDetail(){
+				
 			},
 		},
 		created(){

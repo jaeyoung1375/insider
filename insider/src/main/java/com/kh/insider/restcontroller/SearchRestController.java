@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kh.insider.dto.SearchDto;
+import com.kh.insider.dto.SearchComplexDto;
 import com.kh.insider.repo.SearchRepo;
 
 @RestController
@@ -19,7 +19,7 @@ public class SearchRestController {
 	private SearchRepo searchRepo;
 	
 	@GetMapping("/{searchInput}")
-	public List<SearchDto> recommandSearch(@PathVariable String searchInput){
+	public List<SearchComplexDto> recommandSearch(@PathVariable String searchInput){
 		return searchRepo.selectList(searchInput);
 	}
 }

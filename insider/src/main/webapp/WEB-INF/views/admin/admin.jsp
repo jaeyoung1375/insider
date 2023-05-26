@@ -1642,17 +1642,6 @@
 		},
 		created(){
 			//데이터 불러오는 영역
-			this.loadMemberList();
-			this.loadReportList();
-			this.connectReportServer();
-			this.getMemberLoginStats();
-			this.getMemberJoinStats();
-			this.getMemberCumulativeStats();
-			this.getBoardTimeStats();
-			this.getBoardTagStats();
-			this.loadReportContent();
-			this.loadBoardList();
-			this.loadTagList();
 		},
 		watch:{
 			//감시영역
@@ -1683,6 +1672,38 @@
 					this.makeQueryForTagOrderList();
 				}
 			},
+			adminMenu(){
+				if(this.adminMenu==1){
+					//회원관리
+					this.loadMemberList();
+					this.loadReportContent();
+				}
+				else if(this.adminMenu==2){
+					//게시물 관리
+					this.loadBoardList();
+					this.loadTagList();
+				}
+				else if(this.adminMenu==3){
+					//신고 관리
+					this.loadReportList();
+					this.connectReportServer();
+					this.loadReportContent();
+				}
+				else if(this.adminMenu==4){
+					//회원 통계
+					this.getMemberLoginStats();
+					this.getMemberJoinStats();
+					this.getMemberCumulativeStats();
+				}
+				else if(this.adminMenu==5){
+					//게시물 통계
+					this.getBoardTimeStats();
+					this.getBoardTagStats();
+				}
+				else if(this.adminMenu==6){
+					//조회 통계
+				}
+			}
 		},
 		mounted(){
 			//쿼리 초기화 및 변화 감지

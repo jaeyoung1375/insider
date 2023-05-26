@@ -6,7 +6,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.kh.insider.dto.SearchDto;
+import com.kh.insider.dto.SearchComplexDto;
 
 @Repository
 public class SearchRepoImpl implements SearchRepo{
@@ -15,7 +15,7 @@ public class SearchRepoImpl implements SearchRepo{
 	private SqlSession sqlSession;
 	
 	@Override
-	public List<SearchDto> selectList(String searchInput) {
+	public List<SearchComplexDto> selectList(String searchInput) {
 		return sqlSession.selectList("search.selectList", searchInput);
 	}
 
