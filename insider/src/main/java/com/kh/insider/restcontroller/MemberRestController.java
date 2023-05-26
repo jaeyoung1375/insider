@@ -44,8 +44,6 @@ public class MemberRestController {
 	@Autowired
 	private MemberRepo memberRepo;
 	@Autowired
-	private MemberStatsRepo memberStatsRepo;
-	@Autowired
 	private FollowRepo followRepo;
 	@Autowired
 	private BoardRepo boardRepo;
@@ -58,7 +56,9 @@ public class MemberRestController {
 	}
 	//멤버정보 수정
 	@PutMapping("/")
-	public void putMember(@RequestBody MemberDto memberDto) {
+	public void putMember(@RequestBody MemberDto memberDto, HttpSession session) {
+		long memberNo = (Long)session.getAttribute("memberNo");
+		memberDto.setMemberNo(memberNo);
 		memberRepo.update(memberDto);
 	}
 	
@@ -87,33 +87,7 @@ public class MemberRestController {
 		memberDto.setMemberNo(memberNo);
 		memberRepo.changePassword(memberDto);
 	}
-	//리스트 출력
-	@GetMapping("/list")
-	public MemberWithProfileResponseVO selectList(@ModelAttribute MemberWithProfileSearchVO vo){
-		//정렬 리스트 trim
-		vo.refreshOrderList();
-		//전체 게시물 수 반환
-		int count = memberWithProfileRepo.selectCount(vo);
-		vo.setCount(count);
-		MemberWithProfileResponseVO responseVO = new MemberWithProfileResponseVO();
-		responseVO.setMemberList(memberWithProfileRepo.selectList(vo));
-		
-		PaginationVO paginationVO = new PaginationVO();
-		paginationVO.setCount(count);
-		paginationVO.setPage(vo.getPage());
-		
-		responseVO.setPaginationVO(paginationVO);
-		return responseVO;
-	}
-	//통계자료 반환
-	@PostMapping("/stats/")
-	public List<MemberStatsResponseVO> getStats(@RequestBody MemberStatsSearchVO memberStatsSearchVO){
-		return memberStatsRepo.selectList(memberStatsSearchVO);
-	}
-	@PostMapping("/stats/cumulative/")
-	public List<MemberStatsResponseVO> getCumulative(@RequestBody MemberStatsSearchVO memberStatsSearchVO){
-		return memberStatsRepo.selectListCumulative(memberStatsSearchVO);
-	}
+
 	
 	// 팔로워 목록 불러오기
 	@GetMapping("/followerList")

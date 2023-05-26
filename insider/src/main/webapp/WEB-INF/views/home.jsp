@@ -102,13 +102,20 @@
     
 	.moreText{
 			display:inline-block!important;
-		}
+	}
 	.moreContent{
 		height: auto!important;
 	    overflow: auto!important;
 	    width: auto!important;
 	    white-space: normal!important;
 	    text-overflow: inherit!important;
+	}
+	
+	.childReply{
+		padding-left: 35px;
+	}
+	.childShow{
+		display: none;
 	}
 
 </style>
@@ -129,7 +136,7 @@
                                  <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> 
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
 
-                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo)"></i></div>
+                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo, board.boardWithNickDto.memberNo)"></i></div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲ID▲▲▲▲▲▲▲▲▲▲▲▲▲-->
@@ -159,7 +166,7 @@
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲사진▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼좋아요▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-1" style="height: 40px;">
-                            <div class="d-flex" href="index.html">
+                            <div class="d-flex">
                                 <div class="p-2"><i :class="{'fa-heart': true, 'like':isLiked[index], 'fa-solid': isLiked[index], 'fa-regular': !isLiked[index]}" @click="likePost(board.boardWithNickDto.boardNo,index)" style="font-size: 32px;"></i></div>
                                 <div class="p-2"><img src="/static/image/dm.png"></div>
                                 <div class="p-2"><img src="/static/image/message_ico.png"></div>
@@ -169,16 +176,17 @@
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲좋아요▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼멘트▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-1">
-                            <h4 class="mt-2"><b>좋아요 {{boardLikeCount[index]}}개</b></h4>
+                            <h4 class="mt-1"><b>좋아요 {{boardLikeCount[index]}}개</b></h4>
                             <h4><a class="btn btn-none" style="padding: 0 0 0 0" :href="'${pageContext.request.contextPath}/member/'+board.boardWithNickDto.memberNick"><b>{{board.boardWithNickDto.memberNick}}</b></a></h4>
-                            <p style="height: 20px;overflow: hidden;width: 200px;white-space: nowrap;text-overflow: ellipsis;margin-bottom:5px;">
-                            	<span class="textHide">{{board.boardWithNickDto.boardContent}}
-                            	<br v-if="boardList[index].boardTagList.length > 0"><br v-if="boardList[index].boardTagList.length > 0">
-                            	<a href="#" v-for="(tag, index3) in boardList[index].boardTagList" :key="index3">\#{{tag.tagName}}</a>
+                            <p style="height: 20px;overflow: hidden; width: 400px;white-space: nowrap;text-overflow: ellipsis;margin-bottom:5px;">
+                            	<span class="textHide">
+                            		{{board.boardWithNickDto.boardContent}}
+                            		<br v-if="boardList[index].boardTagList.length > 0"><br v-if="boardList[index].boardTagList.length > 0">
+                            		<a href="#" v-for="(tag, index3) in boardList[index].boardTagList" :key="index3">\#{{tag.tagName}}</a>
                             	</span>
                             </p>                            
                             
-                            <h6 style="cursor: pointer; color:gray;">더 보기</h6>
+                            <h6 style="cursor: pointer; color:gray; display:none;">더 보기</h6>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲멘트▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼댓글 모달창 열기▼▼▼▼▼▼▼▼▼▼▼▼▼-->
@@ -240,25 +248,34 @@
            			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardList[detailIndex].boardWithNickDto.memberNick"><b>{{boardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
            		</div>
 				
-				<div class="card-body card-scroll"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
+				<div class="card-body card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
 					<p class="card-text" style="margin-left: 0.5em;">{{boardList[detailIndex].boardWithNickDto.boardContent}}
 					<br v-if="boardList[detailIndex].boardTagList.length > 0"><br v-if="boardList[detailIndex].boardTagList.length > 0">
                             	<a href="#" v-for="(tag, index3) in boardList[detailIndex].boardTagList" :key="index3">\#{{tag.tagName}}</a>
 					</p>
 					
-					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" style="position: relative;">
+					
+					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
 						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="color:black;text-decoration:none; position:relative;">
-							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="35" height="35" style="border-radius: 70%;position:absolute; margin-top:4px; margin-left: 4px">
-							<img v-else src="https://via.placeholder.com/30x30?text=profile" style="border-radius: 70%;position:absolute;top:10%;">
+							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="42" height="42" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
+							<img v-else src="https://via.placeholder.com/42x42?text=profile" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
 							
-							<p style="padding-left: 2.9em; margin-bottom: 1px; font-size: 0.9em; font-weight: bold;" >{{replyList[index].memberNick}}</p>							
+							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; font-weight: bold;">{{replyList[index].memberNick}}</p>							
 						</a>
-						<p style="padding-left:2.9em;margin-bottom:4px;font-size:0.9em;">{{replyList[index].replyContent}}</p>
+						<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em;">{{replyList[index].replyContent}}</p>
+						<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp;  
+							<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+							<i v-if="replyList[index].replyMemberNo == loginMemberNo" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="margin-top:2px; color:red; cursor: pointer;"></i>
+						</p>
+						
+<!-- 						<p v-if="replyList[index].replyParent == 0"> -->
+<!-- 							<span @click="showReReply(reply.replyNo, index)" style="cursor:pointer; padding-left:4em; font-size:0.8em; color:gray;">{{replyStatus(index)}}</span> -->
+<!-- 						</p> -->
 					</div>
 					
 					<div v-else class="card-text" style="position: relative;">
-						<p>첫 댓글을 작성해보세요</p>
+						<b style="margin-left: 0.5em;">첫 댓글을 작성해보세요</b>
 					</div>
 					
 					
@@ -278,7 +295,7 @@
 				</div>
 				
 				<div class="input-group">
-					<input type="text" class="form-control" placeholder="댓글 달기.." v-model="replyContent" style="border: none;" aria-label="Recipient's username" aria-describedby="button-addon2" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(detailIndex)">
+					<input ref="replyInput" type="text" class="form-control" :placeholder="placeholder" v-model="replyContent" style="border: none;" aria-label="Recipient's username" aria-describedby="button-addon2" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(detailIndex)">
 					<button class="btn" type="button" id="button-addon2" style="border-top-right-radius: 0!important;" @click="replyInsert(detailIndex)">작성</button>
 				</div>
 								        	
@@ -303,14 +320,14 @@
 			<div class="modal-content">
 				<div class="modal-body p-0">
 					<div class="row p-3" @click="showReportMenuModal">
-						<div class="col d-flex justify-content-center align-items-center" style="color:#dc3545;">
+						<div class="col d-flex justify-content-center align-items-center" style="color:#dc3545; cursor:pointer">
 							<h5 style="font-weight:bold; margin:0;">신고</h5>
 						</div>
 					</div>
 					<!-- 메뉴 구분선 -->
 					<hr class="m-0">
 					<div class="row p-3" @click="hideAdditionalMenuModal">
-						<div class="col d-flex justify-content-center align-items-center">
+						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
 							<h5 style="margin:0;">취소</h5>
 						</div>
 					</div>
@@ -336,7 +353,7 @@
 						</div>
 					</div>
 					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo" style="border-top:var(--bs-modal-border-width) solid var(--bs-modal-border-color)">
-						<div class="col d-flex p-3" @click="reportContent(report.reportListContent)">
+						<div class="col d-flex p-2" @click="reportContent(report.reportListContent)" style="cursor:pointer">
 							<h5 style="margin:0;">{{report.reportListContent}}</h5>
 						</div>
 					</div>
@@ -373,7 +390,7 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col d-flex p-3" @click="blockUser" style="color:#dc3545; cursor:pointer">
+						<div class="col d-flex p-3" @click="blockUser" style="color:#dc3545; cursor:pointer" v-if="reportBoardData[2]!=null && reportBoardData[2].length>0">
 							<h5 style="margin:0;">{{reportBoardData[2]}}님 차단</h5>
 						</div>
 					</div>
@@ -421,13 +438,15 @@ Vue.createApp({
 			
 			//게시물 내용 더보기
 			showMore:false,
-			showMoreText:"더 보기",
+			
 			
 			//상세보기 및 댓글
 			detailView:false,
 			detailIndex:"",
 			replyList:[],
+			replyParent:0,
 			replyContent:"",
+			placeholder:"댓글 입력..",
 // 			boardModal:null,
         };
     },
@@ -453,11 +472,6 @@ Vue.createApp({
             if(this.loading == true) return; //로딩중이면
             if(this.finish == true) return; //다 불러왔으면
             this.loading = true;
-			
-            console.log("test");
-            console.log("test");
-            console.log("test");
-            console.log("test")
             const resp = await axios.get("${pageContext.request.contextPath}/rest/board/page/"+ this.page);
             //console.log(resp.data);
             //console.log(resp.data[0].boardLike);
@@ -510,9 +524,7 @@ Vue.createApp({
         dateCount(date) {
         	const curTime = new Date();
         	const postTime = new Date(date);
-        	console.log(postTime);
         	const duration = Math.floor((curTime - postTime) / (1000 * 60));
-        	console.log(duration);
         	
         	if(duration < 1){
         		return "방금 전";
@@ -580,14 +592,9 @@ Vue.createApp({
        
         //댓글 조회
         async replyLoad(index) {
+        	this.replyList = [];
         	const resp = await axios.get("${pageContext.request.contextPath}/rest/reply/"+ this.boardList[index].boardWithNickDto.boardNo);
-        	console.log(resp);
-        	console.log(resp.data);
-        	this.replyList.push(...resp.data);
-			console.log(this.replyList);
-        		
-        		//         	if(resp.data>0){
-//         	}
+            this.replyList.push(...resp.data);
         },
         
         //댓글 등록
@@ -596,14 +603,15 @@ Vue.createApp({
         	  
         	  const requestData = {
         	    replyOrigin: boardNo,
-        	    replyContent: this.replyContent
+        	    replyContent: this.replyContent,
+        	    replyParent : this.replyParent
         	  };
-        	  this.replyList = [];
         	  this.replyContent='';
+        	  
 				
         	  try {
-        	    const response = await axios.post(`${pageContext.request.contextPath}/rest/reply/`, requestData);
-        	    this.replyLoad(index);
+        	    const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+        	    this.replyLoad(index);	    
         	  } 
         	  catch (error) {
         	    console.error(error);
@@ -611,10 +619,79 @@ Vue.createApp({
         },
         
         //댓글 삭제
-        async replyDelete(index) {
-        	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList.replyNo)
-        	this.replyLoad(index);
+        async replyDelete(index,index2) {
+        	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList[index].replyNo);
+        	this.replyLoad(index2);
         },
+        
+        //대댓글
+        reReply(replyNo) {
+        	if(replyNo==this.replyParent){
+        		this.replyParent = 0;
+        		this.placeholder = "댓글 입력.."
+        	}
+        	else{
+        		this.replyParent = replyNo;
+        		this.placeholder = "답글 입력..";
+        		this.$refs.replyInput.focus();
+        	}
+        },
+        
+      	//대댓글 펼치기
+        showReReply(replyNo,index){
+      		const arrayIndex = [];
+      	 	const tmp = index+1;
+      	  	if(index!=this.replyList.length){
+      		  	//console.log(replyNo);
+          	  	while(true){
+          		  	if(this.replyList[tmp]==null) break;
+          		  	if(this.replyList[tmp].replyParent==replyNo){
+	         			  //console.log(tmp);
+	         			  arrayIndex.push(tmp);
+	         			  tmp++;
+	         		  }
+          		  	else if(this.replyList[tmp].replyParent==-1||this.replyList[tmp].replyParent==0) break;
+	         	  }
+	         	  
+          	  	if(arrayIndex.length >= 1){
+	             	  for(var i = 0; i<arrayIndex.length; i++){
+	             		  this.replyList[arrayIndex[i]].replyParent = -1;
+	             	  }
+	             	 //console.log("-1만들기");
+	             	 return;
+	         	  }
+	         	  
+	         	  while(true){
+	         		  if(this.replyList[tmp]==null) break;
+	         		  if(this.replyList[tmp].replyParent==-1){
+	         			  //console.log(tmp);
+	         			  arrayIndex.push(tmp);
+	         			  tmp++;
+	         		  }else if(this.replyList[tmp]==null||this.replyList[tmp].replyParent==0) break;
+	         	  }
+	         	  
+	         	  for(var i = 0; i<arrayIndex.length; i++){
+	         		  this.replyList[arrayIndex[i]].replyParent = replyNo;
+	         	  }
+	         	  //console.log("+만들기");
+	     	  }
+	     	  console.log(arrayIndex);
+	        },
+         
+         //대댓글 숨기기 보기 상태변경
+         replyStatus(index){
+				if(index==this.replyList.length) return;
+      	   		if(this.replyList[index+1]!=null&&this.replyList[index+1].replyParent>0){
+		      		   return "답글 보기";
+		      	}
+      	   		else if(this.replyList[index+1]!=null&&this.replyList[index+1].replyParent==0){
+		      		   return "";
+		      	   }
+      	   		else if(this.replyList[index+1]!=null&&this.replyList[index+1].replyParent<0){
+		      		   return "답글 숨기기";
+		      	   }
+      	  
+         },
         
         //상세보기 모달창 열기
         detailViewOn(index) {
@@ -695,8 +772,8 @@ Vue.createApp({
 			this.hideReportMenuModal();
 			if(resp.data.length!=0){
 				this.reportBoardData[2] = resp.data.memberNick;
-				this.showBlockModal();
 			}
+			this.showBlockModal();
 		},
 		//차단
 		async blockUser(){
@@ -736,10 +813,8 @@ Vue.createApp({
 		//this.boardModal = new bootstrap.Modal(this.$refs.modal03);
     },
     updated(){
-    	console.log($(".textHide").width());
-    	console.log($(".textHide").height());
     	$(".textHide").each(function(){
-    		if($(this).width()>200||$(this).height()>21){
+    		if($(this).width()>400||$(this).height()>21){
         		$(this).parent("p").next("h6").addClass("moreText");
     		}
     	});
@@ -748,8 +823,10 @@ Vue.createApp({
     		//console.log("실행횟수");
     		if($(this).prev("p").hasClass("moreContent")){
     			$(this).prev("p").removeClass("moreContent");
+    			$(this).text("더 보기");
     		}else{
         		$(this).prev("p").addClass("moreContent");
+    			$(this).text("접기");
     		}
     		
     	});

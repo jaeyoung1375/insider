@@ -70,10 +70,43 @@
 	
 	<!-- 회원정보 수정(패스워드 x)-->
 	<update id="update">
-		update member set member_name=#{memberName}, member_email=#{memberEmail}, 
-		member_post=#{memberPost}, member_basic_addr=#{memberBasicAddr}, member_msg=#{memberMsg},
-		member_detail_addr=#{memberDetailAddr}, member_tel=#{memberTel}, member_gender=#{memberGender}
-		, member_birth=#{memberBirth}, member_lat=#{memberLat}, member_lon=#{memberLon} where member_no=#{memberNo} 
+		update member
+		<set>	
+			<if test="memberName!=null and !memberName.equals('')">
+				,member_name=#{memberName}
+			</if>
+			<if test="memberEmail!=null and !memberEmail.equals('')">
+				,member_email=#{memberEmail}
+			</if>
+			<if test="memberPost!=null and !memberPost.equals('')">
+				,member_post=#{memberPost}
+			</if>
+			<if test="memberBasicAddr!=null and !memberBasicAddr.equals('')">
+				,member_basic_addr=#{memberBasicAddr}
+			</if>
+			<if test="memberMsg!=null and !memberMsg.equals('')">
+				,member_msg=#{memberMsg}
+			</if>
+			<if test="memberDetailAddr!=null and !memberDetailAddr.equals('')">
+				,member_detail_addr=#{memberDetailAddr}
+			</if>
+			<if test="memberTel!=null and !memberTel.equals('')">
+				,member_tel=#{memberTel}
+			</if>
+			<if test="memberGender!=null and !memberGender.equals('')">
+				,member_gender=#{memberGender}
+			</if>
+			<if test="memberBirth!=null and !memberBirth.equals('')">
+				,member_birth=#{memberBirth}
+			</if>
+			<if test="memberLat!=null and !memberLat.equals('')">
+				,member_lat=#{memberLat}
+			</if>
+			<if test="memberLon!=null and !memberLon.equals('')">
+				,member_lon=#{memberLon}
+			</if>
+		</set> 
+		where member_no=#{memberNo} 
 	</update>
 	<!-- 회원정보 수정(패스워드)-->
 	<update id="changePassword">

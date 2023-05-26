@@ -3,6 +3,8 @@ package com.kh.insider.repo;
 import java.util.List;
 
 import com.kh.insider.dto.TagDto;
+import com.kh.insider.vo.AdminBoardSearchVO;
+import com.kh.insider.vo.TagCountVO;
 
 public interface TagRepo {
 	//신규 태그 입력
@@ -12,4 +14,10 @@ public interface TagRepo {
 	//tag List 및 단일조회
 	List<TagDto> selectList();
 	TagDto selectOne(String tagName);
+	
+	List<TagCountVO> tagCountList(AdminBoardSearchVO vo);
+	int tagCountListCount(AdminBoardSearchVO vo);
+	
+	//태그 사용가능 여부 변경
+	int updateAvailable(TagDto tagDto);
 }
