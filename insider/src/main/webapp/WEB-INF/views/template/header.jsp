@@ -161,7 +161,7 @@
 </body>
 	
 <script>
-	const aside=Vue.createApp({
+	Vue.createApp({
 		data() {
 			return {
 				sideMenu:false,
@@ -393,8 +393,8 @@
         updated(){},
         
 
-	});
-	aside.mount("#aside");
+	})
+	.mount("#aside");
 
 </script>
 
