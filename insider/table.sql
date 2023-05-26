@@ -156,3 +156,17 @@ inner JOIN member_with_profile m ON f.member_no = m.MEMBER_NO;
 CREATE OR REPLACE VIEW Block_With_Profile as
 SELECT b.*, m.member_name, m.member_nick, m.attachment_no FROM block b
 inner JOIN member_with_profile m ON b.BLOCK_NO = m.MEMBER_NO;
+
+--검색 테이블 및 뷰 생성
+CREATE TABLE search(
+search_no NUMBER PRIMARY KEY,
+member_no REFERENCES member(member_no) ON DELETE CASCADE NOT NULL,
+search_tag_name varchar2(90),
+search_member_no NUMBER,
+search_time DATE DEFAULT sysdate NOT NULL,
+search_delete number(1) DEFAULT 0 NOT NULL
+);
+CREATE SEQUENCE search_base_seq;
+
+CREATE OR REPLACE VIEW search_with_profile AS
+SELECT s.*, m.member_nick, m.member_name, m.attachment_no FROM SEARCH s LEFT OUTER JOIN MEMBER_WITH_PROFILE m ON s.search_MEMBER_NO =m.MEMBER_NO ;
