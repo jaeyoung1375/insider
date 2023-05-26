@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.TagDto;
+import com.kh.insider.vo.AdminBoardSearchVO;
+import com.kh.insider.vo.TagCountVO;
 
 @Repository
 public class TagRepoImpl implements TagRepo{
@@ -31,6 +33,22 @@ public class TagRepoImpl implements TagRepo{
 	@Override
 	public TagDto selectOne(String tagName) {
 		return sqlSession.selectOne("tag.selectOne", tagName);
+	}
+
+	@Override
+	public List<TagCountVO> tagCountList(AdminBoardSearchVO vo) {
+		return sqlSession.selectList("tag.tagCountList", vo);
+	}
+
+	@Override
+	public int tagCountListCount(AdminBoardSearchVO vo) {
+		return sqlSession.selectOne("tag.tagCountListCount", vo);
+	}
+
+	@Override
+	public int updateAvailable(TagDto tagDto) {
+		sqlSession.update("tag.updateAvailable", tagDto);
+		return tagDto.getTagAvailable();
 	}
 
 }

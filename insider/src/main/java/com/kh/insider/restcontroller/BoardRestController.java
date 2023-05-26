@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kh.insider.dto.BoardDto;
 import com.kh.insider.dto.BoardLikeDto;
 import com.kh.insider.repo.BoardLikeRepo;
 import com.kh.insider.repo.BoardRepo;
@@ -21,10 +20,6 @@ import com.kh.insider.service.BoardSearchService;
 import com.kh.insider.vo.BoardLikeVO;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
-import com.kh.insider.vo.BoardTagStatsResponseVO;
-import com.kh.insider.vo.BoardTagStatsSearchVO;
-import com.kh.insider.vo.BoardTimeStatsResponseVO;
-import com.kh.insider.vo.BoardTimeStatsSearchVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -98,18 +93,4 @@ public class BoardRestController {
 		
 		return boardLikeRepo.check(boardLikeDto);
 	}
-	
-
-
-	//통계자료 반환
-	@PostMapping("/stats/boardTime")
-	public List<BoardTimeStatsResponseVO> getTimeStats(@RequestBody BoardTimeStatsSearchVO boardTimeStatsSearchVO){
-		return boardRepo.getBoardTimeStats(boardTimeStatsSearchVO);
-	}
-	//통계자료 반환
-	@PostMapping("/stats/boardTag")
-	public List<BoardTagStatsResponseVO> getTagStats(@RequestBody BoardTagStatsSearchVO boardTagStatsSearchVO){
-		return boardRepo.getBoardTagStats(boardTagStatsSearchVO);
-	}
-	
 }

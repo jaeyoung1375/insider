@@ -26,7 +26,7 @@
 }
 .box {
 	position: relative;
-	width: 33.333333%;
+	width: 30.9%;
 	font-size:1.2em;
 }
 .box::after {
@@ -61,6 +61,9 @@
 	cursor:default;
 	display:none;
 }
+.box:hover{
+	background-color:rgba(34, 34, 34, 0.13);
+}
 .box:hover .like-comment{
 	display:block;
 }
@@ -86,7 +89,7 @@
 			
 		<!-- 리스트 -->
 			<div class="row">
-				<div class="box" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)">
+				<div class="box m-2" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)">
 					<img class='content' v-if="board.boardAttachmentList.length>0" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
 					<img class='content' v-else src="${pageContext.request.contextPath}/static/image/noimage.png">
 					<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>

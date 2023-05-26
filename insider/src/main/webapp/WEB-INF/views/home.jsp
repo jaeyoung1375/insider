@@ -136,7 +136,7 @@
                                  <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> 
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
 
-                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo)"></i></div>
+                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo, board.boardWithNickDto.memberNo)"></i></div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲ID▲▲▲▲▲▲▲▲▲▲▲▲▲-->
@@ -320,14 +320,14 @@
 			<div class="modal-content">
 				<div class="modal-body p-0">
 					<div class="row p-3" @click="showReportMenuModal">
-						<div class="col d-flex justify-content-center align-items-center" style="color:#dc3545;">
+						<div class="col d-flex justify-content-center align-items-center" style="color:#dc3545; cursor:pointer">
 							<h5 style="font-weight:bold; margin:0;">신고</h5>
 						</div>
 					</div>
 					<!-- 메뉴 구분선 -->
 					<hr class="m-0">
 					<div class="row p-3" @click="hideAdditionalMenuModal">
-						<div class="col d-flex justify-content-center align-items-center">
+						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
 							<h5 style="margin:0;">취소</h5>
 						</div>
 					</div>
@@ -353,7 +353,7 @@
 						</div>
 					</div>
 					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo" style="border-top:var(--bs-modal-border-width) solid var(--bs-modal-border-color)">
-						<div class="col d-flex p-3" @click="reportContent(report.reportListContent)">
+						<div class="col d-flex p-2" @click="reportContent(report.reportListContent)" style="cursor:pointer">
 							<h5 style="margin:0;">{{report.reportListContent}}</h5>
 						</div>
 					</div>
@@ -390,7 +390,7 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col d-flex p-3" @click="blockUser" style="color:#dc3545; cursor:pointer">
+						<div class="col d-flex p-3" @click="blockUser" style="color:#dc3545; cursor:pointer" v-if="reportBoardData[2]!=null && reportBoardData[2].length>0">
 							<h5 style="margin:0;">{{reportBoardData[2]}}님 차단</h5>
 						</div>
 					</div>
@@ -772,8 +772,8 @@ Vue.createApp({
 			this.hideReportMenuModal();
 			if(resp.data.length!=0){
 				this.reportBoardData[2] = resp.data.memberNick;
-				this.showBlockModal();
 			}
+			this.showBlockModal();
 		},
 		//차단
 		async blockUser(){

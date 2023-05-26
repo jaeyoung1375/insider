@@ -96,11 +96,84 @@
 	</resultMap>
 	
 	
-	<!-- 계층형 조회 메인 구문 -->
+	<!-- 계층형 조회 메인 구문(관리자 페이지에서 사용) -->
 	<select id="boardListTreeSelect" resultMap="boardListVO">
+		<bind name="memberNickExist" value="memberNick!=null and !memberNick.equals('')"></bind>
+		<bind name="boardTimeBeginExist" value="boardTimeBegin!=null and !boardTimeBegin.equals('')"></bind>
+		<bind name="boardTimeEndExist" value="boardTimeEnd!=null and !boardTimeEnd.equals('')"></bind>
+		<bind name="boardMinReportExist" value="boardMinReport!=null and !boardMinReport.equals('')"></bind>
+		<bind name="boardMaxReportExist" value="boardMaxReport!=null and !boardMaxReport.equals('')"></bind>
+		<bind name="boardMinLikeExist" value="boardMinLike!=null and !boardMinLike.equals('')"></bind>
+		<bind name="boardMaxLikeExist" value="boardMaxLike!=null and !boardMaxLike.equals('')"></bind>
+		<bind name="boardHideExist" value="boardHide!=null and !boardHide.equals('')"></bind>
+		<bind name="orderListExist" value="orderList!=null and orderList.size()>0"></bind>
 		<include refid="topNheader"></include>
 	 		select * from board_with_nick 
-	 		order by board_no asc
+	 		<where>
+	 			<if test="memberNickExist">
+	 				and instr(member_nick, #{memberNick})>0
+	 			</if>
+	 			<!-- 게시시간 -->
+		 		<choose>
+			 		<when test="boardTimeBeginExist and boardTimeEndExist">
+			 			and board_time between
+			 				to_date(#{boardTimeBegin}||' '||'00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+			 				and
+			 				to_date(#{boardTimeEnd}||' '||'23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+			 		</when>
+			 		<when test="boardTimeBeginExist">
+			 			and board_time >= to_date(#{boardTimeBegin}||' '||'00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+			 		</when>
+			 		<when test="boardTimeEndExist">
+			 			<![CDATA[
+			 			and board_time <= to_date(#{boardTimeEnd}||' '||'23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+			 			]]> 
+			 		</when>
+			 		<otherwise></otherwise>
+			 	</choose>
+			 	<!-- 신고 -->
+			 	<choose>
+			 		<when test="boardMinReportExist and boardMaxReportExist">
+			 			and board_report between #{boardMinReport} and #{boardMaxReport}
+			 		</when>
+			 		<when test="boardMinReportExist">
+			 			and board_report >= #{boardMinReport}
+			 		</when>
+			 		<when test="boardMaxReportExist">
+			 			<![CDATA[
+			 			and board_report <= #{boardMaxReport}
+			 			]]>
+			 		</when>
+			 		<otherwise></otherwise>
+			 	</choose>
+			 	<!-- 좋아요 -->
+			 	<choose>
+			 		<when test="boardMinLikeExist and boardMaxLikeExist">
+			 			and board_like between #{boardMinLike} and #{boardMaxLike}
+			 		</when>
+			 		<when test="boardMinLikeExist">
+			 			and board_like >= #{boardMinLike}
+			 		</when>
+			 		<when test="boardMaxLikeExist">
+			 			<![CDATA[
+			 			and board_like <= #{boardMaxLike}
+			 			]]>
+			 		</when>
+			 		<otherwise></otherwise>
+			 	</choose>
+			 	<!-- 숨김여부 -->
+			 	<if test="boardHideExist">
+	 				and board_hide=#{boardHide}
+	 			</if>
+	 		</where>
+	 		<choose>
+		 		<when test="orderListExist">
+			 		<foreach collection="orderList" open="order by " item="order" separator=",">
+						${order}
+			 		</foreach>
+			 	</when>
+			 	<otherwise>order by board_no desc</otherwise>
+	 		</choose>
 	 	<include refid="topNfooter"></include>	
 	</select>
 	<!-- 서브구문 -->
@@ -222,7 +295,7 @@
 		ORDER BY ${order}
 		<include refid="topNfooter"></include>
 	</select>
-	
+	<!-- 태그 통계 -->
 	<select id="boardTagStats" resultType="boardTagStatsResponseVO">
 		<bind name="startDateExist" value="startDate!=null and !startDate.equals('')"></bind>
 		<bind name="endDateExist" value="endDate!=null and !endDate.equals('')"></bind>
@@ -257,5 +330,74 @@
 		<include refid="topNfooter"></include>
 	</select>
 <!-- 통계 관련 sql 끝 -->
-
+<!-- 조건 검색 카운트 -->
+	<select id="selectAdminCount" resultType="int">
+		<bind name="memberNickExist" value="memberNick!=null and !memberNick.equals('')"></bind>
+		<bind name="boardTimeBeginExist" value="boardTimeBegin!=null and !boardTimeBegin.equals('')"></bind>
+		<bind name="boardTimeEndExist" value="boardTimeEnd!=null and !boardTimeEnd.equals('')"></bind>
+		<bind name="boardMinReportExist" value="boardMinReport!=null and !boardMinReport.equals('')"></bind>
+		<bind name="boardMaxReportExist" value="boardMaxReport!=null and !boardMaxReport.equals('')"></bind>
+		<bind name="boardMinLikeExist" value="boardMinLike!=null and !boardMinLike.equals('')"></bind>
+		<bind name="boardMaxLikeExist" value="boardMaxLike!=null and !boardMaxLike.equals('')"></bind>
+		<bind name="boardHideExist" value="boardHide!=null and !boardHide.equals('')"></bind>
+		<bind name="orderListExist" value="orderList!=null and orderList.size()>0"></bind>
+ 		select count(*) from board_with_nick 
+ 		<where>
+ 			<if test="memberNickExist">
+ 				and instr(member_nick, #{memberNick})>0
+ 			</if>
+ 			<!-- 게시시간 -->
+	 		<choose>
+		 		<when test="boardTimeBeginExist and boardTimeEndExist">
+		 			and board_time between
+		 				to_date(#{boardTimeBegin}||' '||'00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+		 				and
+		 				to_date(#{boardTimeEnd}||' '||'23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+		 		</when>
+		 		<when test="boardTimeBeginExist">
+		 			and board_time >= to_date(#{boardTimeBegin}||' '||'00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+		 		</when>
+		 		<when test="boardTimeEndExist">
+		 			<![CDATA[
+		 			and board_time <= to_date(#{boardTimeEnd}||' '||'23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+		 			]]> 
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
+		 	<!-- 신고 -->
+		 	<choose>
+		 		<when test="boardMinReportExist and boardMaxReportExist">
+		 			and board_report between #{boardMinReport} and #{boardMaxReport}
+		 		</when>
+		 		<when test="boardMinReportExist">
+		 			and board_report >= #{boardMinReport}
+		 		</when>
+		 		<when test="boardMaxReportExist">
+		 			<![CDATA[
+		 			and board_report <= #{boardMaxReport}
+		 			]]>
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
+		 	<!-- 좋아요 -->
+		 	<choose>
+		 		<when test="boardMinLikeExist and boardMaxLikeExist">
+		 			and board_like between #{boardMinLike} and #{boardMaxLike}
+		 		</when>
+		 		<when test="boardMinLikeExist">
+		 			and board_like >= #{boardMinLike}
+		 		</when>
+		 		<when test="boardMaxLikeExist">
+		 			<![CDATA[
+		 			and board_like <= #{boardMaxLike}
+		 			]]>
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
+		 	<!-- 숨김여부 -->
+		 	<if test="boardHideExist">
+ 				and board_hide=#{boardHide}
+ 			</if>
+ 		</where>
+	</select>
 </mapper>
