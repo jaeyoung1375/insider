@@ -21,7 +21,7 @@
 	
 	<!-- 댓글 좋아요 체크 -->
 	<select id="check" resultType="int" parameterType="ReplyLikeDto">
-		select count(*) from reply_like where where member_no=#{memberNo} and reply_no = #{replyNo}
+		select count(*) from reply_like where member_no=#{memberNo} and reply_no = #{replyNo}
 	</select>
 	
 	<!-- 댓글 좋아요 카운트 -->

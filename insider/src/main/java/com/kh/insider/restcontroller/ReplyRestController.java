@@ -75,6 +75,7 @@ public class ReplyRestController {
 			
 			//ReplyDto.replyLike개수 설정
 			int count = replyLikeRepo.count(replyLikeDto.getReplyNo());
+			
 			replyRepo.updateLikeCount(replyLikeDto.getReplyNo(), count);
 			
 			return ReplyLikeVO.builder()

@@ -38,10 +38,10 @@ public class ReplyRepoImpl implements ReplyRepo{
 	}
 
 	@Override
-	public void updateLikeCount(int count, int replyNo) {
+	public void updateLikeCount(int replyNo,int count) {
 		Map<String, Object> param = new HashMap<>();
-		param.put("count", count);
 		param.put("replyNo", replyNo);
+		param.put("count", count);
 		sqlSession.update("reply.updateLikeCount",param);
 	}
 

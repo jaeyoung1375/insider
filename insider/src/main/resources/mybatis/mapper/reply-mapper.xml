@@ -29,7 +29,7 @@
   	
   	<!-- 댓글 좋아요 개수 갱신 -->  	
   	<update id="updateLikeCount">
-  		update reply set reply_like	= #{count} where reply_no = #{reply_no}
+  		update reply set reply_like	= #{count} where reply_no = #{replyNo}
   	</update>
   	
   </mapper>

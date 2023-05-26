@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class ReplyLikeDto {
-	private long memberNo;
+	private Long memberNo;
 	private Integer replyNo;
 	private Date replyLikeTime;
 }
