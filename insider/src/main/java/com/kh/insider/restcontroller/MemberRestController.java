@@ -135,4 +135,12 @@ public class MemberRestController {
 		
 		return boardRepo.myPageSelectListPaging(page, memberNo);
 	}
+	
+	@GetMapping("/postList")
+	public List<BoardDto> postList(@RequestParam long memberNo){
+		
+		List<BoardDto> getTotalPost = boardRepo.getTotalMyPost(memberNo);
+		System.out.println(getTotalPost);
+		return getTotalPost;
+	}
 }

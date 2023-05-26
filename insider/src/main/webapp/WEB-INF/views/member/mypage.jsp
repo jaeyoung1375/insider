@@ -29,7 +29,7 @@
   top: 50px;
   left: 0;
   width: 400px;
-  height: 400px;
+  height: 420px;
   background-color: white;
   border: 1px solid gray;
   padding: 10px;
@@ -336,7 +336,7 @@
                     </div>
                     <div class="col-6">
                     	<div style="display:flex;">
-                    	   <div v-for="post in hoverPostList" :key="post.id">
+                    	   <div v-for="post in hoverPostList2" :key="post.id">
 						  <!-- 게시물 정보 출력 -->
 						   <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.attachmentNo" width="127" height="150" style="margin-right:3px;">
 						</div>
@@ -393,16 +393,29 @@
 							<span>팔로우 <span style="font-weight: bold;">{{followCounts}}</span></span>
                     	</div>
                     </div>
+                    <hr>
                     <div class="col-6">
                     	<div style="display:flex;">
-                    	<div v-for="post in hoverPostList" :key="post.id">
-						  <!-- 게시물 정보 출력 -->
-						   <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.attachmentNo" width="127" height="150" style="margin-right:3px;">
-						</div>
+                    	<template v-if="hoverPostList.length === 0">
+						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
+							  <div style="width:500px; margin-left:160px;">
+							    <i class="fa-solid fa-camera fa-2xl" style="font-size: 40px; margin-bottom:30px;"></i>
+							    <h4 style="white-space: nowrap; margin-bottom: 5px;">아직 게시물이 없습니다</h4>
+							    <p style="font-size: 12px; margin-top: 0;">{{item.memberNick}}님이 사진과 릴스를 공유하면 여기에 표시됩니다.</p>
+							  </div>
+							</div>
+						</template>
+					   
+					    <template v-else>
+					      <div v-for="post in hoverPostList" :key="post.id">
+					        <!-- 게시물 정보 출력 -->
+					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.attachmentNo" width="127" height="150" style="margin-right:3px;">
+					      </div>
+					    </template>
                     	  
                     	 </div>
                     </div>
-                    <div class="col-9" style="display:flex; justify-content: space-between; margin-left:20px;">
+                    <div class="col-9" style="display:flex; justify-content: space-between; margin-left:20px; margin-top:15px;">
                   	 <button class="btn btn-primary" @click="follow(item.followFollower)" v-if="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로우</button>
                   	 <button class="btn btn-primary">메시지 보내기</button>
           			<button class="btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-if="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" >팔로잉</button>
@@ -458,6 +471,7 @@
             followerCounts : null,
             postCounts : null,
             hoverPostList : [],
+            hoverPostList2 : [],
             reportBoardNo:"",  
             memberNo : "${memberDto.memberNo}",
             memberNick : "${memberDto.memberNick}",
@@ -502,10 +516,7 @@
                return this.followCounts[memberNick];
              };
            },
-           hoverPostList() {
-        	    // 최대 3개의 게시물만 추출
-        	    return this.myBoardList.slice(0, 3);
-        	  },   
+         
          
          
       },
@@ -821,16 +832,30 @@
            	},
            	
            	async boardList2(memberNo) {
-           	  const resp = await axios.get("/rest/member/page/" + this.page, {
+           	  const resp = await axios.get("/rest/member/postList",{
            	    params: {
            	      memberNo: memberNo
            	    }
            	  });
 				this.hoverPostList = [];
+				console.log("데이터 : "+resp.data);
            	  const newPosts = resp.data.slice(0, 3); // 최대 3개의 게시물만 추출
 
            	  this.hoverPostList.push(...newPosts);
            	},
+           	
+        	async boardList3(memberNo) {
+             	  const resp = await axios.get("/rest/member/postList",{
+             	    params: {
+             	      memberNo: memberNo
+             	    }
+             	  });
+  				this.hoverPostList2 = [];
+  				console.log("데이터 : "+resp.data);
+             	  const newPosts = resp.data.slice(0, 3); // 최대 3개의 게시물만 추출
+
+             	  this.hoverPostList2.push(...newPosts);
+             	},
            	
            	checkOwnerShip(){ // 본인인지 여부 체크
            		this.isOwner = this.memberNo == ${memberNo};
@@ -841,7 +866,8 @@
            		 this.getTotalFollowCount(item.memberNick), // 팔로우 수 가져오기
               	 this.getTotalFollowerCount(item.memberNick), // 팔로워 수 가져오기
               	 this.getTotalPostCount(item.memberNick), // 게시물 수 가져오기 
-              	 this.boardList2(item.memberNo) // 게시물 목록 가져오기
+              	 this.boardList2(item.followFollower), // 게시물 목록 가져오기
+              	 this.boardList3(item.memberNo) // 게시물 목록 가져오기
              
            	  ])          	 
            	    .then(([followCounts,followerCounts,postCounts]) => {
