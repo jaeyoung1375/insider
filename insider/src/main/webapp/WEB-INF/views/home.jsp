@@ -621,7 +621,6 @@ Vue.createApp({
         	this.replyList = [];
         	this.isReplyLiked = [];
         	this.replyLikeCount = [];
-        	
         	const resp = await axios.get("${pageContext.request.contextPath}/rest/reply/"+ this.boardList[index].boardWithNickDto.boardNo);
             
         	for (const reply of resp.data) {
