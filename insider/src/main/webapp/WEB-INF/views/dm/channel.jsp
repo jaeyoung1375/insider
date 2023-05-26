@@ -191,7 +191,7 @@
 						                <div class="content-body">
 							                <div class="message-wrapper">{{message.content}}</div>
 							                <div class="info-wrapper">
-							                	<div class="number-wrapper">{{unreadCount[index]}}</div>
+							                	<div class="number-wrapper" v-show="unreadCount[index] !== 0">{{unreadCount[index]}}</div>
 							                	<div class="time-wrapper" v-if="calculateDisplay(index)">{{timeFormat(message.time)}}</div>
 							                </div>
 						                	<i class="fa-solid fa-x fa-xs" v-on:click="deleteMessage(index)" style="padding-bottom: 0.51em;"></i>
@@ -224,36 +224,47 @@
 		  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down" style="width:400px; margin: 0; position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);">
 		    <div class="modal-content" style="align-content: center;flex-wrap: wrap;">
 		      <div class="modal-header" style="width:300px;">
-		        <h4 class="modal-title" id="memberListModalLabel" style="font-weight: bold; color: #222f3e;">메세지 보내기</h4>
+		        <h4 v-if="roomNo !== null"  class="modal-title" id="memberListModalLabel" style="font-weight: bold; color: #222f3e;">회원 초대</h4>
+		        <h4 v-else class="modal-title" id="memberListModalLabel" style="font-weight: bold; color: #222f3e;">메세지 보내기</h4>
 		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 		      </div>
 		      <div class="modal-body" style="width:300px;">
 		        <div style="margin-bottom:10px;">
 		          <input type="text" placeholder="검색" v-model="keyword" class="form-control me-sm-2" @input="keyword = $event.target.value">
 		        </div>
-		        <div v-if="searchDmList.length==0"  v-for="(member,index) in dmMemberList" :key="index" style="margin-top:20px;position:relative;">
-		          <img src="https://via.placeholder.com/40x40?text=P" style="border-radius: 50%; position:absolute; top:0.3em" >
-		          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
-		          <br>
-		          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
-		          <span style="position:absolute;right:0;top:10px;">
-		            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="createRoomAndInvite(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close" >
-		              채팅
-		            </button>
-		          </span>
+		        <div v-if="searchDmList.length==0" >
+			        <div v-for="(member,index) in dmMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
+			          <img src="https://via.placeholder.com/40x40?text=P" style="border-radius: 50%; position:absolute; top:0.3em" >
+			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <br>
+			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+			          <span style="position:absolute;right:0;top:10px;">
+			            <button v-if="roomNo !== null" class="btn btn-outline-danger" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="inviteRoom(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close" >
+			              초대
+			            </button>
+			            <button v-else class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="createRoomAndInvite(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close" >
+			              채팅
+			            </button>
+			          </span>
+			        </div>
 		        </div>
-		        <div v-if="searchDmList.length>0"  v-for="(member,index) in searchDmList" :key="index" style="margin-top:20px;position:relative;">
-		          <img src="https://via.placeholder.com/40x40?text=P" style="border-radius: 50%; position:absolute; top:0.3em" >
-		          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
-		          <br>
-		          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
-		          <span style="position:absolute;right:0;top:10px;">
-		            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.85em;" @click="createRoomAndInvite(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
-		              채팅
-		            </button>
-		          </span>
-		        </div>
-		        
+		        <div v-if="searchDmList.length>0">
+			        <div v-for="(member,index) in searchDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
+			          <img src="https://via.placeholder.com/40x40?text=P" style="border-radius: 50%; position:absolute; top:0.3em" >
+			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <br>
+			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+			          <span style="position:absolute;right:0;top:10px;">
+			            <button  v-if="roomNo !== null"  class="btn btn-outline-danger" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.85em;" @click="inviteRoom(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
+			              초대
+			            </button>
+			            <button v-else class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.85em;" @click="createRoomAndInvite(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
+			              채팅
+			            </button>
+			          </span>
+			        </div>
+		      	</div>
+		      
 		      </div>
 		    </div>
 		  </div>
@@ -299,12 +310,15 @@
                     roomNo:"",
                     inviteeNo:"",
                     
+                    roomNo:0, //vue에 반환
+                    
                 };
             },
             methods:{
-            	// 메세지 불러오는 함수
+            	// 서버에서 메세지 리스트 불러오는 함수
             	async loadMessage() {
             	    const roomNo = new URLSearchParams(location.search).get("room");
+            	    this.roomNo = roomNo; //vue에 반환
             	    if(roomNo==null){
             	    	this.isRoomJoin=false;
             	    	return;
@@ -320,18 +334,7 @@
             	        console.error("메세지를 불러올 수 없습니다.");
             	    }
             	},
-            	// 메세지 리스트 불러오는 함수
-           		displayMessageList(resp) {
-				    this.messageList = resp.map((msg) => {
-				        const msgContent = JSON.parse(msg.messageContent);
-				        return {
-				            messageNo: msgContent.messageNo,  // 메세지 삭제를 위해 추가
-				            memberNick: msgContent.memberNick,
-				            content: msgContent.content,
-				            time: this.timeFormat(msgContent.time),
-				        };
-				    });
-				},
+
 				//모달창
 				showModal(){
                     if(this.modal == null) return;
@@ -345,7 +348,7 @@
             		const url = "${pageContext.request.contextPath}/ws/channel";
             		this.socket = new SockJS(url);
             		
-            		//this = view이므로 개조 (this가 웹소켓이어야 사용 가능)
+            		//this = 웹소켓 객체이므로 개조 (this가 view이어야 사용 가능)
             		const app = this;
             		this.socket.onopen = function(){
             			app.openHandler();
@@ -466,30 +469,49 @@
 				        const dmRoomVO = await axios.post("${pageContext.request.contextPath}/rest/createChatRoom");
 				        const roomNo = dmRoomVO.data.roomNo;
 				        
-				        // 방 입장
+				        // 채팅 유저 저장
 				        const user = {
 				            roomNo,
 				            memberNo: this.memberNo
 				        };
 				        await axios.post("${pageContext.request.contextPath}/rest/joinDmRoom", user);
 
-				        // 초대자의 정보를 설정
+				        // 초대 정보를 설정
 				        const invite = {
 				            inviterNo: this.memberNo,
 				            roomNo: roomNo,
 				            inviteeNo: memberNo
 				        };
 
-				        // 초대 실행
+				        // 초대 유저 저장
 				        const inviteUrl = "${pageContext.request.contextPath}/rest/inviteUser";
 				        await axios.post(inviteUrl, invite);
 
 				        console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
+				        
+				        this.dmRoomList = []; //채팅방 목록 초기화
+				        await this.fetchDmRoomList(); //채팅방 목록 불러오기
 				    } catch (error) {
 				        console.error("방 생성, 입장, 초대 중 오류가 발생했습니다.", error);
 				    }
 				},
+				//유저 초대
+				async inviteRoom(memberNo) {
+					try {
+						const invite = {
+					            inviterNo: this.memberNo,
+					            roomNo: this.roomNo,
+					            inviteeNo: memberNo
+					        };
+					        // 초대 유저 저장
+					        const inviteUrl = "${pageContext.request.contextPath}/rest/inviteUser";
+					        await axios.post(inviteUrl, invite);
+					        console.log("초대가 성공적으로 수행되었습니다.");
+					} catch (error) {
+				        console.error("채팅 유저 초대 중 오류가 발생했습니다.", error);
+			    }
             },
+        },
             watch:{
             	//검색
             	keyword:_.throttle(function(){
@@ -515,7 +537,7 @@
 		            		this.unreadCount[j]= joiner-count;
 	            		}
         			}
-        		}
+        		},
             },
             computed:{ 
             	jsonText() {
