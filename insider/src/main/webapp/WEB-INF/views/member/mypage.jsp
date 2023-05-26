@@ -356,7 +356,7 @@
                     	</div>
                     	<div class="col-6">
 <!--                     		<span>팔로우 <span style="font-weight: bold;">{{getTotalFollowCount(item.memberNick)}}</span></span> -->
-							<span>팔로우 <span style="font-weight: bold;">{{followCounts}}</span></span>
+							<span>팔로우 <span style="font-weight: bold;">{{followCounts[item.memberNick]}}</span></span>
                     	</div>
                     </div>
                     <div class="col-6">
@@ -424,7 +424,7 @@
             myFollowerList: [],
             myFollowList: [],
             myBoardList : [],
-            followCounts: 0,
+            followCounts: {},
             reportBoardNo:"",  
             memberNo : "${memberDto.memberNo}",
             memberNick : "${memberDto.memberNick}",
@@ -708,7 +708,7 @@
            	      }
            	    });
            	    //console.log(this.followCounts);
-           	 	return this.followCounts = resp.data;
+           	 	this.$set(this.followCounts, memberNick, resp.data);
            	 	//return resp.data;
            	  },
            	
@@ -805,7 +805,6 @@
             this.myOptionModal = new bootstrap.Modal(this.$refs.myOptionModal);
             this.followerModal = new bootstrap.Modal(this.$refs.followerModal);
             this.followModal = new bootstrap.Modal(this.$refs.followModal);
-            this.followerHoverModal = new bootstrap.Modal(this.$refs.followerHoverModal);
             
             window.addEventListener("scroll", _.throttle(()=>{
             	//console.log("스크롤 이벤트");
