@@ -261,14 +261,17 @@
 							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="42" height="42" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
 							<img v-else src="https://via.placeholder.com/42x42?text=profile" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
 							
-							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; font-weight: bold;">{{replyList[index].memberNick}}</p>							
+							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; font-weight: bold;">{{replyList[index].memberNick}}
+							</p>							
 						</a>
 						<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em;">{{replyList[index].replyContent}}</p>
-						<p style="padding-left:4.0em;margin-bottom:1px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} 
-						<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">좋아요 {{replyLikeCount[index]}}개 &nbsp;
-							<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+<!-- 						<p style="padding-left:4.0em;margin-bottom:1px;font-size:0.8em; color:gray;"> -->
+						<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
+							<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
 							<i :class="{'fa-heart': true, 'like':isReplyLiked[index],'ms-2':true, 'fa-solid': isReplyLiked[index], 'fa-regular': !isReplyLiked[index]}" @click="likeReply(reply.replyNo,index)" style="font-size: 0.9em;"></i>
-							<i v-if="replyList[index].replyMemberNo == loginMemberNo" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="margin-top:2px; color:red; cursor: pointer;"></i>
+							&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+							<i v-if="replyList[index].replyMemberNo == loginMemberNo" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="color:red; cursor: pointer;"></i>
+							
 							
 						</p>
 						
@@ -616,14 +619,17 @@ Vue.createApp({
         //댓글 조회
         async replyLoad(index) {
         	this.replyList = [];
+        	this.isReplyLiked = [];
+        	this.replyLikeCount = [];
+        	
         	const resp = await axios.get("${pageContext.request.contextPath}/rest/reply/"+ this.boardList[index].boardWithNickDto.boardNo);
             
         	for (const reply of resp.data) {
-            	this.isReplyLiked.push(await this.likeChecked(reply.replyNo));
+            	this.isReplyLiked.push(await this.likeReplyChecked(reply.replyNo));
             	this.replyLikeCount.push(reply.replyLike);
               }
         	
-        	this.replyList.push(...resp.data);
+        	this.replyList=[...resp.data];
         },
         
         //댓글 등록
@@ -637,7 +643,6 @@ Vue.createApp({
         	  };
         	  this.replyContent='';
         	  
-				
         	  try {
         	    const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
         	    this.replyLoad(index);	    
