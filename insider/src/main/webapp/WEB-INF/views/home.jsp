@@ -1,9 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
-<script>
-	//const memberNo = "${sessionScope.memberNo}";
-</script>
+
 <style>
 	p .card-text {
   		margin: 0 0 4px;
@@ -612,8 +610,6 @@ Vue.createApp({
         	//console.log(this.followCheckList)
         	//console.log(this.boardList);
         	//console.log(this.boardList[0]);
-        	//const check = this.followCheckList.some(followFollower => followFollower === this.boardList[0].boardWithNickDto.memberNo)
-        	//console.log(check);
         },
        
         //댓글 조회
@@ -826,10 +822,7 @@ Vue.createApp({
        }
     },
     mounted(){
-
          window.addEventListener("scroll", _.throttle(()=>{
-        	//console.log("스크롤 이벤트");
-            //console.log(this);
             const height = document.body.clientHeight - window.innerHeight;
             const current = window.scrollY
             const percent = (current / height) * 100
@@ -853,7 +846,6 @@ Vue.createApp({
     	});
     	$(".moreText").unbind("click");
     	$(".moreText").click(function(){
-    		//console.log("실행횟수");
     		if($(this).prev("p").hasClass("moreContent")){
     			$(this).prev("p").removeClass("moreContent");
     			$(this).text("더 보기");
@@ -865,10 +857,8 @@ Vue.createApp({
     	});
     },
     created(){
-    	//this.loginMemberNo =  "${sessionScope.memberNo}";        
     	this.followCheck();
     	this.loadList();
-        //this.likeChecked(boardNo);
     },
 }).mount("#app");
 </script>
