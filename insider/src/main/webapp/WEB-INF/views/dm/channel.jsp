@@ -148,7 +148,7 @@
 							</a>
 						</div>
 						<span style="position:absolute; top:21px; right:0; margin-right:30px;">
-							<i class="fa-regular fa-pen-to-square fa-lg" style="cursor:pointer;" @click="fetchFollowerList(); showModal();"></i>
+							<i class="fa-regular fa-pen-to-square fa-lg" style="cursor:pointer;" @click="fetchFollowerList(); showCreateRoomModal();"></i>
 						</span>
 					</div>
 					
@@ -290,7 +290,7 @@
                     memberNick:"${sessionScope.memberNick}",
                     memberNo:"${sessionScope.memberNo}",
                     socket:null,//웹소켓 연결 객체
-                    modal:null, //modal 제어
+                    createRoomModal:null, //modal 제어
                     dmMemberList:[],//팔로워 회원 목록
                     
                     //차단한 회원을 제외한 전체 회원 검색
@@ -306,19 +306,16 @@
                     unreadCount:[],
                     
                     //초대
-                    inviterNo: "",
-                    roomNo:"",
-                    inviteeNo:"",
-                    
-                    roomNo:0, //vue에 반환
+                    inviterNo:null,
+                    roomNo:null, //vue에 반환
+                    inviteeNo:null,
                     
                 };
             },
             methods:{
-            	// 서버에서 메세지 리스트 불러오는 함수
+            	// 메세지 불러오는 함수
             	async loadMessage() {
             	    const roomNo = new URLSearchParams(location.search).get("room");
-            	    this.roomNo = roomNo; //vue에 반환
             	    if(roomNo==null){
             	    	this.isRoomJoin=false;
             	    	return;
@@ -334,15 +331,26 @@
             	        console.error("메세지를 불러올 수 없습니다.");
             	    }
             	},
-
+            	// 메세지 리스트 불러오는 함수
+           		displayMessageList(resp) {
+				    this.messageList = resp.map((msg) => {
+				        const msgContent = JSON.parse(msg.messageContent);
+				        return {
+				            messageNo: msgContent.messageNo,  // 메세지 삭제를 위해 추가
+				            memberNick: msgContent.memberNick,
+				            content: msgContent.content,
+				            time: this.timeFormat(msgContent.time),
+				        };
+				    });
+				},
 				//모달창
-				showModal(){
-                    if(this.modal == null) return;
-                    this.modal.show();
+				showCreateRoomModal(){
+                    if(this.createRoomModal == null) return;
+                    this.createRoomModal.show();
                 },
-                hideModal(){
-                    if(this.modal == null) return;
-                    this.modal.hide();
+                hideCreateRoomModal(){
+                    if(this.createRoomModal == null) return;
+                    this.createRoomModal.hide();
                 },
 			    connect(){
             		const url = "${pageContext.request.contextPath}/ws/channel";
@@ -367,6 +375,7 @@
             		const room = new URLSearchParams(location.search).get("room");
                     const data = { type:2, room:room };
                     this.socket.send(JSON.stringify(data));
+                    this.roomNo = room; //vue에 반환
                     console.log("서버에 연결되었습니다.");
             	},
             	closeHandler(){
@@ -554,14 +563,14 @@
             },
 			mounted(){
 				//Bootstrap modal 인스턴스를 초기화하고 저장
-				this.modal = new bootstrap.Modal(this.$refs.memberListModal);
+				this.createRoomModal = new bootstrap.Modal(this.$refs.memberListModal);
 					    
 				//검색창 초기화
 			    $('#memberListModal').on('hidden.bs.modal', () => {
 			    	this.keyword = '';
 			        this.searchDmList = [];
 			    });
-	          },
+	        },
         }).mount("#app");
     </script>
     
