@@ -7,14 +7,14 @@
   	
   	<!-- 댓글 생성 -->
   	<insert id="insert" parameterType="ReplyDto">
-  		insert into reply(reply_no, reply_content, reply_origin, reply_member_no, reply_time)
+  		insert into reply(reply_no, reply_content, reply_origin, reply_member_no, reply_time, reply_parent, reply_like)
   		values
-  		(reply_seq.nextval, #{replyContent}, #{replyOrigin}, #{replyMemberNo}, sysdate)
+  		(reply_seq.nextval, #{replyContent}, #{replyOrigin}, #{replyMemberNo}, sysdate, #{replyParent}, #{replyLike})
   	</insert>
   	
   	<!-- 댓글 조회 -->
   	<select id="selectList" resultType="ReplyDto">
-  		select * from reply_with_nick where reply_origin = #{replyOrigin}
+  		SELECT * FROM  reply_with_nick where reply_origin=#{replyOrigin} CONNECT BY PRIOR reply_no = COALESCE(reply_parent, 0) START WITH COALESCE(reply_parent, 0) = 0 order siblings by reply_no ASC
   	</select>
   	
   	<!-- 댓글 삭제 -->

@@ -169,7 +169,7 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-3 detail-option">
+						<div class="col-3 detail-option d-flex align-items-center justify-content-end flex-grow-1">
 							<span>성별</span>
 						</div>
 						<div class="col-9">
@@ -283,8 +283,8 @@
 						<div class="col-6 d-flex align-items-center">
 							<span>{{setting.settingDistance}}km 이내 게시물을 탐색합니다</span>
 						</div>
-		 				<div class="col-3" style="padding:0">
-							<button class="btn btn-primary" @click="settingMap">미리보기</button>
+		 				<div class="col-3">
+							<button class="btn btn-primary w-100" @click="settingMap">미리보기</button>
 						</div>
 					</div>
 					<div class="row">
@@ -299,16 +299,16 @@
 					</div>
 					<hr>
 					<div class="row">
-						<div class="col detail-option p-3">
+						<div class="col detail-option p-3 d-flex align-items-center">
 							<h5>동영상 자동재생</h5>
 						</div>
-						<div class="col p-3 d-flex justify-content-center">
+						<div class="col p-3 d-flex justify-content-center align-items-center" style="vertical-align:middle">
 							<input type="radio" :value="1" v-model.number="setting.settingVideoAuto" v-bind:checked="setting.settingVideoAuto==1">
-							<span>자동재생</span>
+							<span class="ms-1" style="vertical-align:middle">자동재생</span>
 						</div>
-						<div class="col p-3">
+						<div class="col p-3 d-flex justify-content-center align-items-center">
 							<input type="radio" :value="0" v-model.number="setting.settingVideoAuto" v-bind:checked="setting.settingVideoAuto==0">
-							<span>수동재생</span>
+							<span class="ms-1">수동재생</span>
 						</div>
 					</div>
 				</div>
