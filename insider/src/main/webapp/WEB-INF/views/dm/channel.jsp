@@ -13,6 +13,12 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
 
 <style>
+	.modal-footer.btn-center {
+	    display: flex;
+	    justify-content: center;
+	    align-items: center;
+	    height: 3.5em;
+  	}
 	.room-image {
 	    min-width:50px;
 	    width:100%;
@@ -147,15 +153,20 @@
 								</span>
 							</a>
 						</div>
-						<span style="position:absolute; top:21px; right:0; margin-right:30px;">
-							<i class="fa-regular fa-pen-to-square fa-lg" style="cursor:pointer;" @click="fetchFollowerList(); showCreateRoomModal();"></i>
+						<span v-if="roomNo == null" style="position:absolute; top:21px; right:0; margin-right:15px;">
+							<i class="fa-regular fa-pen-to-square fa-lg" style="margin-right: 11px; cursor:pointer;" @click="fetchFollowerList(); showCreateRoomModal();"></i>
+						</span>
+						<span v-else style="position:absolute; top:21px; right:0; margin-right:15px;">
+							<i class="fa-regular fa-pen-to-square fa-lg" style="margin-right: 11px; cursor:pointer;" @click="fetchFollowerList(); showCreateRoomModal();"></i>
+							<i class="fa-solid fa-user-plus fa-lg" style="cursor:pointer;" @click="fetchFollowerList();  showInviteModal()"></i>
 						</span>
 					</div>
 					
 					<!-- 채팅방 이름 -->
 					<div class="card col-8" style="border-radius:0;border-left:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
 						채팅방 이름
-						<span style="position:absolute; top:21px; right:0; margin-right:30px;">
+						<span style="position:absolute; top:21px; right:0; margin-right:19px;">
+							<i class="fa-solid fa-door-open fa-xl" style="margin-right: 11px; cursor:pointer; color: #b2bec3" @click="showExitModal();"></i>
 							<i class="fa-solid fa-circle-info fa-xl" style="cursor:pointer; color: #b2bec3"></i>
 						</span>
 					</div>
@@ -183,7 +194,6 @@
 					                <div class="profile-wrapper" v-if="!checkMyMessage(index)">
                                 			<img src="https://via.placeholder.com/100x100?text=P" width="100%" v-if="!checkSameTime(index)">
 					                </div>
-					                
 					                <div class="content-wrapper">
 						                <div class="content-header" v-if="!checkSameTime(index)">
 						                	{{message.memberNick}}
@@ -201,16 +211,13 @@
 							                <div class=heart-number>23</div>
 						                </div>
 						            </div>
-						            
 					            </div>
 					        </div>
-					        
 					        <div class="row justify-content-between" style="margin-top:10px;margin-bottom:10px;padding-left:calc(var(--bs-gutter-x) * .5);padding-right:calc(var(--bs-gutter-x) * .5);height:38px;">
 						        <!-- 입력창 -->
 						        <input type="text" v-model="text" v-on:input="text=$event.target.value" placeholder="메세지 입력" style="border-radius: 3rem;width:75%;">
 						        <button v-on:click="sendMessage" style="border-radius: 3rem; width:25%;">전송</button>
 					        </div>
-	        
 						</div>
 					</div>
 					
@@ -219,13 +226,12 @@
 			</div>
 		</div>
 		
-		<!-- 회원 목록을 모달창으로 불러오기 -->
+		<!-- 회원 목록을 모달창으로 불러오기 - 채팅방 생성 -->
 		<div class="modal fade" tabindex="-1" id="memberListModal" data-bs-backdrop="static" ref="memberListModal">
 		  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down" style="width:400px; margin: 0; position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);">
 		    <div class="modal-content" style="align-content: center;flex-wrap: wrap;">
 		      <div class="modal-header" style="width:300px;">
-		        <h4 v-if="roomNo !== null"  class="modal-title" id="memberListModalLabel" style="font-weight: bold; color: #222f3e;">회원 초대</h4>
-		        <h4 v-else class="modal-title" id="memberListModalLabel" style="font-weight: bold; color: #222f3e;">메세지 보내기</h4>
+		        <h4 class="modal-title" id="memberListModalLabel" style="font-weight: bold; color: #222f3e;">메세지 보내기</h4>
 		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 		      </div>
 		      <div class="modal-body" style="width:300px;">
@@ -239,10 +245,7 @@
 			          <br>
 			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
-			            <button v-if="roomNo !== null" class="btn btn-outline-danger" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="inviteRoom(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close" >
-			              초대
-			            </button>
-			            <button v-else class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="createRoomAndInvite(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close" >
+			            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="createRoomAndInvite(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close" >
 			              채팅
 			            </button>
 			          </span>
@@ -255,16 +258,77 @@
 			          <br>
 			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
-			            <button  v-if="roomNo !== null"  class="btn btn-outline-danger" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.85em;" @click="inviteRoom(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
-			              초대
-			            </button>
-			            <button v-else class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.85em;" @click="createRoomAndInvite(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
+			            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.85em;" @click="createRoomAndInvite(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
 			              채팅
 			            </button>
 			          </span>
 			        </div>
 		      	</div>
+		      </div>
 		      
+		    </div>
+		  </div>
+		</div>
+		<!-- 회원 목록을 모달창으로 불러오기 - 초대 -->
+		<div class="modal fade" tabindex="-1" id="inviteModal" data-bs-backdrop="static" ref="inviteModal">
+		  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down" style="width:400px; margin: 0; position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);">
+		    <div class="modal-content" style="align-content: center;flex-wrap: wrap;">
+		      <div class="modal-header" style="width:300px;">
+		        <h4 class="modal-title" id="memberListModalLabel" style="font-weight: bold; color: #222f3e;">회원 초대</h4>
+		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		      </div>
+		      <div class="modal-body" style="width:300px;">
+		        <div style="margin-bottom:10px;">
+		          <input type="text" placeholder="검색" v-model="keyword" class="form-control me-sm-2" @input="keyword = $event.target.value">
+		        </div>
+		        <div v-if="searchDmList.length==0" >
+			        <div v-for="(member,index) in dmMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
+			          <img src="https://via.placeholder.com/40x40?text=P" style="border-radius: 50%; position:absolute; top:0.3em" >
+			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <br>
+			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+			          <span style="position:absolute;right:0;top:10px;">
+			            <button class="btn btn-outline-danger" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="inviteRoom(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close" >
+			              초대
+			            </button>
+			          </span>
+			        </div>
+		        </div>
+		        <div v-if="searchDmList.length>0">
+			        <div v-for="(member,index) in searchDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
+			          <img src="https://via.placeholder.com/40x40?text=P" style="border-radius: 50%; position:absolute; top:0.3em" >
+			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <br>
+			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+			          <span style="position:absolute;right:0;top:10px;">
+			            <button class="btn btn-outline-danger" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.85em;" @click="inviteRoom(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
+			              초대
+			            </button>
+			          </span>
+			        </div>
+		      	</div>
+		      </div>
+		      
+		    </div>
+		  </div>
+		</div>
+		
+		<!-- 채팅방 퇴장 모달창 -->
+		<div class="modal fade" id="exitModal" tabindex="-1" data-bs-backdrop="static"  ref="exitModal" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered" style="width:450px;">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title" >채팅방을 퇴장 하시겠습니까?</h5>
+		      </div>
+		      <div class="modal-body" style="display: flex; align-items: center; color:grey;font-size:0.9em; height: 7em;">
+					채팅방을 퇴장 시, 회원님의 채팅 메세지가 모두 삭제됩니다. <br>
+					다른 사람의 채팅방에는 메시지가 계속 표시됩니다.
+		      </div>
+		      <div class="modal-footer btn-center">
+		        <button type="button" class="btn" @click="exitRoom" data-bs-dismiss="modal" aria-label="Close" style="color:red;">확인</button>
+		      </div>
+		      <div class="modal-footer btn-center">
+		        <button type="button" class="btn" data-bs-dismiss="modal">취소</button>
 		      </div>
 		    </div>
 		  </div>
@@ -290,8 +354,12 @@
                     memberNick:"${sessionScope.memberNick}",
                     memberNo:"${sessionScope.memberNo}",
                     socket:null,//웹소켓 연결 객체
-                    createRoomModal:null, //modal 제어
                     dmMemberList:[],//팔로워 회원 목록
+
+                    //modal 제어
+                    createRoomModal:null, 
+                    exitModal:null,
+                    inviteModal:null,
                     
                     //차단한 회원을 제외한 전체 회원 검색
                     searchDmList:[],
@@ -351,6 +419,22 @@
                 hideCreateRoomModal(){
                     if(this.createRoomModal == null) return;
                     this.createRoomModal.hide();
+                },
+				showExitModal(){
+                    if(this.exitModal == null) return;
+                    this.exitModal.show();
+                },
+                hideExitModal(){
+                    if(this.exitModal == null) return;
+                    this.exitModal.hide();
+                },
+				showInviteModal(){
+                    if(this.inviteModal == null) return;
+                    this.inviteModal.show();
+                },
+                hideInviteModal(){
+                    if(this.inviteModal == null) return;
+                    this.inviteModal.hide();
                 },
 			    connect(){
             		const url = "${pageContext.request.contextPath}/ws/channel";
@@ -564,9 +648,15 @@
 			mounted(){
 				//Bootstrap modal 인스턴스를 초기화하고 저장
 				this.createRoomModal = new bootstrap.Modal(this.$refs.memberListModal);
+				this.exitModal = new bootstrap.Modal(this.$refs.exitModal);
+				this.inviteModal = new bootstrap.Modal(this.$refs.inviteModal);
 					    
 				//검색창 초기화
 			    $('#memberListModal').on('hidden.bs.modal', () => {
+			    	this.keyword = '';
+			        this.searchDmList = [];
+			    });
+			    $('#inviteModal').on('hidden.bs.modal', () => {
 			    	this.keyword = '';
 			        this.searchDmList = [];
 			    });
