@@ -20,6 +20,6 @@ public class SearchRestController {
 	
 	@GetMapping("/{searchInput}")
 	public List<SearchComplexDto> recommandSearch(@PathVariable String searchInput){
-		return searchRepo.selectList(searchInput);
+		return searchRepo.selectRecommandList(searchInput);
 	}
 }
