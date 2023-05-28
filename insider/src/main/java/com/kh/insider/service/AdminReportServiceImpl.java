@@ -19,7 +19,7 @@ public class AdminReportServiceImpl implements AdminReportService{
 	private ReportManagementRepo reportManagementRepo;
 
 	@Override
-	public void sendDataToAllCilients() throws IOException {
+	public void sendDataToAllClients() throws IOException {
 		List<ReportManagementDto> reportList = reportManagementRepo.selectList();
 		
 		ObjectMapper objectMapper = new ObjectMapper();

@@ -70,7 +70,7 @@ public class ReportRestController {
 				boardRepo.addReport(reportDto.getReportTableNo());
 			}
 			//최신 현황을 admin report 게시판으로 전송
-			adminReportService.sendDataToAllCilients();
+			adminReportService.sendDataToAllClients();
 		}
 		else {
 			reportRepo.update(reportDto);

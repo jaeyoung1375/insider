@@ -1330,7 +1330,6 @@
 				//메세지를 수신하면 수신된 메세지로 태그를 만들어서 추가
 				this.socket.onmessage=(e)=>{
 					const data = JSON.parse(e.data);
-					console.log(data);
 					this.reportList = [...data];
 				};
 			},
