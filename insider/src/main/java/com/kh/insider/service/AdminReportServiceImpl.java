@@ -1,7 +1,9 @@
 package com.kh.insider.service;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,16 @@ public class AdminReportServiceImpl implements AdminReportService{
 		ObjectMapper objectMapper = new ObjectMapper();
 		
 		String data = objectMapper.writeValueAsString(reportList);
+		adminReportWebSocketServer.sendToAdmin(data);
+	}
+
+	@Override
+	public void sendSearchOptionRequest() throws IOException {
+		Map<String, Integer> map = Map.of("data", 1);
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		
+		String data = objectMapper.writeValueAsString(map);
 		adminReportWebSocketServer.sendToAdmin(data);
 	}
 }
