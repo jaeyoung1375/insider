@@ -24,10 +24,10 @@
 }
 
 .profile-preview {
-  position: absolute;
+  position: fixed;
   margin-left :30px;
-  top: 50px;
-  left: 0;
+  top: 200px;
+  left: 270px;
   width: 400px;
   height: 420px;
   background-color: white;
@@ -46,8 +46,6 @@
 .modalName{
 	color:gray;
 }
-     
-
 
    
 </style>
@@ -135,14 +133,25 @@
             </div>
             <hr>
      <!-- 게시물 시작 -->
-<div class="position-absolute mt-5 start-50 translate-middle-x media-width" style="display: flex; flex-direction: column; width: 770px; height:700px;"> 
- 
+     <!-- 비공개 계정 -->
+<div class="position-absolute mt-5 start-50 translate-middle-x media-width" style="display: flex; flex-direction: column; width: 770px; height: 700px;" v-if="(settingHide === 3 && !isOwner) || settingHide === 2 && followCheckIf(${memberDto.memberNo}) && !isOwner">
+ 	   <div style="display: flex;flex-direction: column; justify-content: center; align-items: center;">    
+   <img src="${pageContext.request.contextPath}/static/image/lock.png" width="200" height="200">
+   <h4 class="mt-5 text-center">비공개 계정입니다 사진 및 동영상을 보려면 팔로우하세요.</h4>
+   </div>
+</div>
+
+
+
+<!-- 공개 계정 -->
+<!-- 게시물이 없는 경우 || 본인 프로필이 아닐 때 -->
+<div class="position-absolute mt-5 start-50 translate-middle-x media-width" style="display: flex; flex-direction: column; width: 770px; height:700px;" v-else> 
     <div class="mt-5" style="display: flex;flex-direction: column; justify-content: center; align-items: center;" v-if="myBoardList.length == 0 && !isOwner">    
    <i class="fa-solid fa-camera fa-2xl" style="font-size:100px;"></i>
    <h2 class="mt-5">게시물 없음</h2>
    </div>
    
-
+	<!-- 게시물이 없는 경우 || 본인 프로필일 때 -->
    <div class="mt-5" style="display: flex;flex-direction: column; justify-content: center; align-items: center;" v-if="myBoardList.length == 0 && isOwner" @click="boardInsert">    
    <i class="fa-solid fa-camera fa-2xl" style="font-size:100px;"></i>
    <h2 class="mt-5">사진 공유</h2>
@@ -316,11 +325,11 @@
                             data-bs-backdrop="static"
                             ref="followerModal" @click.self="followerModalHide">	
             <div class="modal-dialog" role="document">
-                   <div class="modal-content">
+                   <div class="modal-content" style="max-width:400px; min-height:200px max-height:400px; overflow-y: scroll;">
                        <div class="modal-header text-center" style="display:flex; justify-content: center;">
 							<h5 class="modal-title">팔로워</h5>
                        </div>
-                       <div class="modal-body">
+                       <div class="modal-body" style="overflow-y: scroll; max-height:300px;"  @scroll="handleScroll2">
                      	<div v-for="item in myFollowerList" :key="item.attachmentNo">
                      	 						
                   <!-- 프로필 미리보기 내용 -->
@@ -341,7 +350,6 @@
                     		<span>팔로워 <span style="font-weight: bold;">{{followerCounts}}</span></span>
                     	</div>
                     	<div class="col-6">
-<!--                     		<span>팔로우 <span style="font-weight: bold;">{{getTotalFollowCount(item.memberNick)}}</span></span> -->
 							<span>팔로우 <span style="font-weight: bold;">{{followCounts}}</span></span>
                     	</div>
                     </div>
@@ -353,6 +361,16 @@
 							    <i class="fa-solid fa-camera fa-2xl" style="font-size: 40px; margin-bottom:30px;"></i>
 							    <h4 style="white-space: nowrap; margin-bottom: 5px;">아직 게시물이 없습니다</h4>
 							    <p style="font-size: 12px; margin-top: 0;">{{item.memberNick}}님이 사진과 릴스를 공유하면 여기에 표시됩니다.</p>
+							  </div>
+							</div>
+						</template>
+						
+						<template v-else-if="hoverSettingHide === 3">
+						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
+							  <div style="width:500px; margin-left:160px;">
+							    <img src="${pageContext.request.contextPath}/static/image/lock.png" width="60" height="60">
+   								<h6 style="white-space: nowrap; margin-bottom: 5px;">비공개 계정입니다 <br>
+   								사진 및 동영상을 보려면 팔로우하세요.</h6>
 							  </div>
 							</div>
 						</template>
@@ -401,11 +419,11 @@
                             data-bs-backdrop="static"
                             ref="followModal" @click.self="followModalHide">
              <div class="modal-dialog" role="document">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width:400px; min-height:200px max-height:400px; overflow-y: scroll;">
       <div class="modal-header text-center" style="display:flex; justify-content: center;">
-        <h5 class="modal-title">팔로우</h5>
+        <h5 class="modal-title" >팔로우</h5>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" style="overflow-y: scroll; max-height:300px;"  @scroll="handleScroll">
         <div v-for="item in myFollowList" :key="item.attachmentNo">
         
           <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave">
@@ -458,7 +476,7 @@
           			<button class="btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-if="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="width:50%; margin-left:20px;" >팔로잉</button>
                     </div>
           </div> <!-- 팔로우 미리보기 끝 -->
-          	<div style="display: flex; align-items: center;">
+          	<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
           			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover(item)" style="border-radius:50%;">
 						   <div style="display: flex; flex-direction: column; justify-content: flex-start;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
@@ -470,7 +488,7 @@
           
         </div>
       </div>
-      <button type="button" class="btn" data-bs-dismiss="modal" style="color:red;">취소</button>
+     
     </div>
   </div>
 </div> <!-- 팔로우 모달 목록 끝 -->
@@ -493,6 +511,21 @@
              //안전장치
              loading:false,
              finish:false,
+             
+        	 //▼▼▼▼▼▼▼▼▼▼▼▼▼팔로우 무한 페이징▼▼▼▼▼▼▼▼▼▼▼▼▼
+             followPercent:0,
+             followPage : 1,
+             //안전장치
+             followLoading:false,
+             followFinish:false,
+             
+             //▼▼▼▼▼▼▼▼▼▼▼▼▼팔로워 무한 페이징▼▼▼▼▼▼▼▼▼▼▼▼▼
+             followerPercent:0,
+             followerPage : 1,
+             //안전장치
+             followerLoading:false,
+             followFerinish:false,
+             
              isOwner : false,
              showProfilePreview : false,
             //추가 메뉴 모달 및 신고 모달
@@ -534,6 +567,8 @@
                memberBirth:"",
                attachmentNo:"",
             },
+            settingHide :null,
+            hoverSettingHide : null,
             totalFollowCnt: 0,
             totalFollowerCnt: 0,
          };
@@ -669,8 +704,8 @@
          	
          	this.totalFollowerCount();    
          	this.totalFollowCount();
-         	this.followerList();
-         	this.followList();
+         	this.followerListPaging();
+         	this.followListPaging();
         
          },
          
@@ -688,8 +723,8 @@
 		      console.log("언팔로우 성공");
 		      this.totalFollowerCount();
 		      this.totalFollowCount();
-		      this.followerList();
-		      this.followList();
+		      this.followerListPaging();
+		      this.followListPaging();
 		    } else {
 		      // 언팔로우 실패 처리
 		      console.log("언팔로우 실패");
@@ -713,8 +748,8 @@
 			      console.log("언팔로우 성공");
 			      this.totalFollowerCount();
 			      this.totalFollowCount();
-			      this.followerList();
-			      this.followList();
+			      this.followerListPaging();
+			      this.followListPaging();
 			    } else {
 			      // 언팔로우 실패 처리
 			      console.log("언팔로우 실패");
@@ -741,8 +776,8 @@
 			      console.log("언팔로우 성공");
 			      this.totalFollowCount();
 			      this.totalFollowerCount();
-			      this.followList();
-			      this.followerList();
+			      this.followListPaging();
+			      this.followerListPaging();
 			    } else {
 			      // 언팔로우 실패 처리
 			      console.log("언팔로우 실패");
@@ -765,7 +800,7 @@
     
          	const newData = memberNo;
         
-         	 this.followCheckList = resp.data;
+         	// this.followCheckList = resp.data;
          	this.followCheckList.push(...resp.data);
          	this.followCheckList.push(parseInt(newData));
          	
@@ -824,32 +859,83 @@
            	      });
            	     return resp.data;	   
            	},
+
            	
-           	// 본인 팔로워 목록 불러오기
-           	async followerList(){
-           		const resp = await axios.get("/rest/member/followerList",{
-           			params : {
-           				memberNo : this.memberNo
-           			}
-           		});
-           		
-           		this.myFollowerList= resp.data;
-           		console.log("나의 팔로워 리스트 : " +JSON.stringify(this.myFollowerList));
-           		console.log(this.followCheckList); 
-           	},
-         	// 본인 팔로우 목록 불러오기
-         	
-   				async followList(){
-           		const resp = await axios.get("/rest/member/followList",{
-           			params : {
-           				memberNo : this.memberNo
-           			}
-           		});
-           		this.myFollowList= resp.data;
-           		this.followCheck();
-           		console.log("나의 팔로우 리스트 : " +JSON.stringify(this.myFollowList));
-           		 
-           	}, 
+        	// 본인 팔로우 목록 불러오기 무한스크롤
+        async followListPaging() {
+		  if (this.followLoading === true) return; // 로딩중이면
+		  if (this.followFinish === true) return; // 다 불러왔으면
+		  this.followLoading = true;
+		  
+		  try {
+		    const resp = await axios.get("/rest/member/followListPaging/" + this.followPage, {
+		      params: {
+		        memberNo: this.memberNo
+		      }
+		    });
+		
+		    const newData = resp.data;
+		    for (const item of newData) {
+		      const existingItem = this.myFollowList.find(followItem => followItem.followFollower === item.followFollower);
+		      if (!existingItem) {
+		        this.myFollowList.push(item);
+		      }
+		    }
+		
+		    this.followPage++;
+		    console.log("res: ", resp.data.length);
+		    console.log("follow: ", this.myFollowList.length);
+		
+		    if (resp.data.length < 3) {
+		      this.followFinish = true;
+		    }
+		    
+		    this.followCheck();
+		  } catch (error) {
+		    console.error("Error occurred during followListPaging: ", error);
+		  }
+		  
+		  this.followLoading = false;
+		},
+		
+		
+		
+	   	// 본인 팔로워 목록 불러오기 무한스크롤
+       async followerListPaging() {
+		  if (this.followerLoading === true) return; // 로딩중이면
+		  if (this.followerFinish === true) return; // 다 불러왔으면
+		  this.followerLoading = true;
+		  
+		  try {
+		    const resp = await axios.get("/rest/member/followerListPaging/" + this.followerPage, {
+		      params: {
+		        memberNo: this.memberNo
+		      }
+		    });
+		
+		    const newData = resp.data;
+		    for (const item of newData) {
+		      const existingItem = this.myFollowerList.find(followerItem => followerItem.memberNo === item.memberNo);
+		      if (!existingItem) {
+		        this.myFollowerList.push(item);
+		      }
+		    }
+		
+		    this.followerPage++;
+	
+		
+		    if (resp.data.length < 3) {
+		      this.followerFinish = true;
+		    }
+		    
+		  } catch (error) {
+		    console.error("Error occurred during followerListPaging: ", error);
+		  }
+		  
+		  this.followerLoading = false;
+		},
+		
+           	
            	
            	// 마이페이지 게시물 목록 불러오기
            	async boardList(){
@@ -863,7 +949,13 @@
            			},
            		});
            		
-           		this.myBoardList.push(...resp.data);
+           	  const newData = resp.data;
+  		    for (const item of newData) {
+  		      const existingItem = this.myBoardList.find(boardItem => boardItem.boardNo === item.boardNo);
+  		      if (!existingItem) {
+  		        this.myBoardList.push(item);
+  		      }
+  		    }
            		this.page++;
            		
            		if(resp.data < 5) this.finish = true;
@@ -882,7 +974,7 @@
            	    }
            	  });
 				this.hoverPostList = [];
-				console.log("데이터 : "+resp.data);
+				//console.log("데이터 : "+resp.data);
            	  const newPosts = resp.data.slice(0, 3); // 최대 3개의 게시물만 추출
 
            	  this.hoverPostList.push(...newPosts);
@@ -895,17 +987,24 @@
              	    }
              	  });
   				this.hoverPostList2 = [];
-  				console.log("데이터 : "+resp.data);
+  				//console.log("데이터 : "+resp.data);
              	  const newPosts = resp.data.slice(0, 3); // 최대 3개의 게시물만 추출
 
              	  this.hoverPostList2.push(...newPosts);
+             	  
              	},
            	
            	checkOwnerShip(){ // 본인인지 여부 체크
            		this.isOwner = this.memberNo == ${memberNo};
            	},
-           	profileHover(item) {           		
+           async profileHover(item) {           		
            	  this.selectedItem = item; // 선택한 항목의 정보 저장
+           	  
+           	  // settingHide 불러오기 위해서 선언
+           	const resp = await axios.get("/rest/member/setting/"+item.memberNo);
+           	  const settingHide = resp.data.settingHide;
+           	 
+           	  
            	  Promise.all([
            		 this.getTotalFollowCount(item.memberNick), // 팔로우 수 가져오기
               	 this.getTotalFollowerCount(item.memberNick), // 팔로워 수 가져오기
@@ -918,10 +1017,12 @@
            	      this.followCounts = followCounts; // 프로미스가 해결된 값 저장
            	      this.followerCounts = followerCounts; // 프로미스가 해결된 값 저장
            	      this.postCounts = postCounts; // 프로미스가 해결된 값 저장
-           	      console.log("팔로우 수 : " +this.followCounts); // 수정된 값 출력
-           	      console.log("팔로워 수 : "+this.followerCounts); // 수정된 값 출력
-           	      console.log("게시물 수 : " +this.postCounts); // 수정된 값 출력
-           	   	  console.log("게시물 목록: ", this.hoverPostList); // 게시물 목록 출력
+           	      this.hoverSettingHide = settingHide;
+           	   		console.log("settingHide : "+this.hoverSettingHide);
+           	      //console.log("팔로우 수 : " +this.followCounts); // 수정된 값 출력
+           	      //console.log("팔로워 수 : "+this.followerCounts); // 수정된 값 출력
+           	      //console.log("게시물 수 : " +this.postCounts); // 수정된 값 출력
+           	   	  //console.log("게시물 목록: ", this.hoverPostList); // 게시물 목록 출력
            	    })
            	    .catch(error => {
            	      console.error(error);
@@ -937,20 +1038,57 @@
            	    window.location.href = '/board/insert';
            	},
            	
+           	
+           	handleScroll() {
+           	  const modalElement = this.$refs.followModal;
+           	  const bodyElement = modalElement.querySelector('.modal-body');
+           	  const contentHeight = bodyElement.scrollHeight;
+           	  const currentScroll = bodyElement.scrollTop;
+           	  const visibleHeight = bodyElement.clientHeight;
+           	  const scrollPercentage = (currentScroll / (contentHeight - visibleHeight)) * 100;
+           	  this.followPercent = Math.round(scrollPercentage);
+
+           	  if (this.followPercent >= 80) {
+           	    this.followListPaging();
+           	  }
+           	},
+           	
+          	handleScroll2() {
+             	  const modalElement = this.$refs.followerModal;
+             	  const bodyElement = modalElement.querySelector('.modal-body');
+             	  const contentHeight = bodyElement.scrollHeight;
+             	  const currentScroll = bodyElement.scrollTop;
+             	  const visibleHeight = bodyElement.clientHeight;
+             	  const scrollPercentage = (currentScroll / (contentHeight - visibleHeight)) * 100;
+             	  this.followerPercent = Math.round(scrollPercentage);
+
+             	  if (this.followerPercent >= 80) {
+             	    this.followerListPaging();
+             	  }
+             	},
+            async memberSetting(){
+             	const resp = await axios.get("/rest/member/setting/" +this.memberNo);
+             	this.settingHide = resp.data.settingHide;           	
+             },
+             
+           
+           	
 
       },
-      created(){
-         //데이터 불러오는 영역   
-         this.loadMember();
-         this.followCheck();
-         this.totalFollowCount();
-         this.totalFollowerCount();
-         this.followerList();
-         this.followList();  
-         this.boardList();
-         //this.getTotalFollowCount();
-
-      },
+      created() {
+    	  // 데이터 불러오는 영역
+    	  this.loadMember();
+    	  this.totalFollowCount();
+    	  this.totalFollowerCount();
+    	  this.memberSetting();
+    	  Promise.all([this.followListPaging(), this.followerListPaging(), this.boardList()])
+    	    .then(() => {
+    	      this.followCheck();
+    	    })
+    	    .catch((error) => {
+    	      console.error("Error occurred during initialization: ", error);
+    	    });
+    	},
       watch:{
     	// percent가 변하면 percent의 값을 읽어와서 80% 이상인지 판정
     	percent(){
@@ -959,6 +1097,7 @@
     		}
     	},
     	
+   	
       },
       mounted(){   
 			this.checkOwnerShip();
@@ -969,23 +1108,19 @@
             this.myOptionModal = new bootstrap.Modal(this.$refs.myOptionModal);
             this.followerModal = new bootstrap.Modal(this.$refs.followerModal);
             this.followModal = new bootstrap.Modal(this.$refs.followModal);
-            
+        
             window.addEventListener("scroll", _.throttle(()=>{
-            	//console.log("스크롤 이벤트");
-            	
-            	// 스크롤은 몇 % 위치에 있는가?를 알고 싶다면 
-           		// - 전체 문서의 높이(document.body.clientHeight)
-           		// - 현재 스크롤의 위치 (window.scrollY)
-           		// - 브라우저의 높이 (window.innerHeight)
+            
             const height = document.documentElement.scrollHeight - window.innerHeight;
 			const current = window.scrollY;
 			const percent = (current / height) * 100;
+			
 
-           		//console.log("percent = " + Math.round(percent));
-           		
-           		// data의 percent를 계산된 값으로 갱신
            		this.percent = Math.round(percent);
+           		console.log(percent);
             },250));
+            
+          
       },
       
    }).mount("#app");

@@ -117,7 +117,7 @@ public class BoardRepoImpl implements BoardRepo {
 
 	@Override
 	public List<BoardDto> myPageSelectListPaging(int page, int memberNo) {
-		int end = page * 6;
+		int end = page * 10;
 		int begin = end -9;
 		Map param = Map.of("begin",begin, "end",end, "memberNo",memberNo);
 		return sqlSession.selectList("board.getTotalMyPost",param);

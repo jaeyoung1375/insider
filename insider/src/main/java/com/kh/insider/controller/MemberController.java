@@ -149,6 +149,7 @@ public class MemberController {
       return "/member/mypage";
    }
    
+   // 팔로우 총 개수
    @GetMapping("/totalFollowCount")
    @ResponseBody
    public int totalFollowCount(@RequestParam("memberNick") String memberNick) {
@@ -157,6 +158,7 @@ public class MemberController {
        return totalFollowCount;
    }
    
+   // 팔로워 총 개수
    @GetMapping("/totalFollowerCount")
    @ResponseBody
    public int totalFollowerCount(@RequestParam("memberNick") String memberNick) {
@@ -165,6 +167,7 @@ public class MemberController {
        return totalFollowerCount;
    }
    
+   // 게시물 총 개수
    @GetMapping("/totalPostCount")
    @ResponseBody
    public int totalPostCount(@RequestParam("memberNick") String memberNick) {
