@@ -14,7 +14,8 @@
   	
   	<!-- 댓글 조회 -->
   	<select id="selectList" resultType="ReplyDto">
-  		SELECT * FROM  reply_with_nick where reply_origin=#{replyOrigin} CONNECT BY PRIOR reply_no = COALESCE(reply_parent, 0) START WITH COALESCE(reply_parent, 0) = 0 order siblings by reply_no ASC
+  		SELECT * FROM  reply_with_nick where reply_origin=#{replyOrigin} 
+  		CONNECT BY PRIOR reply_no = COALESCE(reply_parent, 0) START WITH COALESCE(reply_parent, 0) = 0 order siblings by reply_no ASC
   	</select>
   	
   	<!-- 댓글 삭제 -->
@@ -27,9 +28,9 @@
   		select * from reply where reply_no = #{replyNo}
   	</select>
   	
-  	<!-- 댓글 수정 -->
-  	<update id="edit" parameterType="ReplyDto">
-  		update reply set reply_content = #{replyContent} where reply_no=#{replyNo}
+  	<!-- 댓글 좋아요 개수 갱신 -->  	
+  	<update id="updateLikeCount">
+  		update reply set reply_like	= #{count} where reply_no = #{replyNo}
   	</update>
-  
+  	
   </mapper>

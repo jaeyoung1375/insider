@@ -9,5 +9,5 @@ public interface ReplyRepo {
 	List<ReplyDto> selectList(int replyOrigin);
 	boolean delete(int replyNo);
 	ReplyDto selectOne(int replyNo);
-	boolean edit(ReplyDto replydto);
+	void updateLikeCount(int count, int replyNo);
 }
