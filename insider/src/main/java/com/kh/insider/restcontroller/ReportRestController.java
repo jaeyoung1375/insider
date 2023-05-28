@@ -16,11 +16,13 @@ import com.kh.insider.dto.BlockDto;
 import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.dto.ReportDto;
 import com.kh.insider.dto.ReportManagementDto;
+import com.kh.insider.dto.ReportResultDto;
 import com.kh.insider.repo.BlockRepo;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.ReportManagementRepo;
 import com.kh.insider.repo.ReportRepo;
+import com.kh.insider.repo.ReportResultRepo;
 import com.kh.insider.service.AdminReportService;
 
 @RequestMapping("/rest/report")
@@ -38,6 +40,8 @@ public class ReportRestController {
 	private MemberWithProfileRepo memberWithProfileRepo;
 	@Autowired
 	private BlockRepo blockRepo;
+	@Autowired
+	private ReportResultRepo reportResultRepo;
 	
 	@PostMapping("/")
 	public MemberWithProfileDto insert(@RequestBody ReportDto reportDto, HttpSession session) throws IOException {
@@ -53,6 +57,13 @@ public class ReportRestController {
 		if(checkReportDto==null) {
 			reportRepo.insert(reportDto);
 			String board = reportDto.getReportTable();
+			
+			//리포트 관리 결과 테이블에 추가
+			ReportResultDto reportResultDto = reportResultRepo.selectOne(reportDto);
+			if(reportResultDto==null) {
+				reportResultRepo.insert(reportDto);
+			}
+			
 			//신고 수 추가
 			switch(board) {
 			case "board" : 

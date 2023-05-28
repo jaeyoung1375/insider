@@ -75,22 +75,51 @@
 		<div class="offset-md-2 col-md-8">
 		<!-- 검색창 -->
 			<div class="text-center">
-				<div class="row">
+				<div class="row" @click="loadSearchedList">
 					<div class="col form-group has-search">
 						<span class="fa-solid fa-search form-control-feedback"></span>
 						<input type="text" class="form-control rounded" placeholder="검색" v-model="searchInput" @blur="hideSearchList" @click="showSearchList" >
 					</div>
 				</div>
+			<!-- 검색기록 -->
+				<div class="row">
+					<div v-for="(searched, index) in searchedList" :key="index">
+						<div class="" >
+							<div class="row" v-if="searched.memberNick==null">
+								<div class="col p-2 ms-2" @click="moveToTagDetail(searched.searchTagName)">
+									# {{searched.searchTagName}}
+								</div>
+								<!-- 삭제 마크 -->
+								<div class="col-1 d-flex justify-content-center align-items-center">
+									<i class="fa-solid fa-xmark" @click="deleteSearched(index)"></i>
+								</div>
+							</div>
+							<div class="row" v-else>
+								<div class="col-3">
+									<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+searched.imageURL">
+								</div>
+								<div class="col-8" @click="moveToMemberDetail(searched.searchMemberNo)">
+									<div class="ms-2">{{searched.memberNick}}</div>
+									<div class="ms-2">{{searched.memberName}}</div>
+								</div>
+								<!-- 삭제 마크 -->
+								<div class="col-1 d-flex justify-content-center align-items-center">
+									<i class="fa-solid fa-xmark" @click="deleteSearched(index)"></i>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			<!-- 추천 검색어 리스트 -->
-				<ul class="dropdown-menu" :style="{ width: dropdownWidth }" aria-labelledby="dropdownMenu2" :class="{'show':recommandListShow}">
-					<li v-for="(recommand, index) in recommandList" :key="index">
-						<div class="dropdown-item">
-							<div class="row" v-if="recommand.nick==null" @click="moveToTagDetail">
+				<div class="" :style="{ width: dropdownWidth }" aria-labelledby="dropdownMenu2" :class="{'show':recommandListShow}">
+					<div v-for="(recommand, index) in recommandList" :key="index">
+						<div class="" >
+							<div class="row" v-if="recommand.nick==null" @click="moveToTagDetail(recommand.name)">
 								<div class="col p-2 ms-2">
 									# {{recommand.name}}
 								</div>
 							</div>
-							<div class="row" v-else  @click="moveToMemberDetail">
+							<div class="row" v-else @click="moveToMemberDetail(recommand.memberNo)">
 								<div class="col-3">
 									<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+recommand.imageURL">
 								</div>
@@ -100,8 +129,8 @@
 								</div>
 							</div>
 						</div>
-					</li>
-				</ul>
+					</div>
+				</div>
 			</div>
 			
 		<!-- 리스트 -->
@@ -131,6 +160,7 @@
 				percent:0,
 				loading:false,
 				finish:false,
+				searchedList:[],
 			};
 		},
 		computed: {
@@ -169,12 +199,27 @@
 				this.recommandListShow=true;
 				this.dropdownWidth = `${inputWidth}px`;
 			},
-			async moveToTagDetail(){
-				
+			async moveToTagDetail(tagName){
+				const data={searchTagName:tagName};
+				const resp = await axios.post(contextPath+"/rest/search/", data);
 			},
-			async moveToMemberDetail(){
-				
+			async moveToMemberDetail(searchMemberNo){
+				const data={searchMemberNo:searchMemberNo};
+				const resp = await axios.post(contextPath+"/rest/search/", data);
 			},
+			//검색기록 출력
+			async loadSearchedList(){
+				const resp = await axios.get(contextPath+"/rest/search/searched");
+				this.searchedList = [...resp.data];
+			},
+			async deleteSearched(index){
+				const data={
+						searchTagName:this.searchedList[index].searchTagName,
+						searchMemberNo:this.searchedList[index].searchMemberNo
+					};
+				const resp = await axios.put(contextPath+"/rest/search/", data);
+				this.searchedList.splice(index, 1);
+			}
 		},
 		created(){
 			//데이터 불러오는 영역

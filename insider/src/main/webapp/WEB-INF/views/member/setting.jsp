@@ -2,10 +2,13 @@
     pageEncoding="UTF-8"%>
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 <style>
+.setting-menu-option{
+	font-size:1em;
+}
 .setting-menu{
 	border:1px solid rgba(0,0,0,0);
 	cursor:default;
-	padding:1.5em;
+	padding:1em;
 }
 .setting-menu:hover{
 	box-shadow: -3px 0 0 rgba(0, 0, 0, 0.1);
@@ -14,7 +17,9 @@
 .selected{
 	box-shadow: -3px 0 0 rgba(0, 0, 0, 0.2);
 }
-
+.selected .setting-menu-option{
+	font-weight:bold;
+}
 .menu-bar{
 	border-top:1px solid lightgray;
 	border-left:1px solid lightgray;
@@ -32,44 +37,44 @@
 <div class="container-fluid mt-4" id="app">
 	<div class="row">
 	<!-- 좌측 사이드 메뉴바 -->
-		<div class="col-md-4">
+		<div class="col-md-3">
 			<div class="row menu-bar">
 				<div class="col">
 					<div class="row setting-menu" @click="changePage(0)" :class="{'selected':page==0}">
 						<div class="col">
-							<h5 class="m-0">개인정보 변경</h5>
+							<h5 class="m-0 setting-menu-option">개인정보 변경</h5>
 						</div>
 					</div>
 					<div class="row setting-menu" @click="changePage(1)" :class="{'selected':page==1}">
 						<div class="col">
-							<h5 class="m-0">프로필 편집</h5>
+							<h5 class="m-0 setting-menu-option">프로필 편집</h5>
 						</div>
 					</div>
 					<div class="row setting-menu" @click="changePage(2)" :class="{'selected':page==2}">
 						<div class="col">
-							<h5 class="m-0">푸시 알림</h5>
+							<h5 class="m-0 setting-menu-option">푸시 알림</h5>
 						</div>
 					</div>
 					<div class="row setting-menu" @click="changePage(3)" :class="{'selected':page==3}">
 						<div class="col">
-							<h5 class="m-0">내가 볼 수 있는 내용</h5>
+							<h5 class="m-0 setting-menu-option">내가 볼 수 있는 내용</h5>
 						</div>
 					</div>
 					<div class="row setting-menu" @click="changePage(4)" :class="{'selected':page==4}">
 						<div class="col">
-							<h5 class="m-0">공개 범위</h5>
+							<h5 class="m-0 setting-menu-option">공개 범위</h5>
 						</div>
 					</div>
 					<div class="row setting-menu" @click="changePage(5)" :class="{'selected':page==5}">
 						<div class="col">
-							<h5 class="m-0">소통 방법</h5>
+							<h5 class="m-0 setting-menu-option">소통 방법</h5>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	<!------------------------------------------- 개인정보 변경 ------------------------------------------->
-		<div class="col-md-8 select-option-box" v-show="page==0">
+		<div class="col-md-9 select-option-box" v-show="page==0">
 			<div class="row">
 				<div class="col">
 					<h2>개인정보 변경</h2>
@@ -131,7 +136,7 @@
 			</div>
 		</div>
 	<!------------------------------------------- 프로필 편집 ------------------------------------------->
-		<div class="col-md-8 select-option-box" v-show="page==1">
+		<div class="col-md-9 select-option-box" v-show="page==1">
 			<div class="row">
 				<div class="col">
 					<h2>프로필 편집</h2>
@@ -183,7 +188,7 @@
 			</div>
 		</div>
 	<!------------------------------------------- 푸시 알림 ------------------------------------------->
-		<div class="col-md-8 select-option-box" v-show="page==2">
+		<div class="col-md-9 select-option-box" v-show="page==2">
 			<div class="row">
 				<div class="col">
 					<h2>푸시 알림</h2>
@@ -248,7 +253,7 @@
 			</div>
 		</div>
 	<!------------------------------------------- 내가볼수있는내용 ------------------------------------------->
-		<div class="col-md-8 select-option-box" v-show="page==3">
+		<div class="col-md-9 select-option-box" v-show="page==3">
 			<div class="row">
 				<div class="col">
 					<h2>내가 볼 수 있는 내용</h2>
@@ -315,7 +320,7 @@
 			</div>
 		</div>
 	<!------------------------------------------- 내 콘텐츠를 볼수 있는 사람 ------------------------------------------->
-		<div class="col-md-8 select-option-box" v-show="page==4">
+		<div class="col-md-9 select-option-box" v-show="page==4">
 			<div class="row">
 				<div class="col">
 					<h2>내 콘텐츠를 볼 수 있는 사람</h2>
@@ -388,7 +393,7 @@
 			</div>
 		</div>
 	<!------------------------------------------- 다른 사람이 나와 소통할 수 있는 방법 ------------------------------------------->
-		<div class="col-md-8 select-option-box" v-show="page==5">
+		<div class="col-md-9 select-option-box" v-show="page==5">
 			<div class="row">
 				<div class="col">
 					<h2>다른 사람이 나와 소통할 수 있는 방법</h2>

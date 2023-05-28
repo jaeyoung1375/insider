@@ -631,20 +631,32 @@
 						<table class="table">
 							<thead>
 								<tr>
-									<th>회원정보</th>
-									<th>신고 위치</th>
-									<th>신고개수</th>
-									<th>처리여부</th>
-									<th>비고</th>
+									<th style="vertical-align:middle; text-align:left">회원정보</th>
+									<th style="vertical-align:middle; text-align:center">신고 위치</th>
+									<th style="vertical-align:middle; text-align:center">신고개수</th>
+									<th style="vertical-align:middle; text-align:center">처리여부</th>
+									<th style="vertical-align:middle; text-align:center">비고</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr v-for="(report, index) in reportList" :key="index">
-									<td>{{report.memberName}}{{report.memberNick}}</td>
-									<td>{{report.reportTable}}</td>
-									<td>{{report.count}}</td>
-									<td>{{report.reportCheck}}</td>
-									<td>내용보기</td>
+									<td>
+										<div class="row">
+											<div class="col-3">
+												<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+report.imageURL">
+											</div>
+											<div class="col-9">
+												<div class="ms-2">{{report.memberNick}}</div>
+												<div class="ms-2">{{report.memberName}}</div>
+											</div>
+										</div>
+									</td>
+									<td style="vertical-align:middle; text-align:center" v-if="report.reportTable=='board'">게시물</td>
+									<td style="vertical-align:middle; text-align:center" v-if="report.reportTable=='member'">회원</td>
+									<td style="vertical-align:middle; text-align:center">{{report.count}}</td>
+									<td style="vertical-align:middle; text-align:center" v-if="report.reportResult==0">미처리</td>
+									<td style="vertical-align:middle; text-align:center" v-if="report.reportResult==1">처리완료</td>
+									<td style="vertical-align:middle; text-align:center">내용보기</td>
 								</tr>
 							</tbody>
 						</table>
@@ -1685,8 +1697,8 @@
 				}
 				else if(this.adminMenu==3){
 					//신고 관리
-					this.loadReportList();
 					this.connectReportServer();
+					this.loadReportList();
 					this.loadReportContent();
 				}
 				else if(this.adminMenu==4){

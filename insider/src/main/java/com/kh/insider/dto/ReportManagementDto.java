@@ -7,9 +7,14 @@ public class ReportManagementDto {
 	private long reportMemberNo;
 	private int reportTableNo;
 	private String reportTable;
-	private int reportCheck;
+	private Integer reportResult;
 	private int count;
 	private String memberName;
 	private String memberNick;
-	private int attachmentNo;
+	private Integer attachmentNo;
+	
+	public String getImageURL() {
+		if(attachmentNo == null) return "https://via.placeholder.com/150x150";
+		else return "/rest/attachment/download/"+attachmentNo;
+	}
 }

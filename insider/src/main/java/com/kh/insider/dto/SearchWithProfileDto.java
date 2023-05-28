@@ -14,5 +14,10 @@ public class SearchWithProfileDto {
 	public int searchDelete;
 	public String memberNick;
 	public String memberName;
-	public Integer AttachmentNo;
+	public Integer attachmentNo;
+	
+	public String getImageURL() {
+		if(attachmentNo == null) return "https://via.placeholder.com/150x150";
+		else return "/rest/attachment/download/"+attachmentNo;
+	}
 }
