@@ -16,13 +16,17 @@
 		SELECT * FROM dm_privacy_room WHERE room_no = #{roomNo}	
     </select>   
 
+	<!-- 채팅방 퇴장 -->
+	<delete id="leaveRoom">
+		delete dm_privacy_room where inviter_no = #{inviterNo} and room_no = #{roomNo}
+	</delete>
 
-	<!--  삭제 예정 -->
-    <select id="inviteeList" resultType="DmPrivacyRoomDto">
-        SELECT * FROM dm_privacy_room WHERE invitee_no = #{inviteeNo}
-    </select>
     
 	<!-- //////////////////////// 삭제 예정 ///////////////// -->
+	<select id="inviteeList" resultType="DmPrivacyRoomDto">
+        SELECT * FROM dm_privacy_room WHERE invitee_no = #{inviteeNo}
+    </select>
+	
     <!-- 특정 채팅방 검색 (중복 확인) --> 
     <select id="selectOneRoom" resultType="DmPrivacyRoomDto">
 		select * from dm_privacy_room

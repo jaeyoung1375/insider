@@ -125,6 +125,22 @@ public class DmRestController {
 		inviter.setRoomNo(roomNo);
 		dmServiceImpl.inviteUserToRoom(inviter, roomNo, inviteeNo);
 	}
+	
+	//채팅방에서 회원 퇴장
+	@PostMapping("/exitDmRoom")
+	public void exitInRoom(@RequestBody DmUserVO user, HttpSession session) {
+		long memberNo = (Long) session.getAttribute("memberNo");
+		int roomNo = user.getRoomNo();
+		user.setMemberNo(memberNo);
+		dmServiceImpl.leaveDmRoom(user, roomNo);
+	}
+	
+	//회원이 존재하지 않는 채팅방 삭제
+	@PostMapping("/deleteDmRoom")
+	public void deleteRoom(@RequestBody DmRoomVO dmRoomVO) {
+	    int roomNo = dmRoomVO.getRoomNo();
+	    dmServiceImpl.deleteRoom(roomNo);
+	}
 
 
 }

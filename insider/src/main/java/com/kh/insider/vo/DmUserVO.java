@@ -39,7 +39,9 @@ public class DmUserVO {
 	
 	//user의 sesstion 메세지를 가지고 jsonMessage를 보내라.
 	public void send(TextMessage jsonMessage) throws IOException {
-		session.sendMessage(jsonMessage);
+	       if (session != null) {
+	            session.sendMessage(jsonMessage);
+	        }
 	}
 	
     // 채팅방 입장을 위한 기본 생성자

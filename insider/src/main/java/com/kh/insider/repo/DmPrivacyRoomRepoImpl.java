@@ -26,16 +26,20 @@ public class DmPrivacyRoomRepoImpl implements DmPrivacyRoomRepo{
 		else return true;
 	}
 
-	/// 삭제 예정
 	@Override
-	public List<DmPrivacyRoomDto> inviteeList(long inviteeNo) {
-		return sqlSession.selectList("dmPrivacyRoom.inviteeList", inviteeNo);
+	public void leaveRoom(DmPrivacyRoomDto dmPrivacyRoomDto) {
+		sqlSession.delete("dmPrivacyRoom.leaveRoom", dmPrivacyRoomDto);
 	}
 
 ////////////////////////삭제 예정 /////////////////
 	@Override
+	public List<DmPrivacyRoomDto> inviteeList(long inviteeNo) {
+		return sqlSession.selectList("dmPrivacyRoom.inviteeList", inviteeNo);
+	}
+	@Override
 	public DmPrivacyRoomDto selectOneRoom(DmPrivacyRoomDto dmPrivacyRoomDto) {
 		return sqlSession.selectOne("dmPrivacyRoom.selectOneRoom", dmPrivacyRoomDto);
 	}
+
 	
 }

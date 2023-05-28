@@ -12,15 +12,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kh.insider.dto.DmInvitationDto;
 import com.kh.insider.dto.DmMessageDeletedDto;
 import com.kh.insider.dto.DmMessageDto;
+import com.kh.insider.dto.DmPrivacyRoomDto;
 import com.kh.insider.dto.DmRoomDto;
 import com.kh.insider.dto.DmUserDto;
-import com.kh.insider.repo.DmInvitationRepo;
 import com.kh.insider.repo.DmMessageDeletedRepo;
 import com.kh.insider.repo.DmMessageRepo;
+import com.kh.insider.repo.DmPrivacyRoomRepo;
 import com.kh.insider.repo.DmRoomRepo;
 import com.kh.insider.repo.DmUserRepo;
 import com.kh.insider.vo.ChannelReceiveVO;
@@ -48,7 +49,7 @@ public class DmServiceImpl implements DmService {
 	private DmMessageDeletedRepo dmMessageDeletedRepo;
 	
 	@Autowired
-	private DmInvitationRepo dmInvitationRepo;
+	private DmPrivacyRoomRepo dmPrivacyRoomRepo;
 
 	//여러 개의 방을 관리할 저장소
 	Map<Integer, DmRoomVO> rooms = Collections.synchronizedMap(new HashMap<>());
@@ -79,8 +80,19 @@ public class DmServiceImpl implements DmService {
 
 	//- DmRoom 제거
 	public void deleteRoom(int roomNo) {
-		rooms.remove(roomNo);
-		//방 제거 코드(DB)
+		if(containsRoom(roomNo) == false) return;
+
+	    // 채팅방에 참여자가 남아있는지 확인
+	    boolean isEmpty = dmUserRepo.findMembersByRoom(roomNo).isEmpty();
+	    log.debug("isEmpty: " + isEmpty);
+	    
+	    //채팅방에 회원이 남아있지 않으면 방 제거(DB)
+	    if (isEmpty) {
+	        DmRoomDto dmRoomDto = new DmRoomDto();
+	        dmRoomDto.setRoomNo(roomNo);
+	        dmRoomRepo.deleteRoom(dmRoomDto);
+	        rooms.remove(roomNo);
+	    }
 	}
 	
 	//- 사용자 방에 입장
@@ -117,7 +129,6 @@ public class DmServiceImpl implements DmService {
 		dmRoomVO.leave(user);
 		
 		//참여자 제거(DB)
-		
 		log.debug("{}님이 {}방에서 퇴장하였습니다.", user.getMemberNo(), roomNo);
 	}
 	
@@ -251,6 +262,16 @@ public class DmServiceImpl implements DmService {
 			long messageNo = receiveVO.getMessageNo();
 			this.deleteMessage(user, messageNo);
 		}
+	    //회원 퇴장 메시지
+	    else if (receiveVO.getType() == WebSocketConstant.LEAVE) {
+	        int roomNo = this.findUser(user);
+	        if (roomNo == -1) return;
+	        
+	        String content = user.getMemberNick() + " 님이 퇴장하셨습니다.";
+	        sendWebSocketMessage(roomNo, content);
+	        
+	        this.exit(user, roomNo);
+	    }
 		
 	}
 	//메세지 삭제
@@ -273,13 +294,53 @@ public class DmServiceImpl implements DmService {
 		if(isJoin) return;
 	    dmUserRepo.enter(inviteeDto);
 
-	    //dm_invitation 테이블에 DB저장 
-	    DmInvitationDto dmInvitationDto = new DmInvitationDto();
-	    dmInvitationDto.setInviterNo(inviter.getMemberNo());
-	    dmInvitationDto.setInviteeNo(inviteeNo);
-	    dmInvitationDto.setRoomNo(roomNo);
-	    dmInvitationRepo.createInvitation(dmInvitationDto); 
+	    //dm_privacy_room 테이블에 DB저장 
+	    DmPrivacyRoomDto dmPrivacyRoomDto = new DmPrivacyRoomDto();
+	    dmPrivacyRoomDto.setInviterNo(inviter.getMemberNo());
+	    dmPrivacyRoomDto.setInviteeNo(inviteeNo);
+	    dmPrivacyRoomDto.setRoomNo(roomNo);
+	    
+	    boolean isJoin2 = dmPrivacyRoomRepo.checkDuplication(dmPrivacyRoomDto);
+		if(isJoin2) return;
+		dmPrivacyRoomRepo.createPrivacy(dmPrivacyRoomDto); 
 	}
 	
+	//채팅방 퇴장 DB
+	public void leaveDmRoom(DmUserVO user, int roomNo) {
+		if(containsRoom(roomNo) == false) return;
+		
+		//참여자 제거(DB)
+		DmUserDto dmUserDto = new DmUserDto();
+	    dmUserDto.setMemberNo(user.getMemberNo());
+	    dmUserDto.setRoomNo(roomNo);
+	    dmUserRepo.leaveRoom(dmUserDto);
+	    
+	    //dm_privacy_room 테이블에서 해당 회원 정보 삭제
+	    DmPrivacyRoomDto dmPrivacyRoomDto = new DmPrivacyRoomDto();
+	    dmPrivacyRoomDto.setInviterNo(user.getMemberNo());
+	    dmPrivacyRoomDto.setRoomNo(roomNo);
+	    dmPrivacyRoomRepo.leaveRoom(dmPrivacyRoomDto);
+	    
+		log.debug("DB삭제 {}님이 {}방에서 퇴장하였습니다.", user.getMemberNo(), roomNo);
+	}
+	
+	//알림 메세지 전송
+	private void sendWebSocketMessage(int roomNo, String content) throws IOException {
+		ChannelReceiveVO message = new ChannelReceiveVO();
+	    message.setType(WebSocketConstant.CHAT);
+	    message.setRoom(roomNo);
+	    message.setContent(content);
+
+	    try {
+	        String json = mapper.writeValueAsString(message);
+	        TextMessage jsonMessage = new TextMessage(json);
+
+	        // Broadcast the message to the chat room
+	        DmRoomVO dmRoomVO = rooms.get(roomNo);
+	        dmRoomVO.broadcast(jsonMessage);
+	    } catch (JsonProcessingException e) {
+	        log.error("Failed to convert message to JSON: {}", e.getMessage());
+	    }
+	}
 	
 }

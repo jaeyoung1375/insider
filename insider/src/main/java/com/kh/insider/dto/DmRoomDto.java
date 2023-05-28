@@ -10,5 +10,6 @@ public class DmRoomDto {
 	private int roomNo;
 	private String roomName;
 	private Date roomCreated;
+	private int roomType;
 	
 }

@@ -13,6 +13,17 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
 
 <style>
+	.content-body .fa-x,
+	.content-body .fa-trash,
+	.content-body .fa-heart {
+	  visibility: hidden;
+	}
+	
+	.content-body:hover .fa-x,
+	.content-body:hover .fa-trash,
+	.content-body:hover .fa-heart {
+	  visibility: visible;
+	}
 	.modal-footer.btn-center {
 	    display: flex;
 	    justify-content: center;
@@ -79,11 +90,11 @@
 	}
 	.message-wrapper > .message > .content-wrapper > .content-body > .info-wrapper > .time-wrapper {
 	    font-size: 0.5em;
-	    padding: 0 0.25em;
+	    padding: 0 0.30em;
 	}
 	.message-wrapper > .message > .content-wrapper > .content-body > .info-wrapper > .number-wrapper {
-	    font-size: 0.5em;
-	    padding: 0 0.35em;
+	    font-size: 0.6em;
+	    padding: 0 0.45em;
 	    color: orange;
 	    font-weight: bold;
 	}
@@ -157,18 +168,21 @@
 							<i class="fa-regular fa-pen-to-square fa-lg" style="margin-right: 11px; cursor:pointer;" @click="fetchFollowerList(); showCreateRoomModal();"></i>
 						</span>
 						<span v-else style="position:absolute; top:21px; right:0; margin-right:15px;">
-							<i class="fa-regular fa-pen-to-square fa-lg" style="margin-right: 11px; cursor:pointer;" @click="fetchFollowerList(); showCreateRoomModal();"></i>
-							<i class="fa-solid fa-user-plus fa-lg" style="cursor:pointer;" @click="fetchFollowerList();  showInviteModal()"></i>
+							<i class="fa-regular fa-pen-to-square fa-lg" style="margin-right: 15px; cursor:pointer;" @click="fetchFollowerList(); showCreateRoomModal();"></i>
+							<i class="fa-solid fa-user-plus fa-lg" style="cursor:pointer;" @click="fetchFollowerList();  showInviteModal();"></i>
 						</span>
 					</div>
 					
 					<!-- 채팅방 이름 -->
 					<div class="card col-8" style="border-radius:0;border-left:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
-						채팅방 이름
-						<span style="position:absolute; top:21px; right:0; margin-right:19px;">
-							<i class="fa-solid fa-door-open fa-xl" style="margin-right: 11px; cursor:pointer; color: #b2bec3" @click="showExitModal();"></i>
-							<i class="fa-solid fa-circle-info fa-xl" style="cursor:pointer; color: #b2bec3"></i>
-						</span>
+						<div v-if="roomNo != null" >
+							채팅방 이름
+							<span style="position:absolute; top:21px; right:0; margin-right:19px;">
+								<i class="fa-solid fa-file-pen fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3"></i>
+								<i class="fa-solid fa-door-open fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showExitModal()"></i>
+								<i class="fa-solid fa-circle-info fa-xl" style="cursor:pointer; color: #b2bec3"></i>
+							</span>
+						</div>
 					</div>
 				</div>
 				
@@ -204,7 +218,9 @@
 							                	<div class="number-wrapper" v-show="unreadCount[index] !== 0">{{unreadCount[index]}}</div>
 							                	<div class="time-wrapper" v-if="calculateDisplay(index)">{{timeFormat(message.time)}}</div>
 							                </div>
-						                	<i class="fa-solid fa-x fa-xs" v-on:click="deleteMessage(index)" style="padding-bottom: 0.51em;"></i>
+						                	<i class="fa-solid fa-x fa-xs" v-on:click="deleteMessage(index)" style="padding-bottom: 0.51em; padding-right: 0.6em; padding-left: 0.7em; color: #ced6e0; cursor:pointer;"></i>
+						                	<i class="fa-solid fa-trash fa-xs" style="padding-bottom: 0.51em; padding-right: 0.51em; padding-left: 0.51em; color: #ced6e0; cursor:pointer;"></i>
+						                	<i class="fa-solid fa-heart fa-xs" style="padding-bottom: 0.51em; padding-right: 0.5em; padding-left: 0.5em; color: #c23616; cursor:pointer;"></i>
 						                </div>
 						                <div class="content-footer">
 						                	<div class=heart><i class="fa-solid fa-heart fa-xs" style="color: #c23616;"></i></div>
@@ -321,11 +337,11 @@
 		        <h5 class="modal-title" >채팅방을 퇴장 하시겠습니까?</h5>
 		      </div>
 		      <div class="modal-body" style="display: flex; align-items: center; color:grey;font-size:0.9em; height: 7em;">
-					채팅방을 퇴장 시, 회원님의 채팅 메세지가 모두 삭제됩니다. <br>
+					채팅방 퇴장 시, 회원님의 채팅 메세지가 모두 삭제됩니다. <br>
 					다른 사람의 채팅방에는 메시지가 계속 표시됩니다.
 		      </div>
 		      <div class="modal-footer btn-center">
-		        <button type="button" class="btn" @click="exitRoom" data-bs-dismiss="modal" aria-label="Close" style="color:red;">확인</button>
+		        <button type="button" class="btn" @click="leaveTheRoom" data-bs-dismiss="modal" aria-label="Close" style="color:red;">확인</button>
 		      </div>
 		      <div class="modal-footer btn-center">
 		        <button type="button" class="btn" data-bs-dismiss="modal">취소</button>
@@ -581,7 +597,8 @@
 				        await axios.post(inviteUrl, invite);
 
 				        console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
-				        
+				        window.location.href = "${pageContext.request.contextPath}/dm/channel?room=" + roomNo;
+
 				        this.dmRoomList = []; //채팅방 목록 초기화
 				        await this.fetchDmRoomList(); //채팅방 목록 불러오기
 				    } catch (error) {
@@ -602,9 +619,46 @@
 					        console.log("초대가 성공적으로 수행되었습니다.");
 					} catch (error) {
 				        console.error("채팅 유저 초대 중 오류가 발생했습니다.", error);
-			    }
-            },
-        },
+				    }
+	            },
+            	//회원 퇴장 및 회원이 존재하지 않는 채팅방 삭제
+				async leaveTheRoom() {
+				    try {
+				        const memberNo = this.memberNo;
+				        const roomNo = new URLSearchParams(location.search).get("room");
+				        const exitData = {
+				            memberNo: memberNo,
+				            roomNo: roomNo
+				        };
+				        const exitUrl = "${pageContext.request.contextPath}/rest/exitDmRoom";
+				        await axios.post(exitUrl, exitData);
+				        
+				        const deleteUrl = "${pageContext.request.contextPath}/rest/deleteDmRoom";
+				        await axios.post(deleteUrl, {roomNo: roomNo});
+				        
+				        // 퇴장 메시지 전송
+				        const content = this.memberNick + " 회원님이 퇴장하셨습니다.";
+				        this.sendWebSocketMessage(roomNo, content);
+				        
+				        console.log("회원이 퇴장 하였습니다.");
+				        window.location.href = "${pageContext.request.contextPath}/dm/channel";
+				        
+				        this.dmRoomList = []; // 채팅방 목록 초기화
+        				await this.fetchDmRoomList(); // 채팅방 목록 불러오기
+				    } catch (error) {
+				        console.error("회원 퇴장에서 오류가 발생하였습니다.", error);
+				    }
+				},
+				//알림 메세지 전송
+				sendWebSocketMessage(roomNo, content) {
+				    const message = {
+				        type: 1,
+				        room: roomNo,
+				        content: content
+				    };
+				    this.socket.send(JSON.stringify(message));
+				},
+       		},
             watch:{
             	//검색
             	keyword:_.throttle(function(){
@@ -652,11 +706,11 @@
 				this.inviteModal = new bootstrap.Modal(this.$refs.inviteModal);
 					    
 				//검색창 초기화
-			    $('#memberListModal').on('hidden.bs.modal', () => {
+			    $('#memberListModal').off('hidden.bs.modal').on('hidden.bs.modal', () => {
 			    	this.keyword = '';
 			        this.searchDmList = [];
 			    });
-			    $('#inviteModal').on('hidden.bs.modal', () => {
+			    $('#inviteModal').off('hidden.bs.modal').on('hidden.bs.modal', () => {
 			    	this.keyword = '';
 			        this.searchDmList = [];
 			    });
