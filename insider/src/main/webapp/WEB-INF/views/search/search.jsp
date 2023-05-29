@@ -68,50 +68,58 @@
 	display:block;
 }
 /* 드롭다운 메뉴 */
+.search-dropdown{
+	position:relative;
+	display:inline-block;
+}
+.search-dropdown-content{
+	position:absolute;
+	top:100%;
+	z-index:1;
+	background-color:white;
+}
 
 </style>
 <div class="container-fluid mt-4" id="app">
 	<div class="row">
-		<div class="offset-md-2 col-md-8">
+		<div class="offset-md-2 col-md-8 p-0">
 		<!-- 검색창 -->
-			<div class="text-center">
-				<div class="row" @click="loadSearchedList">
-					<div class="col form-group has-search">
+			<div class="row text-center search-dropdown w-100 p-0 m-auto">
+				<div class="row w-100 p-0 m-0" @click="loadSearchedList">
+					<div class="col form-group has-search p-0 m-0">
 						<span class="fa-solid fa-search form-control-feedback"></span>
-						<input type="text" class="form-control rounded" placeholder="검색" v-model="searchInput" @blur="hideSearchList" @click="showSearchList" >
+						<input type="text" class="form-control rounded  w-100 m-0" placeholder="검색" v-model="searchInput" @blur="hideAllList" @click="searchInputChanged" @input="searchInputChanged">
 					</div>
 				</div>
 			<!-- 검색기록 -->
-				<div class="row">
+				<div class="search-dropdown-content" v-show="searchedListShow">
 					<div v-for="(searched, index) in searchedList" :key="index">
-						<div class="" >
-							<div class="row" v-if="searched.memberNick==null">
-								<div class="col p-2 ms-2" @click="moveToTagDetail(searched.searchTagName)">
-									# {{searched.searchTagName}}
-								</div>
-								<!-- 삭제 마크 -->
-								<div class="col-1 d-flex justify-content-center align-items-center">
-									<i class="fa-solid fa-xmark" @click="deleteSearched(index)"></i>
-								</div>
+						<div class="row" v-if="searched.memberNick==null">
+							<div class="col p-2 ms-2" @click="moveToTagDetail(searched.searchTagName)">
+								# {{searched.searchTagName}}
 							</div>
-							<div class="row" v-else>
-								<div class="col-3">
-									<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+searched.imageURL">
-								</div>
-								<div class="col-8" @click="moveToMemberDetail(searched.searchMemberNo)">
-									<div class="ms-2">{{searched.memberNick}}</div>
-									<div class="ms-2">{{searched.memberName}}</div>
-								</div>
-								<!-- 삭제 마크 -->
-								<div class="col-1 d-flex justify-content-center align-items-center">
-									<i class="fa-solid fa-xmark" @click="deleteSearched(index)"></i>
-								</div>
+							<!-- 삭제 마크 -->
+							<div class="col-1 d-flex justify-content-center align-items-center">
+								<i class="fa-solid fa-xmark" @click="deleteSearched(index)"></i>
+							</div>
+						</div>
+						<div class="row" v-else>
+							<div class="col-3">
+								<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+searched.imageURL">
+							</div>
+							<div class="col-8" @click="moveToMemberDetail(searched.searchMemberNo)">
+								<div class="ms-2">{{searched.memberNick}}</div>
+								<div class="ms-2">{{searched.memberName}}</div>
+							</div>
+							<!-- 삭제 마크 -->
+							<div class="col-1 d-flex justify-content-center align-items-center">
+								<i class="fa-solid fa-xmark" @click="deleteSearched(index)"></i>
 							</div>
 						</div>
 					</div>
 				</div>
 			<!-- 추천 검색어 리스트 -->
-				<div class="" :style="{ width: dropdownWidth }" aria-labelledby="dropdownMenu2" :class="{'show':recommandListShow}">
+				<div class="search-dropdown-content" v-show="recommandListShow">
 					<div v-for="(recommand, index) in recommandList" :key="index">
 						<div class="" >
 							<div class="row" v-if="recommand.nick==null" @click="moveToTagDetail(recommand.name)">
@@ -155,6 +163,7 @@
 				searchInput:"",
 				recommandList:[],
 				recommandListShow:false,
+				searchedListShow:false,
 				boardList:[],
 				page:1,
 				percent:0,
@@ -164,6 +173,7 @@
 			};
 		},
 		computed: {
+
 			//계산영역
 		},
 		methods: {
@@ -192,12 +202,20 @@
 				const resp = await axios.post(contextPath+"/rest/board/like", data);
 				this.boardList[index].boardWithNickDto.boardLike=resp.data.count;
 			},
-			hideSearchList(){
-				this.recommandListShow=false;
+			//검색어 입력시
+			searchInputChanged(){
+				if(this.searchInput.length>0){
+					this.recommandListShow=true;
+					this.searchedListShow=false;
+				}
+				else{
+					this.recommandListShow=false;
+					this.searchedListShow=true;
+				}
 			},
-			showSearchList(){
-				this.recommandListShow=true;
-				this.dropdownWidth = `${inputWidth}px`;
+			hideAllList(){
+				this.recommandListShow=false;
+				this.searchedListShow=false;
 			},
 			async moveToTagDetail(tagName){
 				const data={searchTagName:tagName};
