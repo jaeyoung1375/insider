@@ -22,6 +22,7 @@ public class DmRoomVO {
 	
 	private long memberNo;
 	private String memberNick;
+	private List<Long> memberList;
 	
     //채팅방의 사용자를 저장할 저장소
     private Set<DmUserVO> users = new CopyOnWriteArraySet<>();
@@ -53,12 +54,4 @@ public class DmRoomVO {
         }
     }
     
-    /////////////////////////////////////////////////
-    //초대 기능
-    public void invite(DmUserVO user) {
-        if (!users.contains(user)) {
-            users.add(user);
-        }
-    }
-
 }

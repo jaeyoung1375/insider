@@ -103,27 +103,17 @@ public class DmRestController {
 	    dmRoomVO.setRoomName(memberNick);
 		return dmRoomVO;
 	}
-    
-	//채팅 유저 입장
-	@PostMapping("/joinDmRoom")
-	public void joinRoom(@RequestBody DmUserVO user, HttpSession session) {
-	    int roomNo = user.getRoomNo();
-	    String memberNick = (String) session.getAttribute("memberNick");
-	    
-	    user.setMemberNick(memberNick); 
-	    dmServiceImpl.join(user, roomNo);
+	
+	//회원 입장
+	@PostMapping("/enterUsers")
+	public void enterUsersInRoom(@RequestBody DmRoomVO dmRoomVO) {
+		dmServiceImpl. enterUsersInRoom(dmRoomVO);
 	}
 	
-	//유저 초대
+	//회원 초대
 	@PostMapping("/inviteUser")
-	public void inviteUserToRoom(@RequestBody DmUserVO inviter, HttpSession session) {
-		long inviterNo = (Long) session.getAttribute("memberNo");
-		int roomNo = inviter.getRoomNo();
-		long inviteeNo = inviter.getInviteeNo();
-
-		inviter.setMemberNo(inviterNo);
-		inviter.setRoomNo(roomNo);
-		dmServiceImpl.inviteUserToRoom(inviter, roomNo, inviteeNo);
+	public void inviteUserToRoom(@RequestBody DmRoomVO dmRoomVO) {
+		dmServiceImpl.inviteUsersToRoom(dmRoomVO);
 	}
 	
 	//채팅방에서 회원 퇴장

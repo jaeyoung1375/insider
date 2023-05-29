@@ -18,7 +18,6 @@
 	.content-body .fa-heart {
 	  visibility: hidden;
 	}
-	
 	.content-body:hover .fa-x,
 	.content-body:hover .fa-trash,
 	.content-body:hover .fa-heart {
@@ -244,7 +243,7 @@
 		
 		<!-- 회원 목록을 모달창으로 불러오기 - 채팅방 생성 -->
 		<div class="modal fade" tabindex="-1" id="memberListModal" data-bs-backdrop="static" ref="memberListModal">
-		  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down" style="width:400px; margin: 0; position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);">
+		  <div class="modal-dialog modal-dialog-scrollable" style="width:400px; margin: 0; position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);">
 		    <div class="modal-content" style="align-content: center;flex-wrap: wrap;">
 		      <div class="modal-header" style="width:300px;">
 		        <h4 class="modal-title" id="memberListModalLabel" style="font-weight: bold; color: #222f3e;">메세지 보내기</h4>
@@ -261,9 +260,7 @@
 			          <br>
 			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
-			            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="createRoomAndInvite(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close" >
-			              채팅
-			            </button>
+			          	<input type="checkbox" v-model="selectedMembers" :value="member.memberNo" style="transform: scale(1.2); margin-right:1em;">
 			          </span>
 			        </div>
 		        </div>
@@ -274,20 +271,22 @@
 			          <br>
 			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
-			            <button class="btn btn-outline-primary" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.85em;" @click="createRoomAndInvite(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
-			              채팅
-			            </button>
+					  	<input type="checkbox" v-model="selectedMembers" :value="member.memberNo" style="transform: scale(1.2); margin-right:1em;">
 			          </span>
 			        </div>
 		      	</div>
 		      </div>
-		      
+		      <div class="modal-footer" style="width:300px;">
+		      	<button class="btn btn-outline-primary" @click="createRoomAndInvite" :disabled="selectedMembers.length === 0"
+        			data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">채팅</button>
+		      </div>
 		    </div>
 		  </div>
 		</div>
+		
 		<!-- 회원 목록을 모달창으로 불러오기 - 초대 -->
 		<div class="modal fade" tabindex="-1" id="inviteModal" data-bs-backdrop="static" ref="inviteModal">
-		  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down" style="width:400px; margin: 0; position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);">
+		  <div class="modal-dialog modal-dialog-scrollable" style="width:400px; margin: 0; position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);">
 		    <div class="modal-content" style="align-content: center;flex-wrap: wrap;">
 		      <div class="modal-header" style="width:300px;">
 		        <h4 class="modal-title" id="memberListModalLabel" style="font-weight: bold; color: #222f3e;">회원 초대</h4>
@@ -304,9 +303,7 @@
 			          <br>
 			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
-			            <button class="btn btn-outline-danger" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.8em;" @click="inviteRoom(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close" >
-			              초대
-			            </button>
+			          	<input type="checkbox" v-model="selectedMembers" :value="member.memberNo" style="transform: scale(1.2); margin-right:1em;">
 			          </span>
 			        </div>
 		        </div>
@@ -317,14 +314,15 @@
 			          <br>
 			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
-			            <button class="btn btn-outline-danger" style="padding: 0.3rem 0.5rem;font-weight: 100;line-height: 1;font-size:0.85em;" @click="inviteRoom(member.memberNo)" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
-			              초대
-			            </button>
+			          	<input type="checkbox" v-model="selectedMembers" :value="member.memberNo" style="transform: scale(1.2); margin-right:1em;">
 			          </span>
 			        </div>
 		      	</div>
 		      </div>
-		      
+		      <div class="modal-footer" style="width:300px;">
+		      	<button class="btn btn-outline-danger" @click="inviteRoom" :disabled="selectedMembers.length === 0"
+        			data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">초대</button>
+		      </div>
 		    </div>
 		  </div>
 		</div>
@@ -390,9 +388,8 @@
                     unreadCount:[],
                     
                     //초대
-                    inviterNo:null,
+                    selectedMembers:[],
                     roomNo:null, //vue에 반환
-                    inviteeNo:null,
                     
                 };
             },
@@ -430,6 +427,9 @@
 				//모달창
 				showCreateRoomModal(){
                     if(this.createRoomModal == null) return;
+                    this.keyword = ""; 
+                    this.dmMemberList = [];
+                    this.searchDmList = []; 
                     this.createRoomModal.show();
                 },
                 hideCreateRoomModal(){
@@ -446,6 +446,10 @@
                 },
 				showInviteModal(){
                     if(this.inviteModal == null) return;
+                    this.selectedMembers = []; 
+                    this.keyword = ""; 
+                    this.dmMemberList = [];
+                    this.searchDmList = []; 
                     this.inviteModal.show();
                 },
                 hideInviteModal(){
@@ -572,7 +576,7 @@
 				    }
 				},
 				//채팅방 생성 및 입장, 초대
-				async createRoomAndInvite(memberNo) {
+				async createRoomAndInvite() {
 				    try {
 				        // 방 생성
 				        const dmRoomVO = await axios.post("${pageContext.request.contextPath}/rest/createChatRoom");
@@ -580,47 +584,57 @@
 				        
 				        // 채팅 유저 저장
 				        const user = {
-				            roomNo,
-				            memberNo: this.memberNo
-				        };
-				        await axios.post("${pageContext.request.contextPath}/rest/joinDmRoom", user);
-
-				        // 초대 정보를 설정
-				        const invite = {
-				            inviterNo: this.memberNo,
 				            roomNo: roomNo,
-				            inviteeNo: memberNo
+				            memberList: [...this.selectedMembers, parseInt(this.memberNo)] 
 				        };
-
-				        // 초대 유저 저장
-				        const inviteUrl = "${pageContext.request.contextPath}/rest/inviteUser";
-				        await axios.post(inviteUrl, invite);
+				        const url = "${pageContext.request.contextPath}/rest/enterUsers";
+				        await axios.post(url, user);
 
 				        console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
 				        window.location.href = "${pageContext.request.contextPath}/dm/channel?room=" + roomNo;
 
 				        this.dmRoomList = []; //채팅방 목록 초기화
 				        await this.fetchDmRoomList(); //채팅방 목록 불러오기
+				        
 				    } catch (error) {
 				        console.error("방 생성, 입장, 초대 중 오류가 발생했습니다.", error);
 				    }
 				},
 				//유저 초대
-				async inviteRoom(memberNo) {
+				async inviteRoom() {
 					try {
-						const invite = {
-					            inviterNo: this.memberNo,
-					            roomNo: this.roomNo,
-					            inviteeNo: memberNo
-					        };
-					        // 초대 유저 저장
-					        const inviteUrl = "${pageContext.request.contextPath}/rest/inviteUser";
-					        await axios.post(inviteUrl, invite);
-					        console.log("초대가 성공적으로 수행되었습니다.");
+						const inviteUrl = "${pageContext.request.contextPath}/rest/inviteUser";
+						const data = {
+								roomNo: this.roomNo,
+								memberList: this.selectedMembers
+						}
+						const resp = await axios.post(inviteUrl, data);
+						
+						//초대 메시지 전송
+				        for (const member of this.selectedMembers) {
+				        	const message = {
+				                    type: 4,
+				                    room: this.roomNo,
+				                    content: "${member.memberNick} 님을 초대 하였습니다."
+				                };
+				                this.socket.send(JSON.stringify(message));
+				        }
+					    console.log("초대가 성공적으로 수행되었습니다.");
 					} catch (error) {
 				        console.error("채팅 유저 초대 중 오류가 발생했습니다.", error);
 				    }
 	            },
+	            //유저 초대 다중 선택
+	            toggleSelection(memberNo) {
+				    if (this.selectedMembers.includes(memberNo)) {
+				      // 이미 선택된 회원인 경우, 선택 해제
+				      const index = this.selectedMembers.indexOf(memberNo);
+				      this.selectedMembers.splice(index, 1);
+				    } else {
+				      // 선택되지 않은 회원인 경우, 선택 추가
+				      this.selectedMembers.push(memberNo);
+				    }
+				},
             	//회원 퇴장 및 회원이 존재하지 않는 채팅방 삭제
 				async leaveTheRoom() {
 				    try {
@@ -637,8 +651,12 @@
 				        await axios.post(deleteUrl, {roomNo: roomNo});
 				        
 				        // 퇴장 메시지 전송
-				        const content = this.memberNick + " 회원님이 퇴장하셨습니다.";
-				        this.sendWebSocketMessage(roomNo, content);
+				        const message = {
+				        type: 5,
+				        room: roomNo,
+				        content: this.memberNick + " 님이 퇴장하셨습니다."
+					    };
+					    this.socket.send(JSON.stringify(message));
 				        
 				        console.log("회원이 퇴장 하였습니다.");
 				        window.location.href = "${pageContext.request.contextPath}/dm/channel";
@@ -651,8 +669,9 @@
 				},
 				//알림 메세지 전송
 				sendWebSocketMessage(roomNo, content) {
+					//퇴장 메세지
 				    const message = {
-				        type: 1,
+				        type: 5,
 				        room: roomNo,
 				        content: content
 				    };
@@ -704,16 +723,16 @@
 				this.createRoomModal = new bootstrap.Modal(this.$refs.memberListModal);
 				this.exitModal = new bootstrap.Modal(this.$refs.exitModal);
 				this.inviteModal = new bootstrap.Modal(this.$refs.inviteModal);
-					    
+				
 				//검색창 초기화
-			    $('#memberListModal').off('hidden.bs.modal').on('hidden.bs.modal', () => {
-			    	this.keyword = '';
-			        this.searchDmList = [];
-			    });
-			    $('#inviteModal').off('hidden.bs.modal').on('hidden.bs.modal', () => {
-			    	this.keyword = '';
-			        this.searchDmList = [];
-			    });
+			    //$('#memberListModal').off('hidden.bs.modal').on('hidden.bs.modal', () => {
+			    //	this.keyword = '';
+			    //    this.searchDmList = [];
+			    //});
+			    //$('#inviteModal').off('hidden.bs.modal').on('hidden.bs.modal', () => {
+			    //	this.keyword = '';
+			    // this.searchDmList = [];
+			    //});
 	        },
         }).mount("#app");
     </script>
