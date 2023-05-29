@@ -299,7 +299,7 @@ public class DmServiceImpl implements DmService {
 	        dmUserDto.setMemberNo(memberNo);
 	        
 	        boolean isJoin = dmUserRepo.check(dmUserDto);
-	        if (isJoin) continue;
+	        if (isJoin) return;
 	        
 	        DmUserDto userDto = new DmUserDto();
 	        userDto.setRoomNo(roomNo);
@@ -336,7 +336,7 @@ public class DmServiceImpl implements DmService {
 	        dmUserDto.setMemberNo(memberNo);
 	        
 	        boolean isJoin3 = dmUserRepo.check(dmUserDto);
-	        if (isJoin3) continue;
+	        if (isJoin3) return;
 	        
 	        DmUserDto userDto = new DmUserDto();
 	        userDto.setRoomNo(roomNo);
@@ -379,5 +379,11 @@ public class DmServiceImpl implements DmService {
         DmRoomVO dmRoomVO = rooms.get(roomNo);
         dmRoomVO.broadcast(jsonMessage);
 	}
+	
+	//채팅방 정보 변경
+	public void changeRoomInfo(DmRoomDto dmRoomDto) {
+	    dmRoomRepo.changeRoomInfo(dmRoomDto);
+	}
+
 	
 }

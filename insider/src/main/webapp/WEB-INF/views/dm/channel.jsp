@@ -390,6 +390,9 @@
                     //초대
                     selectedMembers:[],
                     roomNo:null, //vue에 반환
+                   
+   					roomName: "",
+   					roomType: "",
                     
                 };
             },
@@ -578,24 +581,33 @@
 				//채팅방 생성 및 입장, 초대
 				async createRoomAndInvite() {
 				    try {
-				        // 방 생성
+				        //방 생성
 				        const dmRoomVO = await axios.post("${pageContext.request.contextPath}/rest/createChatRoom");
 				        const roomNo = dmRoomVO.data.roomNo;
 				        
-				        // 채팅 유저 저장
+				        //채팅 유저 저장
 				        const user = {
 				            roomNo: roomNo,
 				            memberList: [...this.selectedMembers, parseInt(this.memberNo)] 
 				        };
 				        const url = "${pageContext.request.contextPath}/rest/enterUsers";
 				        await axios.post(url, user);
-
-				        console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
-				        window.location.href = "${pageContext.request.contextPath}/dm/channel?room=" + roomNo;
-
+				        
+				        //일대일 채팅방이 아닐 경우
+				        if (this.selectedMembers.length >= 2) {
+				            const updateRoomUrl = "${pageContext.request.contextPath}/rest/updateRoomInfo";
+				            const updateRoomData = {
+				                roomNo: roomNo,
+				                roomType: 0,
+				                roomName: this.memberNick  + " 외 " + (this.selectedMembers.length) + "명"
+				            };
+				            await axios.put(updateRoomUrl, updateRoomData);
+				        }
+				        
 				        this.dmRoomList = []; //채팅방 목록 초기화
 				        await this.fetchDmRoomList(); //채팅방 목록 불러오기
-				        
+				        window.location.href = "${pageContext.request.contextPath}/dm/channel?room=" + roomNo;
+				        console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
 				    } catch (error) {
 				        console.error("방 생성, 입장, 초대 중 오류가 발생했습니다.", error);
 				    }

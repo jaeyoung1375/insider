@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.DmMemberListDto;
 import com.kh.insider.dto.DmMessageNickDto;
+import com.kh.insider.dto.DmRoomDto;
 import com.kh.insider.dto.DmRoomUserProfileDto;
 import com.kh.insider.dto.DmUserDto;
 import com.kh.insider.repo.DmMemberListRepo;
@@ -130,6 +132,12 @@ public class DmRestController {
 	public void deleteRoom(@RequestBody DmRoomVO dmRoomVO) {
 	    int roomNo = dmRoomVO.getRoomNo();
 	    dmServiceImpl.deleteRoom(roomNo);
+	}
+	
+	//채팅방 정보 수정
+	@PutMapping("/updateRoomInfo")
+	public void updateRoomInfo(@RequestBody DmRoomDto dmRoomDto) {
+	    dmServiceImpl.changeRoomInfo(dmRoomDto);
 	}
 
 

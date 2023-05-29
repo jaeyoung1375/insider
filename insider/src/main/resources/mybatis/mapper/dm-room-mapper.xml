@@ -30,7 +30,14 @@
 		delete dm_room where room_no = #{roomNo}
 	</delete>
     
-		
+	<!-- 채팅방 정보 변경 -->	
+	<update id="changeRoomInfo">
+        UPDATE dm_room
+        SET room_type = #{roomType},
+            room_name = #{roomName}
+        WHERE room_no = #{roomNo}
+    </update>
+    
 	<!-- 채팅방 이름 변경 -->
 	<update id="updateRoomName">
         update dm_room set room_name = #{roomName} where room_no = #{roomNo}

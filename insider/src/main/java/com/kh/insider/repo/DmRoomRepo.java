@@ -19,8 +19,9 @@ public interface DmRoomRepo {
     //유저가 없을 경우 채팅방 삭제
     void deleteRoom(DmRoomDto dmRoomDto);
 
-
-    //////////////////////////////////////////
+    //채팅방 정보 변경
+    void changeRoomInfo(DmRoomDto dmRoomDto);
+    
     //채팅방 이름 변경
     void updateRoomName(DmRoomDto dmRoomDto);
     

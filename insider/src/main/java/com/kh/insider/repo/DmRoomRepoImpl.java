@@ -38,14 +38,16 @@ public class DmRoomRepoImpl implements DmRoomRepo {
 	public void deleteRoom(DmRoomDto dmRoomDto) {
 		sqlSession.delete("dmRoom.deleteRoom", dmRoomDto);
 	}
+	
+    @Override
+    public void changeRoomInfo(DmRoomDto dmRoomDto) {
+        sqlSession.update("dmRoom.changeRoomInfo", dmRoomDto);
+    }
 
-///////////////////////////////////////////////////////////////////////	
 	@Override
     public void updateRoomName(DmRoomDto dmRoomDto) {
         sqlSession.update("dmRoom.updateRoomName", dmRoomDto);
     }
 
-
-	
 	
 }
