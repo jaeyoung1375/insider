@@ -449,6 +449,8 @@
                     this.keyword = ""; 
                     this.dmMemberList = [];
                     this.searchDmList = []; 
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(checkbox => (checkbox.checked = false));
                     this.createRoomModal.show();
                 },
                 hideCreateRoomModal(){
@@ -468,7 +470,9 @@
                     this.selectedMembers = []; 
                     this.keyword = ""; 
                     this.dmMemberList = [];
-                    this.searchDmList = []; 
+                    this.searchDmList = [];
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(checkbox => (checkbox.checked = false));
                     this.inviteModal.show();
                 },
                 hideInviteModal(){
@@ -723,6 +727,7 @@
 				        };
 				        await axios.put(updateRoomUrl, updateRoomData);
 
+				        this.dmRoomList = [];
 				        await this.fetchDmRoomList(); //채팅방 목록 불러오기
 				    } catch (error) {
 				        console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
@@ -730,11 +735,17 @@
 				},
 				//채팅방 이름 변경 확인 버튼
 				clickConfirmButton() {
-					if (this.roomName) {
-					  this.changeRoomName();
-					  this.hideRoomNameModal()
-					  this.fetchDmRoomList();
-					}
+				    if (this.roomName) {
+				        this.changeRoomName()
+				            .then(() => {
+				                this.hideRoomNameModal();
+				                this.dmRoomList = [];
+				                this.fetchDmRoomList();
+				            })
+				            .catch(error => {
+				                console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
+				            });
+				    }
 				},
        		},
             watch:{
