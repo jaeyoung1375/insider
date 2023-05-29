@@ -266,13 +266,13 @@
 						<div class="col-9">
 							<h5>좋아요 수 및 조회수 숨기기</h5>
 						</div>
-						<div class="col-3">
-							<input type="checkbox" @change="watchLike" v-model="setting.isWatchLike">
+						<div class="col-3 d-flex justify-content-center item-aligns-center form-check form-switch">
+							<input class="form-check-input" type="checkbox" @click="watchLike" :checked="setting.settingWatchLike==1">
 						</div>
 					</div>
 					<div class="row">
 						<div class="col">
-							<p>다른 게시물에서~</p>
+							<p style="color:gray">다른 계정에서 올린 게시물의 좋아요 수가 숨겨집니다.</p>
 						</div>
 					</div>
 					<hr>
@@ -340,9 +340,9 @@
 							<span class="ms-1">전체 공개</span>
 						</div>
 					</div>
-					<div class="row">
+					<div class="row mt-2">
 						<div class="col">
-							<p>계정이 공개된 상태인 경우</p>
+							<p style="color:gray">계정이 공개 상태인 경우 Insider 계정이 없는 사람을 포함해서 Insider 안팎의 모든 사람이 프로필과 게시물을 볼 수 있습니다.</p>
 						</div>
 					</div>
 					<div class="row">
@@ -351,9 +351,9 @@
 							<span class="ms-1">친구추천 불가</span>
 						</div>
 					</div>
-					<div class="row">
+					<div class="row mt-2">
 						<div class="col">
-							<p>계정이 공개된 상태인 경우</p>
+							<p style="color:gray">친구추천 불가 상태인 경우 내 계정이 타인의 추천친구 목록에 보여지지 않습니다.</p>
 						</div>
 					</div>
 					<div class="row">
@@ -362,9 +362,9 @@
 							<span class="ms-1">친구에게만 공개</span>
 						</div>
 					</div>
-					<div class="row">
+					<div class="row mt-2">
 						<div class="col">
-							<p>계정이 공개된 상태인 경우</p>
+							<p style="color:gray">친구에게만 공개 상태인 경우 나를 팔로우 한 사람만 프로필과 게시물을 볼 수 있습니다.</p>
 						</div>
 					</div>
 					<div class="row">
@@ -373,9 +373,9 @@
 							<span class="ms-1">비공개 계정</span>
 						</div>
 					</div>
-					<div class="row">
+					<div class="row mt-2">
 						<div class="col">
-							<p>계정이 공개된 상태인 경우</p>
+							<p style="color:gray">비공개 계정 상태인 경우 팔로워를 비롯한 모든 사람들에게 프로필과 게시물을 볼 수 없게 합니다.</p>
 						</div>
 					</div>
 					<hr>
@@ -584,7 +584,6 @@
 					settingMessage:"",
 					settingAllowReply:"",
 					settingWatchLike:"",
-					isWatchLike:this.settingWatchLike==1,
 				},
 				password:"",
 				passwordCheck:true,
@@ -644,7 +643,7 @@
 			
 			//watchLike 체크에 따른 값 변화
 			watchLike(){
-				if(this.setting.isWatchLike){
+				if(this.setting.settingWatchLike==1){
 					this.setting.settingWatchLike=0;
 				}
 				else{
@@ -898,9 +897,9 @@
 			},
 			setting:{
 				deep:true,
-				handler : _.throttle(function(){
+				handler : _.debounce(function(){
 					this.saveSetting();
-				}, 1000)
+				}, 200)
 			},
 		},
 		updated(){
