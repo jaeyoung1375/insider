@@ -1,9 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
-<script>
-	//const memberNo = "${sessionScope.memberNo}";
-</script>
+
 <style>
 	p .card-text {
   		margin: 0 0 4px;
@@ -261,12 +259,18 @@
 							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="42" height="42" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
 							<img v-else src="https://via.placeholder.com/42x42?text=profile" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
 							
-							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; font-weight: bold;">{{replyList[index].memberNick}}</p>							
+							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; font-weight: bold;">{{replyList[index].memberNick}}
+							</p>							
 						</a>
 						<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em;">{{replyList[index].replyContent}}</p>
-						<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp;  
-							<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-							<i v-if="replyList[index].replyMemberNo == loginMemberNo" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="margin-top:2px; color:red; cursor: pointer;"></i>
+<!-- 						<p style="padding-left:4.0em;margin-bottom:1px;font-size:0.8em; color:gray;"> -->
+						<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
+							<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
+							<i :class="{'fa-heart': true, 'like':isReplyLiked[index],'ms-2':true, 'fa-solid': isReplyLiked[index], 'fa-regular': !isReplyLiked[index]}" @click="likeReply(reply.replyNo,index)" style="font-size: 0.9em;"></i>
+							&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+							<i v-if="replyList[index].replyMemberNo == loginMemberNo" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="color:red; cursor: pointer;"></i>
+							
+							
 						</p>
 						
 <!-- 						<p v-if="replyList[index].replyParent == 0"> -->
@@ -424,8 +428,14 @@ Vue.createApp({
 			loginMemberNo:"${sessionScope.memberNo}", // 로그인한 세션 값
 			followCheckList:[],
 			
+			//게시물 좋아요 기능 전용 변수
 			boardLikeCount:[], // 좋아요 수를 저장할 변수
-            isLiked : [],
+            isLiked : [], // 로그인 회원이 좋아요 체크 여부
+            
+			//게시물 댓글 좋아요 기능 전용 변수
+			replyLikeCount : [], // 댓글 좋아요 수 저장 변수
+			isReplyLiked : [], // 로그인 회원이 댓글 좋아요 체크 여부 
+			
 			/*----------------------신고----------------------*/
 			//추가 메뉴 모달 및 신고 모달
 			additionalMenuModal:null,
@@ -498,16 +508,19 @@ Vue.createApp({
         
         //로그인한 회원이 좋아요 눌렀는지 확인
         async likeChecked(boardNo) {
-        	const resp = await axios.post("${pageContext.request.contextPath}/rest/board/check", {boardNo:boardNo});
-			
-        	//console.log(resp.data);
+        	const resp = await axios.post("${pageContext.request.contextPath}/rest/board/check", {boardNo:boardNo});			
+        	return resp.data;
+        },
+        
+        //로그인한 회원이 댓글 좋아요 눌렀는지 확인
+        async likeReplyChecked(replyNo) {
+        	const resp = await axios.post("${pageContext.request.contextPath}/rest/reply/check", {replyNo:replyNo});
         	return resp.data;
         },
         
         //좋아요
         async likePost(boardNo, index) {
             const resp = await axios.post("${pageContext.request.contextPath}/rest/board/like", {boardNo:boardNo});
-            //console.log(resp.data.count);
             if(resp.data.result){
             	this.isLiked[index] = true;
             }
@@ -515,9 +528,20 @@ Vue.createApp({
             	this.isLiked[index] = false;
             }
             
-            
             this.boardLikeCount[index] = resp.data.count;
-           // console.log(this.boardLikeCount);
+        },
+        
+        //댓글 좋아요
+        async likeReply(replyNo, index) {
+        	const resp = await axios.post("${pageContext.request.contextPath}/rest/reply/like", {replyNo:replyNo});
+        	
+        	if(resp.data.result) {
+        		this.isReplyLiked[index] = true;
+        	}
+        	else {
+        		this.isReplyLiked[index] = false;
+        	}
+        	this.replyLikeCount[index] = resp.data.count;
         },
         
         //게시글 날짜 계산 함수
@@ -586,15 +610,21 @@ Vue.createApp({
         	//console.log(this.followCheckList)
         	//console.log(this.boardList);
         	//console.log(this.boardList[0]);
-        	//const check = this.followCheckList.some(followFollower => followFollower === this.boardList[0].boardWithNickDto.memberNo)
-        	//console.log(check);
         },
        
         //댓글 조회
         async replyLoad(index) {
         	this.replyList = [];
+        	this.isReplyLiked = [];
+        	this.replyLikeCount = [];
         	const resp = await axios.get("${pageContext.request.contextPath}/rest/reply/"+ this.boardList[index].boardWithNickDto.boardNo);
-            this.replyList.push(...resp.data);
+            
+        	for (const reply of resp.data) {
+            	this.isReplyLiked.push(await this.likeReplyChecked(reply.replyNo));
+            	this.replyLikeCount.push(reply.replyLike);
+              }
+        	
+        	this.replyList=[...resp.data];
         },
         
         //댓글 등록
@@ -608,7 +638,6 @@ Vue.createApp({
         	  };
         	  this.replyContent='';
         	  
-				
         	  try {
         	    const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
         	    this.replyLoad(index);	    
@@ -793,10 +822,7 @@ Vue.createApp({
        }
     },
     mounted(){
-
          window.addEventListener("scroll", _.throttle(()=>{
-        	//console.log("스크롤 이벤트");
-            //console.log(this);
             const height = document.body.clientHeight - window.innerHeight;
             const current = window.scrollY
             const percent = (current / height) * 100
@@ -820,7 +846,6 @@ Vue.createApp({
     	});
     	$(".moreText").unbind("click");
     	$(".moreText").click(function(){
-    		//console.log("실행횟수");
     		if($(this).prev("p").hasClass("moreContent")){
     			$(this).prev("p").removeClass("moreContent");
     			$(this).text("더 보기");
@@ -832,10 +857,8 @@ Vue.createApp({
     	});
     },
     created(){
-    	//this.loginMemberNo =  "${sessionScope.memberNo}";        
     	this.followCheck();
     	this.loadList();
-        //this.likeChecked(boardNo);
     },
 }).mount("#app");
 </script>
