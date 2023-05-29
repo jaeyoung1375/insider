@@ -328,8 +328,16 @@ public class BoardController {
 	//게시글 삭제하기
 	@GetMapping("/delete")
 	public String delete(@RequestParam int boardNo) {		
+		boardTagRepo.delete(boardNo);
 		boardRepo.delete(boardNo);
 		return "redirect:/";
+	}
+	
+	//게시물 수정
+	@GetMapping("/edit")
+	public String edit(@RequestParam int boardNo, Model model) {
+		model.addAttribute("boardDto", boardRepo.selectOne(boardNo));
+		return "/board/edit";
 	}
     
     

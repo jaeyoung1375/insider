@@ -21,7 +21,17 @@ public interface BoardRepo {
 
 	int sequence();
 	
+	//게시물 생성
 	BoardDto insert(BoardDto boardDto);
+	
+	//게시물 단일 조회
+	BoardDto selectOne(int boardNo);
+	
+	//게시물 삭제
+	void delete(int boardNo);
+	
+	//게시물 수정
+	boolean update(BoardDto boardDto);
 
 	void updateLikeCount(int boardNo, int count);
 	
@@ -44,7 +54,6 @@ public interface BoardRepo {
 	//게시물 생성 통계
 	List<BoardTimeStatsResponseVO> getBoardTimeStats(BoardTimeStatsSearchVO boardTimeStatsSearchVO);
 
-	void delete(int boardNo);
 	//태그 생성 통계
 	List<BoardTagStatsResponseVO> getBoardTagStats(BoardTagStatsSearchVO boardTagStatsSearchVO);
 }

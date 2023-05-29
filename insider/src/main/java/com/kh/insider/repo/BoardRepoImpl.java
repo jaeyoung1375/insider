@@ -126,4 +126,17 @@ public class BoardRepoImpl implements BoardRepo {
 	public int selectAdminCount(AdminBoardSearchVO vo) {
 		return sqlSession.selectOne("board.selectAdminCount", vo);
 	}
+
+
+	@Override
+	public BoardDto selectOne(int boardNo) {
+		return sqlSession.selectOne("board.selectOne", boardNo);
+	}
+
+
+	@Override
+	public boolean update(BoardDto boardDto) {
+		int result = sqlSession.update("board.edit", boardDto);
+		return result > 0;
+	}
 }
