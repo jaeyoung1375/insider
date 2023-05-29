@@ -24,6 +24,7 @@ import com.kh.insider.dto.BoardDto;
 import com.kh.insider.dto.BoardTagDto;
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.TagDto;
+import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.BoardTagRepo;
 import com.kh.insider.repo.MemberProfileRepo;
 import com.kh.insider.repo.MemberRepo;
@@ -57,6 +58,9 @@ public class BoardController {
 	private BoardTagRepo boardTagRepo;
 	@Autowired
 	private BoardAttachService boardAttachService;
+	
+	@Autowired
+	private BoardRepo boardRepo;
 
 	
 	@GetMapping("/list")
@@ -323,14 +327,9 @@ public class BoardController {
     
 	//게시글 삭제하기
 	@GetMapping("/delete")
-	public String delete(RedirectAttributes attr, @RequestParam int boardNo, HttpSession session) {
-		
-		boardAttachService.delete(boardNo);
-		
-		Integer memberNo = (Integer)session.getAttribute("login");
-		attr.addAttribute("memberNo", memberNo);
-		
-		return "redirect:/board/list";
+	public String delete(@RequestParam int boardNo) {		
+		boardRepo.delete(boardNo);
+		return "redirect:/";
 	}
     
     

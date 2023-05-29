@@ -328,6 +328,21 @@
 							<h5 style="font-weight:bold; margin:0;">신고</h5>
 						</div>
 					</div>
+					
+					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo">
+					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo" @click="updatePost(reportBoardData[0])">
+						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
+							<h5 style="margin:0;">수정</h5>
+						</div>
+					</div>
+					
+					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo" >
+					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo" @click="deletePost(reportBoardData[0])">
+						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
+							<h5 style="margin:0;">삭제</h5>
+						</div>
+					</div>
+					
 					<!-- 메뉴 구분선 -->
 					<hr class="m-0">
 					<div class="row p-3" @click="hideAdditionalMenuModal">
@@ -504,6 +519,17 @@ Vue.createApp({
             if(resp.data < 2) this.finish = true; //데이터가 2개 미만이면 더 읽을게 없다
 
             this.loading = false;
+        },
+        
+        //게시물 수정
+        updatePost(boardNo){
+        	window.location.href = "${pageContext.request.contextPath}/";
+        },
+        
+        //게시물 삭제
+        deletePost(boardNo){
+        	//window.location.href = "${pageContext.request.contextPath}/search";
+        	window.location.href = "${pageContext.request.contextPath}/board/delete?boardNo=" + boardNo;
         },
         
         //로그인한 회원이 좋아요 눌렀는지 확인
