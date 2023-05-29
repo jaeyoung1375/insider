@@ -120,7 +120,7 @@ inner JOIN MEMBER_WITH_PROFILE m ON b.member_no=m.member_no;
 CREATE OR replace VIEW report_management AS
 SELECT rcr.*, rr.report_result FROM 
 (SELECT rc.*, m.member_name, m.member_nick, m.attachment_no from 
-(SELECT r.report_member_no, r.report_table_no, r.report_table, count(*) AS count FROM report r
+(SELECT r.report_member_no, r.report_table_no, r.report_table, count(*) AS count, min(report_time) AS report_time FROM report r
 GROUP BY r.report_member_no, r.report_table_no, r.report_table) rc
 INNER JOIN member_with_profile m ON rc.report_member_no=m.member_no) rcr
 LEFT outer JOIN report_result rr ON rcr.report_table_no=rr.report_table_no AND rcr.report_table=rr.report_table;

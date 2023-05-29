@@ -625,8 +625,74 @@
 						<h3 @click="showReportContentModal">신고 내용 관리</h3>
 					</div>
 				</div>
-			<!-- 신고 리스트 -->
+				<hr>
+			<!-- 검색 리스트 -->
 				<div class="row">
+					<div class="row">
+						<div class="col-2 d-flex align-items-center">
+							<span>이름</span>
+						</div>
+						<div class="col-4 p-0">
+							<input class="form-control" v-model="reportSearchOption.memberName">
+						</div>
+						<div class="col-2 d-flex align-items-center">
+							<span>닉네임</span>
+						</div>
+						<div class="col-4 p-0">
+							<input class="form-control" v-model="reportSearchOption.memberNick">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-2 d-flex align-items-center">
+							<span>신고</span>
+						</div>
+						<div class="col-4 p-0">
+							<div class="row">
+								<div class="col-5">
+									<input class="form-control" v-model="reportSearchOption.reportMinCount">
+								</div>
+								<div class="col-2 d-flex align-items-center justify-content-center">
+									<span>~</span>
+								</div>
+								<div class="col-5">
+									<input class="form-control" v-model="reportSearchOption.reportMaxCount">
+								</div>
+							</div>
+						</div>
+						<div class="col-2 p-0">
+							<select class="form-control" v-model="reportSearchOption.reportTable">
+								<option value="">신고 위치(선택)</option>
+								<option value="board">게시물</option>
+								<option value="member">회원</option>
+								<option value="reply">댓글</option>
+								<option value="dm">메세지</option>
+							</select>
+						</div>
+						<div class="col-2 p-0">
+							<select class="form-control" v-model="reportSearchOption.reportResult">
+								<option value="">처리 여부(전체)</option>
+								<option value="0">미처리</option>
+								<option value="1">처리</option>
+								<option value="2">유예</option>
+							</select>
+						</div>
+						<div class="col-2 p-0">
+							<select class="form-control" v-model="reportSearchOption.order">
+								<option value="">정렬순서(선택)</option>
+								<option value="count desc">신고 많은순</option>
+								<option value="count asc">신고 적은순</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="offset-8 col p-0">
+							<button type="button" class="col-6 btn btn-secondary" @click="resetReportSearchOption">초기화</button>
+							<button type="button" class="col-6 btn btn-primary" @click="getReportListWithSearchOption">검색</button>
+						</div>
+					</div>
+				</div>
+			<!-- 신고 리스트 -->
+				<div class="row mt-4">
 					<div class="col">
 						<table class="table">
 							<thead>
@@ -635,7 +701,7 @@
 									<th style="vertical-align:middle; text-align:center">신고 위치</th>
 									<th style="vertical-align:middle; text-align:center">신고개수</th>
 									<th style="vertical-align:middle; text-align:center">처리여부</th>
-									<th style="vertical-align:middle; text-align:center">비고</th>
+									<th style="vertical-align:middle; width:15%">&nbsp&nbsp&nbsp비고</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -653,13 +719,42 @@
 									</td>
 									<td style="vertical-align:middle; text-align:center" v-if="report.reportTable=='board'">게시물</td>
 									<td style="vertical-align:middle; text-align:center" v-if="report.reportTable=='member'">회원</td>
-									<td style="vertical-align:middle; text-align:center">{{report.count}}</td>
+									<td style="vertical-align:middle; text-align:center">{{report.count}}<i class="fa-solid fa-angles-up ms-2" style="color:blue" v-if="reportDifference[index].count"></i></td>
 									<td style="vertical-align:middle; text-align:center" v-if="report.reportResult==0">미처리</td>
 									<td style="vertical-align:middle; text-align:center" v-if="report.reportResult==1">처리완료</td>
-									<td style="vertical-align:middle; text-align:center">내용보기</td>
+									<td style="vertical-align:middle;">
+										내용보기
+										<i class="fa-solid fa-sort-up ms-2" style="color:blue" v-if="reportDifference[index].index>0"></i>
+										<i class="fa-solid fa-sort-down ms-2" style="color:red" v-if="reportDifference[index].index<0"></i>
+										<span class="ms-2" v-if="reportDifference[index].index==16">new</span>
+									</td>
 								</tr>
 							</tbody>
 						</table>
+					</div>
+				</div>
+			<!-- 리스트 끝 -->
+			<!-- 페이지네이션 -->
+				<div class="row mt-4" id="paging">
+					<div class="col d-flex justify-content-center align-items-center">
+						<ul class="pagination">
+							<li class="page-item" @click="reportFirstPage" :class="{disabled:this.reportSearchPagination.first}">
+								<span class="page-link"><i class="fa-solid fa-angles-left"></i></span>
+							</li>
+							<li class="page-item" @click="reportPrevPage" :class="{disabled:!this.reportSearchPagination.prev}">
+								<span class="page-link"><i class="fa-solid fa-angle-left"></i></span>
+							</li>
+							<li class="page-item" v-for="index in (reportSearchPagination.finishBlock-reportSearchPagination.startBlock+1)" :key="index"
+								 :class="{active:(index+reportSearchPagination.startBlock-1)==reportSearchOption.page}">
+								<span class="page-link" @click="reportSearchOption.page=index+reportSearchPagination.startBlock-1">{{index+reportSearchPagination.startBlock-1}}</span>
+							</li>
+							<li class="page-item" @click="reportNextPage" :class="{disabled:!this.reportSearchPagination.next}">
+								<span class="page-link"><i class="fa-solid fa-angle-right"></i></span>
+							</li>
+							<li class="page-item" @click="reportLastPage" :class="{disabled:this.reportSearchPagination.last}">
+								<span class="page-link"><i class="fa-solid fa-angles-right"></i></span>
+							</li>
+						</ul>
 					</div>
 				</div>
 			</div>
@@ -1047,7 +1142,17 @@
 				reportContentListSub:[],
 				reportContentListEdit:[],
 				reportList:[],
+				reportListBefore:[],
 				reportSocket:null,
+				reportSearchOption:{
+					page:1, reportTable:"", reportMinCount:"", reportMaxCount:"", memberNick:"", memberName:"", reportResult:"", order:"",
+					memberNo:memberNo
+				},
+				reportSearchPagination:{
+					begin:"", end:"", totalPage:"",	startBlock:"", finishBlock:"", first:false, last:false, prev:false,
+					next:false, nextPage:"", prevPage:"",
+				},
+				reportDifference:[],
 				/*---------------------------회원 통계 데이터 --------------------------- */
 				memberLoginSearch:{
 					stat:"member_login",
@@ -1114,7 +1219,7 @@
 			},
 			tagSecondHalfList(){
 				return this.tagList.slice(Math.ceil(this.tagList.length/2));
-			}
+			},
 		},
 		methods: {
 			//메소드영역
@@ -1314,24 +1419,73 @@
 				this.reportContentListSub[index].reportListContent = this.reportContentList[index].reportListContent; 
 			},
 			async loadReportList(){
-				const resp = await axios.get(contextPath+"/rest/report/");
-				this.reportList=[...resp.data];
+				const resp = await axios.get(contextPath+"/rest/report/", {params:this.reportSearchOption});
+				this.reportListBefore=[...resp.data.reportList];
+				this.reportSearchPagination=resp.data.paginationVO;
+				this.reportList=_.cloneDeep(this.reportListBefore);
 			},
  			connectReportServer(){
 				const url = contextPath+"/ws/admin/report";
 				this.socket = new SockJS(url);
 				
 				this.socket.onopen = ()=>{
+					const joinData = {memberNo:memberNo, data:1}
+					this.socket.send(JSON.stringify(joinData))
 				};
 				this.socket.onclose= ()=>{
+					console.log("연결종료")
 				};
 				this.socket.onerror= ()=>{
+					console.log("연결종료")
 				};
 				//메세지를 수신하면 수신된 메세지로 태그를 만들어서 추가
 				this.socket.onmessage=(e)=>{
 					const data = JSON.parse(e.data);
-					this.reportList = [...data];
+					if(data.data==1){
+						this.socket.send(JSON.stringify(this.reportSearchOption));
+					}
+					else{
+						this.reportListBefore = _.cloneDeep(this.reportList);
+						
+						this.reportList = [...data.reportList];
+						this.reportPagination=[data.paginationVO];
+					}
 				};
+			},
+			//신고 검색 버튼 클릭시
+			async getReportListWithSearchOption(){
+				this.reportSearchOption.page=1;
+				const resp = await axios.get(contextPath+"/rest/report/", {params:this.reportSearchOption});
+				this.reportListBefore=[...resp.data.reportList];
+				this.reportSearchPagination=resp.data.paginationVO;
+				this.reportList=_.cloneDeep(this.reportListBefore);
+			},
+			//페이지네이션 처음, 이전, 다음 끝 버튼 누를 때
+			reportFirstPage(){
+				if(!this.reportSearchPagination.first) this.reportSearchOption.page=1;
+			},
+			reportPrevPage(){
+				if(this.reportSearchPagination.prev) this.reportSearchOption.page=this.reportSearchPagination.prevPage;
+			},
+			reportNextPage(){
+				if(this.reportSearchPagination.next) this.reportSearchOption.page=this.reportSearchPagination.nextPage;
+			},
+			reportLastPage(){
+				if(!this.reportSearchPagination.last) this.reportSearchOption.page=this.reportSearchPagination.totalPage;
+			},
+			//리포트 리스트 초기화 버튼 클릭시
+			resetReportSearchOption(){
+				this.reportSearchOption.memberName="";
+				this.reportSearchOption.memberNick="";
+				this.reportSearchOption.reportTable="";
+				this.reportSearchOption.reportMinCount="";
+				this.reportSearchOption.reportMaxCount="";
+				this.reportSearchOption.reportResult="";
+				this.reportSearchOption.order="";
+			},
+			//리포트리스트, 비포 객체 배열 비교 함수
+			compareReport (obj1, obj2){
+				return obj1.reportTableNo==obj2.reportTableNo && obj1.reportTable==obj2.reportTable && obj1.reportMemberNo==obj2.reportMemberNo;
 			},
 			/*------------------------------ 신고관리 끝 ------------------------------*/
 			/*------------------------------ 멤버통계 시작 ------------------------------*/
@@ -1681,6 +1835,25 @@
 				deep:true,
 				handler(newVal, oldVal) {
 					this.makeQueryForTagOrderList();
+				}
+			},
+			"reportSearchOption.page":function(newVal, oldVal){
+				this.loadReportList();
+			},
+			reportList:{
+				deep:true,
+				handler(){
+					this.reportDifference=this.reportList.map((obj1, indexAfter)=>{
+						const indexBefore  = this.reportListBefore.findIndex(obj => this.compareReport(obj1, obj));
+						const obj2 = this.reportListBefore[indexBefore];
+						//index에 올라가는 등수 반환 커졌으면(순위가 올라가면) +, 작아졌으면(순위가 내려가면) -
+						if(obj2!=undefined){
+							return {count:obj1.count != obj2.count, index:indexBefore-indexAfter};
+						}
+						else{
+							return{count:false, index:16};
+						}
+					})
 				}
 			},
 			adminMenu(){

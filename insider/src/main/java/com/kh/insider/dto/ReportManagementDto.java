@@ -1,5 +1,7 @@
 package com.kh.insider.dto;
 
+import java.sql.Date;
+
 import lombok.Data;
 
 @Data
@@ -12,6 +14,7 @@ public class ReportManagementDto {
 	private String memberName;
 	private String memberNick;
 	private Integer attachmentNo;
+	private Date reportTime;
 	
 	public String getImageURL() {
 		if(attachmentNo == null) return "https://via.placeholder.com/150x150";
