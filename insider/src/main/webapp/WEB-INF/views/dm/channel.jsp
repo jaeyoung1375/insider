@@ -351,7 +351,7 @@
 		      </div>
 		      <div class="modal-body" style="display: flex; align-items: center; color:grey;font-size:0.9em; height: 7em;">
 			  	<input type="text" id="roomNameInput" v-model="roomName" placeholder="채팅방 이름을 입력하세요." 
-			  		style="width: 100%; padding: 20px; font-size: 1.2em; border: none; outline: none; border-bottom: none;">
+			  		@keyup.enter="clickConfirmButton" style="width: 100%; padding: 20px; font-size: 1.2em; border: none; outline: none; border-bottom: none;">
 		      </div>
 		      <div class="modal-footer btn-center">
 		        <button type="button" class="btn" @click="changeRoomName" data-bs-dismiss="modal" aria-label="Close" 
@@ -480,7 +480,7 @@
                     this.roomNameModal.show();
                 },
                 hideRoomNameModal(){
-                    if(this.inviteModal == null) return;
+                    if(this.roomNameModal == null) return;
                     this.roomNameModal.hide();
                 },
 			    connect(){
@@ -727,6 +727,14 @@
 				    } catch (error) {
 				        console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
 				    }
+				},
+				//채팅방 이름 변경 확인 버튼
+				clickConfirmButton() {
+					if (this.roomName) {
+					  this.changeRoomName();
+					  this.hideRoomNameModal()
+					  this.fetchDmRoomList();
+					}
 				},
        		},
             watch:{
