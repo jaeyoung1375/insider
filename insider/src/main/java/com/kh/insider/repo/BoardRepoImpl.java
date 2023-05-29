@@ -116,13 +116,13 @@ public class BoardRepoImpl implements BoardRepo {
 
 
 	@Override
-	public List<BoardDto> myPageSelectListPaging(int page, int memberNo) {
+	public List<BoardListVO> myPageSelectListPaging(int page, int memberNo) {
 		int end = page * 10;
 		int begin = end -9;
 		Map param = Map.of("begin",begin, "end",end, "memberNo",memberNo);
-		return sqlSession.selectList("board.getTotalMyPost",param);
+		return sqlSession.selectList("board.myPageSelectPaging",param);
 
-}
+	}
 	public int selectAdminCount(AdminBoardSearchVO vo) {
 		return sqlSession.selectOne("board.selectAdminCount", vo);
 	}

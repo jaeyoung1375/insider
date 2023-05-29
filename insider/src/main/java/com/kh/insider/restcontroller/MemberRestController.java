@@ -28,6 +28,7 @@ import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.repo.MemberStatsRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.SettingRepo;
+import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.MemberStatsResponseVO;
 import com.kh.insider.vo.MemberStatsSearchVO;
 import com.kh.insider.vo.MemberWithProfileResponseVO;
@@ -118,7 +119,7 @@ public class MemberRestController {
 				
 	// 마이페이지 게시물 목록(무한스크롤)
 	@GetMapping("/page/{page}")
-	public List<BoardDto> paging(@PathVariable int page, @RequestParam int memberNo){
+	public List<BoardListVO> paging(@PathVariable int page, @RequestParam int memberNo){
 		
 		return boardRepo.myPageSelectListPaging(page, memberNo);
 	}

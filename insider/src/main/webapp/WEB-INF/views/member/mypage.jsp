@@ -47,6 +47,69 @@
 	color:gray;
 }
 
+ .carousel-inner img {
+        width: 470px;
+        height: 480px;
+    }
+
+  .card-scroll{
+        	overflow-y: auto;
+        	-ms-overflow-style: none;
+		}        
+    .card-scroll::-webkit-scrollbar {
+		    display: none;
+	} 
+    
+    
+	.moreText{
+			display:inline-block!important;
+	}
+	.moreContent{
+		height: auto!important;
+	    overflow: auto!important;
+	    width: auto!important;
+	    white-space: normal!important;
+	    text-overflow: inherit!important;
+	}
+	
+	 .fullscreen{
+            position:fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 99999;
+            
+            background-color: rgba(0, 0, 0, 0.2);
+/*             display: none; */
+      }
+
+     .fullscreen > .fullscreen-container{
+         position: absolute;
+         left: 50%;
+         top: 50%;
+         
+         width: 1200px;
+         height: 700px;
+         
+         transform: translate(-50%, -50%);
+     }
+     
+        .like {
+	color:red;
+	cursor: pointer;
+	}
+	
+	.fa-heart {
+	cursor: pointer;
+	}
+	
+	.isFollow {
+	display: none;
+	}
+		p .card-text {
+  		margin: 0 0 4px;
+	}
    
 </style>
 
@@ -89,7 +152,7 @@
                <button class="btn btn-secondary">메시지 보내기</button>
                </div>
                <div class="col-5" style=" width:30%;">
-               <button class="btn btn-secondary"><i class="fa-solid fa-user-plus"></i></button>
+               <button class="btn btn-secondary" @click="recommend"><i class="fa-solid fa-user-plus"></i></button>
                </div>
                <div class="col-5" style="width:40%;">
                <button class="btn btn-secondary" @click="showModal2"><i class="fa-solid fa-ellipsis"></i></button>
@@ -131,6 +194,14 @@
                
             </div>
             </div>
+            <div  style="display: flex; flex-direction: column; width: 770px; height:200px; background-color: white; border:1px solid gray; margin: 0 auto; margin-top:15px;" v-if="recommendFriends">
+        		<div class="recommend-id" style="display:flex; justify-content: space-between;">
+        			<span style="color:gray; font-weight: bold;">추천계정</span>
+        			<a class="" style="text-decoration: none; font-weight: bold;">모두 보기</a>
+        		</div>    	
+        
+            </div>
+            
             <hr>
      <!-- 게시물 시작 -->
      <!-- 비공개 계정 -->
@@ -159,17 +230,19 @@
   
    </div>
    
-   
+  
 
     <div style="margin-bottom:10px;display: flex; width: 110%;"> 
     	 <div style="margin-bottom:10px;display: flex;flex-wrap:wrap; width: 100%;">
-	    	<div v-for="(board,index) in myBoardList" :key="board.boardNo" style="margin-right: 10px;">
+	    	<div v-for="(board,index) in myBoardList" :key="index" style="margin-right: 10px;">
     		 <div class="media-height" style="margin-right: 10px; position:relative;">
-    		 	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + board.attachmentNo" style="width:100%; height:250px;">
+	    		 	<div v-if="board.boardAttachmentList && board.boardAttachmentList[0]">
+					<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+board.boardAttachmentList[0].attachmentNo" style="width:100%; height:250px;">
+					</div>
     		 	 <i class="fa-solid fa-note-sticky fa-lg" style="color:white;position:absolute;right:0;top:20px;"></i>
-    		 	  <div class="imgHover" style="cursor:pointer;position:absolute;background-color:#22222221;left:0;right:0;top:0;bottom:0;opacity:0;color:white;">
-    		 	   <i class="fa-solid fa-heart fa-lg" style="position:absolute;top:50%;left:25%;">{{board.boardLike}}</i>
-    		 	     <i class="fa-regular fa-comment fa-lg" style="position:absolute;top:50%;left:50%;">{{board.boardReply}}</i> 	    		 	 	    
+    		 	  <div class="imgHover" style="cursor:pointer;position:absolute;background-color:#22222221;left:0;right:0;top:0;bottom:0;opacity:0;color:white;"  @click="detailViewOn(index)">
+    		 	   <i class="fa-solid fa-heart fa-lg" style="position:absolute;top:50%;left:25%;">{{board.boardWithNickDto.boardLike}}</i>
+    		 	     <i class="fa-regular fa-comment fa-lg" style="position:absolute;top:50%;left:50%;">{{board.boardWithNickDto.boardReply}}</i>	    		 	 	    
     		 	  </div> 
     		 </div>  
     	</div>
@@ -179,6 +252,116 @@
     
 </div>
 <!-- 게시물 영역 끝 --> 
+
+<!-- ---------------------------------게시물 상세보기 모달-------------------------- -->
+
+<div v-if="detailView" class="container-fluid fullscreen" @click.self="closeDetail">
+	<div class="row fullscreen-container">
+		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
+			<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
+                <div class="carousel-indicators">
+                  <button v-for="(attach, index2) in myBoardList[detailIndex].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
+                </div>
+               
+                <div class="carousel-inner">
+                  <div  v-for="(attach, index2) in myBoardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
+                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" style="width:700px; height:700px;"> 
+                  </div>
+                </div>
+               
+                <button class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button> 
+                
+           </div>
+		</div>
+           
+         <div class="col-4" style="padding-left: 0;">
+        	<div class="card bg-light" style="border-radius:0; max-height: 700px">
+           		<div class="card-header">
+	           		<!-- <img class="profile" :src="profileUrl(detailIndex)"> -->
+           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+myBoardList[detailIndex].boardWithNickDto.memberNick"><b>{{myBoardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
+           		</div>
+				
+				<div class="card-body card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
+					<h5 class="card-title"></h5>
+					<p class="card-text" style="margin-left: 0.5em;">{{myBoardList[detailIndex].boardWithNickDto.boardContent}}
+					<br v-if="myBoardList[detailIndex].boardTagList.length > 0"><br v-if="myBoardList[detailIndex].boardTagList.length > 0">
+                            	<a href="#" v-for="(tag, index3) in myBoardList[detailIndex].boardTagList" :key="index3">\#{{tag.tagName}}</a>
+					</p>
+					
+					
+					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
+						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="color:black;text-decoration:none; position:relative;">
+							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="42" height="42" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
+							<img v-else src="https://via.placeholder.com/42x42?text=profile" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
+							
+							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; font-weight: bold;">{{replyList[index].memberNick}}
+							</p>							
+						</a>
+						<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em;">{{replyList[index].replyContent}}</p>
+<!-- 						<p style="padding-left:4.0em;margin-bottom:1px;font-size:0.8em; color:gray;"> -->
+						<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
+							<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
+							<i :class="{'fa-heart': true, 'like':isReplyLiked[index],'ms-2':true, 'fa-solid': isReplyLiked[index], 'fa-regular': !isReplyLiked[index]}" @click="likeReply(reply.replyNo,index)" style="font-size: 0.9em;"></i>
+							&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+							<i v-if="replyList[index].replyMemberNo == ${memberNo}" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="color:red; cursor: pointer;"></i>
+							
+							
+						</p>
+						
+<!-- 						<p v-if="replyList[index].replyParent == 0"> -->
+<!-- 							<span @click="showReReply(reply.replyNo, index)" style="cursor:pointer; padding-left:4em; font-size:0.8em; color:gray;">{{replyStatus(index)}}</span> -->
+<!-- 						</p> -->
+					</div>
+					
+					<div v-else class="card-text" style="position: relative;">
+						<b style="margin-left: 0.5em;">첫 댓글을 작성해보세요</b>
+					</div>
+					
+					
+				</div>
+				<hr style="margin-top: 0; margin-bottom: 0;">
+				
+				<div class="card-body"  style="height:110px; padding-top: 0px; padding-left: 0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
+					<h5 class="card-title"></h5>
+					<p class="card-text" style="margin: 0 0 4px 0">
+						<i :class="{'fa-heart': true, 'like':isLiked[detailIndex],'ms-2':true, 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}" @click="likePost(myBoardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
+						&nbsp;
+						<i class="fa-regular fa-message mb-1" style="font-size: 25px; "></i>
+					</p>
+					<p class="card-text" style="margin: 0 0 4px 0"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount[detailIndex]}}개</b></p>
+					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(myBoardList[detailIndex].boardWithNickDto.boardTimeAuto)}}</p>
+					
+				</div>
+				
+				<div class="input-group">
+					<input ref="replyInput" type="text" class="form-control" :placeholder="placeholder" v-model="replyContent" style="border: none;" aria-label="Recipient's username" aria-describedby="button-addon2" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(detailIndex)">
+					<button class="btn" type="button" id="button-addon2" style="border-top-right-radius: 0!important;" @click="replyInsert(detailIndex)">작성</button>
+				</div>
+								        	
+        	</div> 
+			<button @click="closeDetail()">닫기</button>
+        </div>
+	</div>
+</div>
+ 
+
+
+
+
+
+
+
+
+
+
+
       
       
       <!-- Modal 창 영역 -->
@@ -364,8 +547,8 @@
 							  </div>
 							</div>
 						</template>
-						
-						<template v-else-if="hoverSettingHide === 3">
+											<!-- 비공개 계정 || 친구에게만 공개 && 팔로우 목록에 있다면 -->
+						<template v-else-if="hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)">
 						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
 							  <div style="width:500px; margin-left:160px;">
 							    <img src="${pageContext.request.contextPath}/static/image/lock.png" width="60" height="60">
@@ -460,6 +643,19 @@
 							  </div>
 							</div>
 						</template>
+						
+						<!-- 비공개 계정 || 친구에게만 공개 && 팔로우 목록에 있다면 -->
+						<template v-else-if="hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)">
+						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
+							  <div style="width:500px; margin-left:160px;">
+							    <img src="${pageContext.request.contextPath}/static/image/lock.png" width="60" height="60">
+   								<h6 style="white-space: nowrap; margin-bottom: 5px;">비공개 계정입니다 <br>
+   								사진 및 동영상을 보려면 팔로우하세요.</h6>
+							  </div>
+							</div>
+						</template>
+						
+						
 					   
 					    <template v-else>
 					      <div v-for="post in hoverPostList" :key="post.id">
@@ -569,8 +765,27 @@
             },
             settingHide :null,
             hoverSettingHide : null,
+            hoverFollowerCheck : false,
+            hoverFollowCheck : false,
             totalFollowCnt: 0,
             totalFollowerCnt: 0,
+            
+          //상세보기 및 댓글
+			detailView:false,
+			detailIndex:"",
+			replyList:[],
+			replyParent:0,
+			replyContent:"",
+			placeholder:"댓글 입력..",
+			
+			//게시물 좋아요 기능 전용 변수
+			boardLikeCount:[], // 좋아요 수를 저장할 변수
+            isLiked : [], // 로그인 회원이 좋아요 체크 여부
+            
+			//게시물 댓글 좋아요 기능 전용 변수
+			replyLikeCount : [], // 댓글 좋아요 수 저장 변수
+			isReplyLiked : [], // 로그인 회원이 댓글 좋아요 체크 여부 
+			recommendFriends : false,
          };
       },
       computed: {
@@ -777,7 +992,7 @@
 			      this.totalFollowCount();
 			      this.totalFollowerCount();
 			      this.followListPaging();
-			      this.followerListPaging();
+			      this.followerListPaging();		     
 			    } else {
 			      // 언팔로우 실패 처리
 			      console.log("언팔로우 실패");
@@ -946,20 +1161,32 @@
            		const resp = await axios.get("/rest/member/page/"+this.page,{
            			params : {           
            				memberNo : this.memberNo
+           			
            			},
            		});
            		
+           	 for (const board of resp.data) {
+             	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+             	//console.log(this.isLiked);
+             	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
+             	//this.followCheck(board.boardWithNickDto.memberNo);
+             	//console.log(this.boardLikeCount);
+             	//this.boardLikeCount.push(board.boardLike);
+             	//this.boardLikeCount = boardList.boardLike;
+               }
+           		
            	  const newData = resp.data;
-  		    for (const item of newData) {
+  		   /*  for (const item of newData) {
   		      const existingItem = this.myBoardList.find(boardItem => boardItem.boardNo === item.boardNo);
   		      if (!existingItem) {
   		        this.myBoardList.push(item);
   		      }
-  		    }
+  		    } */
+  		    
+  		    this.myBoardList.push(...resp.data);
            		this.page++;
            		
            		if(resp.data < 5) this.finish = true;
-           	
            	
            		console.log(this.myBoardList);
            		
@@ -1018,7 +1245,11 @@
            	      this.followerCounts = followerCounts; // 프로미스가 해결된 값 저장
            	      this.postCounts = postCounts; // 프로미스가 해결된 값 저장
            	      this.hoverSettingHide = settingHide;
+           	      this.hoverFollowerCheck = this.followCheckIf(item.memberNo);
+           	      this.hoverFollowCheck = this.followCheckIf(item.followFollower);
            	   		console.log("settingHide : "+this.hoverSettingHide);
+           	   		console.log("hoverFollowerCheck : " + this.followCheckIf(item.memberNo));
+           	   		console.log("hoverFollowCheck : " + this.followCheckIf(item.followFollower));
            	      //console.log("팔로우 수 : " +this.followCounts); // 수정된 값 출력
            	      //console.log("팔로워 수 : "+this.followerCounts); // 수정된 값 출력
            	      //console.log("게시물 수 : " +this.postCounts); // 수정된 값 출력
@@ -1047,7 +1278,7 @@
            	  const visibleHeight = bodyElement.clientHeight;
            	  const scrollPercentage = (currentScroll / (contentHeight - visibleHeight)) * 100;
            	  this.followPercent = Math.round(scrollPercentage);
-
+	
            	  if (this.followPercent >= 80) {
            	    this.followListPaging();
            	  }
@@ -1061,7 +1292,7 @@
              	  const visibleHeight = bodyElement.clientHeight;
              	  const scrollPercentage = (currentScroll / (contentHeight - visibleHeight)) * 100;
              	  this.followerPercent = Math.round(scrollPercentage);
-
+	
              	  if (this.followerPercent >= 80) {
              	    this.followerListPaging();
              	  }
@@ -1071,6 +1302,197 @@
              	this.settingHide = resp.data.settingHide;           	
              },
              
+             //댓글 조회
+             async replyLoad(index) {
+             	this.replyList = [];
+             	this.isReplyLiked = [];
+             	this.replyLikeCount = [];
+             	const resp = await axios.get("${pageContext.request.contextPath}/rest/reply/"+ this.myBoardList[index].boardWithNickDto.boardNo);
+                 
+             	for (const reply of resp.data) {
+                 	this.isReplyLiked.push(await this.likeReplyChecked(reply.replyNo));
+                 	this.replyLikeCount.push(reply.replyLike);
+                   }
+             	
+             	this.replyList=[...resp.data];
+             },
+             
+             //댓글 등록
+             async replyInsert(index) {
+             	  const boardNo = this.myBoardList[index].boardWithNickDto.boardNo;
+             	  
+             	  const requestData = {
+             	    replyOrigin: boardNo,
+             	    replyContent: this.replyContent,
+             	    replyParent : this.replyParent
+             	  };
+             	  this.replyContent='';
+             	  
+             	  try {
+             	    const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+             	    this.replyLoad(index);	    
+             	  } 
+             	  catch (error) {
+             	    console.error(error);
+             	  }
+             },
+             
+             //댓글 삭제
+             async replyDelete(index,index2) {
+             	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList[index].replyNo);
+             	this.replyLoad(index2);
+             },
+             
+             //대댓글
+             reReply(replyNo) {
+             	if(replyNo==this.replyParent){
+             		this.replyParent = 0;
+             		this.placeholder = "댓글 입력.."
+             	}
+             	else{
+             		this.replyParent = replyNo;
+             		this.placeholder = "답글 입력..";
+             		this.$refs.replyInput.focus();
+             	}
+             },
+             
+           	//대댓글 펼치기
+             showReReply(replyNo,index){
+           		const arrayIndex = [];
+           	 	const tmp = index+1;
+           	  	if(index!=this.replyList.length){
+           		  	//console.log(replyNo);
+               	  	while(true){
+               		  	if(this.replyList[tmp]==null) break;
+               		  	if(this.replyList[tmp].replyParent==replyNo){
+     	         			  //console.log(tmp);
+     	         			  arrayIndex.push(tmp);
+     	         			  tmp++;
+     	         		  }
+               		  	else if(this.replyList[tmp].replyParent==-1||this.replyList[tmp].replyParent==0) break;
+     	         	  }
+     	         	  
+               	  	if(arrayIndex.length >= 1){
+     	             	  for(var i = 0; i<arrayIndex.length; i++){
+     	             		  this.replyList[arrayIndex[i]].replyParent = -1;
+     	             	  }
+     	             	 //console.log("-1만들기");
+     	             	 return;
+     	         	  }
+     	         	  
+     	         	  while(true){
+     	         		  if(this.replyList[tmp]==null) break;
+     	         		  if(this.replyList[tmp].replyParent==-1){
+     	         			  //console.log(tmp);
+     	         			  arrayIndex.push(tmp);
+     	         			  tmp++;
+     	         		  }else if(this.replyList[tmp]==null||this.replyList[tmp].replyParent==0) break;
+     	         	  }
+     	         	  
+     	         	  for(var i = 0; i<arrayIndex.length; i++){
+     	         		  this.replyList[arrayIndex[i]].replyParent = replyNo;
+     	         	  }
+     	         	  //console.log("+만들기");
+     	     	  }
+     	     	  console.log(arrayIndex);
+     	        },
+              
+              //대댓글 숨기기 보기 상태변경
+              replyStatus(index){
+     				if(index==this.replyList.length) return;
+           	   		if(this.replyList[index+1]!=null&&this.replyList[index+1].replyParent>0){
+     		      		   return "답글 보기";
+     		      	}
+           	   		else if(this.replyList[index+1]!=null&&this.replyList[index+1].replyParent==0){
+     		      		   return "";
+     		      	   }
+           	   		else if(this.replyList[index+1]!=null&&this.replyList[index+1].replyParent<0){
+     		      		   return "답글 숨기기";
+     		      	   }
+           	  
+              },
+             
+             //상세보기 모달창 열기
+             detailViewOn(index) {
+             	this.detailView = true;
+             	this.detailIndex = index;
+             	this.replyLoad(index);
+             },
+             
+             //상세보기 모달창 닫기
+             closeDetail() {
+             	this.detailView = false;
+             	this.replyList = [];
+             },
+             
+             //로그인한 회원이 좋아요 눌렀는지 확인
+             async likeChecked(boardNo) {
+             	const resp = await axios.post("${pageContext.request.contextPath}/rest/board/check", {boardNo:boardNo});			
+             	return resp.data;
+             },
+             
+             //로그인한 회원이 댓글 좋아요 눌렀는지 확인
+             async likeReplyChecked(replyNo) {
+             	const resp = await axios.post("${pageContext.request.contextPath}/rest/reply/check", {replyNo:replyNo});
+             	return resp.data;
+             },
+             
+             //좋아요
+             async likePost(boardNo, index) {
+                 const resp = await axios.post("${pageContext.request.contextPath}/rest/board/like", {boardNo:boardNo});
+                 if(resp.data.result){
+                 	this.isLiked[index] = true;
+                 }
+                 else {
+                 	this.isLiked[index] = false;
+                 }
+                 
+                 this.boardLikeCount[index] = resp.data.count;
+             },
+             
+             //댓글 좋아요
+             async likeReply(replyNo, index) {
+             	const resp = await axios.post("${pageContext.request.contextPath}/rest/reply/like", {replyNo:replyNo});
+             	
+             	if(resp.data.result) {
+             		this.isReplyLiked[index] = true;
+             	}
+             	else {
+             		this.isReplyLiked[index] = false;
+             	}
+             	this.replyLikeCount[index] = resp.data.count;
+             },
+             
+             
+             //게시글 날짜 계산 함수
+             dateCount(date) {
+             	const curTime = new Date();
+             	const postTime = new Date(date);
+             	const duration = Math.floor((curTime - postTime) / (1000 * 60));
+             	
+             	if(duration < 1){
+             		return "방금 전";
+             	}
+             	else if(duration < 60){
+             		return duration + "분 전";
+             	}
+             	else if(duration < 1440) {
+             		const hours = Math.floor(duration / 60);
+             		return hours + "시간 전"
+             	} 
+             	else {
+             		const days = Math.floor(duration / 1440);
+             		return days + "일 전";
+             		//return day + "일 전";
+             	}
+             		//return Math.floor(time) + "시간 전";
+             	
+             	
+             },
+             // 친구추천
+             recommend(){
+            	 this.recommendFriends = !this.recommendFriends;
+             },
            
            	
 
