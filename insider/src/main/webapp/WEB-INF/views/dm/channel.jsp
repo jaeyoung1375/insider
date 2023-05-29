@@ -23,12 +23,6 @@
 	.content-body:hover .fa-heart {
 	  visibility: visible;
 	}
-	.modal-footer.btn-center {
-	    display: flex;
-	    justify-content: center;
-	    align-items: center;
-	    height: 3.5em;
-  	}
 	.room-image {
 	    min-width:50px;
 	    width:100%;
@@ -177,7 +171,7 @@
 						<div v-if="roomNo != null" >
 							채팅방 이름
 							<span style="position:absolute; top:21px; right:0; margin-right:19px;">
-								<i class="fa-solid fa-file-pen fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3"></i>
+								<i class="fa-solid fa-file-pen fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showRoomNameModal()"></i>
 								<i class="fa-solid fa-door-open fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showExitModal()"></i>
 								<i class="fa-solid fa-circle-info fa-xl" style="cursor:pointer; color: #b2bec3"></i>
 							</span>
@@ -339,10 +333,32 @@
 					다른 사람의 채팅방에는 메시지가 계속 표시됩니다.
 		      </div>
 		      <div class="modal-footer btn-center">
-		        <button type="button" class="btn" @click="leaveTheRoom" data-bs-dismiss="modal" aria-label="Close" style="color:red;">확인</button>
+		        <button type="button" class="btn" @click="leaveTheRoom" data-bs-dismiss="modal" aria-label="Close" style="color:red; margin-right: 10.9em; height: 2em;">확인</button>
 		      </div>
 		      <div class="modal-footer btn-center">
-		        <button type="button" class="btn" data-bs-dismiss="modal">취소</button>
+		        <button type="button" class="btn" data-bs-dismiss="modal" style="margin-right: 10.9em; height: 2em;">취소</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<!-- 채팅방 이름 변경 -->
+		<div class="modal fade" id="roomNameModal" tabindex="-1" data-bs-backdrop="static"  ref="roomReName" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered" style="width:450px;">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title" >채팅방 이름을 변경하시겠습니까?</h5>
+		      </div>
+		      <div class="modal-body" style="display: flex; align-items: center; color:grey;font-size:0.9em; height: 7em;">
+			  	<input type="text" id="roomNameInput" v-model="roomName" placeholder="채팅방 이름을 입력하세요." 
+			  		style="width: 100%; padding: 20px; font-size: 1.2em; border: none; outline: none; border-bottom: none;">
+		      </div>
+		      <div class="modal-footer btn-center">
+		        <button type="button" class="btn" @click="changeRoomName" data-bs-dismiss="modal" aria-label="Close" 
+		        	:disabled="!roomName" style="color:#0652DD; margin-right: 10.9em; height: 2em;">확인</button>
+		      </div>
+		      <div class="modal-footer btn-center">
+		        <button type="button" class="btn" data-bs-dismiss="modal" style="margin-right: 10.9em; height: 2em;">취소</button>
 		      </div>
 		    </div>
 		  </div>
@@ -458,6 +474,14 @@
                 hideInviteModal(){
                     if(this.inviteModal == null) return;
                     this.inviteModal.hide();
+                },
+				showRoomNameModal(){
+                    if(this.roomNameModal == null) return;
+                    this.roomNameModal.show();
+                },
+                hideRoomNameModal(){
+                    if(this.inviteModal == null) return;
+                    this.roomNameModal.hide();
                 },
 			    connect(){
             		const url = "${pageContext.request.contextPath}/ws/channel";
@@ -662,7 +686,7 @@
 				        const deleteUrl = "${pageContext.request.contextPath}/rest/deleteDmRoom";
 				        await axios.post(deleteUrl, {roomNo: roomNo});
 				        
-				        // 퇴장 메시지 전송
+				        //퇴장 메시지 전송
 				        const message = {
 				        type: 5,
 				        room: roomNo,
@@ -688,6 +712,21 @@
 				        content: content
 				    };
 				    this.socket.send(JSON.stringify(message));
+				},
+				//채팅방 이름 변경
+				async changeRoomName() {
+				    try {
+				        const updateRoomUrl = "${pageContext.request.contextPath}/rest/changeReName";
+				        const updateRoomData = {
+				            roomNo: this.roomNo,
+				            roomName: roomNameInput.value
+				        };
+				        await axios.put(updateRoomUrl, updateRoomData);
+
+				        await this.fetchDmRoomList(); //채팅방 목록 불러오기
+				    } catch (error) {
+				        console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
+				    }
 				},
        		},
             watch:{
@@ -735,6 +774,7 @@
 				this.createRoomModal = new bootstrap.Modal(this.$refs.memberListModal);
 				this.exitModal = new bootstrap.Modal(this.$refs.exitModal);
 				this.inviteModal = new bootstrap.Modal(this.$refs.inviteModal);
+				this.roomNameModal = new bootstrap.Modal(this.$refs.roomReName);
 				
 				//검색창 초기화
 			    //$('#memberListModal').off('hidden.bs.modal').on('hidden.bs.modal', () => {

@@ -139,6 +139,11 @@ public class DmRestController {
 	public void updateRoomInfo(@RequestBody DmRoomDto dmRoomDto) {
 	    dmServiceImpl.changeRoomInfo(dmRoomDto);
 	}
-
+	
+	//채팅방 이름 변경
+	@PutMapping("/changeReName")
+	public void changeReName(@RequestBody DmRoomDto dmRoomDto) {
+	    dmServiceImpl.updateReName(dmRoomDto);
+	}
 
 }

@@ -385,5 +385,9 @@ public class DmServiceImpl implements DmService {
 	    dmRoomRepo.changeRoomInfo(dmRoomDto);
 	}
 
+	//채팅방 이름 변경
+	public void updateReName(DmRoomDto dmRoomDto) {
+	    dmRoomRepo.updateRoomName(dmRoomDto);
+	}
 	
 }
