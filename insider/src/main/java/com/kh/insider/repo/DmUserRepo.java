@@ -26,6 +26,9 @@ public interface DmUserRepo {
 	//채팅방에서 남아 있는 회원
 	List<DmUserDto> findMembersByRoom(int roomNo);
 	
+	//특정 채팅방에 참여한 총 회원수
+	int countUsersInRoom(int roomNo);
+	
 	////////////////////////////////////////////////////
 	
 	//특정 채팅방에 참여한 모든 회원 조회

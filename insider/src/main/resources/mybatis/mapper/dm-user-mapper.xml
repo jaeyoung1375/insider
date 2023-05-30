@@ -45,6 +45,11 @@
         WHERE room_no = #{roomNo}
     </select>
     
+    <!-- 특정 채팅방에 참여한 총 회원수 -->
+    <select id="countUsersInRoom" resultType="int" parameterType="int">
+        SELECT COUNT(*) FROM dm_user WHERE room_no = #{roomNo}
+    </select>
+    
     
 	
 	<!-- 특정 채팅방에 참여한 모든 회원 조회 -->

@@ -211,7 +211,7 @@
 							                	<div class="number-wrapper" v-show="unreadCount[index] !== 0">{{unreadCount[index]}}</div>
 							                	<div class="time-wrapper" v-if="calculateDisplay(index)">{{timeFormat(message.time)}}</div>
 							                </div>
-						                	<i class="fa-solid fa-x fa-xs" v-on:click="deleteMessage(index)" style="padding-bottom: 0.51em; padding-right: 0.6em; padding-left: 0.7em; color: #ced6e0; cursor:pointer;"></i>
+						                	<i class="fa-solid fa-x fa-xs" @click="deleteMessage(index)"  style="padding-bottom: 0.51em; padding-right: 0.6em; padding-left: 0.7em; color: #ced6e0; cursor:pointer;"></i>
 						                	<i class="fa-solid fa-trash fa-xs" style="padding-bottom: 0.51em; padding-right: 0.51em; padding-left: 0.51em; color: #ced6e0; cursor:pointer;"></i>
 						                	<i class="fa-solid fa-heart fa-xs" style="padding-bottom: 0.51em; padding-right: 0.5em; padding-left: 0.5em; color: #c23616; cursor:pointer;"></i>
 						                </div>
@@ -333,10 +333,10 @@
 					다른 사람의 채팅방에는 메시지가 계속 표시됩니다.
 		      </div>
 		      <div class="modal-footer btn-center">
-		        <button type="button" class="btn" @click="leaveTheRoom" data-bs-dismiss="modal" aria-label="Close" style="color:red; margin-right: 10.9em; height: 2em;">확인</button>
+		        <button type="button" class="btn" @click="leaveTheRoom" data-bs-dismiss="modal" aria-label="Close" style="color:red; margin-right: 11em; height: 2em;">나가기</button>
 		      </div>
 		      <div class="modal-footer btn-center">
-		        <button type="button" class="btn" data-bs-dismiss="modal" style="margin-right: 10.9em; height: 2em;">취소</button>
+		        <button type="button" class="btn" data-bs-dismiss="modal" style="margin-right: 11em; height: 2em;">취소</button>
 		      </div>
 		    </div>
 		  </div>
@@ -350,15 +350,37 @@
 		        <h5 class="modal-title" >채팅방 이름을 변경하시겠습니까?</h5>
 		      </div>
 		      <div class="modal-body" style="display: flex; align-items: center; color:grey;font-size:0.9em; height: 7em;">
-			  	<input type="text" id="roomNameInput" v-model="roomName" placeholder="채팅방 이름을 입력하세요." 
-			  		@keyup.enter="clickConfirmButton" style="width: 100%; padding: 20px; font-size: 1.2em; border: none; outline: none; border-bottom: none;">
+			  	<input type="text" id="roomNameInput" v-model="roomName" placeholder="채팅방 이름을 입력하세요." @keyup.enter="clickConfirmButton" 
+			  		style="width: 100%; padding: 20px; font-size: 1.2em; border: none; outline: none; border-bottom: none;" maxlength="49">
+		      <span>{{roomNameLen}} / 49</span>
 		      </div>
 		      <div class="modal-footer btn-center">
 		        <button type="button" class="btn" @click="changeRoomName" data-bs-dismiss="modal" aria-label="Close" 
-		        	:disabled="!roomName" style="color:#0652DD; margin-right: 10.9em; height: 2em;">확인</button>
+		        	:disabled="!roomName" style="color:#0652DD; margin-right: 11em; height: 2em;">수정</button>
 		      </div>
 		      <div class="modal-footer btn-center">
-		        <button type="button" class="btn" data-bs-dismiss="modal" style="margin-right: 10.9em; height: 2em;">취소</button>
+		        <button type="button" class="btn" data-bs-dismiss="modal" style="margin-right: 11em; height: 2em;">취소</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<!-- 나에게만 메세지 삭제 - messageNo를 가져 오지 못해 사용 불가 -->
+		<div class="modal fade" id="deleteMsgModal" tabindex="-1" data-bs-backdrop="static"  ref="deleteMsgModal" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered" style="width:450px;">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title" >나에게만 메세지 삭제</h5>
+		      </div>
+		      <div class="modal-body" style="display: flex; align-items: center; color:grey;font-size:0.9em; height: 7em;">
+					나에게만 해당 메세지가 삭제됩니다. <br>
+					다른 사람의 채팅방에는 메시지가 계속 표시됩니다.
+		      </div>
+		      <div class="modal-footer btn-center">
+		        <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close" style="color:red; margin-right: 11em; height: 2em;">삭제</button>
+		      </div>
+		      <div class="modal-footer btn-center">
+		        <button type="button" class="btn" data-bs-dismiss="modal" style="margin-right: 11em; height: 2em;">취소</button>
 		      </div>
 		    </div>
 		  </div>
@@ -446,6 +468,7 @@
 				//모달창
 				showCreateRoomModal(){
                     if(this.createRoomModal == null) return;
+                    this.selectedMembers = []; 
                     this.keyword = ""; 
                     this.dmMemberList = [];
                     this.searchDmList = []; 
@@ -486,6 +509,14 @@
                 hideRoomNameModal(){
                     if(this.roomNameModal == null) return;
                     this.roomNameModal.hide();
+                },
+				showDeleteMsgModalModal(){
+                    if(this.deleteMsgModal == null) return;
+                    this.deleteMsgModal.show();
+                },
+                hideDeleteMsgModalModal(){
+                    if(this.deleteMsgModal == null) return;
+                    this.deleteMsgModal.hide();
                 },
 			    connect(){
             		const url = "${pageContext.request.contextPath}/ws/channel";
@@ -640,26 +671,31 @@
 				        console.error("방 생성, 입장, 초대 중 오류가 발생했습니다.", error);
 				    }
 				},
-				//유저 초대
+				//회원 초대
 				async inviteRoom() {
 					try {
 						const inviteUrl = "${pageContext.request.contextPath}/rest/inviteUser";
+						const countUrl = "${pageContext.request.contextPath}/rest/countUsersInDmRoom";
 						const data = {
 								roomNo: this.roomNo,
 								memberList: this.selectedMembers
 						}
-						const resp = await axios.post(inviteUrl, data);
-						
-						//초대 메시지 전송
-				        for (const member of this.selectedMembers) {
-				        	const message = {
-				                    type: 4,
-				                    room: this.roomNo,
-				                    content: "${member.memberNick} 님을 초대 하였습니다."
-				                };
-				                this.socket.send(JSON.stringify(message));
-				        }
+						await axios.post(inviteUrl, data);
 					    console.log("초대가 성공적으로 수행되었습니다.");
+					    
+					 	//회원 초대 후, 총 회원수 가져오기
+						const countResp = await axios.get(countUrl, {params: {roomNo: this.roomNo}});
+						const count = countResp.data;
+					
+						if (count >= 3) {
+							const updateRoomUrl = "${pageContext.request.contextPath}/rest/updateRoomInfo";
+				            const updateRoomData = {
+				                roomNo: this.roomNo,
+				                roomType: 0,
+				                roomName: this.roomName// 서버에서 roomName을 가져올 예정
+				            };
+				            await axios.put(updateRoomUrl, updateRoomData);
+						}
 					} catch (error) {
 				        console.error("채팅 유저 초대 중 오류가 발생했습니다.", error);
 				    }
@@ -726,6 +762,10 @@
 				            roomName: roomNameInput.value
 				        };
 				        await axios.put(updateRoomUrl, updateRoomData);
+				        //const resp = await axios.put(updateRoomUrl, updateRoomData);
+				        //this.roomName = resp.data.name;
+				        //console.log("확인용 roomName", resp.data);
+				        //console.log("확인용 roomName2", resp.data.name);
 
 				        this.dmRoomList = [];
 				        await this.fetchDmRoomList(); //채팅방 목록 불러오기
@@ -779,6 +819,10 @@
             	jsonText() {
             		return JSON.stringify({ type: 1, content: this.text });
             	},
+            	//채팅방 이름 변경
+            	roomNameLen(){
+                    return this.roomName.length;
+                },
             },
             created(){
             	//웹소켓 연결 코드
@@ -794,16 +838,7 @@
 				this.exitModal = new bootstrap.Modal(this.$refs.exitModal);
 				this.inviteModal = new bootstrap.Modal(this.$refs.inviteModal);
 				this.roomNameModal = new bootstrap.Modal(this.$refs.roomReName);
-				
-				//검색창 초기화
-			    //$('#memberListModal').off('hidden.bs.modal').on('hidden.bs.modal', () => {
-			    //	this.keyword = '';
-			    //    this.searchDmList = [];
-			    //});
-			    //$('#inviteModal').off('hidden.bs.modal').on('hidden.bs.modal', () => {
-			    //	this.keyword = '';
-			    // this.searchDmList = [];
-			    //});
+				this.deleteMsgModal = new bootstrap.Modal(this.$refs.deleteMsgModal);
 	        },
         }).mount("#app");
     </script>

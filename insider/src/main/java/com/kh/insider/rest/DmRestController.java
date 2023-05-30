@@ -145,5 +145,12 @@ public class DmRestController {
 	public void changeReName(@RequestBody DmRoomDto dmRoomDto) {
 	    dmServiceImpl.updateReName(dmRoomDto);
 	}
+	
+	//특정 채팅방에 참여한 총 회원수
+	@GetMapping("/countUsersInDmRoom")
+	public int countUsersInDmRoom(@RequestParam int roomNo) {
+		return dmServiceImpl.countUsersInRoom(roomNo);
+	}
+	
 
 }

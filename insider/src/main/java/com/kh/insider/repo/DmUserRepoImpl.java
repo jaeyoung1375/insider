@@ -53,6 +53,10 @@ public class DmUserRepoImpl implements DmUserRepo {
 		return sqlSession.selectList("dmUser.findMembersByRoom", roomNo);
 	}
 	
+	@Override
+	public int countUsersInRoom(int roomNo) {
+		return sqlSession.selectOne("dmUser.countUsersInRoom", roomNo);
+	}
 
 	///////////////////////////////////////////////////////
 	
@@ -60,6 +64,7 @@ public class DmUserRepoImpl implements DmUserRepo {
 	public List<DmUserDto> findUsersByRoomNo(int roomNo) {
 		return sqlSession.selectList("dmUser.findUsersByRoomNo", roomNo);
 	}
+
 
 
 
