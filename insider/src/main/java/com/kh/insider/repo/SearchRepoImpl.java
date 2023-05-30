@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import com.kh.insider.dto.SearchComplexDto;
 import com.kh.insider.dto.SearchDto;
 import com.kh.insider.dto.SearchWithProfileDto;
+import com.kh.insider.vo.SearchStatsSearchVO;
+import com.kh.insider.vo.SearchStatsVO;
 
 @Repository
 public class SearchRepoImpl implements SearchRepo{
@@ -44,6 +46,11 @@ public class SearchRepoImpl implements SearchRepo{
 	@Override
 	public void updateTime(SearchDto searchDto) {
 		sqlSession.update("search.updateTime", searchDto);
+	}
+
+	@Override
+	public List<SearchStatsVO> selectStatsList(SearchStatsSearchVO searchStatsSearchVO) {
+		return sqlSession.selectList("search.selectStatsList", searchStatsSearchVO);
 	}
 
 }

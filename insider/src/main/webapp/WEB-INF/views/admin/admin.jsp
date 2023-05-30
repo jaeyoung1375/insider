@@ -134,7 +134,7 @@
 						<h5 class="m-0">게시물 통계</h5>
 				</div>
 				<div class="admin-menu" @click="changeAdminMenu(6)" :class="{'selected':adminMenu==6}">
-						<h5 class="m-0">조회 통계</h5>
+						<h5 class="m-0">검색 통계</h5>
 				</div>
 			</div>
 		</div>
@@ -986,7 +986,7 @@
 			<div class="col" v-show="adminMenu==6">
 				<div class="row">
 					<div class="col">
-						<h2>조회 통계</h2>
+						<h2>검색 통계</h2>
 					</div>
 				</div>
 				<hr>
