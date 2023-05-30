@@ -15,6 +15,7 @@ public class SearchWithProfileDto {
 	public String memberNick;
 	public String memberName;
 	public Integer attachmentNo;
+	public int follow;
 	
 	public String getImageURL() {
 		if(attachmentNo == null) return "https://via.placeholder.com/150x150";

@@ -75,8 +75,13 @@
 .search-dropdown-content{
 	position:absolute;
 	top:100%;
-	z-index:1;
+	z-index:9999;
 	background-color:white;
+	border-left : 1px solid lightgray;
+	border-right: 1px solid lightgray;
+	border-bottom: 1px solid lightgray;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+	
 }
 
 </style>
@@ -93,10 +98,13 @@
 				</div>
 			<!-- 검색기록 -->
 				<div class="search-dropdown-content" v-show="searchedListShow">
-					<div v-for="(searched, index) in searchedList" :key="index">
+					<div class="p-3" v-for="(searched, index) in searchedList" :key="index">
 						<div class="row" v-if="searched.memberNick==null">
-							<div class="col p-2 ms-2" @click="moveToTagDetail(searched.searchTagName)">
+							<div class="offset-2 col-6 p-2" style="text-align:left; font-weight:bold; font-size:1.2em" @click="moveToTagDetail(searched.searchTagName)">
 								# {{searched.searchTagName}}
+							</div>
+							<div class="col-3 d-flex align-items-center text-left">
+								팔로우 : {{searched.follow}}
 							</div>
 							<!-- 삭제 마크 -->
 							<div class="col-1 d-flex justify-content-center align-items-center">
@@ -104,12 +112,15 @@
 							</div>
 						</div>
 						<div class="row" v-else>
-							<div class="col-3">
+							<div class="col-2">
 								<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+searched.imageURL">
 							</div>
-							<div class="col-8" @click="moveToMemberDetail(searched.searchMemberNo)">
-								<div class="ms-2">{{searched.memberNick}}</div>
-								<div class="ms-2">{{searched.memberName}}</div>
+							<div class="col-6" @click="moveToMemberDetail(searched.searchMemberNo)">
+								<div style="text-align:left; font-weight:bold; font-size:1.2em">{{searched.memberNick}}</div>
+								<div style="text-align:left;">{{searched.memberName}}</div>
+							</div>
+							<div class="col-3 d-flex align-items-center text-left">
+								팔로우 : {{searched.follow}}
 							</div>
 							<!-- 삭제 마크 -->
 							<div class="col-1 d-flex justify-content-center align-items-center">
@@ -120,21 +131,25 @@
 				</div>
 			<!-- 추천 검색어 리스트 -->
 				<div class="search-dropdown-content" v-show="recommandListShow">
-					<div v-for="(recommand, index) in recommandList" :key="index">
-						<div class="" >
-							<div class="row" v-if="recommand.nick==null" @click="moveToTagDetail(recommand.name)">
-								<div class="col p-2 ms-2">
-									# {{recommand.name}}
-								</div>
+					<div class="p-3" v-for="(recommand, index) in recommandList" :key="index">
+						<div class="row" v-if="recommand.nick==null" @click="moveToTagDetail(recommand.name)">
+							<div class="col-6 offset-2 p-2" style="text-align:left; font-weight:bold; font-size:1.2em">
+								# {{recommand.name}}
 							</div>
-							<div class="row" v-else @click="moveToMemberDetail(recommand.memberNo)">
-								<div class="col-3">
-									<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+recommand.imageURL">
-								</div>
-								<div class="col-9">
-									<div class="ms-2">{{recommand.nick}}</div>
-									<div class="ms-2">{{recommand.name}}</div>
-								</div>
+							<div class="col-4 d-flex align-items-center text-left">
+								팔로우 : {{recommand.follow}}
+							</div>
+						</div>
+						<div class="row" v-else @click="moveToMemberDetail(recommand.memberNo)">
+							<div class="col-2">
+								<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+recommand.imageURL">
+							</div>
+							<div class="col-6">
+								<div style="text-align:left; font-weight:bold; font-size:1.2em">{{recommand.nick}}</div>
+								<div style="text-align:left;">{{recommand.name}}</div>
+							</div>
+							<div class="col-4 d-flex align-items-center text-left">
+								팔로우 : {{recommand.follow}}
 							</div>
 						</div>
 					</div>

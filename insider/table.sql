@@ -170,8 +170,18 @@ search_delete number(1) DEFAULT 0 NOT NULL
 );
 CREATE SEQUENCE search_base_seq;
 
+--검색 테이블에 필요한 데이터 추가해서 반환
 CREATE OR REPLACE VIEW search_with_profile AS
-SELECT s.*, m.member_nick, m.member_name, m.attachment_no FROM SEARCH s LEFT OUTER JOIN MEMBER_WITH_PROFILE m ON s.search_MEMBER_NO =m.MEMBER_NO ;
+SELECT s.*, m.member_nick, m.member_name, m.attachment_no, 
+CASE WHEN t.tag_follow IS NOT NULL THEN t.tag_follow ELSE m.member_follow END AS follow 
+FROM SEARCH s LEFT OUTER JOIN MEMBER_WITH_PROFILE m ON s.search_MEMBER_NO =m.MEMBER_NO
+LEFT OUTER JOIN tag t ON s.search_tag_name=t.tag_name;
+
+--추천 검색어 리스트 반환
+CREATE OR REPLACE VIEW search_complex as
+SELECT member_name AS name, member_nick AS nick, member_follow AS follow, member_no AS member_no, attachment_no AS ATTACHMENT_NO
+FROM MEMBER_with_profile UNION ALL SELECT tag_name AS name, NULL AS nick, tag_follow AS follow, NULL AS member_no, NULL AS attachment_no
+FROM tag;
 
 --리포트 결과 테이블 생성
 CREATE TABLE report_result(
