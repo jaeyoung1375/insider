@@ -6,13 +6,21 @@
     
 <mapper namespace="dmMessageNick">
     
-    <!-- 특정 채팅방에서 회원이 삭제하지 않은 모든 메시지 조회 -->
+    <!-- 특정 채팅방에서 회원이 삭제하지 않은 모든 메시지 + 입장 이후 메세지 + 첨부파일번호 및 닉네임조회 -->
 	<select id="getUndeletedMessages" resultType="DmMessageNickDto">
-		select * from dm_message_nick 
-		where room_no=#{roomNo} and message_no 
-		not in(select message_no from dm_message_deleted 
-		where member_no=#{memberNo})
-		order by message_no asc
+		SELECT dm.*, ma.attachment_no
+		FROM dm_message_nick dm 
+		LEFT OUTER JOIN member_profile ma ON dm.message_sender = ma.member_no
+		JOIN dm_user u ON dm.room_no = u.room_no
+		WHERE dm.room_no = #{roomNo}
+		AND dm.message_no NOT IN (
+		    SELECT message_no 
+		    FROM dm_message_deleted 
+		    WHERE member_no = #{memberNo}
+		)
+		AND dm.message_send_time > u.join_time
+		AND u.member_no = #{memberNo}
+		ORDER BY dm.message_no ASC
 	</select>
 
 </mapper>

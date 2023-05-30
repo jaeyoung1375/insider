@@ -20,12 +20,6 @@
 		where member_no = #{memberNo} and room_no = #{roomNo}
 	</select>
 
-	<!-- 채팅방에서 사용자 퇴장 -->
-	<delete id="leaveRoom">
-	    delete from dm_user 
-	    where member_no = #{memberNo} and room_no = #{roomNo}
-	</delete>
-
 	<!-- 읽은 시간 수정 -->
 	<update id="updateReadTime">
 		update dm_user
@@ -37,4 +31,30 @@
 	<select id="selectReadTime" resultType="long">
 		select read_time from dm_user where room_no=#{roomNo}
 	</select>
+	
+	<!-- 채팅방에서 사용자 퇴장 -->
+	<delete id="leaveRoom">
+	    delete from dm_user 
+	    where member_no = #{memberNo} and room_no = #{roomNo}
+	</delete>
+	
+	<!-- 채팅방에 남아 있는 회원 -->
+	<select id="findMembersByRoom" resultType="DmUserDto">
+        SELECT *
+        FROM dm_user
+        WHERE room_no = #{roomNo}
+    </select>
+    
+    <!-- 특정 채팅방에 참여한 총 회원수 -->
+    <select id="countUsersInRoom" resultType="int" parameterType="int">
+        SELECT COUNT(*) FROM dm_user WHERE room_no = #{roomNo}
+    </select>
+    
+    
+	
+	<!-- 특정 채팅방에 참여한 모든 회원 조회 -->
+	<select id="findUsersByRoomNo" resultType="DmUserDto">
+	  SELECT * FROM dm_user WHERE room_no = #{roomNo}
+	</select>
+	
 </mapper>
