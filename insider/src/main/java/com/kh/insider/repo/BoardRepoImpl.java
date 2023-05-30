@@ -129,8 +129,8 @@ public class BoardRepoImpl implements BoardRepo {
 
 
 	@Override
-	public BoardDto selectOne(int boardNo) {
-		return sqlSession.selectOne("board.selectOne", boardNo);
+	public BoardWithNickDto selectOne(int boardNo) {
+		return sqlSession.selectOne("board.selectOneNick", boardNo);
 	}
 
 

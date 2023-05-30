@@ -2,10 +2,8 @@ package com.kh.insider.repo;
 
 import java.util.List;
 
-
 import com.kh.insider.dto.BoardDto;
 import com.kh.insider.dto.BoardWithNickDto;
-import com.kh.insider.vo.BoardAttachmentVO;
 import com.kh.insider.vo.AdminBoardSearchVO;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
@@ -25,7 +23,7 @@ public interface BoardRepo {
 	BoardDto insert(BoardDto boardDto);
 	
 	//게시물 단일 조회
-	BoardDto selectOne(int boardNo);
+	BoardWithNickDto selectOne(int boardNo);
 	
 	//게시물 삭제
 	void delete(int boardNo);

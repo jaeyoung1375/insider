@@ -180,7 +180,7 @@
                             	<span class="textHide">
                             		{{board.boardWithNickDto.boardContent}}
                             		<br v-if="boardList[index].boardTagList.length > 0"><br v-if="boardList[index].boardTagList.length > 0">
-                            		<a href="#" v-for="(tag, index3) in boardList[index].boardTagList" :key="index3">\#{{tag.tagName}}</a>
+                            		<a href="#" v-for="(tag, index3) in boardList[index].boardTagList" :key="index3" style="margin-right: 0.5em;">\#{{tag.tagName}}</a>
                             	</span>
                             </p>                            
                             
@@ -250,7 +250,7 @@
 					<h5 class="card-title"></h5>
 					<p class="card-text" style="margin-left: 0.5em;">{{boardList[detailIndex].boardWithNickDto.boardContent}}
 					<br v-if="boardList[detailIndex].boardTagList.length > 0"><br v-if="boardList[detailIndex].boardTagList.length > 0">
-                            	<a href="#" v-for="(tag, index3) in boardList[detailIndex].boardTagList" :key="index3">\#{{tag.tagName}}</a>
+                            	<a href="#" v-for="(tag, index3) in boardList[detailIndex].boardTagList" :key="index3" style="margin-right: 0.5em;">\#{{tag.tagName}}</a>
 					</p>
 					
 					
@@ -523,7 +523,7 @@ Vue.createApp({
         
         //게시물 수정
         updatePost(boardNo){
-        	window.location.href = "${pageContext.request.contextPath}/";
+        	window.location.href = "${pageContext.request.contextPath}/board/edit?boardNo="+ boardNo;
         },
         
         //게시물 삭제
