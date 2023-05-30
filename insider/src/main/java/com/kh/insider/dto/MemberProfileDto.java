@@ -6,5 +6,5 @@ import lombok.Data;
 public class MemberProfileDto {
 	private int memberProfileNo;
 	private long memberNo;
-	private int attachmentNo;
+	private Integer attachmentNo;
 }

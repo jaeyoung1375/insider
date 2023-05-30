@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.BoardDto;
+import com.kh.insider.dto.BoardWithNickDto;
 import com.kh.insider.vo.BoardAttachmentVO;
+import com.kh.insider.vo.AdminBoardSearchVO;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
 import com.kh.insider.vo.BoardTagStatsResponseVO;
@@ -47,11 +49,8 @@ public class BoardRepoImpl implements BoardRepo {
 	}
 
 	@Override
-	public List<BoardListVO> selectListWithAttach(int page) {
-		int end = page*2;
-		int begin = end-1;
-		Map<String, Object> param = Map.of("begin", begin, "end", end);
-		return sqlSession.selectList("board.boardListTreeSelect",param);
+	public List<BoardListVO> selectListWithAttach(AdminBoardSearchVO vo) {
+		return sqlSession.selectList("board.boardListTreeSelect",vo);
 	}
 	@Override
 	public List<BoardListVO> selectListWithFollow(BoardSearchVO vo) {
@@ -86,7 +85,7 @@ public class BoardRepoImpl implements BoardRepo {
 
 	@Override
 	public List<BoardDto> getTotalMyPost(long memberNo) {
-		return sqlSession.selectList("board.getTotalMyPost",memberNo);
+		return sqlSession.selectList("board.getTotalMyPost2",memberNo);
 	}
 	
 	public List<BoardTimeStatsResponseVO> getBoardTimeStats(BoardTimeStatsSearchVO boardTimeStatsSearchVO) {
@@ -115,4 +114,16 @@ public class BoardRepoImpl implements BoardRepo {
 		return sqlSession.selectList("board.boardTagStats", boardTagStatsSearchVO);
 	}
 
+
+	@Override
+	public List<BoardDto> myPageSelectListPaging(int page, int memberNo) {
+		int end = page * 6;
+		int begin = end -9;
+		Map param = Map.of("begin",begin, "end",end, "memberNo",memberNo);
+		return sqlSession.selectList("board.getTotalMyPost",param);
+
+}
+	public int selectAdminCount(AdminBoardSearchVO vo) {
+		return sqlSession.selectOne("board.selectAdminCount", vo);
+	}
 }

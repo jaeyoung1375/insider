@@ -16,6 +16,7 @@ public class DmUserRepoImpl implements DmUserRepo {
 
 	@Override
 	public void enter(DmUserDto dmUserDto) {
+		dmUserDto.setReadTime(System.currentTimeMillis());
 		sqlSession.insert("dmUser.enter", dmUserDto);
 	}
 
@@ -32,8 +33,39 @@ public class DmUserRepoImpl implements DmUserRepo {
 	}
 
 	@Override
-    public void leaveRoom(DmUserDto dmUserDto) {
-        sqlSession.delete("dmUser.leaveRoom", dmUserDto);
-    }
+	public void updateReadTime(DmUserDto dmUserDto) {
+		dmUserDto.setReadTime(System.currentTimeMillis());
+		sqlSession.update("dmUser.updateReadTime", dmUserDto);
+	}
+	
+	@Override
+	public List<Long> selectReadTime(int roomNo) {
+		return sqlSession.selectList("dmUser.selectReadTime", roomNo);
+	}
+	
+	@Override
+	public void leaveRoom(DmUserDto dmUserDto) {
+		sqlSession.delete("dmUser.leaveRoom", dmUserDto);
+	}
+	
+	@Override
+	public List<DmUserDto> findMembersByRoom(int roomNo) {
+		return sqlSession.selectList("dmUser.findMembersByRoom", roomNo);
+	}
+	
+	@Override
+	public int countUsersInRoom(int roomNo) {
+		return sqlSession.selectOne("dmUser.countUsersInRoom", roomNo);
+	}
+
+	///////////////////////////////////////////////////////
+	
+	@Override
+	public List<DmUserDto> findUsersByRoomNo(int roomNo) {
+		return sqlSession.selectList("dmUser.findUsersByRoomNo", roomNo);
+	}
+
+
+
 
 }
