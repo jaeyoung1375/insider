@@ -1,10 +1,15 @@
 package com.kh.insider.dto;
 
+import java.sql.Date;
+
 import lombok.Data;
 
 @Data
 public class SearchDto {
-	private String name;
-	private String nick;
-	private int follow;
+	public int searchNo;
+	public long memberNo;
+	public String searchTagName;
+	public Long searchMemberNo;
+	public Date searchTime;
+	public int searchDelete;
 }

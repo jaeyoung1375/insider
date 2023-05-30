@@ -3,7 +3,67 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="search">
-	<select id="selectList" resultType="searchDto">
-		select * from search where instr(name, #{searchInput})>0 or instr(nick, #{searchInput})>0
+<!-- 검색 추천 리스트 출력 -->
+	<select id="selectRecommand" resultType="searchComplexDto">
+		select * from search_complex where instr(name, #{searchInput})>0 or instr(nick, #{searchInput})>0
 	</select>
+<!-- 검색했던 리스트 출력 -->
+	<select id="selectSearched" resultType="searchWithProfileDto">
+		select * from search_with_profile where member_no=#{memberNo} and search_Delete=0 order by search_time desc 
+	</select>
+<!-- 검색 기록 삭제 -->
+	<update id="searchDelete">
+		update search
+		set search_delete=1
+		where member_no=#{memberNo}
+		<if test="searchTagName!=null and !searchTagName.equals('')">
+			and search_tag_name=#{searchTagName}
+		</if>
+		<if test="searchMemberNo!=null and !searchMemberNo.equals('')">
+			and search_member_no=#{searchMemberNo}
+		</if>
+	</update>
+<!-- 검색기록 추가 -->
+	<insert id="insert">
+		insert into search(
+		search_no, member_no
+		<if test="searchTagName!=null and !searchTagName.equals('')">
+			,search_tag_name
+		</if>
+		<if test="searchMemberNo!=null and !searchMemberNo.equals('')">
+			,search_member_no
+		</if>
+		) 
+		values(
+		search_seq.nextval, #{memberNo}
+		<if test="searchTagName!=null and !searchTagName.equals('')">
+			,#{searchTagName}
+		</if>
+		<if test="searchMemberNo!=null and !searchMemberNo.equals('')">
+			,#{searchMemberNo}
+		</if>
+		)
+	</insert>
+<!-- 단일조회 -->
+	<select id="selectOne" resultType="searchDto">
+		select * from search where member_no=#{memberNo}
+		<if test="searchTagName!=null and !searchTagName.equals('')">
+			and search_tag_name=#{searchTagName}
+		</if>
+		<if test="searchMemberNo!=null and !searchMemberNo.equals('')">
+			and search_member_no=#{searchMemberNo}
+		</if>
+	</select>
+<!-- 검색기록 시간 갱신 -->
+	<update id="updateTime">
+		update search
+		set search_time=sysdate, search_delete=0
+		where member_no=#{memberNo}
+		<if test="searchTagName!=null and !searchTagName.equals('')">
+			and search_tag_name=#{searchTagName}
+		</if>
+		<if test="searchMemberNo!=null and !searchMemberNo.equals('')">
+			and search_member_no=#{searchMemberNo}
+		</if>
+	</update>
 </mapper>
