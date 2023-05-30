@@ -162,43 +162,37 @@
 $(function(){
 
 	$(document).ready(function() {
-		  // Show the modal on page load
+
 		  $('#modalForm').css('display', 'block');
 
-		  // Disable modal closing when clicking outside the modal content
 		  $('.modal-dialog').on('click', function(event) {
 		    event.stopPropagation();
 		  });
 
-		  // Close the modal when the cancel button is clicked
 		  $('.cancel').on('click', function() {
 		    $('#modalForm').css('display', 'none');
 		  });
 
-		  // Close the modal when the close button is clicked
 		  $('.close').on('click', function() {
 		    $('#modalForm').css('display', 'none');
 		  });
 		});
 
 
-
-	
-	
 $(document).ready(function() {
     $('#summernote').summernote({
         toolbar: false,
         callbacks: {
             onInit: function() {
-                // Retrieve the initial content
+
                 var content = $('#summernote').val();
-                // Convert line breaks to <br> tags
+
                 content = content.replace(/\n/g, '<br>');
-                // Set the modified content back to Summernote
+ 
                 $('#summernote').summernote('code', content);
             },
             onKeyup: function() {
-                // Update the character count
+
                 var content = $('#summernote').summernote('code');
                 var characterCount = content.replace(/<[^>]+>/g, '').length;
                 $('.count').text(characterCount);

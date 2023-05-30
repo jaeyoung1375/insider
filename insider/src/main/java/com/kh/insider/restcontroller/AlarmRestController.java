@@ -26,28 +26,22 @@ public class AlarmRestController {
 	@GetMapping("")
 	public List<AlarmVO> selectList(
 									HttpSession session){
-		Long memberNo = (Long) session.getAttribute("findByNo");
+		Long memberNo = (Long) session.getAttribute("login");
 		return alarmService.selectAlarm(memberNo);
 	}
 	
 	@PutMapping("/check")
 	public void checkAlarm(
 							HttpSession session) {
-		Long memberNo = (Long)session.getAttribute("findByNo");
+		Long memberNo = (Long)session.getAttribute("login");
 		alarmService.check(memberNo);
 	}
 	
 	@GetMapping("/is_insider")
 	public Integer isInsider(
 						HttpSession session) {
-		Long memberNo = (Long)session.getAttribute("findByNo");
+		Long memberNo = (Long)session.getAttribute("login");
 		return alarmService.isInsider(memberNo);
 	}
 	
-	@GetMapping("/is_chat")
-	public int isChat(
-						HttpSession session) {
-		int memberNo = (Integer)session.getAttribute("login");
-		return alarmService.isChat(memberNo);
-	}
 }

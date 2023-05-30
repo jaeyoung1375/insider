@@ -22,7 +22,7 @@ public class AlarmServiceImpl implements AlarmService{
 
 	@Transactional
 	@Override
-	public void check(long memberNo) {
+	public void check(Long memberNo) {
 		sqlSession.update("alarm.checkBL", memberNo);
 		sqlSession.update("alarm.checkAL", memberNo);
 		sqlSession.update("alarm.checkFollow", memberNo);
@@ -31,19 +31,12 @@ public class AlarmServiceImpl implements AlarmService{
 	}
 
 	@Override
-	public int isInsider(long memberNo) {
+	public int isInsider(Long memberNo) {
 		if(sqlSession.selectOne("alarm.isAlarm", memberNo)==null) {
 			return 0;
 		}
 		return sqlSession.selectOne("alarm.isAlarm",memberNo);
 	}
 
-	@Override
-	public int isChat(long memberNo) {
-		if(sqlSession.selectOne("alram.isChatAlarm",memberNo)==null) {
-			return 0;
-		}
-		return sqlSession.selectOne("alarm.isChatAlarm", memberNo);
-	}
 
 }

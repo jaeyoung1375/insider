@@ -82,8 +82,4 @@ select br2.board_no, m.member_no, m.member_nick, mp.attachment_no, r.reply_check
         ) where rownum = 1
 	</select>
 	
-	<select id="isChatAlarm" resultType="int" parameterType="int">
-		select member_no from dm_unread_user where target = #{member_no} and is_read = 0
-	</select>
-	
  </mapper> 

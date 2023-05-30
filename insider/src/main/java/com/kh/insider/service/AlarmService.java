@@ -8,7 +8,6 @@ import com.kh.insider.vo.AlarmVO;
 public interface AlarmService {
 
 	List<AlarmVO> selectAlarm(Long memberNo);
-	void check(long memeberNo);
-	int isInsider(long memberNo);
-	int isChat(long memberNo);
+	void check(Long memeberNo);
+	int isInsider(Long memberNo);
 }
