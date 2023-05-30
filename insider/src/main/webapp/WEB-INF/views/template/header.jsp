@@ -266,7 +266,7 @@
 					</button>
 					<div class="dropdown-menu" aria-labelledby="dropdownMenuButton" v-show="sideMenu" :class="{'show' : sideMenu}">
 						<a class="dropdown-item" href="${pageContext.request.contextPath}/member/setting?page=1">환경설정</a>
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/admin/">관리자 메뉴</a>
+						<a class="dropdown-item" href="${pageContext.request.contextPath}/admin/?adminMenu=1">관리자 메뉴</a>
 						<a class="dropdown-item" href="${pageContext.request.contextPath}/member/login">로그인</a>
 						<c:if test="${socialUser != null}">
 						<a class="dropdown-item" href="${pageContext.request.contextPath}/member/logout">로그아웃</a>

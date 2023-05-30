@@ -17,7 +17,7 @@
 		select * from member_with_profile where member_no=#{memberNo}
 	</select>
 	
-	<select id="selectList" resultType="memberWithProfileDto">
+	<select id="selectList" resultType="memberWithSuspensionDto">
 		<!-- 변수 선언 -->
 		<bind name="memberNoExist" value="memberNo!=null and !memberNo.equals('')"></bind>
 		<bind name="memberNameExist" value="memberName!=null and !memberName.equals('')"></bind>
@@ -34,9 +34,9 @@
 		<bind name="memberMinFollowExist" value="memberMinFollow!=null and !memberMinFollow.equals('')"></bind>
 		<bind name="memberMaxFollowExist" value="memberMaxFollow!=null and !memberMaxFollow.equals('')"></bind>
 		<bind name="orderListExist" value="orderList!=null and orderList.size()>0"></bind>
-		
+		<bind name="memberSuspensionStatusExist" value="memberSuspensionStatus!=null and !memberSuspensionStatus.equals('')"></bind>
 		<include refid="topNheader"></include>
-		select * from member_with_profile
+		select * from member_with_suspension
 		
 		<where>
 		<!-- 회원번호 -->
@@ -128,6 +128,18 @@
 		 		</when>
 		 		<otherwise></otherwise>
 		 	</choose>
+		<!-- 차단여부 -->
+		 	<choose>
+		 		<when test="memberSuspensionStatusExist and memberSuspensionStatus==0">
+		 			and member_suspension_status=0
+		 		</when>
+		 		<when test="memberSuspensionStatusExist and memberSuspensionStatus==1">
+		 			<![CDATA[
+		 			and member_suspension_status is null or member_suspension_status=1
+		 			]]>
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
 		</where>
 		
 		<if test="orderListExist">
@@ -155,8 +167,9 @@
 		<bind name="memberMinFollowExist" value="memberMinFollow!=null and !memberMinFollow.equals('')"></bind>
 		<bind name="memberMaxFollowExist" value="memberMaxFollow!=null and !memberMaxFollow.equals('')"></bind>
 		<bind name="orderListExist" value="orderList!=null and orderList.size()>0"></bind>
+		<bind name="memberSuspensionStatusExist" value="memberSuspensionStatus!=null and !memberSuspensionStatus.equals('')"></bind>
 		
-		select count(*) from member_with_profile
+		select count(*) from member_with_suspension
 		
 		<where>
 		<!-- 회원번호 -->
@@ -244,10 +257,24 @@
 		 		</when>
 		 		<otherwise></otherwise>
 		 	</choose>
+		<!-- 차단여부 -->
+		 	<choose>
+		 		<when test="memberSuspensionStatusExist and memberSuspensionStatus==0">
+		 			and member_suspension_status=0
+		 		</when>
+		 		<when test="memberSuspensionStatusExist and memberSuspensionStatus==1">
+		 			<![CDATA[
+		 			and member_suspension_status is null or member_suspension_status=1
+		 			]]>
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
 		</where>
 	</select>
 	
 <!-- 통합 통계 -->
 	
-	
+	<select id="suspensionSelectOne" resultType="memberWithSuspensionDto">
+		select * from member_with_suspension where member_no=#{memberNo}
+	</select>
 </mapper>

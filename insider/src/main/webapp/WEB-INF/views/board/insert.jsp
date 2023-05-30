@@ -284,7 +284,7 @@ $(document).ready(function() {
 
 <form action="insert" method="post" enctype="multipart/form-data" class="form-submit">
 
-	<div class="container-fluid">
+	<div class="container-fluid" style="width: 1200px">
 	
 		<div class="row mt-3"></div>
 		

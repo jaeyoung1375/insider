@@ -167,6 +167,14 @@ public class MemberController {
        return totalFollowerCount;
    }
    
+   @GetMapping("/totalPostCount")
+   @ResponseBody
+   public int totalPostCount(@RequestParam("memberNick") String memberNick) {
+	   MemberDto findMember = memberRepo.findByNickName(memberNick);
+	   int totalPostCount = boardRepo.getTotalPostCount(findMember.getMemberNo());
+	   return totalPostCount;
+   }
+   
    
    @GetMapping("/emailCheck")
    @ResponseBody

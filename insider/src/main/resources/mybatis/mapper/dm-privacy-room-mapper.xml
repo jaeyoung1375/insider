@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="dmPrivacyRoom">
+
+	<insert id="createPrivacy" parameterType="DmPrivacyRoomDto">
+        INSERT INTO dm_privacy_room (inviter_no, invitee_no, room_no) 
+        VALUES (#{inviterNo}, #{inviteeNo}, #{roomNo})
+    </insert>
+    
+    <!-- 채팅방에 동일한 초대 유저 중복 확인 -->
+    <select id="checkDuplication" resultType="DmPrivacyRoomDto">
+		SELECT * FROM dm_privacy_room WHERE room_no = #{roomNo}	
+    </select>   
+
+	<!-- 채팅방 퇴장 -->
+	<delete id="leaveRoom">
+		delete dm_privacy_room where inviter_no = #{inviterNo} and room_no = #{roomNo}
+	</delete>
+
+    
+	<!-- //////////////////////// 삭제 예정 ///////////////// -->
+	<select id="inviteeList" resultType="DmPrivacyRoomDto">
+        SELECT * FROM dm_privacy_room WHERE invitee_no = #{inviteeNo}
+    </select>
+	
+    <!-- 특정 채팅방 검색 (중복 확인) --> 
+    <select id="selectOneRoom" resultType="DmPrivacyRoomDto">
+		select * from dm_privacy_room
+		where inviter_no = #{inviterNo} 
+		and invitee_no = #{inviteeNo}
+	</select>
+    
+</mapper>

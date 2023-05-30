@@ -50,6 +50,36 @@
 	border:1px solid lightgray;
 	padding:3em;
 }
+.box {
+	position: relative;
+	width: 16.666666%;
+	font-size:1.2em;
+}
+.box::after {
+	display: block;
+	content: "";
+	padding-bottom: 100%;
+}
+.content {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.box:hover{
+	background-color:rgba(34, 34, 34, 0.13);
+}
+.pages {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 1;
+	margin-top:0.5em;
+	margin-right:0.5em;
+	color:lightgray;
+}
 </style>
 <div id="app">
 	<div class="container-fluid mt-4" style="position:relative">
@@ -60,15 +90,18 @@
 					<h5 class="m-0">회원 관리</h5>
 				</div>
 				<div class="admin-menu" @click="changeAdminMenu(2)" :class="{'selected':adminMenu==2}">
-						<h5 class="m-0">신고 관리</h5>
+					<h5 class="m-0">게시물 관리</h5>
 				</div>
 				<div class="admin-menu" @click="changeAdminMenu(3)" :class="{'selected':adminMenu==3}">
-						<h5 class="m-0">회원 통계</h5>
+						<h5 class="m-0">신고 관리</h5>
 				</div>
 				<div class="admin-menu" @click="changeAdminMenu(4)" :class="{'selected':adminMenu==4}">
-						<h5 class="m-0">게시물 통계</h5>
+						<h5 class="m-0">회원 통계</h5>
 				</div>
 				<div class="admin-menu" @click="changeAdminMenu(5)" :class="{'selected':adminMenu==5}">
+						<h5 class="m-0">게시물 통계</h5>
+				</div>
+				<div class="admin-menu" @click="changeAdminMenu(6)" :class="{'selected':adminMenu==6}">
 						<h5 class="m-0">조회 통계</h5>
 				</div>
 			</div>
@@ -174,7 +207,7 @@
 						<div class="col-2 d-flex align-items-center">
 							<span>생일</span>
 						</div>
-						<div class="col-10 p-0">
+						<div class="col-6 p-0">
 							<div class="row">
 								<div class="col-5">
 									<input type="date" class="form-control" v-model="memberSearchOption.memberBeginBirth">
@@ -187,6 +220,20 @@
 								</div>
 							</div>
 						</div>
+						<div class="col-4">
+							<div class="row">
+								<div class="col-6 d-flex align-items-center">
+									<span>정지여부</span>
+								</div>
+								<div class="col-6 p-0">
+									<select class="form-control" v-model="memberSearchOption.memberSuspensionStatus">
+										<option value="">전체</option>
+										<option value="0">정지</option>
+										<option value="1">일반</option>
+									</select>
+								</div>
+							</div>
+						</div>
 					</div>
 					<div class="row">
 						<div class="col-2 d-flex align-items-center">
@@ -196,7 +243,7 @@
 							<select class="form-control" v-model="memberOrderList[0]">
 								<option value="" selected>팔로워(선택)</option>
 								<option value="member_follow asc">팔로워 적은순</option>
-								<option value="member-follow desc">팔로워 많은순</option>
+								<option value="member_follow desc">팔로워 많은순</option>
 							</select>
 						</div>
 						<div class="col p-0">
@@ -232,7 +279,7 @@
 									<th style="vertical-align:middle; width:30%">이메일</th>
 									<th style="vertical-align:middle; width:8.666666%; text-align:center">팔로우</th>
 									<th style="vertical-align:middle; width:6.666666%; text-align:center">신고</th>
-									<th style="vertical-align:middle; width:6.666666%">관리</th>
+									<th style="vertical-align:middle; width:6.666666%">상태</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -243,7 +290,8 @@
 									<td style="vertical-align:middle">{{member.memberEmail}}</td>
 									<td style="vertical-align:middle; text-align:center">{{member.memberFollow}}</td>
 									<td style="vertical-align:middle; text-align:center">{{member.memberReport}}</td>
-									<td style="vertical-align:middle">관리</td>
+									<td style="vertical-align:middle" v-if="member.memberSuspensionStatus==0" @click="showSuspensionModal(index, 0)">정지</td>
+									<td style="vertical-align:middle" v-else @click="showSuspensionModal(index, 1)">일반</td>
 								</tr>
 							</tbody>
 						</table>
@@ -275,8 +323,297 @@
 				</div>
 			</div>
 		<!--------------------------- 회원 관리 끝--------------------------->
-		<!--------------------------- 신고 관리 시작 --------------------------->
+		<!--------------------------- 게시물 관리 시작 --------------------------->
 			<div class="col" v-show="adminMenu==2">
+				<div class="row">
+					<div class="col">
+						<h2>게시물 관리</h2>
+					</div>
+				</div>
+				<hr>
+				<div class="row mt-4">
+					<div class="col">
+						<h4 class="m-0">게시물</h4>
+					</div>
+				</div>
+				<hr>
+			<!-- 검색창 -->
+				<div class="row">
+					<div class="col-2 d-flex align-items-center">
+						<span>신고</span>
+					</div>
+					<div class="col-4 p-0">
+						<div class="row">
+							<div class="col-5">
+								<input class="form-control" v-model="boardSearchOption.boardMinReport">
+							</div>
+							<div class="col-2 d-flex align-items-center justify-content-center">
+								<span>~</span>
+							</div>
+							<div class="col-5">
+								<input class="form-control" v-model="boardSearchOption.boardMaxReport">
+							</div>
+						</div>
+					</div>
+					<div class="col-2 d-flex align-items-center">
+						<span>좋아요</span>
+					</div>
+					<div class="col-4 p-0">
+						<div class="row">
+							<div class="col-5">
+								<input class="form-control" v-model="boardSearchOption.boardMinLike">
+							</div>
+							<div class="col-2 d-flex align-items-center justify-content-center">
+								<span>~</span>
+							</div>
+							<div class="col-5">
+								<input class="form-control" v-model="boardSearchOption.boardMaxLike">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-2 d-flex align-items-center">
+						<span>게시일</span>
+					</div>
+					<div class="col-6 p-0">
+						<div class="row">
+							<div class="col-5">
+								<input type="date" class="form-control" v-model="boardSearchOption.boardTimeBegin">
+							</div>
+							<div class="col-2 d-flex align-items-center justify-content-center">
+								<span>~</span>
+							</div>
+							<div class="col-5">
+								<input type="date" class="form-control" v-model="boardSearchOption.boardTimeEnd">
+							</div>
+						</div>
+					</div>
+					<div class="col-4">
+						<div class="row">
+							<div class="col-6 d-flex align-items-center">
+								<span>숨김여부</span>
+							</div>
+							<div class="col-6 p-0">
+								<select class="form-control" v-model="boardSearchOption.boardHide">
+									<option value="">전체</option>
+									<option value="0">공개</option>
+									<option value="1">숨김</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-2 d-flex align-items-center">
+						<span>정렬 순서</span>
+					</div>
+					<div class="col p-0">
+						<select class="form-control" v-model="boardOrderList[2]">
+							<option value="" selected>작성(선택)</option>
+							<option value="board_no desc">최근 작성순</option>
+							<option value="board_no asc">오래된순</option>
+						</select>
+					</div>
+					<div class="col p-0">
+						<select class="form-control" v-model="boardOrderList[1]">
+							<option value="" selected>신고수(선택)</option>
+							<option value="board_report asc">신고수 적은순</option>
+							<option value="board_report desc">신고수 많은순</option>
+						</select>
+					</div>
+					<div class="col p-0">
+						<select class="form-control" v-model="boardOrderList[0]">
+							<option value="" selected>좋아요(선택)</option>
+							<option value="board_like desc">좋아요 많은순</option>
+							<option value="board_like asc">좋아요 적은순</option>
+						</select>
+					</div>
+					<div class="col p-0">
+						<button type="button" class="col-6 btn btn-secondary" @click="resetBoardSearchOption">초기화</button>
+						<button type="button" class="col-6 btn btn-primary" @click="getBoardListWithSearchOption">검색</button>
+					</div>
+				</div>
+				<hr>
+			<!-- 검색창 끝 -->
+			<!-- 게시물 출력 -->
+				<div class="row">
+					<div class="box" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)">
+						<img class='content' v-if="board.boardAttachmentList.length>0" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
+						<img class='content' v-else src="${pageContext.request.contextPath}/static/image/noimage.png">
+						<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
+					</div>
+				</div>
+			<!-- 페이지네이션 -->
+				<div class="row mt-4" id="paging">
+					<div class="col d-flex justify-content-center align-items-center">
+						<ul class="pagination">
+							<li class="page-item" @click="boardFirstPage" :class="{disabled:this.boardSearchPagination.first}">
+								<span class="page-link"><i class="fa-solid fa-angles-left"></i></span>
+							</li>
+							<li class="page-item" @click="boardPrevPage" :class="{disabled:!this.boardSearchPagination.prev}">
+								<span class="page-link"><i class="fa-solid fa-angle-left"></i></span>
+							</li>
+							<li class="page-item" v-for="index in (boardSearchPagination.finishBlock-boardSearchPagination.startBlock+1)" :key="index"
+								 :class="{active:(index+boardSearchPagination.startBlock-1)==boardSearchOption.page}">
+								<span class="page-link" @click="boardSearchOption.page=index+boardSearchPagination.startBlock-1">{{index+boardSearchPagination.startBlock-1}}</span>
+							</li>
+							<li class="page-item" @click="boardNextPage" :class="{disabled:!this.boardSearchPagination.next}">
+								<span class="page-link"><i class="fa-solid fa-angle-right"></i></span>
+							</li>
+							<li class="page-item" @click="boardLastPage" :class="{disabled:this.boardSearchPagination.last}">
+								<span class="page-link"><i class="fa-solid fa-angles-right"></i></span>
+							</li>
+						</ul>
+					</div>
+				</div>
+			<!-- 게시물 태그 시작 -->
+				<div class="row mt-4">
+					<div class="col">
+						<h4 class="m-0">게시물 태그</h4>
+					</div>
+				</div>
+				<hr>
+			<!-- 태그 검색창 -->
+				<div class="row">
+					<div class="col-2 d-flex align-items-center">
+						<span>팔로우</span>
+					</div>
+					<div class="col-4 p-0">
+						<div class="row">
+							<div class="col-5">
+								<input class="form-control" v-model="boardSearchOption.tagMinFollow">
+							</div>
+							<div class="col-2 d-flex align-items-center justify-content-center">
+								<span>~</span>
+							</div>
+							<div class="col-5">
+								<input class="form-control" v-model="boardSearchOption.tagMaxFollow">
+							</div>
+						</div>
+					</div>
+					<div class="col-2 d-flex align-items-center">
+						<span>태그수</span>
+					</div>
+					<div class="col-4 p-0">
+						<div class="row">
+							<div class="col-5">
+								<input class="form-control" v-model="boardSearchOption.tagMinCount">
+							</div>
+							<div class="col-2 d-flex align-items-center justify-content-center">
+								<span>~</span>
+							</div>
+							<div class="col-5">
+								<input class="form-control" v-model="boardSearchOption.tagMaxCount">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-2 d-flex align-items-center">
+						<span>사용가능여부</span>
+					</div>
+					<div class="col-2 p-0">
+						<select class="form-control" v-model="boardSearchOption.tagAvailable">
+							<option value="">전체</option>
+							<option value="1">사용가능</option>
+							<option value="0">사용불가</option>
+						</select>
+					</div>
+					<div class="col-2 d-flex align-items-center">
+						<span>정렬 순서</span>
+					</div>
+					<div class="col p-0">
+						<select class="form-control" v-model="tagOrderList[1]">
+							<option value="" selected>태그수(선택)</option>
+							<option value="count desc">태그 많은순</option>
+							<option value="count asc">태그 적은순</option>
+						</select>
+					</div>
+					<div class="col p-0">
+						<select class="form-control" v-model="tagOrderList[0]">
+							<option value="" selected>팔로우(선택)</option>
+							<option value="tag_follow desc">팔로우 많은순</option>
+							<option value="tag_follow asc">팔로우 적은순</option>
+						</select>
+					</div>
+					<div class="col p-0">
+						<button type="button" class="col-6 btn btn-secondary" @click="resetTagSearchOption">초기화</button>
+						<button type="button" class="col-6 btn btn-primary" @click="getTagListWithSearchOption">검색</button>
+					</div>
+				</div>
+			<!-- 태그 리스트 -->
+				<div class="row mt-4">
+					<div class="col-6 p-0">
+						<table class="table">
+							<thead>
+								<tr>
+									<th style="width:40%; text-align:center">이름</th>
+									<th style="width:20%; text-align:center">팔로우</th>
+									<th style="width:20%; text-align:center">태그수</th>
+									<th style="width:20%; text-align:center">관리</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="(tag, index) in tagFirstHalfList">
+									<td style="text-align:center">{{tag.tagName}}</td>
+									<td style="text-align:center">{{tag.tagFollow}}</td>
+									<td style="text-align:center">{{tag.count}}</td>
+									<td style="text-align:center; cursor:pointer" v-if="tag.tagAvailable==1" @click="changeTagAvailable(tag.tagName, index)">사용가능</td>
+									<td style="text-align:center; cursor:pointer" v-else @click="changeTagAvailable(tag.tagName, index)">사용불가</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="col-6 p-0">
+						<table class="table">
+							<thead>
+								<tr>
+									<th style="width:40%; text-align:center">이름</th>
+									<th style="width:20%; text-align:center">팔로우</th>
+									<th style="width:20%; text-align:center">태그수</th>
+									<th style="width:20%; text-align:center">관리</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="(tag, index) in tagSecondHalfList">
+									<td style="text-align:center">{{tag.tagName}}</td>
+									<td style="text-align:center">{{tag.tagFollow}}</td>
+									<td style="text-align:center">{{tag.count}}</td>
+									<td style="text-align:center; cursor:pointer" v-if="tag.tagAvailable==1" @click="changeTagAvailable(tag.tagName, index+Math.ceil(tagList.length/2))">사용가능</td>
+									<td style="text-align:center; cursor:pointer" v-else @click="changeTagAvailable(tag.tagName, index+Math.ceil(tagList.length/2))">사용불가</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			<!-- 페이지네이션 -->
+				<div class="row mt-4" id="paging">
+					<div class="col d-flex justify-content-center align-items-center">
+						<ul class="pagination">
+							<li class="page-item" @click="tagFirstPage" :class="{disabled:this.tagSearchPagination.first}">
+								<span class="page-link"><i class="fa-solid fa-angles-left"></i></span>
+							</li>
+							<li class="page-item" @click="tagPrevPage" :class="{disabled:!this.tagSearchPagination.prev}">
+								<span class="page-link"><i class="fa-solid fa-angle-left"></i></span>
+							</li>
+							<li class="page-item" v-for="index in (tagSearchPagination.finishBlock-tagSearchPagination.startBlock+1)" :key="index"
+								 :class="{active:(index+tagSearchPagination.startBlock-1)==boardSearchOption.tagPage}">
+								<span class="page-link" @click="boardSearchOption.tagPage=index+tagSearchPagination.startBlock-1">{{index+tagSearchPagination.startBlock-1}}</span>
+							</li>
+							<li class="page-item" @click="tagNextPage" :class="{disabled:!this.tagSearchPagination.next}">
+								<span class="page-link"><i class="fa-solid fa-angle-right"></i></span>
+							</li>
+							<li class="page-item" @click="tagLastPage" :class="{disabled:this.tagSearchPagination.last}">
+								<span class="page-link"><i class="fa-solid fa-angles-right"></i></span>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		<!--------------------------- 기시물 관리 끝 --------------------------->
+		<!--------------------------- 신고 관리 시작 --------------------------->
+			<div class="col" v-show="adminMenu==3">
 				<div class="row">
 					<div class="col">
 						<h2>신고관리</h2>
@@ -316,7 +653,7 @@
 			</div>
 		<!--------------------------- 신고 관리 끝 --------------------------->
 		<!--------------------------- 회원 통계 --------------------------->
-			<div class="col" v-show="adminMenu==3">
+			<div class="col" v-show="adminMenu==4">
 				<div class="row">
 					<div class="col">
 						<h2>회원 통계</h2>
@@ -421,7 +758,7 @@
 				</div>
 			</div>
 		<!--------------------------- 게시물 통계 --------------------------->
-			<div class="col" v-show="adminMenu==4">
+			<div class="col" v-show="adminMenu==5">
 				<div class="row">
 					<div class="col">
 						<h2>게시물 통계</h2>
@@ -507,7 +844,7 @@
 				</div>
 			</div>
 		<!--------------------------- 조회 통계 --------------------------->
-			<div class="col" v-show="adminMenu==5">
+			<div class="col" v-show="adminMenu==6">
 				<div class="row">
 					<div class="col">
 						<h2>조회 통계</h2>
@@ -515,6 +852,7 @@
 				</div>
 				<hr>
 			</div>
+		<!--------------------------- 조회 통계 끝 --------------------------->
 		</div>
 	</div>
 	<!-- ---------------------------------신고 내용 관리 모달-------------------------- -->
@@ -566,7 +904,81 @@
 		</div>
 	</div>
 	<!-- ---------------------------------신고 내용 관리 모달 끝-------------------------- -->
-
+	<!-- ---------------------------------정지 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="suspensionModal" data-bs-backdrop="static" ref="suspensionModal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">회원 차단</h5>
+					<button type="button" class="btn-close" @click="hideSuspensionModal" aria-label="Close">
+					<span aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="modal-body">
+				    <!-- 이미 정지당한 사람 페이지 -->
+					<div class="row" v-if="suspensionIndex[1]==0">
+						<div class="row">
+							<div class="col">
+								정지 사유 : {{memberList[suspensionIndex[0]].memberSuspensionContent}} 
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
+								기간 : {{memberList[suspensionIndex[0]].memberSuspensionDays}}
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
+								<select class="form-control rounded" v-model="suspensionContent[0]">
+									<option value="" selected>기한(선택)</option>
+									<option value="1">1일</option>
+									<option value="7">7일</option>
+									<option value="30">30일</option>
+									<option value="365">1년</option>
+									<option value="99999">영구</option>
+								</select>
+								<select class="form-control rounded" v-model="suspensionContent[1]">
+									<option value="" selected>내용(선택)</option>>
+									<option class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo">{{report.reportListContent}}</option>
+								</select>						
+							</div>
+						</div>
+					</div>
+					<!-- 일반 사람 페이지 -->
+					<div class="row" v-else>
+						<div class="col">
+							<select class="form-control rounded" v-model="suspensionContent[0]">
+								<option value="" selected>기한(선택)</option>
+								<option value="1">1일</option>
+								<option value="7">7일</option>
+								<option value="30">30일</option>
+								<option value="365">1년</option>
+								<option value="99999">영구</option>
+							</select>
+							<select class="form-control rounded" v-model="suspensionContent[1]">
+								<option value="" selected>내용(선택)</option>>
+								<option class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo">{{report.reportListContent}}</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div class="row">
+						<div class="col" v-if="suspensionIndex[1]==0">
+							<button type="button" class="btn btn-primary" @click="insertSuspension()" :class="{'disabled':suspensionContent[0]=='' || suspensionContent[1]==''}">수정</button>
+							<button type="button" class="btn btn-primary" @click="deleteSuspension()">해제</button>
+							<button type="button" class="btn btn-secondary" @click="hideSuspensionModal">취소</button>
+						</div>
+						<div class="col" v-else>
+							<button type="button" class="btn btn-primary" @click="insertSuspension()" :class="{'disabled':suspensionContent[0]=='' || suspensionContent[1]==''}">정지</button>
+							<button type="button" class="btn btn-secondary" @click="hideSuspensionModal">취소</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ---------------------------------정지 모달 끝-------------------------- -->
 	
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
@@ -591,10 +1003,28 @@
 				memberSearchOption:{
 					memberName:"", memberEmail:"", memberNick:"", searchLoginDays:"", memberAddress:"",	memberLevel:"",
 					memberGender:"", memberMinReport:"", memberMaxReport:"", memberBeginBirth:"", memberEndBirth:"",memberMinFollow:"",
-					memberMaxFollow:"",	orderListString:"",	page:1,
+					memberMaxFollow:"",	orderListString:"", memberSuspensionStatus:"", page:1,
 				},
 				memberOrderList:["","",""],
 				memberSearchPagination:{
+					begin:"", end:"", totalPage:"",	startBlock:"", finishBlock:"", first:false, last:false, prev:false,
+					next:false, nextPage:"", prevPage:"",
+				},
+				/* --------------------------------게시물 데이터-------------------------------- */
+				boardList:[],
+				tagList:[],
+				boardSearchOption:{
+					memberNick:"", boardTimeBegin:"", boardTimeEnd:"", boardMinReport:"", boardMaxReport:"",
+					boardMinLike:"", boardMaxLike:"", boardHide:"",	orderListString:"", page:1,
+					tagPage:1, tagOrderListString:"", tagMinFollow:"", tagMaxFollow:"", tagAvailable:"", tagMinCount:"", tagMaxCount:"",
+				},
+				boardOrderList:["","",""],
+				tagOrderList:["",""],
+				boardSearchPagination:{
+					begin:"", end:"", totalPage:"",	startBlock:"", finishBlock:"", first:false, last:false, prev:false,
+					next:false, nextPage:"", prevPage:"",
+				},
+				tagSearchPagination:{
 					begin:"", end:"", totalPage:"",	startBlock:"", finishBlock:"", first:false, last:false, prev:false,
 					next:false, nextPage:"", prevPage:"",
 				},
@@ -659,10 +1089,20 @@
 				},
 				boardTimeChartLeft:true,
 				boardTagChartRight:true,
+				/*---------------------------정지 데이터 --------------------------- */
+				suspensionModal:null,
+				suspensionIndex:[],
+				suspensionContent:["",""],
 			};
 		},
 		computed: {
 			//계산영역
+			tagFirstHalfList(){
+				return this.tagList.slice(0, Math.ceil(this.tagList.length/2));
+			},
+			tagSecondHalfList(){
+				return this.tagList.slice(Math.ceil(this.tagList.length/2));
+			}
 		},
 		methods: {
 			//메소드영역
@@ -686,7 +1126,7 @@
 			/*------------------------------ 회원관리 시작 ------------------------------*/
 			//회원 리스트 출력
 			async loadMemberList(){
-				const resp = await axios.get(contextPath+"/rest/member/list", {params:this.memberSearchOption});
+				const resp = await axios.get(contextPath+"/rest/admin/member/list", {params:this.memberSearchOption});
 				this.memberList=[...resp.data.memberList];
 				this.memberSearchPagination=resp.data.paginationVO;
 			},
@@ -706,11 +1146,13 @@
 				this.memberSearchOption.memberMinFollow="";
 				this.memberSearchOption.memberMaxFollow="";
 				this.memberOrderList=["","",""];
+				this.memberSearchOption.orderListString="";
+				this.memberSearchOption.memberSuspensionStatus="";
 			},
 			//회원 검색 버튼 클릭시
 			async getListWithSearchOption(){
 				this.memberSearchOption.page=1;
-				const resp = await axios.get(contextPath+"/rest/member/list", {params:this.memberSearchOption});
+				const resp = await axios.get(contextPath+"/rest/admin/member/list", {params:this.memberSearchOption});
 				this.memberList=[...resp.data.memberList];
 				this.memberSearchPagination=resp.data.paginationVO;
 			},
@@ -730,9 +1172,98 @@
 			//orderList 쿼리파라미터 반환
 			makeQueryForOrderList(){
 				const orderListParams = this.memberOrderList.join(',');
-				this.memberSearchOption.orderList=orderListParams;
+				this.memberSearchOption.orderListString=orderListParams;
 			},
 			/*------------------------------ 회원관리 끝 ------------------------------*/
+			/*------------------------------ 게시물관리 시작 ------------------------------*/
+			async loadBoardList(){
+				const resp = await axios.get(contextPath+"/rest/admin/board/list", {params:this.boardSearchOption});
+				this.boardList=[...resp.data.boardList];
+				this.boardSearchPagination=resp.data.paginationVO;
+			},
+			//페이지네이션 처음, 이전, 다음 끝 버튼 누를 때
+			boardFirstPage(){
+				if(!this.boardSearchPagination.first) this.boardSearchOption.page=1;
+			},
+			boardPrevPage(){
+				if(this.boardSearchPagination.prev) this.boardSearchOption.page=this.boardSearchPagination.prevPage;
+			},
+			boardNextPage(){
+				if(this.boardSearchPagination.next) this.boardSearchOption.page=this.boardSearchPagination.nextPage;
+			},
+			boardLastPage(){
+				if(!this.boardSearchPagination.last) this.boardSearchOption.page=this.boardSearchPagination.totalPage;
+			},
+			makeQueryForBoardOrderList(){
+				const orderListParams = this.boardOrderList.join(',');
+				this.boardSearchOption.orderListString=orderListParams;
+			},
+			//회원 리스트 초기화 버튼 클릭시
+			resetBoardSearchOption(){
+				this.boardSearchOption.memberNick="";
+				this.boardSearchOption.boardTimeBegin="";
+				this.boardSearchOption.boardTimeEnd="";
+				this.boardSearchOption.boardMinReport="";
+				this.boardSearchOption.boardMaxReport="";
+				this.boardSearchOption.boardMinLike="";
+				this.boardSearchOption.boardMaxLike="";
+				this.boardSearchOption.boardHide="";
+				this.boardOrderList=["","",""];
+				this.boardSearchOption.orderListString="";
+			},
+			//회원 검색 버튼 클릭시
+			async getBoardListWithSearchOption(){
+				this.boardSearchOption.page=1;
+				const resp = await axios.get(contextPath+"/rest/admin/board/list", {params:this.boardSearchOption});
+				this.boardList=[...resp.data.boardList];
+				this.boardSearchPagination=resp.data.paginationVO;
+			},
+			/*--- 태그리스트 ---*/
+			async loadTagList(){
+				const resp = await axios.get(contextPath+"/rest/admin/tag/list", {params:this.boardSearchOption});
+				this.tagList=[...resp.data.tagList];
+				this.tagSearchPagination=resp.data.paginationVO;
+			},
+			//페이지네이션 처음, 이전, 다음 끝 버튼 누를 때
+			tagFirstPage(){
+				if(!this.tagSearchPagination.first) this.boardSearchOption.tagPage=1;
+			},
+			tagPrevPage(){
+				if(this.tagSearchPagination.prev) this.boardSearchOption.tagPage=this.tagSearchPagination.prevPage;
+			},
+			tagNextPage(){
+				if(this.tagSearchPagination.next) this.boardSearchOption.tagPage=this.tagSearchPagination.nextPage;
+			},
+			tagLastPage(){
+				if(!this.tagSearchPagination.last) this.boardSearchOption.tagPage=this.tagSearchPagination.totalPage;
+			},
+			makeQueryForTagOrderList(){
+				const orderListParams = this.tagOrderList.join(',');
+				this.boardSearchOption.tagOrderListString=orderListParams;
+			},
+			//회원 리스트 초기화 버튼 클릭시
+			resetTagSearchOption(){
+				this.boardSearchOption.tagMinFollow="";
+				this.boardSearchOption.tagMaxFollow="";
+				this.boardSearchOption.tagAvailable="";
+				this.boardSearchOption.tagMinCount="";
+				this.boardSearchOption.tagMaxCount="";
+				this.tagOrderList=["",""];
+				this.boardSearchOption.tagOrderListString="";
+			},
+			//회원 검색 버튼 클릭시
+			async getTagListWithSearchOption(){
+				this.boardSearchOption.tagPage=1;
+				const resp = await axios.get(contextPath+"/rest/admin/tag/list", {params:this.boardSearchOption});
+				this.tagList=[...resp.data.tagList];
+				this.tagSearchPagination=resp.data.paginationVO;
+			},
+			async changeTagAvailable(tagName, index){
+				const data={tagName:tagName}
+				const resp = await axios.put(contextPath+"/rest/tag/", data)
+				this.tagList[index].tagAvailable=resp.data;
+			},
+			/*------------------------------ 게시물관리 끝 ------------------------------*/
 			/*------------------------------ 신고관리 시작 ------------------------------*/
  			showReportContentModal(){
 				if(this.reportContentModal==null) return;
@@ -797,7 +1328,7 @@
 				if(buttonClick){
 					this.memberLoginSearch.page=1;
 				}
-				const resp = await axios.post(contextPath+"/rest/member/stats/", this.memberLoginSearch)
+				const resp = await axios.post(contextPath+"/rest/admin/stats/member", this.memberLoginSearch)
 				this.loginChartLeft=true;
 				if(this.memberLoginSearch.col=='days'){
 					if(resp.data.length<31){
@@ -850,7 +1381,7 @@
 				if(buttonClick){
 					this.memberJoinSearch.page=1;
 				}
-				const resp = await axios.post(contextPath+"/rest/member/stats/", this.memberJoinSearch);
+				const resp = await axios.post(contextPath+"/rest/admin/stats/member/", this.memberJoinSearch);
 				this.joinChartLeft=true;
 				if(this.memberJoinSearch.col=='days'){
 					if(resp.data.length<31){
@@ -903,7 +1434,7 @@
 				if(buttonClick){
 					this.memberCumulativeSearch.page=1;
 				}
-				const resp = await axios.post(contextPath+"/rest/member/stats/cumulative/", this.memberCumulativeSearch);
+				const resp = await axios.post(contextPath+"/rest/admin/stats/cumulative/", this.memberCumulativeSearch);
 				this.memberCumulativeList.col = _.map(resp.data, 'col');
 				this.memberCumulativeList.count = _.map(resp.data, 'count');
 				if(this.memberCumulativeList.col[0]==null){
@@ -964,7 +1495,7 @@
 				if(buttonClick){
 					this.boardTimeSearch.page=1;
 				}
-				const resp = await axios.post(contextPath+"/rest/board/stats/boardTime", this.boardTimeSearch)
+				const resp = await axios.post(contextPath+"/rest/admin/stats/boardTime", this.boardTimeSearch)
 				this.boardTimeChartLeft=true;
 				if(this.boardTimeSearch.col=='days'){
 					if(resp.data.length<31){
@@ -1017,7 +1548,7 @@
 				if(buttonClick){
 					this.boardTagSearch.page=1;
 				}
-				const resp = await axios.post(contextPath+"/rest/board/stats/boardTag", this.boardTagSearch)
+				const resp = await axios.post(contextPath+"/rest/admin/stats/boardTag", this.boardTagSearch)
 				this.boardTagChartRight=true;
 				if(resp.data.length<15){
 					this.boardTagChartRight=false;
@@ -1074,6 +1605,39 @@
 			},
 		
 		/*------------------------------ 게시물통계통계 끝 ------------------------------*/
+		/*------------------------------ 정지모달 시작 ------------------------------*/
+ 			showSuspensionModal(index, status){
+				if(this.suspensionModal==null) return;
+				this.suspensionModal.show();
+				this.suspensionIndex=[index, status];
+			},
+			hideSuspensionModal(){
+				if(this.suspensionModal==null) return;
+				this.suspensionModal.hide();
+				this.suspensionIndex=[];
+				this.suspensionContent=["",""];
+			},
+			async insertSuspension(days, contents){
+				let data={
+					memberNo:this.memberList[this.suspensionIndex[0]].memberNo,
+					memberSuspensionDays:this.suspensionContent[0],
+					memberSuspensionContent:this.suspensionContent[1]
+				};
+				const resp = await axios.post(contextPath+"/rest/suspension/", data);
+				this.memberList[this.suspensionIndex[0]]=resp.data;
+				this.hideSuspensionModal();
+			},
+			async deleteSuspension(){
+				let data={
+						memberNo:this.memberList[this.suspensionIndex[0]].memberNo,
+				}
+				const resp = await axios.put(contextPath+"/rest/suspension/", data);
+				this.memberList[this.suspensionIndex[0]]=resp.data;
+				this.hideSuspensionModal();
+			}
+			
+		
+		/*------------------------------ 정지모달 끝 ------------------------------*/
 
 		},
 		created(){
@@ -1086,6 +1650,9 @@
 			this.getMemberCumulativeStats();
 			this.getBoardTimeStats();
 			this.getBoardTagStats();
+			this.loadReportContent();
+			this.loadBoardList();
+			this.loadTagList();
 		},
 		watch:{
 			//감시영역
@@ -1098,6 +1665,24 @@
 					this.makeQueryForOrderList();
 				}
 			},
+			"boardSearchOption.page":function(newVal, oldVal){
+				this.loadBoardList();
+			},
+			boardOrderList:{
+				deep:true,
+				handler(newVal, oldVal) {
+					this.makeQueryForBoardOrderList();
+				}
+			},
+			"boardSearchOption.tagPage":function(newVal, oldVal){
+				this.loadTagList();
+			},
+			tagOrderList:{
+				deep:true,
+				handler(newVal, oldVal) {
+					this.makeQueryForTagOrderList();
+				}
+			},
 		},
 		mounted(){
 			//쿼리 초기화 및 변화 감지
@@ -1106,6 +1691,7 @@
 			window.addEventListener('popstate', this.initializePageFromQuery);
 			//모달 선언
 			this.reportContentModal = new bootstrap.Modal(this.$refs.reportContentModal);
+			this.suspensionModal = new bootstrap.Modal(this.$refs.suspensionModal);
 		},
 	}).mount("#app");
 </script>

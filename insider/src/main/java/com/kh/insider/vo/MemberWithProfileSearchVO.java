@@ -23,6 +23,7 @@ public class MemberWithProfileSearchVO {
 	private String memberEndBirth;
 	private Integer memberMinFollow;
 	private Integer memberMaxFollow;
+	private Integer memberSuspensionStatus;
 	
 	private String orderListString;
 	private List<String> orderList;

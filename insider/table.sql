@@ -156,3 +156,25 @@ inner JOIN member_with_profile m ON f.member_no = m.MEMBER_NO;
 CREATE OR REPLACE VIEW Block_With_Profile as
 SELECT b.*, m.member_name, m.member_nick, m.attachment_no FROM block b
 inner JOIN member_with_profile m ON b.BLOCK_NO = m.MEMBER_NO;
+
+--게시물 좋아요 테이블 생성
+create table board_like (
+member_no  number references member(member_no) on delete cascade,
+board_no number references board(board_no) on delete cascade,
+board_like_time date default sysdate,
+like_check char(1) default 0 not null
+);
+
+
+-- reply에 멤버닉, 어태치먼트 넘버 추가
+CREATE OR REPLACE VIEW reply_with_nick as
+SELECT r.*, m.attachment_no, m.member_nick FROM reply r
+inner JOIN MEMBER_WITH_PROFILE m ON r.reply_member_no=m.member_no;
+
+--댓글 좋아요 테이블 생성
+create table reply_like (
+member_no  number references member(member_no) on delete cascade,
+reply_no number references reply(reply_no) on delete cascade,
+reply_like_time date default sysdate not null,
+reply_like_check NUMBER default 0 not null
+);
