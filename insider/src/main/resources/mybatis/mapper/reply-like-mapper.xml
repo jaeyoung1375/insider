@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- dtd선언 -->
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="replyLike">
+	
+	<!-- 댓글 좋아요 등록 -->
+	<insert id="insert" parameterType="ReplyLikeDto">
+		insert into reply_like(member_no, reply_no)
+		values
+		(#{memberNo},#{replyNo})
+	</insert>
+	
+	<!-- 댓글 좋아요 취소 -->
+	<delete id="delete">
+		delete reply_like where member_no=#{memberNo} and reply_no = #{replyNo}
+	</delete>
+	
+	<!-- 댓글 좋아요 체크 -->
+	<select id="check" resultType="int" parameterType="ReplyLikeDto">
+		select count(*) from reply_like where member_no=#{memberNo} and reply_no = #{replyNo}
+	</select>
+	
+	<!-- 댓글 좋아요 카운트 -->
+	<select id="count" resultType="int">
+		select count(*)	from reply_like where reply_no = #{replyNo}
+	</select>
+	
+</mapper>

@@ -1,6 +1,8 @@
 package com.kh.insider.repo;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +38,11 @@ public class ReplyRepoImpl implements ReplyRepo{
 	}
 
 	@Override
-	public boolean edit(ReplyDto replyDto) {
-		return sqlSession.update("reply.edit", replyDto) > 0;
+	public void updateLikeCount(int replyNo,int count) {
+		Map<String, Object> param = new HashMap<>();
+		param.put("replyNo", replyNo);
+		param.put("count", count);
+		sqlSession.update("reply.updateLikeCount",param);
 	}
 
 
