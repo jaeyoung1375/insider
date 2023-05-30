@@ -20,10 +20,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.insider.configuration.FileUploadProperties;
+import com.kh.insider.dto.BoardAttachmentDto;
 import com.kh.insider.dto.BoardDto;
 import com.kh.insider.dto.BoardTagDto;
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.TagDto;
+import com.kh.insider.repo.BoardAttachmentRepo;
+import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.BoardTagRepo;
 import com.kh.insider.repo.MemberProfileRepo;
 import com.kh.insider.repo.MemberRepo;
@@ -57,6 +60,12 @@ public class BoardController {
 	private BoardTagRepo boardTagRepo;
 	@Autowired
 	private BoardAttachService boardAttachService;
+	
+	@Autowired
+	private BoardRepo boardRepo;
+	
+	@Autowired
+	private BoardAttachmentRepo boardAttachmentRepo;
 
 	
 	@GetMapping("/list")
@@ -323,14 +332,85 @@ public class BoardController {
     
 	//게시글 삭제하기
 	@GetMapping("/delete")
-	public String delete(RedirectAttributes attr, @RequestParam int boardNo, HttpSession session) {
+	public String delete(@RequestParam int boardNo) {		
+		boardTagRepo.delete(boardNo);
+		boardRepo.delete(boardNo);
+		return "redirect:/";
+	}
+	
+	//게시물 수정
+	@GetMapping("/edit")
+	public String edit(@RequestParam int boardNo, Model model) {
+		model.addAttribute("board", boardRepo.selectOne(boardNo));
+		//model.addAttribute("boardAttach", boardAttachmentRepo.selectList(boardNo));
 		
-		boardAttachService.delete(boardNo);
+		List<BoardTagDto> find = boardTagRepo.selectList(boardNo);
+		List<String> tagList = new ArrayList<>();
 		
-		Integer memberNo = (Integer)session.getAttribute("login");
-		attr.addAttribute("memberNo", memberNo);
+		if(find != null) {
+			for (BoardTagDto tagDto : find) {
+			    String tagName = "#" + tagDto.getTagName();
+			    tagList.add(tagName);
+			}
+			String tagData = String.join(" ", tagList);
+			model.addAttribute("tag", tagData);			
+		}
+		else {
+			String empty = "";
+			tagList.add(empty);
+			model.addAttribute("tag", tagList);			
+		}
 		
-		return "redirect:/board/list";
+		List<BoardAttachmentDto> findImage = boardAttachmentRepo.selectList(boardNo);
+		List<Integer> imageList = new ArrayList<>();
+		for(BoardAttachmentDto attDto : findImage) {
+			imageList.add(attDto.getAttachmentNo());
+		}
+		model.addAttribute("image",imageList);
+		
+		return "/board/edit";
+	}
+	
+	@PostMapping("/edit")
+	public String edit(
+			@ModelAttribute BoardDto boardDto,
+			@ModelAttribute TagDto tagDto,
+			@ModelAttribute BoardTagDto boardTagDto) {
+		boardTagRepo.delete(boardDto.getBoardNo());
+		boardRepo.update(boardDto);
+		
+		// 해시태그 저장
+				if(tagDto.getTagName() != null) {
+					String inputTagName = tagDto.getTagName();
+					String[] array = inputTagName.split("#");
+					List<String> tagList = new ArrayList<>();
+					for(String s : array) {
+						if(s!=null && s.length()>0) {
+							s=s.trim();
+							s=s.replace("#","");
+							if(s.length()>0) {
+								tagList.add(s);
+							}
+						}
+					}
+					
+					for(int i = 0; i < tagList.size(); i++) {
+						String tagName = tagList.get(i);
+						TagDto tagDtoFind = tagRepo.selectOne(tagName);
+						log.debug("태그디티오:{}",tagDtoFind);
+						if(tagDtoFind == null) {
+							tagRepo.insert(tagName);
+						}
+							
+						BoardTagDto newBoardTagDto = new BoardTagDto();
+						newBoardTagDto.setBoardTagNo(boardTagDto.getBoardTagNo());
+						newBoardTagDto.setBoardNo(boardDto.getBoardNo());
+						newBoardTagDto.setTagName(tagName);
+						boardTagRepo.insert(newBoardTagDto);
+					}
+				}
+		
+		return "redirect:/";
 	}
     
     
