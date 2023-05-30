@@ -372,7 +372,43 @@ public class BoardController {
 	}
 	
 	@PostMapping("/edit")
-	public String edit() {
+	public String edit(
+			@ModelAttribute BoardDto boardDto,
+			@ModelAttribute TagDto tagDto,
+			@ModelAttribute BoardTagDto boardTagDto) {
+		boardTagRepo.delete(boardDto.getBoardNo());
+		boardRepo.update(boardDto);
+		
+		// 해시태그 저장
+				if(tagDto.getTagName() != null) {
+					String inputTagName = tagDto.getTagName();
+					String[] array = inputTagName.split("#");
+					List<String> tagList = new ArrayList<>();
+					for(String s : array) {
+						if(s!=null && s.length()>0) {
+							s=s.trim();
+							s=s.replace("#","");
+							if(s.length()>0) {
+								tagList.add(s);
+							}
+						}
+					}
+					
+					for(int i = 0; i < tagList.size(); i++) {
+						String tagName = tagList.get(i);
+						TagDto tagDtoFind = tagRepo.selectOne(tagName);
+						log.debug("태그디티오:{}",tagDtoFind);
+						if(tagDtoFind == null) {
+							tagRepo.insert(tagName);
+						}
+							
+						BoardTagDto newBoardTagDto = new BoardTagDto();
+						newBoardTagDto.setBoardTagNo(boardTagDto.getBoardTagNo());
+						newBoardTagDto.setBoardNo(boardDto.getBoardNo());
+						newBoardTagDto.setTagName(tagName);
+						boardTagRepo.insert(newBoardTagDto);
+					}
+				}
 		
 		return "redirect:/";
 	}

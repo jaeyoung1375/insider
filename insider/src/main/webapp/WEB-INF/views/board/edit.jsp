@@ -229,7 +229,7 @@ $(document).ready(function() {
 
 	$(".cancel").click(function(){
 		 event.stopPropagation(); 
-		const text = confirm("게시물을 삭제하시겠어요?\n지금 나가면 수정 내용이 저장되지 않습니다.");
+		const text = confirm("게시물을 수정을 그만하시겠어요?\n지금 나가면 수정 내용이 저장되지 않습니다.");
 		
 		if(text){
 			location.replace("/")
@@ -244,12 +244,12 @@ $(document).ready(function() {
 			e.preventDefault();
 		}
 		
-		if($("#upload2").val() == ""){
+		/* if($("#upload2").val() == ""){
 			$("#upload2").attr("disabled", true);
 		}
 		else{
 			$("#upload2").attr("disabled", false);
-		}
+		} */
 		
 		
 		if ($(".content").val() == "" || $("#tagName").val() != "") {
@@ -309,12 +309,12 @@ $(document).ready(function() {
 <div id="app" class="vue-container">
 
 <form action="edit" method="post" enctype="multipart/form-data" class="form-submit">
-
+	<input type="hidden" name="boardNo" value="${board.boardNo}">
 	<div class="container-fluid" style="width: 1200px">
 	
 		<div class="row mt-3"></div>
 		
-		<!-- 1. 사진 첨부 영역 -->
+		<%-- <!-- 1. 사진 첨부 영역 -->
 		<div class="page">
 		<div class="row w-70 mt-5" style="float: none; margin: 0 auto;">
 		  <div class="col">
@@ -375,19 +375,19 @@ $(document).ready(function() {
 		
 		  </div>
 		</div>
-		</div>
+		</div> --%>
 		
 		
 		<!-- 2. 게시물 등록 영역 -->
 		<div class="page">
-		<div v-show="files.length > 0" class="row w-70 mt-5" style="float: none; margin: 0 auto;">
+		<div class="row w-70 mt-5" style="float: none; margin: 0 auto;">
 		  <div class="col">
 		
 		    <div class="card border-primary mb-3" style="height: 600px;">
 		      <div class="card-header">
 		        <div class="row">
 		          <div class="col-md-2">
-		            <button type="button" class="btn btn-secondary btn-prev" style="float:left;">이전</button>
+		            <button type="button" class="btn btn-secondary cancel" style="float:left;">이전</button>
 		          </div>
 		          <div class="col-md-8">
 		            <h4 class="text-primary text-center" style="margin-top: 1%;">게시물 수정하기</h4>
