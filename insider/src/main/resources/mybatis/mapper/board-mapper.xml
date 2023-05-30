@@ -241,6 +241,11 @@
 	 	<include refid="topNfooter"></include>	
 	</select>
 
+	<!-- 계층형 단일조회 -->
+	<select id="selectOneBoard" resultMap="boardListVO">
+		select * from board_with_nick where board_no=#{boardNo}
+	</select>
+
 
 	<!-- 신고수 추가 기능 -->
 	<update id="addReport">

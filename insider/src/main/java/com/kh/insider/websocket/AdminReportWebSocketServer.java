@@ -72,7 +72,6 @@ public class AdminReportWebSocketServer extends TextWebSocketHandler{
 			
 			this.sendToAdmin(searchVO.getMemberNo(), data);
 		}
-		log.debug("참가자 : {}", users.size());
 	}
 	//서버에서 연결된 유저들에게 메세지 전달(AdminReportService로 호출)
 	public void sendToAdmin(long memberNo, String message) throws IOException {

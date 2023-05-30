@@ -23,8 +23,8 @@ import com.kh.insider.repo.ReportManagementRepo;
 import com.kh.insider.repo.ReportRepo;
 import com.kh.insider.repo.ReportResultRepo;
 import com.kh.insider.service.AdminReportService;
-import com.kh.insider.vo.MemberWithProfileResponseVO;
 import com.kh.insider.vo.PaginationVO;
+import com.kh.insider.vo.ReportDetailVO;
 import com.kh.insider.vo.ReportResponseVO;
 import com.kh.insider.vo.ReportSearchVO;
 
@@ -106,5 +106,17 @@ public class ReportRestController {
 		
 		responseVO.setPaginationVO(paginationVO);
 		return responseVO;
+	}
+	@GetMapping("/detail")
+	public ReportDetailVO selectReportDetailCount(@ModelAttribute ReportDto reportDto){
+		ReportDetailVO reportDetailVO = new ReportDetailVO();
+		reportDetailVO.setReportDetailCountVO(reportRepo.selectDetailCount(reportDto));
+		
+		switch(reportDto.getReportTable()) {
+		case "board":
+			reportDetailVO.setBoardListVO(boardRepo.selectOneBoard(reportDto.getReportTableNo()));
+			break;
+		}
+		return reportDetailVO;
 	}
 }

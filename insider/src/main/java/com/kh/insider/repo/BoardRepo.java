@@ -47,4 +47,7 @@ public interface BoardRepo {
 	void delete(int boardNo);
 	//태그 생성 통계
 	List<BoardTagStatsResponseVO> getBoardTagStats(BoardTagStatsSearchVO boardTagStatsSearchVO);
+	
+	//계층형 단일조회
+	BoardListVO selectOneBoard(int boardNo);
 }

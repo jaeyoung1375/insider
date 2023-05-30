@@ -80,6 +80,38 @@
 	margin-right:0.5em;
 	color:lightgray;
 }
+/* 모달 버튼 파란 글씨 */
+.modal-click-btn{
+	color:#0095F6;
+	cursor:pointer;
+}
+.modal-click-btn:hover{
+	color:#0b5ed7;
+}
+/* 모달 버튼 빨간 글씨 */
+.modal-click-btn-negative{
+	color:#dc3545;
+	cursor:pointer;
+}
+.modal-click-btn-negative:hover{
+	color:#d63384;
+}
+/* 모달 버튼 회색 글씨 */
+.modal-click-btn-neutral{
+	color:#6c757d;
+	cursor:pointer;
+}
+.modal-click-btn-neutral:hover{
+	color:#343a40;
+}
+/* 모달 버튼 초록 글씨 */
+.modal-click-btn-green{
+	color:#198754;
+	cursor:pointer;
+}
+.modal-click-btn-green:hover{
+	color:#20c997;
+}
 </style>
 <div id="app">
 	<div class="container-fluid mt-4" style="position:relative">
@@ -290,8 +322,8 @@
 									<td style="vertical-align:middle">{{member.memberEmail}}</td>
 									<td style="vertical-align:middle; text-align:center">{{member.memberFollow}}</td>
 									<td style="vertical-align:middle; text-align:center">{{member.memberReport}}</td>
-									<td style="vertical-align:middle" v-if="member.memberSuspensionStatus==0" @click="showSuspensionModal(index, 0)">정지</td>
-									<td style="vertical-align:middle" v-else @click="showSuspensionModal(index, 1)">일반</td>
+									<td class="modal-click-btn-negative" style="vertical-align:middle" v-if="member.memberSuspensionStatus==0" @click="showSuspensionModal(index, 0)">정지</td>
+									<td class="modal-click-btn" style="vertical-align:middle" v-else @click="showSuspensionModal(index, 1)">일반</td>
 								</tr>
 							</tbody>
 						</table>
@@ -622,7 +654,7 @@
 				<hr>
 				<div class="row">
 					<div class="col">
-						<h3 @click="showReportContentModal">신고 내용 관리</h3>
+						<h3 @click="showReportContentModal" class="modal-click-btn">신고 내용 관리</h3>
 					</div>
 				</div>
 				<hr>
@@ -712,7 +744,7 @@
 												<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+report.imageURL">
 											</div>
 											<div class="col-9">
-												<div class="ms-2">{{report.memberNick}}</div>
+												<div class="ms-2" style="font-weight:bold; font-size:1.2em">{{report.memberNick}}</div>
 												<div class="ms-2">{{report.memberName}}</div>
 											</div>
 										</div>
@@ -723,7 +755,7 @@
 									<td style="vertical-align:middle; text-align:center" v-if="report.reportResult==0">미처리</td>
 									<td style="vertical-align:middle; text-align:center" v-if="report.reportResult==1">처리완료</td>
 									<td style="vertical-align:middle;">
-										내용보기
+										<span class="modal-click-btn" @click="showReportDetailModal(index)">내용보기</span>
 										<i class="fa-solid fa-sort-up ms-2" style="color:blue" v-if="reportDifference[index].index>0"></i>
 										<i class="fa-solid fa-sort-down ms-2" style="color:red" v-if="reportDifference[index].index<0"></i>
 										<span class="ms-2" v-if="reportDifference[index].index==16">new</span>
@@ -964,7 +996,7 @@
 	</div>
 	<!-- ---------------------------------신고 내용 관리 모달-------------------------- -->
 	<div class="modal" tabindex="-1" role="dialog" id="reportContentModal" data-bs-backdrop="static" ref="reportContentModal">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title">신고 내용 관리</h5>
@@ -974,38 +1006,37 @@
 				</div>
 				<div class="modal-body">
 				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
-					<div class="row">
-						<div class="col">
+					<div class="row mb-3">
+						<div class="col-10 m-0 p-0">
 							<input class="form-control rounded" placeholder="신규 내용 추가" type="text" v-model="newReportContent">
 						</div>
-						<div class="col">
-							<button class="btn btn-primary" @click="insertReportContent">등록</button>
+						<div class="col p-0 m-0">
+							<button class="btn btn-primary w-100" @click="insertReportContent">등록</button>
 						</div>
 					</div>
-					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo">
+					<div class="row d-flex justify-content-center" v-for="(report, index) in reportContentList" :key="report.reportListNo">
 						<div class="row" v-if="!reportContentListEdit[index]">
-							<div class="col">
-								<span>{{report.reportListContent}}</span>
+							<div class="col-10 p-2">
+								<h5 class="m-0">{{report.reportListContent}}</h5>
 							</div>
-							<div class="col">
-								<i class="fa-solid fa-pen-to-square" @click="reportContentListEdit[index]=true"></i>
-								<i class="fa-solid fa-trash" @click="deleteReportContent(report.reportListNo)"></i>
+							<div class="col d-flex align-items-center">
+								<i class="fa-solid fa-pen-to-square modal-click-btn-neutral" @click="reportContentListEdit[index]=true" style="font-size:1.2em"></i>
+								<i class="fa-solid fa-trash ms-2 modal-click-btn-negative" @click="deleteReportContent(report.reportListNo)" style="font-size:1.2em"></i>
 							</div>
 						</div>
-						<div class="row" v-if="reportContentListEdit[index]">
-							<div class="col">
+						<div class="row d-flex justify-content-center p-0" v-if="reportContentListEdit[index]">
+							<div class="col-10">
 								<input class="form-control" v-model="reportContentListSub[index].reportListContent">
 							</div>
-							<div class="col">
-								<i class="fa-solid fa-xmark" @click="hideReportContentEdit(index)"></i>
-								<i class="fa-solid fa-check" @click="updateReportContent(index, report.reportListNo)"></i>
+							<div class="col d-flex align-items-center p-1">
+								<i class="fa-solid fa-xmark modal-click-btn-negative" @click="hideReportContentEdit(index)" style="font-size:1.2em"></i>
+								<i class="fa-solid fa-check ms-3 modal-click-btn-green" @click="updateReportContent(index, report.reportListNo)" style="font-size:1.2em"></i>
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-primary">확인</button>
-					<button type="button" class="btn btn-secondary" @click="hideReportContentModal">취소</button>
+					<button type="button" class="btn btn-secondary" @click="hideReportContentModal">닫기</button>
 				</div>
 			</div>
 		</div>
@@ -1013,27 +1044,67 @@
 	<!-- ---------------------------------신고 내용 관리 모달 끝-------------------------- -->
 	<!-- ---------------------------------정지 모달-------------------------- -->
 	<div class="modal" tabindex="-1" role="dialog" id="suspensionModal" data-bs-backdrop="static" ref="suspensionModal">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title">회원 차단</h5>
+					<h5 class="modal-title">회원 정지</h5>
 					<button type="button" class="btn-close" @click="hideSuspensionModal" aria-label="Close">
 					<span aria-hidden="true"></span>
 					</button>
 				</div>
 				<div class="modal-body">
+					<div class="row mb-3" v-if="suspensionIndex[0]>=0">
+						<div class="row">
+							<div class="col-3 d-flex justify-content-center item-aligns-center">
+								<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+memberList[suspensionIndex[0]].imageURL">
+							</div>
+							<div class="col-9">
+								<div class="ms-2" style="font-weight:bold; font-size:1.2em">{{memberList[suspensionIndex[0]].memberNick}}</div>
+								<div class="ms-2">{{memberList[suspensionIndex[0]].memberName}}</div>
+							</div>
+						</div>
+					</div>
 				    <!-- 이미 정지당한 사람 페이지 -->
 					<div class="row" v-if="suspensionIndex[1]==0">
-						<div class="row">
+						<div class="row mb-4">
 							<div class="col">
-								정지 사유 : {{memberList[suspensionIndex[0]].memberSuspensionContent}} 
+								<div class="row">
+									<div class="row">
+										<div class="col-3" style="text-align:right">
+										정지 횟수 :
+										</div>
+										<div class="col-9 p-0">
+										{{memberList[suspensionIndex[0]].memberSuspensionTimes}}
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="row">
+										<div class="col-3" style="text-align:right">
+										정지 사유 :
+										</div>
+										<div class="col-9 p-0">
+										{{memberList[suspensionIndex[0]].memberSuspensionContent}}
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="row">
+										<div class="col-3" style="text-align:right">
+										기간 :
+										</div>
+										<div class="col-9 p-0">
+										{{memberList[suspensionIndex[0]].memberSuspensionDays}}
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col">
-								기간 : {{memberList[suspensionIndex[0]].memberSuspensionDays}}
+								<h5>정지내역 수정</h5>
 							</div>
-						</div>
+						</div>						
 						<div class="row">
 							<div class="col">
 								<select class="form-control rounded" v-model="suspensionContent[0]">
@@ -1052,20 +1123,49 @@
 						</div>
 					</div>
 					<!-- 일반 사람 페이지 -->
-					<div class="row" v-else>
-						<div class="col">
-							<select class="form-control rounded" v-model="suspensionContent[0]">
-								<option value="" selected>기한(선택)</option>
-								<option value="1">1일</option>
-								<option value="7">7일</option>
-								<option value="30">30일</option>
-								<option value="365">1년</option>
-								<option value="99999">영구</option>
-							</select>
-							<select class="form-control rounded" v-model="suspensionContent[1]">
-								<option value="" selected>내용(선택)</option>>
-								<option class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo">{{report.reportListContent}}</option>
-							</select>
+					<div class="row" v-if="suspensionIndex[1]==1">
+						<div class="row mb-4">
+							<div class="col" v-if="memberList[suspensionIndex[0]].memberSuspensionTimes>0">
+								<div class="row">
+									<div class="col-3" style="text-align:right">
+									정지 횟수 :
+									</div>
+									<div class="col-9 p-0">
+									{{memberList[suspensionIndex[0]].memberSuspensionTimes}}
+									</div>
+								</div>
+							</div>
+							<div class="col" v-else>
+								<div class="row">
+									<div class="col-3" style="text-align:right">
+									정지 횟수 :
+									</div>
+									<div class="col-9 p-0">
+									0
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
+								<h5>정지내역 입력</h5>
+							</div>
+						</div>	
+						<div class="row">
+							<div class="col">
+								<select class="form-control rounded" v-model="suspensionContent[0]">
+									<option value="" selected>기한(선택)</option>
+									<option value="1">1일</option>
+									<option value="7">7일</option>
+									<option value="30">30일</option>
+									<option value="365">1년</option>
+									<option value="99999">영구</option>
+								</select>
+								<select class="form-control rounded" v-model="suspensionContent[1]">
+									<option value="" selected>내용(선택)</option>>
+									<option class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo">{{report.reportListContent}}</option>
+								</select>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -1086,7 +1186,79 @@
 		</div>
 	</div>
 	<!-- ---------------------------------정지 모달 끝-------------------------- -->
-	
+	<!-- ---------------------------------신고 세부 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="reportDetailModal" data-bs-backdrop="static" ref="reportDetailModal">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">신고 내용 관리</h5>
+					<button type="button" class="btn-close" @click="hideReportDetailModal" aria-label="Close">
+					<span aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="modal-body">
+				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
+					<div class="row" >
+						<div class="col-3 d-flex justify-content-center item-aligns-center">
+							<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+reportDetailData.imageURL">
+						</div>
+						<div class="col-9">
+							<div class="ms-2" style="font-weight:bold; font-size:1.2em">{{reportDetailData.memberNick}}</div>
+							<div class="ms-2">{{reportDetailData.memberName}}</div>
+						</div>
+					</div>
+					<!-- 게시물 신고내용일 경우 출력 -->
+					<div class="row p-2" v-if="reportDetailData.reportTable=='board'">
+						<div class="col">
+							<div class="row">
+								<div class="col-12" v-for="(image, index) in reportDetailContent.boardAttachmentList" style="position:relative">
+									<img style="height:auto; display:block" class="w-100" :src="'${pageContext.request.contextPath}'+image.imageURL">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-2 text-center">
+									내용
+								</div>
+								<div class="col">
+									{{reportDetailContent.boardWithNickDto.boardContent}}
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-2 text-center">
+									태그
+								</div>
+								<div class="col">
+									<span v-for="(tag,index) in reportDetailContent.boardTagList" :key="index">\#{{tag.tagName}}&nbsp</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row p-3">
+						<div class="col">
+							<table class="table">
+								<thead>
+									<tr class="p-2">
+										<th style="padding-left:2.5em"> 신고항목</th>
+										<th style="text-align:center">신고수</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-for="(report, index) in reportDetailCountList">
+										<td style="padding-left:1.5em"> {{report.reportContent}}</td>
+										<td style="text-align:center"> {{report.count}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" @click="hideReportDetailModal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ---------------------------------신고 세부 모달 끝-------------------------- -->
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <!-- SockJS라이브러리 의존성 추가  -->
@@ -1153,6 +1325,11 @@
 					next:false, nextPage:"", prevPage:"",
 				},
 				reportDifference:[],
+				reportDetailModal:null,
+				/* 리포트 내용보기 인덱스 */
+				reportDetailData:{},
+				reportDetailContent:{},
+				reportDetailCountList:[],
 				/*---------------------------회원 통계 데이터 --------------------------- */
 				memberLoginSearch:{
 					stat:"member_login",
@@ -1799,11 +1976,27 @@
 				const resp = await axios.put(contextPath+"/rest/suspension/", data);
 				this.memberList[this.suspensionIndex[0]]=resp.data;
 				this.hideSuspensionModal();
-			}
+			},
 			
-		
 		/*------------------------------ 정지모달 끝 ------------------------------*/
-
+		/*------------------------------ 신고 세부 모달 시작 ------------------------------*/
+ 			showReportDetailModal(index){
+				this.reportDetailData=this.reportList[index];
+				this.loadDetailCount();
+				if(this.reportDetailModal==null) return;
+				this.reportDetailModal.show();
+			},
+			hideReportDetailModal(){
+				if(this.reportDetailModal==null) return;
+				this.reportDetailModal.hide();
+			},
+			async loadDetailCount(){
+				const resp = await axios.get(contextPath+"/rest/report/detail?reportTable="+this.reportDetailData.reportTable+"&reportTableNo="+this.reportDetailData.reportTableNo);
+				this.reportDetailCountList = [...resp.data.reportDetailCountVO];
+				this.reportDetailContent=resp.data.boardListVO;
+			},
+		
+		/*------------------------------ 신고 세부 모달 끝 ------------------------------*/
 		},
 		created(){
 			//데이터 불러오는 영역
@@ -1897,6 +2090,7 @@
 			//모달 선언
 			this.reportContentModal = new bootstrap.Modal(this.$refs.reportContentModal);
 			this.suspensionModal = new bootstrap.Modal(this.$refs.suspensionModal);
+			this.reportDetailModal = new bootstrap.Modal(this.$refs.reportDetailModal);
 		},
 	}).mount("#app");
 </script>
