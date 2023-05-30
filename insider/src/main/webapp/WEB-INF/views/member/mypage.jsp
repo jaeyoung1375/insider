@@ -139,7 +139,9 @@
                   <a class="btn btn-secondary" href="/member/setting?page=1">프로필 편집</a>
                   </div>
                   <div class="col-5" style=" width:30%;">
-               <button class="btn btn-secondary" @click="recommend"><i class="fa-solid fa-user-plus"></i></button>
+               <button class="btn btn-secondary" @click="recommend">
+               		<i :class="iconClass"></i>
+               </button>
                </div>
                <div class="col-5" style="width:40%;">
                <button class="btn btn-secondary" @click="myOptionModalShow" style="background-color: white; border:none;"><i class="fa-sharp fa-solid fa-gear" style="font-size:24px;"></i></button>
@@ -884,6 +886,9 @@
         	  displayedItems() {
         		    return this.paginatedRecommendFriends[this.currentPage];
         		  },
+        	iconClass(){
+        			return this.recommendFriends ? "fa-solid fa-user-plus" : "far fa-user";  
+        		  },
         	  
          
          
@@ -1581,7 +1586,7 @@
             	const resp = await axios.get("/rest/member/recommendFriendsList");
             	this.recommendFriendsList.push(...resp.data);
             	
-            	console.log(this.recommendFriendsList);
+            	console.log("친구 추천 목록 : " +this.recommendFriendsList.length);
              },
            
            	
