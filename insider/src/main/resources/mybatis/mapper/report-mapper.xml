@@ -33,4 +33,7 @@
 		<include refid="topNfooter"></include>	
 	</select>
 
+	<select id="selectDetailCount" resultType="ReportDetailCountVO">
+		SELECT report_content, count(*) AS count FROM report WHERE report_table=#{reportTable} AND report_table_no=#{reportTableNo} GROUP BY report_content order by count desc
+	</select>
 </mapper>
