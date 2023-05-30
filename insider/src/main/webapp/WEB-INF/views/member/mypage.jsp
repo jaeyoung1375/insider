@@ -138,6 +138,9 @@
                  <div class="col-7">
                   <a class="btn btn-secondary" href="/member/setting?page=1">프로필 편집</a>
                   </div>
+                  <div class="col-5" style=" width:30%;">
+               <button class="btn btn-secondary" @click="recommend"><i class="fa-solid fa-user-plus"></i></button>
+               </div>
                <div class="col-5" style="width:40%;">
                <button class="btn btn-secondary" @click="myOptionModalShow" style="background-color: white; border:none;"><i class="fa-sharp fa-solid fa-gear" style="font-size:24px;"></i></button>
              </div>
@@ -151,9 +154,7 @@
                <div class="col-5"  style=" width:70%;">
                <button class="btn btn-secondary">메시지 보내기</button>
                </div>
-               <div class="col-5" style=" width:30%;">
-               <button class="btn btn-secondary" @click="recommend"><i class="fa-solid fa-user-plus"></i></button>
-               </div>
+               
                <div class="col-5" style="width:40%;">
                <button class="btn btn-secondary" @click="showModal2"><i class="fa-solid fa-ellipsis"></i></button>
              </div>
@@ -194,13 +195,47 @@
                
             </div>
             </div>
-            <div  style="display: flex; flex-direction: column; width: 770px; height:200px; background-color: white; border:1px solid gray; margin: 0 auto; margin-top:15px;" v-if="recommendFriends">
+            <!-- 친구 추천 목록 -->
+            <div  style="display: flex; flex-direction: column; width: 930px; height:280px; background-color: white; border:1px solid gray; margin: 0 auto;" v-if="recommendFriends">
         		<div class="recommend-id" style="display:flex; justify-content: space-between;">
         			<span style="color:gray; font-weight: bold;">추천계정</span>
-        			<a class="" style="text-decoration: none; font-weight: bold;">모두 보기</a>
-        		</div>    	
-        
+        			<a class="" style="text-decoration: none; font-weight: bold;" @click="recommendFriendsAllListModalShow">모두 보기</a>
+        		</div>  
+			<div class="card-container" style="display:flex; margin-top:20px;">
+			<!-- 이전 페이지로 이동하는 버튼 -->
+				<div class="button-container" style="display: flex; justify-content: center; align-items: center;">
+					<i class="fa-solid fa-arrow-left"  @click="currentPage--" :class="{'hide' : currentPage === 0}" style="height:24px; weight:24px; margin-left:5px;"></i>
+				</div>
+
+			  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style="display:flex;">
+			    <div class="card" style="width: 174px; height: 192px; margin-left: 30px;">
+			      <div class="ms-auto" style="margin-right:8px;">x</div>
+			      <div class="profile d-flex justify-content-center align-items-start">
+			        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="54" height="54" style="border-radius:50%;">
+			      </div>
+			      <div class="recommend-nickname d-flex justify-content-center align-items-start">
+			        {{ item.memberNick }}
+			      </div>
+			      <div class="recommend-name d-flex justify-content-center align-items-start">
+			        <span style="margin-top:5px;">{{ item.memberName }}</span>
+			      </div>
+			      <div class="recommend-name d-flex justify-content-center align-items-start">
+			      <!-- 다음 페이지로 이동하는 버튼 -->
+			        <button class="btn btn-primary" style="width:85px; margin-top:8px;" @click="follow(item.memberNo)">팔로우</button>
+			      </div>
+			    </div>
+			  </div>
+		<div class="button-container" style="display: flex; justify-content: center; align-items: center; ">
+  		
+  			<i class="fa-sharp fa-solid fa-arrow-right" @click="currentPage++"  :class="{'hide':currentPage === paginatedRecommendFriends.length - 1}" 
+  			style="height: 24px; weight: 24px; margin-left:20px;"></i>
+		</div>
+			</div>
+
+
+
             </div>
+            
             
             <hr>
      <!-- 게시물 시작 -->
@@ -350,20 +385,7 @@
         </div>
 	</div>
 </div>
- 
-
-
-
-
-
-
-
-
-
-
-
-      
-      
+  
       <!-- Modal 창 영역 -->
                    <div class="modal" tabindex="-1" role="dialog" id="modal03"
                             data-bs-backdrop="static"
@@ -687,8 +709,39 @@
      
     </div>
   </div>
-</div> <!-- 팔로우 모달 목록 끝 -->
+</div> 
+
+       <div class="modal" tabindex="-1" role="dialog" id="recommendFriendsAllListModal"
+                            data-bs-backdrop="static"
+                            ref="recommendFriendsAllListModal" @click.self="recommendFriendsAllListModalHide">
+             <div class="modal-dialog" role="document">
+    <div class="modal-content" style="max-width:400px; min-height:200px max-height:400px; overflow-y: scroll;">
+      <div class="modal-header text-center" style="display:flex; justify-content: center;">
+        <h5 class="modal-title" >비슷한 계정</h5>
+      </div>
+      <div class="modal-body" style="overflow-y: scroll; max-height:300px;"  @scroll="handleScroll">
+        <div v-for="item in recommendFriendsList" :key="item.attachmentNo">
+     
+          	<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
+          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60"  style="border-radius:50%;">
+						   <div style="display: flex; flex-direction: column; justify-content: flex-start;">
+						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
+          					<p class="modalName">{{item.memberName}}</p>
+						  </div>
+          <button class="float-end btn btn-primary" @click="follow(item.memberNo)" v-if="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로우</button>
+			</div>
+          
+        </div>
+      </div>
+     
+    </div>
+  </div>
+</div> 
+
+<!-- 팔로우 모달 목록 끝 -->
         <!-- Modal 창 영역 끝 -->
+        
+        
       
       </div> <!-- vue 끝 -->
       
@@ -734,6 +787,7 @@
             followerModal : null,
             followModal : null,  
             followerHoverModal : null,
+            recommendFriendsAllListModal : null,
             selectedItem: null,
             reportContentList:[],
             followCheckList:[],
@@ -786,6 +840,9 @@
 			replyLikeCount : [], // 댓글 좋아요 수 저장 변수
 			isReplyLiked : [], // 로그인 회원이 댓글 좋아요 체크 여부 
 			recommendFriends : false,
+			recommendFriendsList : [], // 친구 추천목록 리스트
+			currentPage: 0,
+			itemsPerPage : 4,
          };
       },
       computed: {
@@ -810,6 +867,24 @@
                return this.followCounts[memberNick];
              };
            },
+           
+           paginatedRecommendFriends() {
+        	    const totalPages = Math.ceil(this.recommendFriendsList.length / this.itemsPerPage);
+        	    const paginatedArray = [];
+
+        	    for (let i = 0; i < totalPages; i++) {
+        	      const startIndex = i * this.itemsPerPage;
+        	      const endIndex = startIndex + this.itemsPerPage;
+        	      const pageItems = this.recommendFriendsList.slice(startIndex, endIndex);
+        	      paginatedArray.push(pageItems);
+        	    }
+
+        	    return paginatedArray;
+        	  },
+        	  displayedItems() {
+        		    return this.paginatedRecommendFriends[this.currentPage];
+        		  },
+        	  
          
          
          
@@ -878,6 +953,14 @@
                 	if(this.followerHoverModal == null) return;
                 	this.followerHoverModal.show();
                 },
+                recommendFriendsAllListModalShow(){
+                	if(this.recommendFriendsAllListModal == null) return;
+                	this.recommendFriendsAllListModal.show();
+                },
+                recommendFriendsAllListModalHide(){
+                	if(this.recommendFriendsAllListModal == null) return;
+                	this.recommendFriendsAllListModal.hide();
+                },
               
               accountView(){
                  this.addtionModal.hide();
@@ -921,7 +1004,6 @@
          	this.totalFollowCount();
          	this.followerListPaging();
          	this.followListPaging();
-        
          },
          
          //팔로워 되있는사람 -> 팔로우 삭제
@@ -1489,9 +1571,17 @@
              	
              	
              },
-             // 친구추천
+             // 친구 추천 버튼
              recommend(){
             	 this.recommendFriends = !this.recommendFriends;
+             },
+             
+             // 친구 추천목록 조회
+             async recommendList(){
+            	const resp = await axios.get("/rest/member/recommendFriendsList");
+            	this.recommendFriendsList.push(...resp.data);
+            	
+            	console.log(this.recommendFriendsList);
              },
            
            	
@@ -1503,6 +1593,7 @@
     	  this.totalFollowCount();
     	  this.totalFollowerCount();
     	  this.memberSetting();
+    	  this.recommendList();
     	  Promise.all([this.followListPaging(), this.followerListPaging(), this.boardList()])
     	    .then(() => {
     	      this.followCheck();
@@ -1530,6 +1621,7 @@
             this.myOptionModal = new bootstrap.Modal(this.$refs.myOptionModal);
             this.followerModal = new bootstrap.Modal(this.$refs.followerModal);
             this.followModal = new bootstrap.Modal(this.$refs.followModal);
+            this.recommendFriendsAllListModal = new bootstrap.Modal(this.$refs.recommendFriendsAllListModal);
         
             window.addEventListener("scroll", _.throttle(()=>{
             

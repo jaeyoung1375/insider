@@ -20,6 +20,7 @@ import com.kh.insider.dto.BoardWithNickDto;
 import com.kh.insider.dto.FollowWithProfileDto;
 import com.kh.insider.dto.FollowerWithProfileDto;
 import com.kh.insider.dto.MemberDto;
+import com.kh.insider.dto.MemberProfileDto;
 import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.dto.SettingDto;
 import com.kh.insider.repo.BoardRepo;
@@ -130,5 +131,13 @@ public class MemberRestController {
 		List<BoardDto> getTotalPost = boardRepo.getTotalMyPost(memberNo);
 		System.out.println(getTotalPost);
 		return getTotalPost;
+	}
+	
+	// 친구 추천목록 조회
+	@GetMapping("/recommendFriendsList")
+	public List<MemberProfileDto> recommendFriendsList(HttpSession session){
+		long memberNo = (long)session.getAttribute("memberNo");
+		List<MemberProfileDto> recommendFriendsList = memberRepo.recommendFriends(memberNo);
+		return recommendFriendsList;
 	}
 }

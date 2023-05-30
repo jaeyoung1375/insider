@@ -1,6 +1,7 @@
 package com.kh.insider.repo;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.MemberDto;
+import com.kh.insider.dto.MemberProfileDto;
 
 @Repository
 public class MemberRepoImpl implements MemberRepo{
@@ -86,6 +88,12 @@ public class MemberRepoImpl implements MemberRepo{
 	@Override
 	public void updateTempPassword(MemberDto dto) {
 		sqlSession.update("member.updateTempPassword",dto);
+	}
+
+	// 친구 추천목록 조회
+	@Override
+	public List<MemberProfileDto> recommendFriends(long memberNo) {
+		return sqlSession.selectList("member.recommendFriends",memberNo);
 	}
 	
 }
