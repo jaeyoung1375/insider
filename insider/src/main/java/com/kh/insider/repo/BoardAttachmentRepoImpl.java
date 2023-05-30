@@ -24,13 +24,13 @@ public class BoardAttachmentRepoImpl implements BoardAttachmentRepo{
 
 	@Override
 	public void delete(int boardNo) {
-		sqlSession.delete("board_attachment.delete", boardNo);
+		sqlSession.delete("boardAttachment.delete", boardNo);
 	}
 
 
 	@Override
 	public List<BoardAttachmentDto> selectList(int boardNo) {
-		return sqlSession.selectList("boardAttach.list", boardNo);
+		return sqlSession.selectList("boardAttachment.list", boardNo);
 	}
 
 }

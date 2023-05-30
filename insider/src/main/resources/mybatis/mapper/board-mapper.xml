@@ -23,12 +23,18 @@
 		)
 	</insert>
 	
+	<select id="selectOneNick" resultType="BoardWithNickDto">
+		select * from board_with_nick where board_no=#{boardNo}
+	</select>
+	
 	<select id="selectOne" resultType="BoardDto">
 		select * from board where board_no=#{boardNo}
 	</select>
+	
 	<select id="selectList" resultType="BoardDto">
 		select * from board order by board_no asc
 	</select>
+	
 	<update id="edit" parameterType="BoardDto">
 		update board set 
 		board_content=#{boardContent}, board_reply_valid=#{boardReplyValid}, board_like_valid=#{boardLikeValid},
@@ -241,10 +247,15 @@
 	 	<include refid="topNfooter"></include>	
 	</select>
 
+	<!-- 계층형 단일조회 -->
+	<select id="selectOneBoard" resultMap="boardListVO">
+		select * from board_with_nick where board_no=#{boardNo}
+	</select>
+
 
 	<!-- 신고수 추가 기능 -->
 	<update id="addReport">
-		update board set board_report = board_report+1 where board_no=#{boardNo}
+		update board set board_report = (select count(*) from report where report_table='board' and report_table_no=#{boardNo}) where board_no=#{boardNo}
 	</update>
 	
 	<!-- 게시물 총 개수  -->

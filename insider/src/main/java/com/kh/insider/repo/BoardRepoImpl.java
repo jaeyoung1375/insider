@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.BoardDto;
 import com.kh.insider.dto.BoardWithNickDto;
-import com.kh.insider.vo.BoardAttachmentVO;
 import com.kh.insider.vo.AdminBoardSearchVO;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
@@ -123,7 +122,24 @@ public class BoardRepoImpl implements BoardRepo {
 		return sqlSession.selectList("board.myPageSelectPaging",param);
 
 	}
+	
 	public int selectAdminCount(AdminBoardSearchVO vo) {
 		return sqlSession.selectOne("board.selectAdminCount", vo);
+	}
+
+	@Override
+	public BoardListVO selectOneBoard(int boardNo) {
+		return sqlSession.selectOne("board.selectOneBoard", boardNo);
+	}
+	
+	@Override
+	public BoardWithNickDto selectOne(int boardNo) {
+		return sqlSession.selectOne("board.selectOneNick", boardNo);
+	}
+
+	@Override
+	public boolean update(BoardDto boardDto) {
+		int result = sqlSession.update("board.edit", boardDto);
+		return result > 0;
 	}
 }

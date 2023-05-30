@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.ReportDto;
+import com.kh.insider.vo.ReportDetailCountVO;
 
 @Repository
 public class ReportRepoImpl implements ReportRepo {
@@ -32,5 +33,10 @@ public class ReportRepoImpl implements ReportRepo {
 	@Override
 	public List<ReportDto> selectList() {
 		return sqlSession.selectList("report.selectList");
+	}
+
+	@Override
+	public List<ReportDetailCountVO> selectDetailCount(ReportDto reportDto) {
+		return sqlSession.selectList("report.selectDetailCount", reportDto);
 	}
 }
