@@ -152,5 +152,11 @@ public class DmRestController {
 		return dmServiceImpl.countUsersInRoom(roomNo);
 	}
 	
+	//특정 채팅방 정보 조회
+	@GetMapping("/searchDmRoom")
+	public DmRoomDto searchDmRoom(@RequestParam int roomNo) {
+		return dmServiceImpl.findRoomByRoomNo(roomNo);
+	}
+	
 
 }

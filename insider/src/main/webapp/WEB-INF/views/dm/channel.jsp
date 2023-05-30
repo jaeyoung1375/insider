@@ -676,6 +676,7 @@
 					try {
 						const inviteUrl = "${pageContext.request.contextPath}/rest/inviteUser";
 						const countUrl = "${pageContext.request.contextPath}/rest/countUsersInDmRoom";
+						const searchUrl = "${pageContext.request.contextPath}/rest/searchDmRoom";
 						const data = {
 								roomNo: this.roomNo,
 								memberList: this.selectedMembers
@@ -688,11 +689,13 @@
 						const count = countResp.data;
 					
 						if (count >= 3) {
+							const roomInfoResp = await axios.get(searchUrl, {params: {roomNo: this.roomNo}});
+				            const roomInfo = roomInfoResp.data;
 							const updateRoomUrl = "${pageContext.request.contextPath}/rest/updateRoomInfo";
 				            const updateRoomData = {
 				                roomNo: this.roomNo,
 				                roomType: 0,
-				                roomName: this.roomName// 서버에서 roomName을 가져올 예정
+				                roomName: roomInfo.roomName
 				            };
 				            await axios.put(updateRoomUrl, updateRoomData);
 						}

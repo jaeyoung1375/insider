@@ -261,22 +261,22 @@ public class DmServiceImpl implements DmService {
 	        this.exit(user, roomNo);
 	    }
 		//회원 초대 메세지
-	    else if (receiveVO.getType() == WebSocketConstant.INVITATION) {
-	        int roomNo = this.findUser(user);
-	        if (roomNo == -1) return;
+//	    else if (receiveVO.getType() == WebSocketConstant.INVITATION) {
+//	        int roomNo = this.findUser(user);
+//	        if (roomNo == -1) return;
 
-	        List<Long> memberList = new ArrayList<>();
-	        memberList.add(receiveVO.getMemberNo());
+//	        List<Long> memberList = new ArrayList<>();
+//	        memberList.add(receiveVO.getMemberNo());
 
-	        DmRoomVO dmRoomVO = new DmRoomVO();
-	        dmRoomVO.setRoomNo(roomNo);
-	        dmRoomVO.setMemberList(memberList);
+//	        DmRoomVO dmRoomVO = new DmRoomVO();
+//	        dmRoomVO.setRoomNo(roomNo);
+//	        dmRoomVO.setMemberList(memberList);
 
-	        String content = user.getMemberNick() + "님이 회원을 초대하였습니다.";
-	        sendWebSocketMessage(roomNo, content);
+//	        String content = user.getMemberNick() + "님이 회원을 초대하였습니다.";
+//	        sendWebSocketMessage(roomNo, content);
 
-	        this.inviteUsersToRoom(dmRoomVO);
-	    }
+//	        this.inviteUsersToRoom(dmRoomVO);
+//	    }
 
 	}
 	//메세지 삭제
@@ -330,6 +330,7 @@ public class DmServiceImpl implements DmService {
 		int roomNo = dmRoomVO.getRoomNo();
 		List<Long> memberList = dmRoomVO.getMemberList();
 		
+		log.debug("확인용 초대 멤버 {}", memberList.size());
 	    for (Long memberNo : memberList) {
 	        DmUserDto dmUserDto = new DmUserDto();
 	        dmUserDto.setRoomNo(roomNo);
@@ -389,5 +390,15 @@ public class DmServiceImpl implements DmService {
 	public void updateReName(DmRoomDto dmRoomDto) {
 	    dmRoomRepo.updateRoomName(dmRoomDto);
 	}
+	
+	//특정 채팅방에 참여한 총 회원수
+    public int countUsersInRoom(int roomNo) {
+        return dmUserRepo.countUsersInRoom(roomNo);
+    }
+    
+    //특정 채팅방 정보 조회
+    public DmRoomDto findRoomByRoomNo(int roomNo) {
+        return dmRoomRepo.find(roomNo);
+    }
 	
 }
