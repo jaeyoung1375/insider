@@ -2,10 +2,8 @@ package com.kh.insider.repo;
 
 import java.util.List;
 
-
 import com.kh.insider.dto.BoardDto;
 import com.kh.insider.dto.BoardWithNickDto;
-import com.kh.insider.vo.BoardAttachmentVO;
 import com.kh.insider.vo.AdminBoardSearchVO;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
@@ -21,7 +19,17 @@ public interface BoardRepo {
 
 	int sequence();
 	
+	//게시물 생성
 	BoardDto insert(BoardDto boardDto);
+	
+	//게시물 단일 조회
+	BoardWithNickDto selectOne(int boardNo);
+	
+	//게시물 삭제
+	void delete(int boardNo);
+	
+	//게시물 수정
+	boolean update(BoardDto boardDto);
 
 	void updateLikeCount(int boardNo, int count);
 	
@@ -44,10 +52,10 @@ public interface BoardRepo {
 	//게시물 생성 통계
 	List<BoardTimeStatsResponseVO> getBoardTimeStats(BoardTimeStatsSearchVO boardTimeStatsSearchVO);
 
-	void delete(int boardNo);
 	//태그 생성 통계
 	List<BoardTagStatsResponseVO> getBoardTagStats(BoardTagStatsSearchVO boardTagStatsSearchVO);
 	
 	//계층형 단일조회
 	BoardListVO selectOneBoard(int boardNo);
+	
 }

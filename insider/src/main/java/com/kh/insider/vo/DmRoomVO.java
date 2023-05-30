@@ -7,16 +7,23 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.springframework.web.socket.TextMessage;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kh.insider.dto.DmMessageDto;
 
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties
 public class DmRoomVO {
 	
 	private int roomNo;
 	private String roomName;
 	private List<DmMessageDto> messages;
+	
+	private long memberNo;
+	private String memberNick;
+	private List<Long> memberList;
+	private int roomType;
 	
     //채팅방의 사용자를 저장할 저장소
     private Set<DmUserVO> users = new CopyOnWriteArraySet<>();
@@ -47,5 +54,5 @@ public class DmRoomVO {
         	user.send(jsonMessage);
         }
     }
-
+    
 }

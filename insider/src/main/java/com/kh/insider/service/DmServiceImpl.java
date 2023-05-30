@@ -1,6 +1,7 @@
 package com.kh.insider.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -15,10 +16,12 @@ import org.springframework.web.socket.WebSocketSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kh.insider.dto.DmMessageDeletedDto;
 import com.kh.insider.dto.DmMessageDto;
+import com.kh.insider.dto.DmPrivacyRoomDto;
 import com.kh.insider.dto.DmRoomDto;
 import com.kh.insider.dto.DmUserDto;
 import com.kh.insider.repo.DmMessageDeletedRepo;
 import com.kh.insider.repo.DmMessageRepo;
+import com.kh.insider.repo.DmPrivacyRoomRepo;
 import com.kh.insider.repo.DmRoomRepo;
 import com.kh.insider.repo.DmUserRepo;
 import com.kh.insider.vo.ChannelReceiveVO;
@@ -45,6 +48,8 @@ public class DmServiceImpl implements DmService {
 	@Autowired
 	private DmMessageDeletedRepo dmMessageDeletedRepo;
 	
+	@Autowired
+	private DmPrivacyRoomRepo dmPrivacyRoomRepo;
 
 	//여러 개의 방을 관리할 저장소
 	Map<Integer, DmRoomVO> rooms = Collections.synchronizedMap(new HashMap<>());
@@ -60,22 +65,34 @@ public class DmServiceImpl implements DmService {
 	//- DmRoom 생성
 	public void createRoom(int roomNo, String memberNick) {
 		if(containsRoom(roomNo)) return;
-		rooms.put(roomNo, new DmRoomVO());
-	
+			rooms.put(roomNo, new DmRoomVO());
+				
 		//방 생성(등록) 코드(DB)
 		boolean isWaitingRoom = roomNo == WebSocketConstant.WAITING_ROOM_NO;
 		if(!isWaitingRoom && dmRoomRepo.find(roomNo) == null) {
 			DmRoomDto dmRoomDto = new DmRoomDto();
 			dmRoomDto.setRoomNo(roomNo);
 			dmRoomDto.setRoomName(memberNick);
+			dmRoomDto.setRoomType(1);
 			dmRoomRepo.create(dmRoomDto);
 		}
 	}
-	
+
 	//- DmRoom 제거
 	public void deleteRoom(int roomNo) {
-		rooms.remove(roomNo);
-		//방 제거 코드(DB)
+		if(containsRoom(roomNo) == false) return;
+
+	    // 채팅방에 참여자가 남아있는지 확인
+	    boolean isEmpty = dmUserRepo.findMembersByRoom(roomNo).isEmpty();
+	    log.debug("isEmpty: " + isEmpty);
+	    
+	    //채팅방에 회원이 남아있지 않으면 방 제거(DB)
+	    if (isEmpty) {
+	        DmRoomDto dmRoomDto = new DmRoomDto();
+	        dmRoomDto.setRoomNo(roomNo);
+	        dmRoomRepo.deleteRoom(dmRoomDto);
+	        rooms.remove(roomNo);
+	    }
 	}
 	
 	//- 사용자 방에 입장
@@ -85,24 +102,12 @@ public class DmServiceImpl implements DmService {
 		DmRoomVO dmRoomVO = rooms.get(roomNo);
 		dmRoomVO.enter(user);
 		
-		//참여자 등록(DB)
 		boolean isWaitingRoom = roomNo == WebSocketConstant.WAITING_ROOM_NO;
 		
 		if (isWaitingRoom) return;
-		
-		DmUserDto dmUserDto = new DmUserDto();
-		dmUserDto.setRoomNo(roomNo);
-		dmUserDto.setMemberNo(user.getMemberNo());
-		boolean isJoin = dmUserRepo.check(dmUserDto);
-		if(isJoin) return;
-		
-		DmUserDto userDto = new DmUserDto();
-		userDto.setRoomNo(roomNo);
-		userDto.setMemberNo(user.getMemberNo());
-		dmUserRepo.enter(userDto);
-	    
+		//참여자 등록(DB)
 		log.debug("{}님이 {}방으로 참여하였습니다.", user.getMemberNo(), roomNo);
-    }
+  }
 	
 	//사용자 방에서 퇴장
 	public void exit(DmUserVO user, int roomNo) {
@@ -112,7 +117,6 @@ public class DmServiceImpl implements DmService {
 		dmRoomVO.leave(user);
 		
 		//참여자 제거(DB)
-		
 		log.debug("{}님이 {}방에서 퇴장하였습니다.", user.getMemberNo(), roomNo);
 	}
 	
@@ -136,8 +140,9 @@ public class DmServiceImpl implements DmService {
 		dmMessageDto.setMessageContent(jsonMessage.getPayload());
 		dmMessageRepo.create(dmMessageDto);
 	}
+	
 	//방 인원에게 데이터 전송하고 읽은 시간 갱신 기능
-	public void broadcastRoom(int roomNo) throws IOException {
+	public void broadcastRoom (int roomNo) throws IOException {
 		if(containsRoom(roomNo) == false) return;
 		
 		DmRoomVO dmRoomVO = rooms.get(roomNo);
@@ -175,8 +180,7 @@ public class DmServiceImpl implements DmService {
 		join(user, roomNo);
 	}
 	
-	
-	
+
 	@Override
 	public void connertHandler(WebSocketSession session) {
 		DmUserVO user = new DmUserVO(session);
@@ -246,7 +250,34 @@ public class DmServiceImpl implements DmService {
 			long messageNo = receiveVO.getMessageNo();
 			this.deleteMessage(user, messageNo);
 		}
-		
+	    //회원 퇴장 메세지
+	    else if (receiveVO.getType() == WebSocketConstant.LEAVE) {
+	        int roomNo = this.findUser(user);
+	        if (roomNo == -1) return;
+	        
+	        String content = user.getMemberNick() + " 님이 퇴장하셨습니다.";
+	        sendWebSocketMessage(roomNo, content);
+	        
+	        this.exit(user, roomNo);
+	    }
+		//회원 초대 메세지
+//	    else if (receiveVO.getType() == WebSocketConstant.INVITATION) {
+//	        int roomNo = this.findUser(user);
+//	        if (roomNo == -1) return;
+
+//	        List<Long> memberList = new ArrayList<>();
+//	        memberList.add(receiveVO.getMemberNo());
+
+//	        DmRoomVO dmRoomVO = new DmRoomVO();
+//	        dmRoomVO.setRoomNo(roomNo);
+//	        dmRoomVO.setMemberList(memberList);
+
+//	        String content = user.getMemberNick() + "님이 회원을 초대하였습니다.";
+//	        sendWebSocketMessage(roomNo, content);
+
+//	        this.inviteUsersToRoom(dmRoomVO);
+//	    }
+
 	}
 	//메세지 삭제
 	private void deleteMessage(DmUserVO user, long messageNo) {
@@ -255,6 +286,119 @@ public class DmServiceImpl implements DmService {
         dmMessageDeletedDto.setMessageNo(messageNo);
         dmMessageDeletedRepo.insertDeleteMessage(dmMessageDeletedDto);
 	}
+	
+	// 회원 입장 DB 등록
+	public void  enterUsersInRoom(DmRoomVO dmRoomVO) {
+		int roomNo = dmRoomVO.getRoomNo();
+		List<Long> memberList = dmRoomVO.getMemberList();
 		
+		//채팅 유저 DB 등록
+	    for (Long memberNo : memberList) {
+	        DmUserDto dmUserDto = new DmUserDto();
+	        dmUserDto.setRoomNo(roomNo);
+	        dmUserDto.setMemberNo(memberNo);
+	        
+	        boolean isJoin = dmUserRepo.check(dmUserDto);
+	        if (isJoin) return;
+	        
+	        DmUserDto userDto = new DmUserDto();
+	        userDto.setRoomNo(roomNo);
+	        userDto.setMemberNo(memberNo);
+	        
+	        dmUserRepo.enter(userDto);
+	        
+	        log.debug("DB등록 {}님이 {}방으로 참여하였습니다.", memberNo, roomNo);
+	    }
+	        
+        // 일대일 채팅방일 경우, dm_privacy_room 테이블에도 저장
+        if (memberList.size() == 2) {
+            DmPrivacyRoomDto dmPrivacyRoomDto = new DmPrivacyRoomDto();
+            dmPrivacyRoomDto.setInviterNo(memberList.get(1));
+            dmPrivacyRoomDto.setInviteeNo(memberList.get(0));
+            dmPrivacyRoomDto.setRoomNo(roomNo);
+            
+            dmPrivacyRoomRepo.createPrivacy(dmPrivacyRoomDto);
+            log.debug("일대일 채팅방 DB 등록 {}님이 {}방으로 참여되었습니다.", memberList.get(0), roomNo);
+        }
+        else {
+			return;
+		}
+	} 
+	
+	//회원 초대
+	public void inviteUsersToRoom(DmRoomVO dmRoomVO) {
+		int roomNo = dmRoomVO.getRoomNo();
+		List<Long> memberList = dmRoomVO.getMemberList();
+		
+		log.debug("확인용 초대 멤버 {}", memberList.size());
+	    for (Long memberNo : memberList) {
+	        DmUserDto dmUserDto = new DmUserDto();
+	        dmUserDto.setRoomNo(roomNo);
+	        dmUserDto.setMemberNo(memberNo);
+	        
+	        boolean isJoin3 = dmUserRepo.check(dmUserDto);
+	        if (isJoin3) return;
+	        
+	        DmUserDto userDto = new DmUserDto();
+	        userDto.setRoomNo(roomNo);
+	        userDto.setMemberNo(memberNo);
+	        dmUserRepo.enter(dmUserDto);
+	        
+	        log.debug("회원 초대 DB등록 {}님이 {}방으로 참여하였습니다.", memberNo, roomNo);
+	    }
+	} 
+	
+	//채팅방 퇴장 DB
+	public void leaveDmRoom(DmUserVO user, int roomNo) {
+		if(containsRoom(roomNo) == false) return;
+		
+		//참여자 제거(DB)
+		DmUserDto dmUserDto = new DmUserDto();
+	    dmUserDto.setMemberNo(user.getMemberNo());
+	    dmUserDto.setRoomNo(roomNo);
+	    dmUserRepo.leaveRoom(dmUserDto);
+	    
+	    //dm_privacy_room 테이블에서 해당 회원 정보 삭제
+	    DmPrivacyRoomDto dmPrivacyRoomDto = new DmPrivacyRoomDto();
+	    dmPrivacyRoomDto.setInviterNo(user.getMemberNo());
+	    dmPrivacyRoomDto.setRoomNo(roomNo);
+	    dmPrivacyRoomRepo.leaveRoom(dmPrivacyRoomDto);
+	    
+		log.debug("DB삭제 {}님이 {}방에서 퇴장하였습니다.", user.getMemberNo(), roomNo);
+	}
+	
+	//알림 메세지 전송
+	private void sendWebSocketMessage(int roomNo, String content) throws IOException {
+		ChannelReceiveVO message = new ChannelReceiveVO();
+	    message.setType(WebSocketConstant.LEAVE);
+	    message.setRoom(roomNo);
+	    message.setContent(content);
+
+        String json = mapper.writeValueAsString(message);
+        TextMessage jsonMessage = new TextMessage(json);
+
+        DmRoomVO dmRoomVO = rooms.get(roomNo);
+        dmRoomVO.broadcast(jsonMessage);
+	}
+	
+	//채팅방 정보 변경
+	public void changeRoomInfo(DmRoomDto dmRoomDto) {
+	    dmRoomRepo.changeRoomInfo(dmRoomDto);
+	}
+
+	//채팅방 이름 변경
+	public void updateReName(DmRoomDto dmRoomDto) {
+	    dmRoomRepo.updateRoomName(dmRoomDto);
+	}
+	
+	//특정 채팅방에 참여한 총 회원수
+    public int countUsersInRoom(int roomNo) {
+        return dmUserRepo.countUsersInRoom(roomNo);
+    }
+    
+    //특정 채팅방 정보 조회
+    public DmRoomDto findRoomByRoomNo(int roomNo) {
+        return dmRoomRepo.find(roomNo);
+    }
 	
 }
