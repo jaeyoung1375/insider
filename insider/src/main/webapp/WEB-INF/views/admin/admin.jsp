@@ -90,7 +90,7 @@
 }
 /* 모달 버튼 빨간 글씨 */
 .modal-click-btn-negative{
-	color:#dc3545;
+	color:#d9534f;
 	cursor:pointer;
 }
 .modal-click-btn-negative:hover{
@@ -764,9 +764,11 @@
 									<td style="vertical-align:middle; text-align:center" v-if="report.reportTable=='member'">회원</td>
 									<td style="vertical-align:middle; text-align:center">{{report.count}}<i class="fa-solid fa-angles-up ms-2" style="color:blue" v-if="reportDifference[index].count"></i></td>
 									<td style="vertical-align:middle; text-align:center" v-if="report.reportResult==0">미처리</td>
-									<td style="vertical-align:middle; text-align:center" v-if="report.reportResult==1">처리완료</td>
+									<td style="vertical-align:middle; text-align:center" v-if="report.reportResult==1">검토완료</td>
+									<td style="vertical-align:middle; text-align:center" v-if="report.reportResult==2">삭제</td>
 									<td style="vertical-align:middle;">
-										<span class="modal-click-btn" @click="showReportDetailModal(index)">내용보기</span>
+										<span class="modal-click-btn" @click="showReportDetailModal(index)" v-if="report.reportResult!=2">내용보기</span>
+										<span v-if="report.reportResult==2">삭제된내용</span>
 										<i class="fa-solid fa-sort-up ms-2" style="color:blue" v-if="reportDifference[index].index>0"></i>
 										<i class="fa-solid fa-sort-down ms-2" style="color:red" v-if="reportDifference[index].index<0"></i>
 										<span class="ms-2" v-if="reportDifference[index].index==16">new</span>
@@ -1306,32 +1308,6 @@
 							<div class="ms-2">{{reportDetailData.memberName}}</div>
 						</div>
 					</div>
-					<!-- 게시물 신고내용일 경우 출력 -->
-					<div class="row p-2" v-if="reportDetailData.reportTable=='board'">
-						<div class="col">
-							<div class="row">
-								<div class="col-12" v-for="(image, index) in reportDetailContent.boardAttachmentList" style="position:relative">
-									<img style="height:auto; display:block" class="w-100" :src="'${pageContext.request.contextPath}'+image.imageURL">
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-2 text-center">
-									내용
-								</div>
-								<div class="col">
-									{{reportDetailContent.boardWithNickDto.boardContent}}
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-2 text-center">
-									태그
-								</div>
-								<div class="col">
-									<span v-for="(tag,index) in reportDetailContent.boardTagList" :key="index">\#{{tag.tagName}}&nbsp</span>
-								</div>
-							</div>
-						</div>
-					</div>
 					<div class="row p-3">
 						<div class="col">
 							<table class="table">
@@ -1350,6 +1326,43 @@
 							</table>
 						</div>
 					</div>
+					<div class="row">
+						<div class="col">
+							<h5 class="ms-2">신고 상세</h5>
+						</div>
+					</div>
+			<!----------- 게시물 신고내용일 경우 출력 --------->
+					<div class="row p-2" v-if="reportDetailData.reportTable=='board'">
+						<div class="col">
+							<div class="row">
+								<div class="col-12" v-for="(image, index) in reportDetailContent.boardAttachmentList" style="position:relative">
+									<img style="height:auto; display:block" class="w-100" :src="'${pageContext.request.contextPath}'+image.imageURL">
+								</div>
+							</div>
+							<div class="row mt-2">
+								<div class="col-2 text-center">
+									내용
+								</div>
+								<div class="col">
+									{{reportDetailContent.boardWithNickDto.boardContent}}
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-2 text-center">
+									태그
+								</div>
+								<div class="col">
+									<span v-for="(tag,index) in reportDetailContent.boardTagList" :key="index">\#{{tag.tagName}}&nbsp</span>
+								</div>
+							</div>
+							<div class="row mt-3">
+								<div class="col">
+									<button class="btn btn-danger w-100" type="button" @click="boardDelete">게시물 삭제</button>
+								</div>
+							</div>
+						</div>
+					</div>
+			<!----------- 게시물 신고내용일 경우 출력 --------->
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" @click="hideReportDetailModal">닫기</button>
@@ -2220,7 +2233,14 @@
 				this.reportDetailCountList = [...resp.data.reportDetailCountVO];
 				this.reportDetailContent=resp.data.boardListVO;
 			},
-		
+			//신고관리 페이지에서 게시물 즉시 삭제
+			async boardDelete(){
+				const data={reportTableNo:this.reportDetailData.reportTableNo, reportTable:'board', reportResult:2};
+				const resp = await axios.delete(contextPath+"/rest/admin/board", {params:data});
+				this.reportDetailData.reportResult=2;
+				this.loadReportList();
+				this.hideReportDetailModal();
+			},
 		/*------------------------------ 신고 세부 모달 끝 ------------------------------*/
 		},
 		created(){

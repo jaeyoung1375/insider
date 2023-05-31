@@ -31,7 +31,16 @@
 		background-color: #DBDBDB;
 		border-color: #DBDBDB;
 	}
-
+/* 빨간버튼 */
+	.btn.btn-danger{
+		background-color: #d9534f;
+		border-color:#d9534f;
+		font-weight:500;
+	}
+	.btn.btn-danger:hover{
+		background-color: #d23430;
+		border-color: #d23430;
+	}
 /* input, textarea 클릭 시 그림자효과 조정 (rounded)와 함께 씀 */
 	.form-control:focus{
 	    border-color:#dee2e6;

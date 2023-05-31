@@ -3,6 +3,7 @@ package com.kh.insider.restcontroller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,9 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.insider.dto.BoardDto;
+import com.kh.insider.dto.ReportResultDto;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.MemberStatsRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
+import com.kh.insider.repo.ReportResultRepo;
 import com.kh.insider.repo.SearchRepo;
 import com.kh.insider.repo.TagRepo;
 import com.kh.insider.vo.AdminBoardResponseVO;
@@ -43,6 +47,8 @@ public class AdminRestController {
 	private MemberStatsRepo memberStatsRepo;
 	@Autowired
 	private SearchRepo searchRepo;
+	@Autowired
+	private ReportResultRepo reportResultRepo;
 	
 	//관리자페이지 리스트 출력
 	@GetMapping("/board/list")
@@ -128,5 +134,11 @@ public class AdminRestController {
 	public List<SearchStatsVO> getSearchNickStats(@RequestBody SearchStatsSearchVO searchVO){
 		searchVO.setColumn("member_nick");
 		return searchRepo.selectStatsList(searchVO);
+	}
+	@DeleteMapping("/board")
+	public void deleteBoard(@ModelAttribute ReportResultDto reportResultDto) {
+		boardRepo.delete(reportResultDto.getReportTableNo());
+		
+		reportResultRepo.updateResult(reportResultDto);
 	}
 }
