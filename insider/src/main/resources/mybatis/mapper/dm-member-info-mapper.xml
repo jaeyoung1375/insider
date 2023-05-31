@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="dmMemberInfo">
+
+	<!-- 특정 회원에 정보 -->
+	<select id="dmMemberList" resultType="DmMemberInfoDto">
+		WITH first_join AS (
+		    SELECT du.room_no, MIN(du2.member_no) as member_no
+		    FROM dm_user du
+		    INNER JOIN dm_user du2 ON du.room_no = du2.room_no AND du.member_no != du2.member_no
+		    WHERE du.member_no = #{memberNo}
+		    GROUP BY du.room_no
+		)
+		SELECT 
+		    dr.room_name,
+		    drr.member_no,
+		    drr.room_rename,
+		    dr.room_type,
+		    dr.room_no,
+		    dm.message_no, 
+		    dm.message_content, 
+		    dm.message_sender,
+		    dm.message_send_time, 
+		    dm.message_type,
+		    m.member_nick,
+		    m.member_name,
+		    mp.attachment_no
+		FROM 
+		    first_join f
+		    INNER JOIN dm_user du ON f.room_no = du.room_no AND f.member_no = du.member_no
+		    LEFT JOIN dm_room dr ON du.room_no = dr.room_no
+		    LEFT JOIN dm_room_rename drr ON dr.room_no = drr.room_no and drr.member_no= #{memberNo}
+		    LEFT JOIN (
+		        SELECT room_no, MAX(message_no) AS last_message_no
+		        FROM dm_message
+		        GROUP BY room_no
+		    ) lm ON du.room_no = lm.room_no
+		    LEFT JOIN dm_message dm ON lm.last_message_no = dm.message_no AND dm.message_sender != du.member_no
+		    INNER JOIN member m ON du.member_no = m.member_no 
+		    LEFT JOIN member_profile mp ON du.member_no = mp.member_no
+		WHERE
+		    m.member_no NOT IN (SELECT block_no FROM block WHERE member_no = #{memberNo})
+		ORDER BY 
+		    dm.message_no DESC
+	</select>
+	
+</mapper>

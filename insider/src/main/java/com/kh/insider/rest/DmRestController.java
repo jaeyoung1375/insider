@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.insider.dto.DmMemberInfoDto;
 import com.kh.insider.dto.DmMemberListDto;
 import com.kh.insider.dto.DmMessageNickDto;
 import com.kh.insider.dto.DmRoomDto;
 import com.kh.insider.dto.DmRoomUserProfileDto;
 import com.kh.insider.dto.DmUserDto;
+import com.kh.insider.repo.DmMemberInfoRepo;
 import com.kh.insider.repo.DmMemberListRepo;
 import com.kh.insider.repo.DmMessageNickRepo;
 import com.kh.insider.repo.DmRoomRepo;
@@ -49,6 +51,9 @@ public class DmRestController {
 	
 	@Autowired
 	private DmServiceImpl dmServiceImpl;
+	
+	@Autowired
+	private DmMemberInfoRepo dmMemberInfoRepo;
 	
 	
 	//메세지 리스트
@@ -87,10 +92,11 @@ public class DmRestController {
 	
 	//로그인 회원이 참여중인 채팅방 목록
 	@GetMapping("/dmRoomList")
-	public List<DmRoomUserProfileDto> findRoomsById (HttpSession session){
+	public List<DmMemberInfoDto> findRoomsById (HttpSession session){
 		long memberNo = (Long) session.getAttribute("memberNo");
-		return dmRoomUserProfileRepo.findRoomsById(memberNo);
+		return dmMemberInfoRepo.dmMemberList(memberNo);
 	}	
+	
 	
 	//채팅방 생성
 	@PostMapping("/createChatRoom")
@@ -140,12 +146,6 @@ public class DmRestController {
 	    dmServiceImpl.changeRoomInfo(dmRoomDto);
 	}
 	
-	//채팅방 이름 변경
-	@PutMapping("/changeReName")
-	public void changeReName(@RequestBody DmRoomDto dmRoomDto) {
-	    dmServiceImpl.updateReName(dmRoomDto);
-	}
-	
 	//특정 채팅방에 참여한 총 회원수
 	@GetMapping("/countUsersInDmRoom")
 	public int countUsersInDmRoom(@RequestParam int roomNo) {
@@ -157,6 +157,12 @@ public class DmRestController {
 	public DmRoomDto searchDmRoom(@RequestParam int roomNo) {
 		return dmServiceImpl.findRoomByRoomNo(roomNo);
 	}
+	
+	//채팅방 이름 변경
+    @PostMapping("/roomRenameInsert")
+    public void renameInsert(@RequestBody DmRoomVO dmRoomVO) {
+        dmServiceImpl.RenameInsert(dmRoomVO);
+    }
 	
 
 }
