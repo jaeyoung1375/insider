@@ -5,6 +5,8 @@ import java.util.List;
 import com.kh.insider.dto.SearchComplexDto;
 import com.kh.insider.dto.SearchDto;
 import com.kh.insider.dto.SearchWithProfileDto;
+import com.kh.insider.vo.SearchStatsSearchVO;
+import com.kh.insider.vo.SearchStatsVO;
 
 public interface SearchRepo {
 	//검색 추천 리스트 출력
@@ -19,4 +21,7 @@ public interface SearchRepo {
 	SearchDto selectOne(SearchDto searchDto);
 	//검색 기록 시간 갱신
 	void updateTime(SearchDto searchDto);
+	
+	//통계자료 반환
+	List<SearchStatsVO> selectStatsList(SearchStatsSearchVO searchStatsSearchVO);
 }
