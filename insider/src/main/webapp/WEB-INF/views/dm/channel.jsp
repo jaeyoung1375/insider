@@ -184,11 +184,11 @@
 					<div class="card col-3" style="width:290px;border-radius:0;border-top:none;padding:0;">
 						<div class="card-body" style="padding:0;padding-top:10px;">
 						<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo">
-						    <h5>
+						    <div>
 						    <a :href="'channel?room=' + room.roomNo" style="color: black; text-decoration: none;">
 							    {{room.roomName}}
 							</a>
-						    </h5>
+						    </div>
 						</div>
 						</div>
 					</div>
@@ -431,6 +431,7 @@
                    
    					roomName: "",
    					roomType: "",
+   					roomRename:"",
                     
                 };
             },
@@ -632,9 +633,28 @@
 				async fetchDmRoomList() {
 				    try {
 				        const resp = await axios.get("${pageContext.request.contextPath}/rest/dmRoomList");
+				        const countUrl = "${pageContext.request.contextPath}/rest/countUsersInDmRoom";
 				        this.dmRoomList.push(...resp.data);
+				
+				        //채팅방 나에게만 이름 변경
+				        this.dmRoomList.forEach(async (item) => {
+				    	// 채팅방 총 인원 수
+				        const countResp = await axios.get(countUrl, { params: { roomNo: item.roomNo } });
+				        const count = countResp.data;
+				        	//채팅방 이름이 변경 되었고, 변경한 사람이 로그인한 회원 본인일 경우
+				            if (item.roomRename != null || item.memberNo === this.memberNo) {
+				                item.roomName = item.roomRename;
+				            } else {
+				                item.roomName = item.memberNick;
+				                
+				                //채팅방 이름이 변경되지 않았고, 그룹 채팅일 경우
+				                if (item.roomType === 0) {
+							        item.roomName = item.memberNick + " 외 " + (count - 1) + "명";
+				                }
+				            }
+				        });
 				    } catch (error) {
-				        console.error(error); 
+				        console.error(error);
 				    }
 				},
 				//채팅방 생성 및 입장, 초대
@@ -759,19 +779,17 @@
 				//채팅방 이름 변경
 				async changeRoomName() {
 				    try {
-				        const updateRoomUrl = "${pageContext.request.contextPath}/rest/changeReName";
-				        const updateRoomData = {
+				    	const renameUrl = "${pageContext.request.contextPath}/rest/roomRenameInsert";
+				        const data = {
 				            roomNo: this.roomNo,
-				            roomName: roomNameInput.value
-				        };
-				        await axios.put(updateRoomUrl, updateRoomData);
-				        //const resp = await axios.put(updateRoomUrl, updateRoomData);
-				        //this.roomName = resp.data.name;
-				        //console.log("확인용 roomName", resp.data);
-				        //console.log("확인용 roomName2", resp.data.name);
+				           	memberNo: this.memberNo,
+				            roomRename: roomNameInput.value
+				        }
+				        await axios.post(renameUrl, data);
+				        console.log("채팅방 이름 변경이 성공적으로 수행되었습니다.");
 
 				        this.dmRoomList = [];
-				        await this.fetchDmRoomList(); //채팅방 목록 불러오기
+				        await this.fetchDmRoomList();
 				    } catch (error) {
 				        console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
 				    }
