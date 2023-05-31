@@ -11,37 +11,37 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.MemberDto;
-import com.kh.insider.service.AlarmService;
-import com.kh.insider.vo.AlarmVO;
+import com.kh.insider.service.NoticeService;
+import com.kh.insider.vo.NoticeVO;
 
 @RestController
-@RequestMapping("/rest/alarm")
-public class AlarmRestController {
+@RequestMapping("/rest/notice")
+public class NoticeRestController {
 
 	@Autowired
-	private AlarmService alarmService;
+	private NoticeService noticeService;
 	
 	
 	// findByNo를 사용하여 memberNo에 관련된 나머지 데이터를 불러와야함
 	@GetMapping("")
-	public List<AlarmVO> selectList(
+	public List<NoticeVO> selectList(
 									HttpSession session){
 		Long memberNo = (Long) session.getAttribute("login");
-		return alarmService.selectAlarm(memberNo);
+		return noticeService.selectNotice(memberNo);
 	}
 	
 	@PutMapping("/check")
 	public void checkAlarm(
 							HttpSession session) {
 		Long memberNo = (Long)session.getAttribute("login");
-		alarmService.check(memberNo);
+		noticeService.check(memberNo);
 	}
 	
 	@GetMapping("/is_insider")
 	public Integer isInsider(
 						HttpSession session) {
 		Long memberNo = (Long)session.getAttribute("login");
-		return alarmService.isInsider(memberNo);
+		return noticeService.isInsider(memberNo);
 	}
 	
 }

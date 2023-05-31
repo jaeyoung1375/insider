@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
-public class AlarmVO {
+public class NoticeVO {
 	
 	//게시물 번호
 	private int boardNo;

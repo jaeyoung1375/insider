@@ -2,13 +2,13 @@ package com.kh.insider.repo;
 
 import java.sql.Date;
 
-import com.kh.insider.vo.AlarmVO;
+import com.kh.insider.vo.NoticeVO;
 
-public class AlarmRepoImpl implements AlarmRepo {
+public class NoticeRepoImpl implements NoticeRepo {
 
-	private final AlarmVO alarmVO;
+	private final NoticeVO alarmVO;
 
-    public AlarmRepoImpl(AlarmVO alarmVO) {
+    public NoticeRepoImpl(NoticeVO alarmVO) {
         this.alarmVO = alarmVO;
     }
 

@@ -2,9 +2,9 @@
  <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
- <mapper namespace="alarm">
+ <mapper namespace="notice">
 
-	<select id="selectList" resultType="AlarmVO" parameterType="int">
+	<select id="selectList" resultType="NoticeVO" parameterType="int">
 	select * from (
 		select b.board_no"board_no", bl.member_no, m.member_nick, mp.attachment_no, bl.like_check "check", bl.like_time "alarm_time", 0 "type", to_char(bl."like_member_count") "etc"   from board b
     inner join (
@@ -60,7 +60,7 @@ select br2.board_no, m.member_no, m.member_nick, mp.attachment_no, r.reply_check
 		) and reply_check = 0
 	</update>
 	
-	<select id="isAlarm" resultType="int" parameterType="int">
+	<select id="isNotice" resultType="int" parameterType="int">
 		select * from (
 			select board_no "no" from board_like where board_no in (
 			        select b.board_no from board  b

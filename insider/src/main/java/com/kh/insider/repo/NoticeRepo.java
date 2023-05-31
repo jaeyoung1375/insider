@@ -2,7 +2,7 @@ package com.kh.insider.repo;
 
 import java.sql.Date;
 
-public interface AlarmRepo{
+public interface NoticeRepo{
 	
 	int getBoardNo();
 	Date getBoardTime();

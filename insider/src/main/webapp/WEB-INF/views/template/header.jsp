@@ -195,6 +195,35 @@
   });
 </script>
 
+<script type="text/javascript">
+
+$(document).ready(function() {
+	  $("#notice").click(function() {
+	    $("#noticeContainer").html(""); // 출력할 컨테이너 초기화
+
+	    $.ajax({
+	      type: "GET",
+	      url: "${pageContext.request.contextPath}/rest/notice",
+	      dataType: "json",
+	      success: function(result) {
+	        if (result.length > 0) {
+	          // 알림이 있을 경우 처리 로직
+	          $.each(result, function(index, notice) {
+	            // 각 알림 데이터를 출력하는 로직
+	            // 예시로 제목(title)을 출력하도록 함
+	            $("#noticeContainer").append("<p>" + notice.title + "</p>");
+	          });
+	        } else {
+	          // 알림이 없을 경우 처리 로직
+	          $("#noticeContainer").append("<p>No new notifications</p>");
+	        }
+	      }
+	    });
+	  });
+	});
+
+</script>
+
 
 
 
@@ -223,18 +252,18 @@
 							</li>
 						<!-- 알림 -->
 							 <li class="nav-item mt-2">
-							    <a class="nav-link" @click="toggleModal"><i class="fa-regular fa-heart"></i></a>
-							
+							    <a class="nav-link notice" @click="toggleModal">
+							    <i class="fa-regular fa-heart"></i>
+								<i class="fa-solid fa-circle" v-show="hasNewNotification"></i>
+							    </a>
+							    
 							    <div class="modal-window" v-if="showModal">
 							      <div class="modal-content">
 							        <div class="modal-header">
-							          <h6>알림창</h6>
 							        </div>
 							        <div class="modal-body">
 							          <ul class="notification-list">
-							            <li>Notification 1</li>
-							            <li>Notification 2</li>
-							            <li>Notification 3</li>
+ 										<li v-for="notification in notifications">{{ notification }}</li>
 							          </ul>
 							        </div>
 							        <div class="modal-footer">
@@ -303,6 +332,18 @@
 			
 		    toggleModal() {
 			      this.showModal = !this.showModal;
+			      if (this.hasNewNotification) {
+			          this.hasNewNotification = false; // 알림창을 열면 새로운 알림이 확인된 것으로 표시
+			      }
+			},
+			
+			loadNotifications() {
+			      // AJAX 요청을 통해 알림 데이터를 받아온다고 가정하고 처리하는 로직
+			      // 받아온 데이터를 this.notifications에 할당
+			      this.notifications = ["알림 1", "알림 2", "알림 3"];
+			      
+			      // 새로운 알림이 있는 경우 아이콘 표시
+			      this.hasNewNotification = true;
 			},
          },	
 
@@ -311,6 +352,10 @@
 		},
 		watch:{
 			//감시영역
+		},
+		
+		mounted() {
+		    this.loadNotifications(); // 컴포넌트가 마운트될 때 알림 데이터를 로드
 		},
         
 	}).mount("#aside");
