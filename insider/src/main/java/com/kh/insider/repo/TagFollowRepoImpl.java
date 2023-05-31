@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.kh.insider.dto.TagFollowDto;
 
 @Repository
-public class TagFollowRepoImpl implements TagFollowRepo{
+public class TagFollowRepoImpl implements TagFollowRepo {
 	@Autowired
 	private SqlSession sqlSession;
 
@@ -37,5 +37,10 @@ public class TagFollowRepoImpl implements TagFollowRepo{
 	public void delete(TagFollowDto tagFollowDto) {
 		sqlSession.delete("tagFollow.delete", tagFollowDto);
 	}
+	@Override
+	public 	TagFollowDto selectOne(TagFollowDto tagFollowDto) {
+		return sqlSession.selectOne("tagFollow.selectOne", tagFollowDto);
+	}
+	
 
 }

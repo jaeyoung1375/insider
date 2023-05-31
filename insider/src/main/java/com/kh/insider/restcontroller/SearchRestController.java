@@ -36,6 +36,7 @@ public class SearchRestController {
 		long memberNo = (long)httpSession.getAttribute("memberNo");
 		return searchRepo.selectSearchedList(memberNo);
 	}
+	//검색기록 추가
 	@PostMapping("/")
 	public void insert(@RequestBody SearchDto searchDto, HttpSession httpSession) {
 		

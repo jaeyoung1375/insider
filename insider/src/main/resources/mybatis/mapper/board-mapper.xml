@@ -251,7 +251,33 @@
 	<select id="selectOneBoard" resultMap="boardListVO">
 		select * from board_with_nick where board_no=#{boardNo}
 	</select>
-
+	<!-- 계층형 태그로 조회 -->
+	<select id="selectListTagBoard" resultMap="boardListVO">
+		<bind name="blockExist" value="blockDtoList!=null and blockDtoList.size()>0"></bind>
+		<include refid="topNheader"></include>
+		select * from board_with_nick 
+			where board_no in (SELECT board_no FROM board_tag WHERE tag_name=#{tagName})
+		 	<if test="blockExist">
+ 				and member_no not in
+ 				<foreach collection="blockDtoList" open="(" close=")" item="blockDto" separator=",">
+ 					#{blockDto.blockNo}
+ 				</foreach>
+ 			</if>
+		order by board_no desc
+		<include refid="topNfooter"></include>	
+	</select>
+	<!-- 태그로 조회 게시물 수 반환 -->
+	<select id="selectListTagBoardCount" resultType="int">
+		<bind name="blockExist" value="blockDtoList!=null and blockDtoList.size()>0"></bind>
+		select count(*) from board_with_nick 
+			where board_no in (SELECT board_no FROM board_tag WHERE tag_name=#{tagName})
+		 	<if test="blockExist">
+ 				and member_no not in
+ 				<foreach collection="blockDtoList" open="(" close=")" item="blockDto" separator=",">
+ 					#{blockDto.blockNo}
+ 				</foreach>
+ 			</if>
+	</select>
 
 	<!-- 신고수 추가 기능 -->
 	<update id="addReport">

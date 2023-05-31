@@ -7,7 +7,7 @@ public class SearchComplexDto {
 	private String name;
 	private String nick;
 	private int follow;
-	private Integer memberNo;
+	private Long memberNo;
 	private Integer attachmentNo;
 	
 	public String getImageURL() {
