@@ -44,12 +44,20 @@ public class SearchRestController {
 		searchDto.setMemberNo(memberNo);
 		
 		SearchDto searchedDto = searchRepo.selectOne(searchDto);
-		//최초 검색이면 입력
-		if(searchedDto==null) {
-			searchRepo.insert(searchDto);
-		}//기존에 기록이 있으면 삭제 기록 0으로 만들고 시간 수정
+		//태그나 아이디를 눌러서 들어갔을 때 검색 리스트에는 안나오나 기록은 되도록 만듬
+		if(searchDto.getSearchDelete()!=null && searchDto.getSearchDelete()==1) {
+			if(searchedDto==null) {
+				searchRepo.insert(searchDto);
+			}
+		}
 		else {
-			searchRepo.updateTime(searchDto);
+			//최초 검색이면 입력
+			if(searchedDto==null) {
+				searchRepo.insert(searchDto);
+			}//기존에 기록이 있으면 삭제 기록 0으로 만들고 시간 수정
+			else {
+				searchRepo.updateTime(searchDto);
+			}
 		}
 	}
 	//검색기록 삭제

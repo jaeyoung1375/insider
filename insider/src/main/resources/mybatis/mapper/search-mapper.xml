@@ -43,6 +43,9 @@
 		<if test="searchMemberNo!=null and !searchMemberNo.equals('')">
 			,search_member_no
 		</if>
+		<if test="searchDelete!=null and !searchDelete.equals('')">
+			,search_delete
+		</if>
 		) 
 		values(
 		search_seq.nextval, #{memberNo}
@@ -51,6 +54,9 @@
 		</if>
 		<if test="searchMemberNo!=null and !searchMemberNo.equals('')">
 			,#{searchMemberNo}
+		</if>
+		<if test="searchDelete!=null and !searchDelete.equals('')">
+			,#{searchDelete}
 		</if>
 		)
 	</insert>
