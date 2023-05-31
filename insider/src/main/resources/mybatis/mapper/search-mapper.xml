@@ -15,6 +15,7 @@
 <!-- 검색 추천 리스트 출력 -->
 	<select id="selectRecommand" resultType="searchComplexDto">
 		select * from search_complex where instr(name, #{searchInput})>0 or instr(nick, #{searchInput})>0
+		ORDER BY UTL_MATCH.EDIT_DISTANCE(name, #{searchInput}) ASC, UTL_MATCH.EDIT_DISTANCE(nick, #{searchInput}) ASC
 	</select>
 <!-- 검색했던 리스트 출력 -->
 	<select id="selectSearched" resultType="searchWithProfileDto">
@@ -133,6 +134,15 @@
 		 	</choose>
 		GROUP BY ${column}
 		order by count desc
-		<include refid="topNfooter"></include>
+		
+		)TMP
+		<choose>
+			<when test="column.equals('search_tag_name')">
+			 	)where rn between #{tagBegin} and #{tagEnd}
+			</when>
+			<otherwise>
+				)where rn between #{nickBegin} and #{nickEnd}
+			</otherwise>
+		</choose>
 	</select>
 </mapper>

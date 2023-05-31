@@ -13,6 +13,7 @@ public class BoardSearchVO {
 	private List<BlockDto> blockDtoList;
 	private int page;
 	private int boardCount;
+	private String tagName;
 	
 	public int getEnd() {
 		return page*boardCount;

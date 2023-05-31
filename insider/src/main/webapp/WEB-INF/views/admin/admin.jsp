@@ -112,6 +112,17 @@
 .modal-click-btn-green:hover{
 	color:#20c997;
 }
+/* 모달이 사이즈가 커지면 스크롤이 생기고 헤더 고정 */
+.modal-content{
+	max-height:100%;
+	overflow-y:auto
+}
+.modal-header{
+	position:sticky; 
+	top:0; 
+	z-index:1; 
+	background-color:white
+}
 </style>
 <div id="app">
 	<div class="container-fluid mt-4" style="position:relative">
@@ -982,7 +993,7 @@
 					</div>
 				</div>
 			</div>
-		<!--------------------------- 조회 통계 --------------------------->
+		<!--------------------------- 검색 통계 --------------------------->
 			<div class="col" v-show="adminMenu==6">
 				<div class="row">
 					<div class="col">
@@ -990,8 +1001,96 @@
 					</div>
 				</div>
 				<hr>
+				<!-- 검색조건 -->
+				<div class="row">
+					<div class="col-2 d-flex align-items-center justify-content-center">
+						<span>성별</span>
+					</div>						
+					<div class="col-2 p-0">
+						<select class="form-control" v-model="searchStatsSearch.memberGender">
+							<option value="">전체(선택)</option>
+							<option value="0">여성</option>
+							<option value="1">남성</option>
+						</select>
+					</div>
+					<div class="col-2 d-flex align-items-center justify-content-center">
+						<span>생일 </span>
+					</div>
+					<div class="col-6 p-0 m-0">
+						<div class="row p-0 m-0">
+							<div class="col-5 p-0">
+								<input class="form-control" type="date" v-model="searchStatsSearch.memberBeginBirth">
+							</div>
+							<div class="col-2 d-flex align-items-center justify-content-center">
+								<span> ~ </span>
+							</div>
+							<div class="col-5 p-0">
+								<input class="form-control" type="date" v-model="searchStatsSearch.memberEndBirth">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-11">
+						<div class="row">
+							<div class="col-2 d-flex align-items-center justify-content-center">
+								<span>기간설정 </span>
+							</div>
+							<div class="col-4">
+								<input class="form-control" type="date" v-model="searchStatsSearch.searchBeginDate">
+							</div>
+							<div class="col-1 d-flex align-items-center justify-content-center">
+								<span> 부터 </span>
+							</div>
+							<div class="col-4">
+								<input class="form-control" type="date" v-model="searchStatsSearch.searchEndDate">
+							</div>
+							<div class="col-1 d-flex align-items-center">
+								<span> 까지</span>
+							</div>
+						</div>
+					</div>
+					<div class="col-1 p-0">
+						<button type="button" class="btn btn-secondary w-100" @click="getSearchTagStats(true)">검색</button>
+					</div>
+				</div>
+				<!-- 검색 닉네임 통계 -->
+				<div class="row mt-4">
+					<div class="col">
+						<h4 class="m-0">검색 닉네임 통계</h4>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col" style="position:relative">
+						<div class="chart-arrow-left" :class="{'chart-disabled':searchStatsSearch.nickPage==1}">
+							<i class="fa-solid fa-chevron-left" @click="searchNickStatsPrev"></i>
+						</div>
+						<div class="chart-arrow-right" :class="{'chart-disabled':!searchNickChartRight}">
+							<i class="fa-solid fa-chevron-right" @click="searchNickStatsNext"></i>
+						</div>
+						<canvas ref="searchNickChart"></canvas>
+					</div>
+				</div>
+				<hr>
+				<!-- 검색 태그 수 통계 -->
+				<div class="row mt-4">
+					<div class="col">
+						<h4 class="m-0">검색 태그 통계</h4>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col" style="position:relative">
+						<div class="chart-arrow-left" :class="{'chart-disabled':searchStatsSearch.tagPage==1}">
+							<i class="fa-solid fa-chevron-left" @click="searchTagStatsPrev"></i>
+						</div>
+						<div class="chart-arrow-right" :class="{'chart-disabled':!searchTagChartRight}">
+							<i class="fa-solid fa-chevron-right" @click="searchTagStatsNext"></i>
+						</div>
+						<canvas ref="searchTagChart"></canvas>
+					</div>
+				</div>
 			</div>
-		<!--------------------------- 조회 통계 끝 --------------------------->
+		<!--------------------------- 검색 통계 끝 --------------------------->
 		</div>
 	</div>
 	<!-- ---------------------------------신고 내용 관리 모달-------------------------- -->
@@ -1272,6 +1371,8 @@
 	let cumulativeChart;
 	let boardTimeChart;
 	let boardTagChart;
+	let searchTagChart;
+	let searchNickChart;
 	Vue.createApp({
 		data() {
 			return {
@@ -1383,6 +1484,26 @@
 				},
 				boardTimeChartLeft:true,
 				boardTagChartRight:true,
+				/*---------------------------검색 통계 데이터 --------------------------- */
+				searchStatsSearch:{
+					tagPage:1,
+					nickPage:1,
+					memberGender:"",
+					memberBeginBirth:"",
+					memberEndBirth:"",
+					searchBeginDate:"",
+					searchEndDate:"",
+				},
+				searchTagList:{
+					name:[],
+					count:[],
+				},
+				searchNickList:{
+					name:[],
+					count:[],
+				},
+				searchTagChartRight:true,
+				searchNickChartRight:true,
 				/*---------------------------정지 데이터 --------------------------- */
 				suspensionModal:null,
 				suspensionIndex:[],
@@ -1945,8 +2066,112 @@
 				this.boardTagSearch.page++;
 				this.getBoardTagStats();
 			},
-		
-		/*------------------------------ 게시물통계통계 끝 ------------------------------*/
+		/*------------------------------ 게시물통계 끝 ------------------------------*/
+		/*------------------------------ 검색통계 시작 ------------------------------*/
+			async getSearchNickStats(buttonClick){
+				if(buttonClick){
+					this.searchStatsSearch.nickPage=1;
+				}
+				const resp = await axios.post(contextPath+"/rest/admin/stats/searchNick", this.searchStatsSearch)
+				this.searchNickChartRight=true;
+				if(resp.data.length<15){
+					this.searchNickChartRight=false;
+				}
+				this.searchNickList.name = _.map(resp.data, 'name');
+				this.searchNickList.count = _.map(resp.data, 'count');
+				//캔버스 사용 초기화
+				if(searchNickChart!=null) {
+					searchNickChart.destroy();
+				}
+				searchNickChart = this.$refs.searchNickChart;
+				
+				searchNickChart = new Chart(searchNickChart, {
+					type: "bar",
+					data: {
+						labels: this.searchNickList.name,
+						datasets: [
+							{
+								label: "생성 개수",
+								data: this.searchNickList.count,
+								borderWidth: 1,
+								backgroundColor: [
+									"navy",
+								],
+								borderColor: [
+									"navy",
+								],
+							},
+						],
+					},
+					options: {
+						scales: {
+							y: {beginAtZero: true,},
+						},
+					},
+				});
+			},
+			async getSearchTagStats(buttonClick){
+				if(buttonClick){
+					this.searchStatsSearch.tagPage=1;
+					this.searchStatsSearch.nickPage=1;
+					this.getSearchNickStats();
+				}
+				const resp = await axios.post(contextPath+"/rest/admin/stats/searchTag", this.searchStatsSearch)
+				this.searchTagChartRight=true;
+				if(resp.data.length<15){
+					this.searchTagChartRight=false;
+				}
+				this.searchTagList.name = _.map(resp.data, 'name');
+				this.searchTagList.count = _.map(resp.data, 'count');
+				//캔버스 사용 초기화
+				if(searchTagChart!=null) {
+					searchTagChart.destroy();
+				}
+				searchTagChart = this.$refs.searchTagChart;
+				
+				searchTagChart = new Chart(searchTagChart, {
+					type: "bar",
+					data: {
+						labels: this.searchTagList.name,
+						datasets: [
+							{
+								label: "생성 개수",
+								data: this.searchTagList.count,
+								borderWidth: 1,
+								backgroundColor: [
+									"navy",
+								],
+								borderColor: [
+									"navy",
+								],
+							},
+						],
+					},
+					options: {
+						scales: {
+							y: {beginAtZero: true,},
+						},
+					},
+				});
+			},
+			//차트 좌우버튼 클릭시
+			searchTagStatsPrev(){
+				this.searchStatsSearch.tagPage++;
+				this.getSearchTagStats();
+			},
+			searchTagStatsNext(){
+				this.searchStatsSearch.tagPage--;
+				this.getSearchTagStats();
+			},
+			searchNickStatsPrev(){
+				this.searchStatsSearch.nickPage--;
+				this.getSearchNickStats();
+			},
+			searchNickStatsNext(){
+				this.searchStatsSearch.nickPage++;
+				this.getSearchNickStats();
+			},
+		/*------------------------------ 검색통계 끝 ------------------------------*/
 		/*------------------------------ 정지모달 시작 ------------------------------*/
  			showSuspensionModal(index, status){
 				if(this.suspensionModal==null) return;
@@ -2079,6 +2304,8 @@
 				}
 				else if(this.adminMenu==6){
 					//조회 통계
+					this.getSearchTagStats();
+					this.getSearchNickStats();
 				}
 			}
 		},

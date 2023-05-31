@@ -81,6 +81,9 @@
 	border-right: 1px solid lightgray;
 	border-bottom: 1px solid lightgray;
 	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+	/* 스크롤바 반들기 */
+	max-height:1500%;
+	overflow-y:auto
 }
 .search-recommand-menu{
 	z-iondex:2000;
@@ -108,7 +111,8 @@
 				<div class="row w-100 p-0 m-0" @click="loadSearchedList">
 					<div class="col form-group has-search p-0 m-0">
 						<span class="fa-solid fa-search form-control-feedback"></span>
-						<input type="text" class="form-control rounded  w-100 m-0" placeholder="검색" v-model="searchInput" @blur="hideAllList"  @focus="searchInputChanged" @input="searchInputChanged" ref="searchInput">
+						<input type="text" class="form-control rounded  w-100 m-0" placeholder="검색" v-model="searchInput" @blur="hideAllList"  @focus="searchInputChanged" 
+							@input="searchInputChanged" ref="searchInput">
 					</div>
 				</div>
 			<!-- 검색기록 -->
@@ -233,7 +237,8 @@
 				this.boardList[index].boardWithNickDto.boardLike=resp.data.count;
 			},
 			//검색어 입력시
-			searchInputChanged(){
+			searchInputChanged(e){
+				this.searchInput = e.target.value;
 				if(this.searchInput.length>0){
 					this.recommandListShow=true;
 					this.searchedListShow=false;
@@ -288,8 +293,8 @@
 			percent(){
 				if(this.percent >= 80){
 				this.loadList();
-			}
-}			
+				}
+			}			
 		},
 		mounted(){
 			window.addEventListener("scroll", _.throttle(()=>{

@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class SearchStatsSearchVO {
-	private int page=1;
+	private int tagPage=1;
+	private int nickPage=1;
 	private String column;
 	private Integer memberGender;
 	private String memberBeginBirth;
@@ -15,11 +16,18 @@ public class SearchStatsSearchVO {
 		return 15;
 	}
 	
-	public int getBegin() {
-		return page*getSize()-getSize()+1;
+	public int getTagBegin() {
+		return tagPage*getSize()-getSize()+1;
 	}
 	//종료행 번호 계산
-	public int getEnd() {
-		return page*getSize();
+	public int getTagEnd() {
+		return tagPage*getSize();
+	}
+	public int getNickBegin() {
+		return nickPage*getSize()-getSize()+1;
+	}
+	//종료행 번호 계산
+	public int getNickEnd() {
+		return nickPage*getSize();
 	}
 }

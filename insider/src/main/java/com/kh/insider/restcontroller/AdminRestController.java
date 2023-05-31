@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.MemberStatsRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
+import com.kh.insider.repo.SearchRepo;
 import com.kh.insider.repo.TagRepo;
 import com.kh.insider.vo.AdminBoardResponseVO;
 import com.kh.insider.vo.AdminBoardSearchVO;
@@ -26,6 +27,8 @@ import com.kh.insider.vo.MemberStatsSearchVO;
 import com.kh.insider.vo.MemberWithProfileResponseVO;
 import com.kh.insider.vo.MemberWithProfileSearchVO;
 import com.kh.insider.vo.PaginationVO;
+import com.kh.insider.vo.SearchStatsSearchVO;
+import com.kh.insider.vo.SearchStatsVO;
 
 @RestController
 @RequestMapping("/rest/admin")
@@ -38,17 +41,8 @@ public class AdminRestController {
 	private TagRepo tagRepo;
 	@Autowired
 	private MemberStatsRepo memberStatsRepo;
-
-	//통계자료 반환
-	@PostMapping("/stats/boardTime")
-	public List<BoardTimeStatsResponseVO> getTimeStats(@RequestBody BoardTimeStatsSearchVO boardTimeStatsSearchVO){
-		return boardRepo.getBoardTimeStats(boardTimeStatsSearchVO);
-	}
-	//통계자료 반환
-	@PostMapping("/stats/boardTag")
-	public List<BoardTagStatsResponseVO> getTagStats(@RequestBody BoardTagStatsSearchVO boardTagStatsSearchVO){
-		return boardRepo.getBoardTagStats(boardTagStatsSearchVO);
-	}
+	@Autowired
+	private SearchRepo searchRepo;
 	
 	//관리자페이지 리스트 출력
 	@GetMapping("/board/list")
@@ -104,8 +98,17 @@ public class AdminRestController {
 		responseVO.setPaginationVO(paginationVO);
 		return responseVO;
 	}
+	//게시물 통계자료 반환
+	@PostMapping("/stats/boardTime")
+	public List<BoardTimeStatsResponseVO> getTimeStats(@RequestBody BoardTimeStatsSearchVO boardTimeStatsSearchVO){
+		return boardRepo.getBoardTimeStats(boardTimeStatsSearchVO);
+	}
+	@PostMapping("/stats/boardTag")
+	public List<BoardTagStatsResponseVO> getTagStats(@RequestBody BoardTagStatsSearchVO boardTagStatsSearchVO){
+		return boardRepo.getBoardTagStats(boardTagStatsSearchVO);
+	}
 
-	//통계자료 반환
+	//회원 통계자료 반환
 	@PostMapping("/stats/member")
 	public List<MemberStatsResponseVO> getStats(@RequestBody MemberStatsSearchVO memberStatsSearchVO){
 		return memberStatsRepo.selectList(memberStatsSearchVO);
@@ -113,5 +116,17 @@ public class AdminRestController {
 	@PostMapping("/stats/cumulative")
 	public List<MemberStatsResponseVO> getCumulative(@RequestBody MemberStatsSearchVO memberStatsSearchVO){
 		return memberStatsRepo.selectListCumulative(memberStatsSearchVO);
+	}
+	
+	//검색 통계자료 반환
+	@PostMapping("/stats/searchTag")
+	public List<SearchStatsVO> getSearchTagStats(@RequestBody SearchStatsSearchVO searchVO) {
+		searchVO.setColumn("search_tag_name");
+		return searchRepo.selectStatsList(searchVO);
+	}
+	@PostMapping("/stats/searchNick")
+	public List<SearchStatsVO> getSearchNickStats(@RequestBody SearchStatsSearchVO searchVO){
+		searchVO.setColumn("member_nick");
+		return searchRepo.selectStatsList(searchVO);
 	}
 }
