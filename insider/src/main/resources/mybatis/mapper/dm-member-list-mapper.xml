@@ -6,41 +6,68 @@
     
 <mapper namespace="dmMemberList">
 
-	<!-- 팔로워 회원 목록 -->
+	<!-- 팔로워 회원 목록 + 나를 차단한 사람, 내가 차단한 사람, 일대일 채팅방 참여 회원 제외 + memberNick + attachmentNo -->
 	<select id="chooseDm" resultType="DmMemberListDto">
-        select * from (
-        	select * from (
-	        	select m.member_no, m.member_nick, m.member_name, mp.attachment_no from follow f
-	        
-	        	inner join member m on f.follow_follower = m.member_no
-	        	left outer join member_profile mp on mp.member_no = m.member_no
-	        
-	        	where f.member_no = #{memberNo}
-        	) order by dbms_random.value
-        <![CDATA[
-        )where rownum <= 10
-        ]]>
+        SELECT * 
+		FROM (
+		    SELECT * 
+		    FROM (
+		        SELECT m.member_no, m.member_nick, m.member_name, mp.attachment_no 
+		        FROM follow f
+		        INNER JOIN member m ON f.follow_follower = m.member_no
+		        LEFT OUTER JOIN member_profile mp ON mp.member_no = m.member_no
+		        WHERE f.member_no = #{memberNo}
+		        AND NOT EXISTS (
+		            SELECT 1
+		            FROM block b
+		            WHERE b.block_no = #{memberNo} AND b.member_no = m.member_no
+		        )
+		        AND NOT EXISTS (
+		            SELECT 1
+		            FROM block b
+		            WHERE b.member_no = #{memberNo} AND b.block_no = m.member_no
+		        )
+		        AND NOT EXISTS (
+		            SELECT 1
+		            FROM dm_user du
+		            JOIN dm_room dr ON du.room_no = dr.room_no
+		            JOIN dm_privacy_room dpr ON dr.room_no = dpr.room_no 
+		            WHERE dr.room_type = 1 AND (
+		                (dpr.inviter_no = #{memberNo} AND dpr.invitee_no = m.member_no) OR
+		                (dpr.inviter_no = m.member_no AND dpr.invitee_no = #{memberNo})
+		            )
+		        )
+		    )
+		    ORDER BY dbms_random.value
+		)
+		<![CDATA[WHERE rownum <= 10]]>
 	</select>
 	
-	<!-- 차단한 회원을 제외한 전체 회원 목록 -->
+	<!-- 나를 차단한 사람, 내가 차단한 사람, 일대일 채팅방 참여 회원을 제외한 모든 회원 조회 + memberNick + attachmentNo -->
 	<select id="dmMemberSearch" resultType="DmMemberListDto">
-		select m.member_no, m.member_nick, m.member_name, mp.attachment_no from (
-	        select * from member where member_no != #{memberNo}
-	        minus
-	        select m.* from member m left outer join block b on b.member_no = m.member_no where b.block_no = #{memberNo} 
-	        minus
-	        select m.* from member m left outer join block b on b.block_no = m.member_no where b.member_no = #{memberNo}
-	    ) m left outer join member_profile mp on m.member_no = mp.member_no
-	    where instr(member_nick, #{keyword}) > 0
-	    union
-	    select m.member_no, m.member_nick, m.member_name, mp.attachment_no from (
-	        select * from member where member_no != #{memberNo}
-	        minus
-	        select m.* from member m left outer join block b on b.member_no = m.member_no where b.block_no = #{memberNo} 
-	        minus
-	        select m.* from member m left outer join block b on b.block_no = m.member_no where b.member_no = #{memberNo}
-    	) m left outer join member_profile mp on m.member_no = mp.member_no
-    	where instr(member_name, #{keyword}) > 0
+		SELECT m.member_no, m.member_nick, m.member_name, mp.attachment_no 
+		FROM member m
+		LEFT OUTER JOIN member_profile mp ON m.member_no = mp.member_no
+		WHERE m.member_no != #{memberNo} 
+		AND m.member_no NOT IN (
+		    SELECT b.member_no
+		    FROM block b
+		    WHERE b.block_no = #{memberNo}
+		    UNION
+		    SELECT b.block_no
+		    FROM block b
+		    WHERE b.member_no = #{memberNo}
+		    UNION
+		    SELECT du.member_no
+		    FROM dm_user du
+		    JOIN dm_room dr ON du.room_no = dr.room_no
+		    JOIN dm_privacy_room dpr ON dr.room_no = dpr.room_no 
+		    WHERE dr.room_type = 1 AND (
+		        (dpr.inviter_no = #{memberNo} AND dpr.invitee_no = m.member_no) OR
+		        (dpr.inviter_no = m.member_no AND dpr.invitee_no = #{memberNo})
+		    )
+		)
+		AND <![CDATA[(INSTR(m.member_nick, #{keyword}) > 0 OR INSTR(m.member_name, #{keyword}) > 0)]]>
 	</select>
     
 </mapper>
