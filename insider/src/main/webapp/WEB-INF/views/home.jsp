@@ -53,30 +53,30 @@
     }
     
     .like {
-	color:red;
-	cursor: pointer;
+		color:red;
+		cursor: pointer;
 	}
 	
 	.fa-heart {
-	cursor: pointer;
+		cursor: pointer;
 	}
 	
 	.isFollow {
-	display: none;
+		display: none;
 	}
 	
 	
 	 .fullscreen{
-            position:fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 99999;
-            
-            background-color: rgba(0, 0, 0, 0.2);
+        position:fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 99999;
+        
+        background-color: rgba(0, 0, 0, 0.2);
 /*             display: none; */
-      }
+    }
 
      .fullscreen > .fullscreen-container{
          position: absolute;
