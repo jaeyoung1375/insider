@@ -149,8 +149,8 @@
               </c:when>
               <c:otherwise> <!-- 본인 프로필이 아니라면 -->
                     <div class="col-5">
-               <button class="btn btn-primary" @click="follow(${memberDto.memberNo})" v-show="!followBtn">팔로우</button>
-               <button class="btn btn-secondary" @click="unFollow(${memberDto.memberNo})" v-show="followBtn">팔로잉</button>
+               <button class="btn btn-primary" @click="follow(${memberDto.memberNo})" v-if="followCheckIf(${memberDto.memberNo})">팔로우</button>
+               <button class="btn btn-secondary" @click="unFollow(${memberDto.memberNo})" v-else>팔로잉</button>
                
                </div>
                <div class="col-5"  style=" width:70%;">
@@ -611,9 +611,9 @@
   						 	<p class="modalName">{{item.memberName}}</p>
   						 		</div>
   						
-						  <button class="float-end btn btn-primary" @click="follow(item.memberNo)"  v-show="!followBtn" :class="{'hide' : item.memberNo == ${memberNo}}" style="margin-left:auto;">팔로우</button>
-						  <button class="float-end btn btn-secondary" @click="myUnFollower(item.memberNo)"  v-show="followBtn && ${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}" style="margin-left:auto;">팔로잉</button>					  
-						  <button class="float-end btn btn-secondary unfollow-button" @click="unFollower(item.memberNo)" v-show="followBtn && !${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
+						   <button class="float-end btn btn-primary" @click="follow(item.memberNo)" v-if="followCheckIf(item.memberNo)" :class="{'hide' : item.memberNo == ${memberNo}}" style="margin-left:auto;">팔로우</button>
+						  <button class="float-end btn btn-secondary" @click="myUnFollower(item.memberNo)" v-if="!followCheckIf(item.memberNo) && ${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}" style="margin-left:auto;">팔로잉</button>					  
+						  <button class="float-end btn btn-secondary unfollow-button" @click="unFollower(item.memberNo)" v-if="!followCheckIf(item.memberNo) && !${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
 						 
 						</div>
 						</div>
@@ -693,9 +693,9 @@
                     	 </div>
                     </div>
                     <div class="col-9" style="display:flex; justify-content: space-between; margin-left:40px; margin-top:15px;">
-                  	 <button class="btn btn-primary" @click="follow(item.followFollower)" v-show="!followBtn" :class="{'hide' : item.followFollower == ${memberNo}}" style="flex-grow:1;">팔로우</button>
+                  	 <button class="btn btn-primary" @click="follow(item.followFollower)" v-if="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="flex-grow:1;">팔로우</button>
                   	 <button class="btn btn-primary" v-if="!followCheckIf(item.followFollower)" style="width:50%;">메시지 보내기</button>
-          			<button class="btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)"  v-show="followBtn" :class="{'hide' : item.followFollower == ${memberNo}}" style="width:50%; margin-left:20px;" >팔로잉</button>
+          			<button class="btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-if="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="width:50%; margin-left:20px;" >팔로잉</button>
                     </div>
           </div> <!-- 팔로우 미리보기 끝 -->
           	<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
@@ -704,8 +704,8 @@
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
           					<p class="modalName">{{item.memberName}}</p>
 						  </div>
-          <button class="float-end btn btn-primary" @click="follow(item.followFollower)"  v-show="!followBtn" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto; ">팔로우</button>
-          <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)"  v-show="followBtn" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
+          <button class="float-end btn btn-primary" @click="follow(item.followFollower)" v-show="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto; ">팔로우</button>
+          <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-show="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
 			</div>
           
         </div>
@@ -1034,7 +1034,14 @@
 		      this.totalFollowCount();
 		      this.followerListPaging();
 		      this.followListPaging();
-		      this.followBtn = false;
+		      console.log("list 전: "+this.followCheckList);
+		      const index = this.followCheckList.findIndex(item => item === memberNo);
+		      if (index !== -1) {
+		        this.followCheckList.splice(index, 1);
+		      }
+		      console.log("index : "+index);
+		      console.log("list 후: "+this.followCheckList);
+		      
 		    } else {
 		      // 언팔로우 실패 처리
 		      console.log("언팔로우 실패");
@@ -1060,8 +1067,8 @@
 			      this.totalFollowCount();
 			      this.followerListPaging();
 			      this.followListPaging();
-			      this.followBtn = false;
-			      
+			     
+			     
 			           
 			    } else {
 			      // 언팔로우 실패 처리
@@ -1115,13 +1122,14 @@
          	const resp = await axios.post("${pageContext.request.contextPath}/rest/follow/check");
     
          	const newData = memberNo;
-        
          	// this.followCheckList = resp.data;
          	this.followCheckList.push(...resp.data);
          	this.followCheckList.push(parseInt(newData));
-         	
-      
+ 
          }, 
+        
+         
+       
        
          // 팔로우 총 개수 
          async totalFollowCount() {
