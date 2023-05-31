@@ -515,14 +515,14 @@
 					</div>
 					<div class="row">
 						<div class="col">
-							<input class="form-control rounded" placeholder="비밀번호 입력" type="password" v-model="newPassword">
+							<input class="form-control rounded" placeholder="비밀번호 입력" type="password" v-model="newPassword" :class="{'is-invalid':!showPasswordWarning}" @input="validatePassword()">
 							<div class="invalid-feedback">올바른 비밀번호를 입력하세요</div>
 							<div v-show="passwordCheck">&nbsp</div>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col">
-							<input class="form-control rounded" placeholder="비밀번호 확인" type="password" v-model="newPasswordCheck">
+							<input class="form-control rounded" placeholder="비밀번호 확인" type="password" v-model="newPasswordCheck" :class="{'is-invalid':!showPasswordCheckWarning}" @blur="validatePasswordCheck()">
 							<div class="invalid-feedback">올바른 비밀번호를 입력하세요</div>
 							<div v-show="passwordCheck">&nbsp</div>
 						</div>
@@ -617,7 +617,9 @@
 				passwordCheck:true,
 				newPassword:"",
 				newPasswordCheck:"",
-				
+				showPasswordWarning:true,
+				showPasswordCheckWarning:true,
+				isValid:false,
 				/* ------------지도------------ */
 				mapContainer:null,
 				options:null,
@@ -638,9 +640,6 @@
 				else{
 					return "https://via.placeholder.com/100x100?text=profile";
 				}
-			},
-			isValid(){
-				return this.newPassword.length>0 && this.newPassword==this.newPasswordCheck;
 			},
 			mapLevel(){
 				if(this.setting.settingDistance<=5) return 8;
@@ -766,7 +765,24 @@
 				const resp = await axios.put(contextPath+"/rest/member/setting/password", sendNewPassword)
 				this.hidePasswordChangeModal();
 			},
-			
+            validatePassword(){
+                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$#!%^*?&])[A-Za-z\d@$#^!%*?&]{8,16}$/;
+
+                if(passwordRegex.test(this.newPassword)){
+                    this.showPasswordWarning = true;
+                }else{
+                    this.showPasswordWarning = false;
+                }
+            },
+            validatePasswordCheck(){
+            	const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$#!%^*?&])[A-Za-z\d@$#^!%*?&]{8,16}$/;
+                if(this.newPassword == this.newPasswordCheck){
+                    this.showPasswordCheckWarning = true;
+                }else{
+                    this.showPasswordCheckWarning = false;
+                }
+				this.isValid= passwordRegex.test(this.newPassword) && this.showPasswordCheckWarning && this.showPasswordWarning && this.newPassword==this.newPasswordCheck;
+            },
 			/*------------------------우편번호 찾기------------------------*/
 			findAddress(){
 				new daum.Postcode({
