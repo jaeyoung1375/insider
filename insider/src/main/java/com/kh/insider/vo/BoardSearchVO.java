@@ -14,6 +14,8 @@ public class BoardSearchVO {
 	private int page;
 	private int boardCount;
 	private long loginMemberNo;
+	private String tagName;
+
 	
 	public int getEnd() {
 		return page*boardCount;

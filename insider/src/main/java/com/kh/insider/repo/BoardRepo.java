@@ -60,4 +60,8 @@ public interface BoardRepo {
 	//계층형 단일조회
 	BoardListVO selectOneBoard(int boardNo);
 	
+	//태그로 계층형 조회
+	List<BoardListVO> selectListWithTag(BoardSearchVO vo);
+	//태그 조회 개수 반환
+	int selectListWithTagCount(BoardSearchVO vo);
 }

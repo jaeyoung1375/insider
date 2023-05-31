@@ -152,5 +152,16 @@ public class BoardRepoImpl implements BoardRepo {
 	}
 
 
-	
+
+	@Override
+	public List<BoardListVO> selectListWithTag(BoardSearchVO vo) {
+		return sqlSession.selectList("board.selectListTagBoard", vo);
+	}
+
+
+	@Override
+	public int selectListWithTagCount(BoardSearchVO vo) {
+		return sqlSession.selectOne("board.selectListTagBoardCount", vo);
+	}
+
 }

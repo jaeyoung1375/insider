@@ -18,4 +18,7 @@
 	<delete id="delete">
 		delete tag_follow where member_no=#{memberNo} and tag_name=#{tagName}
 	</delete>
+	<select id="selectOne" resultType="tagFollowDto">
+		select * from tag_follow where tag_name=#{tagName} and member_no=#{memberNo}
+	</select>
 </mapper>
