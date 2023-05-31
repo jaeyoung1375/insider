@@ -14,5 +14,6 @@ public interface AttachmentRepo {
     int save(MultipartFile attach) throws IllegalStateException, IOException;
 //    List<Integer> save(List<MultipartFile> attach) throws IllegalStateException, IOException;
     AttachmentDto selectOne(int attachmentNo);
+    boolean delete(int attachmentNo);
 
 }

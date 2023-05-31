@@ -154,6 +154,22 @@
 	  width: 100%;
 	  max-width: 100%;
 	}
+	
+	.carousel-item {
+ 	 position: relative;		
+	}
+	
+	.delete-img{
+	  position: absolute;
+	  top: 10px;
+	  right: 10px;
+	  z-index: 10;
+	  background-color: transparent;
+	  border: none;
+	  color: red;
+	  font-size: 20px;
+	  cursor: pointer;
+	}
 	 	
 </style>
 
@@ -233,6 +249,9 @@ $(document).ready(function() {
 		
 		if(text){
 			location.replace("/")
+		}
+		else{
+			location.reload();
 		}
 	});
 		
@@ -410,7 +429,8 @@ $(document).ready(function() {
 								  
 								  <div class="carousel-inner" >
 									  	<div  v-for="(file, index) in files" :key="index" class="carousel-item" v-bind:class="{'active':index==0}">
-									  		<img :src="file.preview" class="d-block w-100" style="height: 480px; width:470px" />
+									  		<img :src="file.preview" class="d-block w-100" style="height: 480px; width:470px position: relative; display: inline-block!important;" />
+									  		<button class="delete-img" v-if="path.length > 1" @click="deleteImage(index, $event, boardNo)">X</button>
 									  	</div>
 								  </div>
 								  
@@ -515,7 +535,8 @@ $(document).ready(function() {
     	  filesPreview: [],
     	  uploadImageIndex: 0,
 
-    	  image : [],
+    	  path : [],
+    	  boardNo : ${board.boardNo},
     	  /* //사람태그
     	  keyword: "",
     	  nickList: [],
@@ -527,7 +548,6 @@ $(document).ready(function() {
     //methods : 애플리케이션 내에서 언제든 호출 가능한 코드 집합이 필요한 경우 작성한다.
      methods: {
     	 imageUpload(){
-     		
      		let num = -1;
      		for(let i = 0; i < this.$refs.files.files.length; i++){
      			this.files = [
@@ -544,7 +564,6 @@ $(document).ready(function() {
      	},
      	
      	imageAddUpload(){
-     		
      		let num = -1;
      		for(let i = 0; i < this.$refs.files2.files.length; i++){
      			this.files = [
@@ -567,41 +586,60 @@ $(document).ready(function() {
     		this.files = this.files.filter(data => data.number != Number(name));
     	},
     	
-//     	 fileLoad(){
-//     		 const path = ${image};
+    	async deleteImage(index,event, boardNo){
+    		this.path = ${image};
+    		event.preventDefault();
+    		//console.log(path[index]);
+    		const confirmed = confirm("사진을 삭제하시겠습니까?\n 사진은 복구되지 않습니다.");
     		
-//     		for(const i=0; i<path.length; i++){
-//     			this.file.preview = "${pageContext.request.contextPath}/rest/attachment/download/" + path[i];
-//     		} 
-//     	},  
-	    
+    		if(confirmed){
+	    		const resp = await axios.delete("${pageContext.request.contextPath}/rest/attachment/delete/"+ this.path[index], { params: { boardNo: boardNo } });
+	    		this.path.splice(index,1);
+	    		console.log(this.path);
+	    		//this.loadImage();
+	    		//this.path = ${image};
+	    		//console.log(this.path);
+	    		location.reload();    			
+    		}
+    		else{
+    			location.reload();
+    		}
+    		
+    	},
+    	
+    	loadImage(){
+    		this.files = [];
+    		this.path = ${image};
+        	/* console.log(path);
+        	console.log(path.length);
+        	console.log(path[0], path[1]); */
+        	
+     		let num = -1;
+    		for(let i=0; i<this.path.length; i++){
+      			this.files = [
+      				...this.files,
+      				{
+      					file:"",
+      					preview:"${pageContext.request.contextPath}/rest/attachment/download/" + this.path[i],
+      					number : i
+      				}
+      			] 
+      			num = i;
+      		} 
+    		this.uploadImageIndex = num + 1;
+    	},
+		
     },
     
     created() {
-    	const path = ${image};
-    	console.log(path);
-    	console.log(path.length);
-    	console.log(path[0], path[1]);
     	
- 		let num = -1;
-		for(let i=0; i<path.length; i++){
-  			this.files = [
-  				...this.files,
-  				{
-  					file:"",
-  					preview:"${pageContext.request.contextPath}/rest/attachment/download/" + path[i],
-  					number : i
-  				}
-  			] 
-  			num = i;
-  		} 
-		this.uploadImageIndex = num + 1;
     	//this.files.preview.push(...a);
     	//this.image.push(...a)
     	//console.log(this.files);
     	//this.files.preview = [...a];
     	//console.log(this.files.preview)
-    	//fileLoad();
+    	this.loadImage();
+    	console.log(this.path);
     },
     
 

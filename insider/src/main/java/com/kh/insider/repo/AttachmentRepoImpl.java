@@ -82,4 +82,9 @@ public class AttachmentRepoImpl implements AttachmentRepo{
 //	    return attachmentNumbers;
 //	}
 
+	@Override
+	public boolean delete(int attachmentNo) {
+		return sqlSession.delete("attachment.remove",attachmentNo)>0;
+	}
+
 }
