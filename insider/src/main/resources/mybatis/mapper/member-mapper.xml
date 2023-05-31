@@ -72,22 +72,21 @@
   <![CDATA[
 SELECT *
 FROM member_with_profile
-WHERE MEMBER_NO != #{memberNo}
-AND (
-    SQRT(POWER(MEMBER_LON - (SELECT MEMBER_LON FROM member WHERE MEMBER_NO = #{memberNo}), 2) + POWER(MEMBER_LAT - (SELECT MEMBER_LAT FROM member WHERE MEMBER_NO = #{memberNo}), 2)) * 111.319 <= 5
-)
-OR MEMBER_NO NOT IN (
-    SELECT distinct follow_follower
-    FROM follow
-    WHERE member_no IN (
-        SELECT follow_follower
-        FROM follow
-        WHERE member_no = #{memberNo}
-    ) and follow_follower NOT IN (
-        SELECT follow_follower
+WHERE (
+    MEMBER_NO != #{memberNo}
+    AND (
+        SQRT(POWER(MEMBER_LON - (SELECT MEMBER_LON FROM member WHERE MEMBER_NO = #{memberNo}), 2) + POWER(MEMBER_LAT - (SELECT MEMBER_LAT FROM member WHERE MEMBER_NO = #{memberNo}), 2)) * 111.319 <= 5
+    )
+    AND MEMBER_NO NOT IN (
+        SELECT DISTINCT follow_follower
         FROM follow
         WHERE member_no = #{memberNo}
     )
+)
+AND MEMBER_NO NOT IN (
+    SELECT follow_follower
+    FROM follow
+    WHERE member_no = #{memberNo}
 )
 
   ]]>

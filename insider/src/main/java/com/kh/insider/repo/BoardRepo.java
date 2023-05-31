@@ -15,7 +15,7 @@ import com.kh.insider.vo.BoardTimeStatsSearchVO;
 public interface BoardRepo {
 	List<BoardDto> selectListPaging(int page);
 	
-	List<BoardListVO> myPageSelectListPaging(int page, int memberNo);
+	List<BoardListVO> myPageSelectListPaging(int page, long memberNo);
 
 	int sequence();
 	

@@ -120,7 +120,7 @@ public class MemberRestController {
 				
 	// 마이페이지 게시물 목록(무한스크롤)
 	@GetMapping("/page/{page}")
-	public List<BoardListVO> paging(@PathVariable int page, @RequestParam int memberNo){
+	public List<BoardListVO> paging(@PathVariable int page, @RequestParam long memberNo){
 		
 		return boardRepo.myPageSelectListPaging(page, memberNo);
 	}

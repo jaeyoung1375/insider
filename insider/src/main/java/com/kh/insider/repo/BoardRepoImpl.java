@@ -115,7 +115,7 @@ public class BoardRepoImpl implements BoardRepo {
 
 
 	@Override
-	public List<BoardListVO> myPageSelectListPaging(int page, int memberNo) {
+	public List<BoardListVO> myPageSelectListPaging(int page, long memberNo) {
 		int end = page * 10;
 		int begin = end -9;
 		Map param = Map.of("begin",begin, "end",end, "memberNo",memberNo);

@@ -149,8 +149,8 @@
               </c:when>
               <c:otherwise> <!-- 본인 프로필이 아니라면 -->
                     <div class="col-5">
-               <button class="btn btn-primary" @click="follow(${memberDto.memberNo})" v-if="followCheckIf(${memberDto.memberNo})">팔로우</button>
-               <button class="btn btn-secondary" @click="unFollow(${memberDto.memberNo})" v-else>팔로잉</button>
+               <button class="btn btn-primary" @click="follow(${memberDto.memberNo})" v-show="!followBtn">팔로우</button>
+               <button class="btn btn-secondary" @click="unFollow(${memberDto.memberNo})" v-show="followBtn">팔로잉</button>
                
                </div>
                <div class="col-5"  style=" width:70%;">
@@ -211,7 +211,9 @@
 
 			  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style="display:flex;">
 			    <div class="card" style="width: 174px; height: 192px; margin-left: 30px;">
-			      <div class="ms-auto" style="margin-right:8px;">x</div>
+			      <div class="ms-auto" style="margin-right:8px;">
+			      	<span @click="deleteRecommendFriend(item.memberNo)">x</span>
+			      </div>
 			      <div class="profile d-flex justify-content-center align-items-start">
 			        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="54" height="54" style="border-radius:50%;">
 			      </div>
@@ -609,9 +611,9 @@
   						 	<p class="modalName">{{item.memberName}}</p>
   						 		</div>
   						
-						  <button class="float-end btn btn-primary" @click="follow(item.memberNo)" v-if="followCheckIf(item.memberNo)" :class="{'hide' : item.memberNo == ${memberNo}}" style="margin-left:auto;">팔로우</button>
-						  <button class="float-end btn btn-secondary" @click="myUnFollower(item.memberNo)" v-if="!followCheckIf(item.memberNo) && ${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}" style="margin-left:auto;">팔로잉</button>					  
-						  <button class="float-end btn btn-secondary unfollow-button" @click="unFollower(item.memberNo)" v-if="!followCheckIf(item.memberNo) && !${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
+						  <button class="float-end btn btn-primary" @click="follow(item.memberNo)"  v-show="!followBtn" :class="{'hide' : item.memberNo == ${memberNo}}" style="margin-left:auto;">팔로우</button>
+						  <button class="float-end btn btn-secondary" @click="myUnFollower(item.memberNo)"  v-show="followBtn && ${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}" style="margin-left:auto;">팔로잉</button>					  
+						  <button class="float-end btn btn-secondary unfollow-button" @click="unFollower(item.memberNo)" v-show="followBtn && !${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
 						 
 						</div>
 						</div>
@@ -691,9 +693,9 @@
                     	 </div>
                     </div>
                     <div class="col-9" style="display:flex; justify-content: space-between; margin-left:40px; margin-top:15px;">
-                  	 <button class="btn btn-primary" @click="follow(item.followFollower)" v-if="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="flex-grow:1;">팔로우</button>
+                  	 <button class="btn btn-primary" @click="follow(item.followFollower)" v-show="!followBtn" :class="{'hide' : item.followFollower == ${memberNo}}" style="flex-grow:1;">팔로우</button>
                   	 <button class="btn btn-primary" v-if="!followCheckIf(item.followFollower)" style="width:50%;">메시지 보내기</button>
-          			<button class="btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-if="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="width:50%; margin-left:20px;" >팔로잉</button>
+          			<button class="btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)"  v-show="followBtn" :class="{'hide' : item.followFollower == ${memberNo}}" style="width:50%; margin-left:20px;" >팔로잉</button>
                     </div>
           </div> <!-- 팔로우 미리보기 끝 -->
           	<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
@@ -702,8 +704,8 @@
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
           					<p class="modalName">{{item.memberName}}</p>
 						  </div>
-          <button class="float-end btn btn-primary" @click="follow(item.followFollower)" v-if="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto; ">팔로우</button>
-          <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-if="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
+          <button class="float-end btn btn-primary" @click="follow(item.followFollower)"  v-show="!followBtn" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto; ">팔로우</button>
+          <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)"  v-show="followBtn" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
 			</div>
           
         </div>
@@ -845,6 +847,8 @@
 			recommendFriendsList : [], // 친구 추천목록 리스트
 			currentPage: 0,
 			itemsPerPage : 4,
+			followBtn : false,
+			followerBtn : false,
          };
       },
       computed: {
@@ -1009,6 +1013,9 @@
          	this.totalFollowCount();
          	this.followerListPaging();
          	this.followListPaging();
+         	
+         	this.followBtn = true;
+         	
          },
          
          //팔로워 되있는사람 -> 팔로우 삭제
@@ -1027,6 +1034,7 @@
 		      this.totalFollowCount();
 		      this.followerListPaging();
 		      this.followListPaging();
+		      this.followBtn = false;
 		    } else {
 		      // 언팔로우 실패 처리
 		      console.log("언팔로우 실패");
@@ -1052,6 +1060,9 @@
 			      this.totalFollowCount();
 			      this.followerListPaging();
 			      this.followListPaging();
+			      this.followBtn = false;
+			      
+			           
 			    } else {
 			      // 언팔로우 실패 처리
 			      console.log("언팔로우 실패");
@@ -1074,12 +1085,14 @@
 			      }
 			    });
 			    if (response.data) {
-			      // 언팔로우 성공 처리
+			      // 언팔로우 성공 처리   
 			      console.log("언팔로우 성공");
 			      this.totalFollowCount();
 			      this.totalFollowerCount();
 			      this.followListPaging();
-			      this.followerListPaging();		     
+			      this.followerListPaging();
+			  	this.followBtn = false;
+			
 			    } else {
 			      // 언팔로우 실패 처리
 			      console.log("언팔로우 실패");
@@ -1089,6 +1102,7 @@
 			    console.error("언팔로우 요청 실패", error);
 			  }
 			},
+			
 		 
          // 팔로우 v-if 여부체크 함수
         	followCheckIf(memberNo){
@@ -1107,7 +1121,8 @@
          	this.followCheckList.push(parseInt(newData));
          	
       
-         },  
+         }, 
+       
          // 팔로우 총 개수 
          async totalFollowCount() {
         	    const resp = await axios.get("totalFollowCount", {
@@ -1586,7 +1601,31 @@
             	const resp = await axios.get("/rest/member/recommendFriendsList");
             	this.recommendFriendsList.push(...resp.data);
             	
+            	// sessionStorage에 친구 추천목록 저장
+            	sessionStorage.setItem("recommendFriendsList",JSON.stringify(this.recommendFriendsList));
             	console.log("친구 추천 목록 : " +this.recommendFriendsList.length);
+             },
+             
+            deleteRecommendFriend(idToDelete){
+            	
+            	 // 추천 친구목록 가져오기
+            	 const cachedRecommendFriendsList = sessionStorage.getItem("recommendFriendsList");
+            	 const recommendFriendsList = JSON.parse(cachedRecommendFriendsList);
+            	
+            	 
+            	 // 삭제할 데이터의 인덱스 찾기
+            	 const indexToDelete = recommendFriendsList.findIndex(item => item.memberNo === idToDelete);
+            	 console.log("indexToDelete" + indexToDelete);
+            	// 인덱스를 사용하여 데이터 삭제
+            	  if (indexToDelete !== -1) {
+            	    recommendFriendsList.splice(indexToDelete, 1);
+            	    
+            	    // 수정된 목록을 다시 sessionStorage에 저장
+            	    sessionStorage.setItem("recommendFriendsList", JSON.stringify(recommendFriendsList));
+           	    	console.log(sessionStorage.getItem("recommendFriendsList"));
+           	    	
+           	     this.recommendFriendsList = recommendFriendsList;
+            	  }
              },
            
            	
