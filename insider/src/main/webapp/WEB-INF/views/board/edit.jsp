@@ -250,6 +250,9 @@ $(document).ready(function() {
 		if(text){
 			location.replace("/")
 		}
+		else{
+			location.reload();
+		}
 	});
 		
 	
@@ -427,7 +430,7 @@ $(document).ready(function() {
 								  <div class="carousel-inner" >
 									  	<div  v-for="(file, index) in files" :key="index" class="carousel-item" v-bind:class="{'active':index==0}">
 									  		<img :src="file.preview" class="d-block w-100" style="height: 480px; width:470px position: relative; display: inline-block!important;" />
-									  		<button class="delete-img" @click="deleteImage(index, $event, boardNo)">X</button>
+									  		<button class="delete-img" v-if="path.length > 1" @click="deleteImage(index, $event, boardNo)">X</button>
 									  	</div>
 								  </div>
 								  
@@ -587,25 +590,20 @@ $(document).ready(function() {
     		this.path = ${image};
     		event.preventDefault();
     		//console.log(path[index]);
+    		const confirmed = confirm("사진을 삭제하시겠습니까?\n 사진은 복구되지 않습니다.");
     		
-    		const resp = await axios.delete("${pageContext.request.contextPath}/rest/attachment/delete/"+ this.path[index], { params: { boardNo: boardNo } });
-    		this.path.splice(index,1);
-    		console.log(this.path);
-    		//this.loadImage();
-    		this.files = [];
-    		let num = -1;
-    		for(let i=0; i<this.path.length; i++){
-      			this.files = [
-      				...this.files,
-      				{
-      					file:"",
-      					preview:"${pageContext.request.contextPath}/rest/attachment/download/" + this.path[i],
-      					number : i
-      				}
-      			] 
-      			num = i;
-      		} 
-    		this.uploadImageIndex = num + 1;
+    		if(confirmed){
+	    		const resp = await axios.delete("${pageContext.request.contextPath}/rest/attachment/delete/"+ this.path[index], { params: { boardNo: boardNo } });
+	    		this.path.splice(index,1);
+	    		console.log(this.path);
+	    		//this.loadImage();
+	    		//this.path = ${image};
+	    		//console.log(this.path);
+	    		location.reload();    			
+    		}
+    		else{
+    			location.reload();
+    		}
     		
     	},
     	
@@ -641,6 +639,7 @@ $(document).ready(function() {
     	//this.files.preview = [...a];
     	//console.log(this.files.preview)
     	this.loadImage();
+    	console.log(this.path);
     },
     
 
