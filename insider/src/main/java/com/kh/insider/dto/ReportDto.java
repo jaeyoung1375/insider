@@ -13,5 +13,4 @@ public class ReportDto {
 	private int reportTableNo;
 	private String reportTable;
 	private Date reportTime;
-	private int reportCheck;
 }

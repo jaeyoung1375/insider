@@ -154,6 +154,22 @@
 	  width: 100%;
 	  max-width: 100%;
 	}
+	
+	.carousel-item {
+ 	 position: relative;		
+	}
+	
+	.delete-img{
+	  position: absolute;
+	  top: 10px;
+	  right: 10px;
+	  z-index: 10;
+	  background-color: transparent;
+	  border: none;
+	  color: red;
+	  font-size: 20px;
+	  cursor: pointer;
+	}
 	 	
 </style>
 
@@ -229,10 +245,13 @@ $(document).ready(function() {
 
 	$(".cancel").click(function(){
 		 event.stopPropagation(); 
-		const text = confirm("게시물을 삭제하시겠어요?\n지금 나가면 수정 내용이 저장되지 않습니다.");
+		const text = confirm("게시물을 수정을 그만하시겠어요?\n지금 나가면 수정 내용이 저장되지 않습니다.");
 		
 		if(text){
 			location.replace("/")
+		}
+		else{
+			location.reload();
 		}
 	});
 		
@@ -244,12 +263,12 @@ $(document).ready(function() {
 			e.preventDefault();
 		}
 		
-		if($("#upload2").val() == ""){
+		/* if($("#upload2").val() == ""){
 			$("#upload2").attr("disabled", true);
 		}
 		else{
 			$("#upload2").attr("disabled", false);
-		}
+		} */
 		
 		
 		if ($(".content").val() == "" || $("#tagName").val() != "") {
@@ -308,13 +327,13 @@ $(document).ready(function() {
 
 <div id="app" class="vue-container">
 
-<form action="insert" method="post" enctype="multipart/form-data" class="form-submit">
-
+<form action="edit" method="post" enctype="multipart/form-data" class="form-submit">
+	<input type="hidden" name="boardNo" value="${board.boardNo}">
 	<div class="container-fluid" style="width: 1200px">
 	
 		<div class="row mt-3"></div>
 		
-		<!-- 1. 사진 첨부 영역 -->
+		<%-- <!-- 1. 사진 첨부 영역 -->
 		<div class="page">
 		<div class="row w-70 mt-5" style="float: none; margin: 0 auto;">
 		  <div class="col">
@@ -326,7 +345,7 @@ $(document).ready(function() {
 		            <button type="button" class="btn btn-secondary cancel" style="float:left;">취소</button>
 		          </div>
 		          <div class="col-md-8">
-		            <h4 class="text-primary text-center" style="margin-top: 1%;">새 게시물 만들기</h4>
+		            <h4 class="text-primary text-center" style="margin-top: 1%;">게시물 수정하기</h4>
 		          </div>
 		          <div class="col-md-2">
 		            <button type="button" class="btn btn-secondary btn-next" style="float:right;">다음</button>
@@ -375,22 +394,22 @@ $(document).ready(function() {
 		
 		  </div>
 		</div>
-		</div>
+		</div> --%>
 		
 		
 		<!-- 2. 게시물 등록 영역 -->
 		<div class="page">
-		<div v-show="files.length > 0" class="row w-70 mt-5" style="float: none; margin: 0 auto;">
+		<div class="row w-70 mt-5" style="float: none; margin: 0 auto;">
 		  <div class="col">
 		
 		    <div class="card border-primary mb-3" style="height: 600px;">
 		      <div class="card-header">
 		        <div class="row">
 		          <div class="col-md-2">
-		            <button type="button" class="btn btn-secondary btn-prev" style="float:left;">이전</button>
+		            <button type="button" class="btn btn-secondary cancel" style="float:left;">이전</button>
 		          </div>
 		          <div class="col-md-8">
-		            <h4 class="text-primary text-center" style="margin-top: 1%;">새 게시물 만들기</h4>
+		            <h4 class="text-primary text-center" style="margin-top: 1%;">게시물 수정하기</h4>
 		          </div>
 		          <div class="col-md-2">
 		            <button type="submit" class="btn btn-primary" style="float:right;">공유하기</button>
@@ -410,7 +429,8 @@ $(document).ready(function() {
 								  
 								  <div class="carousel-inner" >
 									  	<div  v-for="(file, index) in files" :key="index" class="carousel-item" v-bind:class="{'active':index==0}">
-									  		<img :src="file.preview" class="d-block w-100" style="height: 480px;" />
+									  		<img :src="file.preview" class="d-block w-100" style="height: 480px; width:470px position: relative; display: inline-block!important;" />
+									  		<button class="delete-img" v-if="path.length > 1" @click="deleteImage(index, $event, boardNo)">X</button>
 									  	</div>
 								  </div>
 								  
@@ -429,7 +449,7 @@ $(document).ready(function() {
 		      		<div class="col-md-5">
 					    	<div class="row">
 					    		<div class="col-md-10 left bottom">
-					    			<span class="nickname">${memberNick}</span>
+					    			<span class="nickname">${board.memberNick}</span>
 					    		</div>
 					    	</div>
 					    	
@@ -437,7 +457,7 @@ $(document).ready(function() {
 					    	
 					    <div class="row">
 						    <div id="summernoteContainer">
-						        <textarea id="summernote" class="form-control content" rows="6" name="boardContent" placeholder="문구를 입력하세요" required ></textarea>
+						        <textarea id="summernote" class="form-control content" rows="6" name="boardContent" placeholder="문구를 입력하세요" required >${board.boardContent}</textarea>
 						    </div>
 						    <div class="right">
 						        <span class="length">
@@ -450,7 +470,7 @@ $(document).ready(function() {
 
 					    	
 					    	<div class="row mt-4">
-					    		<input type="text" name="tagName" class="form-control" placeholder="#해시태그" id="tagName" autocomplete="off">
+					    		<input type="text" name="tagName" class="form-control" placeholder="#해시태그" id="tagName" autocomplete="off" value="${tag}">
 					    	</div>
 					    	
 					    	<div class="row mt-4">
@@ -515,7 +535,8 @@ $(document).ready(function() {
     	  filesPreview: [],
     	  uploadImageIndex: 0,
 
-    	  
+    	  path : [],
+    	  boardNo : ${board.boardNo},
     	  /* //사람태그
     	  keyword: "",
     	  nickList: [],
@@ -527,7 +548,6 @@ $(document).ready(function() {
     //methods : 애플리케이션 내에서 언제든 호출 가능한 코드 집합이 필요한 경우 작성한다.
      methods: {
     	 imageUpload(){
-     		
      		let num = -1;
      		for(let i = 0; i < this.$refs.files.files.length; i++){
      			this.files = [
@@ -544,7 +564,6 @@ $(document).ready(function() {
      	},
      	
      	imageAddUpload(){
-     		
      		let num = -1;
      		for(let i = 0; i < this.$refs.files2.files.length; i++){
      			this.files = [
@@ -567,10 +586,61 @@ $(document).ready(function() {
     		this.files = this.files.filter(data => data.number != Number(name));
     	},
     	
-	    
+    	async deleteImage(index,event, boardNo){
+    		this.path = ${image};
+    		event.preventDefault();
+    		//console.log(path[index]);
+    		const confirmed = confirm("사진을 삭제하시겠습니까?\n 사진은 복구되지 않습니다.");
+    		
+    		if(confirmed){
+	    		const resp = await axios.delete("${pageContext.request.contextPath}/rest/attachment/delete/"+ this.path[index], { params: { boardNo: boardNo } });
+	    		this.path.splice(index,1);
+	    		console.log(this.path);
+	    		//this.loadImage();
+	    		//this.path = ${image};
+	    		//console.log(this.path);
+	    		location.reload();    			
+    		}
+    		else{
+    			location.reload();
+    		}
+    		
+    	},
+    	
+    	loadImage(){
+    		this.files = [];
+    		this.path = ${image};
+        	/* console.log(path);
+        	console.log(path.length);
+        	console.log(path[0], path[1]); */
+        	
+     		let num = -1;
+    		for(let i=0; i<this.path.length; i++){
+      			this.files = [
+      				...this.files,
+      				{
+      					file:"",
+      					preview:"${pageContext.request.contextPath}/rest/attachment/download/" + this.path[i],
+      					number : i
+      				}
+      			] 
+      			num = i;
+      		} 
+    		this.uploadImageIndex = num + 1;
+    	},
+		
     },
     
-    
+    created() {
+    	
+    	//this.files.preview.push(...a);
+    	//this.image.push(...a)
+    	//console.log(this.files);
+    	//this.files.preview = [...a];
+    	//console.log(this.files.preview)
+    	this.loadImage();
+    	console.log(this.path);
+    },
     
 
   });

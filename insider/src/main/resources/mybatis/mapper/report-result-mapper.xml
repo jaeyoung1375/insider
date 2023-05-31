@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="reportResult">
+	<select id="selectOne" resultType="reportResultDto">
+		select * from report_result where report_table_no=#{reportTableNo} and report_table=#{reportTable}
+	</select>
+	<insert id="insert">
+		insert into report_result(report_table_no, report_table) values(#{reportTableNo}, #{reportTable})
+	</insert>
+	<update id="updateResult">
+		update report_result set report_result=#{reportResult} where report_table_no=#{reportTableNo} and report_table=#{reportTable}
+	</update>
+</mapper>

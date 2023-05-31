@@ -3,7 +3,111 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="reportManagement">
+	<!-- SQL 구문 조각 생성 -->
+	<sql id="topNheader">
+		select * from (
+		select rownum rn, TMP.*from(
+	</sql>
+	<sql id="topNfooter">
+		)TMP
+		)where rn between #{begin} and #{end}
+	</sql>
+	
 	<select id="selectList" resultType="reportManagementDto">
-		select * from report_management order by count desc
+		<bind name="memberNameExist" value="memberName!=null and !memberName.equals('')"></bind>
+		<bind name="memberNickExist" value="memberNick!=null and !memberNick.equals('')"></bind>
+		<bind name="reportTableExist" value="reportTable!=null and !reportTable.equals('')"></bind>
+		<bind name="reportMinCountExist" value="reportMinCount!=null and !reportMinCount.equals('')"></bind>
+		<bind name="reportMaxCountExist" value="reportMaxCount!=null and !reportMaxCount.equals('')"></bind>
+		<bind name="reportResultExist" value="reportResult!=null and !reportResult.equals('')"></bind>
+		<bind name="orderExist" value="order!=null and !order.equals('')"></bind>
+		<include refid="topNheader"></include>
+		select * from report_management 
+		<where>
+		<!-- 신고 -->
+		 	<choose>
+		 		<when test="reportMinCountExist and reportMaxCountExist">
+		 			and count between #{reportMinCount} and #{reportMaxCount}
+		 		</when>
+		 		<when test="reportMinCountExist">
+		 			and count >= #{reportMinCount}
+		 		</when>
+		 		<when test="reportMaxCountExist">
+		 			<![CDATA[
+		 			and count <= #{reportMaxCount}
+		 			]]>
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
+		<!-- 회원이름 -->
+			<if test="memberNameExist">
+				and instr(member_name, #{memberName})>0
+			</if>
+		<!-- 닉네임 -->
+			<if test="memberNickExist">
+				and instr(member_nick, #{memberNick})>0
+			</if>
+		<!-- 테이블 -->
+			<if test="reportTableExist">
+				and report_table=#{reportTable}
+			</if>
+		<!-- 처리여부 -->
+			<if test="reportResultExist">
+				and report_result=#{reportResult}
+			</if>
+		</where>
+		<choose>
+			<when test="orderExist">
+				order by ${order}, report_time asc
+			</when>
+			<otherwise>
+				order by count desc, report_time asc
+			</otherwise>
+		</choose>
+		<include refid="topNfooter"></include>
+	</select>
+	
+	<select id="selectCount" resultType="int">
+		<bind name="memberNameExist" value="memberName!=null and !memberName.equals('')"></bind>
+		<bind name="memberNickExist" value="memberNick!=null and !memberNick.equals('')"></bind>
+		<bind name="reportTableExist" value="reportTable!=null and !reportTable.equals('')"></bind>
+		<bind name="reportMinCountExist" value="reportMinCount!=null and !reportMinCount.equals('')"></bind>
+		<bind name="reportMaxCountExist" value="reportMaxCount!=null and !reportMaxCount.equals('')"></bind>
+		<bind name="reportResultExist" value="reportResult!=null and !reportResult.equals('')"></bind>
+		<bind name="orderExist" value="order!=null and !order.equals('')"></bind>
+		select count(*) from report_management 
+		<where>
+		<!-- 신고 -->
+		 	<choose>
+		 		<when test="reportMinCountExist and reportMaxCountExist">
+		 			and count between #{reportMinCount} and #{reportMaxCount}
+		 		</when>
+		 		<when test="reportMinCountExist">
+		 			and count >= #{reportMinCount}
+		 		</when>
+		 		<when test="reportMaxCountExist">
+		 			<![CDATA[
+		 			and count <= #{reportMaxCount}
+		 			]]>
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
+		<!-- 회원이름 -->
+			<if test="memberNameExist">
+				and instr(member_name, #{memberName})>0
+			</if>
+		<!-- 닉네임 -->
+			<if test="memberNickExist">
+				and instr(member_nick, #{memberNick})>0
+			</if>
+		<!-- 테이블 -->
+			<if test="reportTableExist">
+				and report_table=#{reportTable}
+			</if>
+		<!-- 처리여부 -->
+			<if test="reportResultExist">
+				and report_result=#{reportResult}
+			</if>
+		</where>
 	</select>
 </mapper>

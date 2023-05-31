@@ -15,5 +15,6 @@ public interface TagFollowRepo {
 	int countFromTag(String tagName);
 	//사용자가 태그를 언팔
 	void delete(TagFollowDto tagFollowDto);
-	
+	//단일조회
+	TagFollowDto selectOne(TagFollowDto tagFollowDto);
 }

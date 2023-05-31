@@ -117,11 +117,13 @@ SELECT b.*, m.attachment_no, m.member_nick FROM board b
 inner JOIN MEMBER_WITH_PROFILE m ON b.member_no=m.member_no;
 
 --신고 현황관리 view 생성
-CREATE VIEW report_management as
-SELECT rc.*, m.member_name, m.member_nick, m.attachment_no from 
-(SELECT r.report_member_no, r.report_table_no, r.report_table, r.report_check, count(*) FROM report r
-GROUP BY r.report_member_no, r.report_table_no, r.report_table, r.report_check) rc
-INNER JOIN member_with_profile m ON rc.report_member_no=m.member_no;
+CREATE OR replace VIEW report_management AS
+SELECT rcr.*, rr.report_result FROM 
+(SELECT rc.*, m.member_name, m.member_nick, m.attachment_no from 
+(SELECT r.report_member_no, r.report_table_no, r.report_table, count(*) AS count, min(report_time) AS report_time FROM report r
+GROUP BY r.report_member_no, r.report_table_no, r.report_table) rc
+INNER JOIN member_with_profile m ON rc.report_member_no=m.member_no) rcr
+LEFT outer JOIN report_result rr ON rcr.report_table_no=rr.report_table_no AND rcr.report_table=rr.report_table;
 
 --차단 테이블
 CREATE TABLE block(
@@ -156,3 +158,57 @@ inner JOIN member_with_profile m ON f.member_no = m.MEMBER_NO;
 CREATE OR REPLACE VIEW Block_With_Profile as
 SELECT b.*, m.member_name, m.member_nick, m.attachment_no FROM block b
 inner JOIN member_with_profile m ON b.BLOCK_NO = m.MEMBER_NO;
+
+--검색 테이블 및 뷰 생성
+CREATE TABLE search(
+search_no NUMBER PRIMARY KEY,
+member_no REFERENCES member(member_no) ON DELETE CASCADE NOT NULL,
+search_tag_name varchar2(90),
+search_member_no NUMBER,
+search_time DATE DEFAULT sysdate NOT NULL,
+search_delete number(1) DEFAULT 0 NOT NULL
+);
+CREATE SEQUENCE search_base_seq;
+
+--검색 테이블에 필요한 데이터 추가해서 반환
+CREATE OR REPLACE VIEW search_with_profile AS
+SELECT s.*, m.member_nick, m.member_name, m.attachment_no, 
+CASE WHEN t.tag_follow IS NOT NULL THEN t.tag_follow ELSE m.member_follow END AS follow 
+FROM SEARCH s LEFT OUTER JOIN MEMBER_WITH_PROFILE m ON s.search_MEMBER_NO =m.MEMBER_NO
+LEFT OUTER JOIN tag t ON s.search_tag_name=t.tag_name;
+
+--추천 검색어 리스트 반환
+CREATE OR REPLACE VIEW search_complex as
+SELECT member_name AS name, member_nick AS nick, member_follow AS follow, member_no AS member_no, attachment_no AS ATTACHMENT_NO
+FROM MEMBER_with_profile UNION ALL SELECT tag_name AS name, NULL AS nick, tag_follow AS follow, NULL AS member_no, NULL AS attachment_no
+FROM tag;
+
+--리포트 결과 테이블 생성
+CREATE TABLE report_result(
+report_table_no NUMBER NOT NULL,
+report_table  varchar2(30) NOT NULL,
+report_result NUMBER(1) DEFAULT 0,
+unique(report_table_no, report_table)
+);
+
+--게시물 좋아요 테이블 생성
+create table board_like (
+member_no  number references member(member_no) on delete cascade,
+board_no number references board(board_no) on delete cascade,
+board_like_time date default sysdate,
+like_check char(1) default 0 not null
+);
+
+
+-- reply에 멤버닉, 어태치먼트 넘버 추가
+CREATE OR REPLACE VIEW reply_with_nick as
+SELECT r.*, m.attachment_no, m.member_nick FROM reply r
+inner JOIN MEMBER_WITH_PROFILE m ON r.reply_member_no=m.member_no;
+
+--댓글 좋아요 테이블 생성
+create table reply_like (
+member_no  number references member(member_no) on delete cascade,
+reply_no number references reply(reply_no) on delete cascade,
+reply_like_time date default sysdate not null,
+reply_like_check NUMBER default 0 not null
+);

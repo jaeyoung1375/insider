@@ -3,6 +3,8 @@ package com.kh.insider.restcontroller;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpSession;
@@ -14,7 +16,9 @@ import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,8 +29,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.insider.configuration.FileUploadProperties;
 import com.kh.insider.dto.AttachmentDto;
+import com.kh.insider.dto.BoardAttachmentDto;
 import com.kh.insider.dto.MemberProfileDto;
 import com.kh.insider.repo.AttachmentRepo;
+import com.kh.insider.repo.BoardAttachmentRepo;
 import com.kh.insider.repo.MemberProfileRepo;
 
 @CrossOrigin
@@ -42,6 +48,9 @@ public class AttachmentRestController {
 	
 	@Autowired
 	private MemberProfileRepo memberProfileRepo;
+	
+	@Autowired 
+	private BoardAttachmentRepo boardAttachmentRepo;
 	
 	private File dir;
 	
@@ -144,5 +153,19 @@ public class AttachmentRestController {
 			memberProfileRepo.insert(memberProfileDto);
 		}
 		return attachmentNo;
+	}
+	
+	//게시물 수정시 사진 삭제
+	@DeleteMapping("/delete/{attachmentNo}")
+	public void delete(@PathVariable int attachmentNo,
+			@RequestParam int boardNo
+			,Model model) {
+		attachmentRepo.delete(attachmentNo);
+		List<BoardAttachmentDto> findImage = boardAttachmentRepo.selectList(boardNo);
+		List<Integer> imageList = new ArrayList<>();
+		for(BoardAttachmentDto attDto : findImage) {
+			imageList.add(attDto.getAttachmentNo());
+		}
+		model.addAttribute("image",imageList);
 	}
 }

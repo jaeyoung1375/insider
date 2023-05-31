@@ -80,6 +80,49 @@
 	margin-right:0.5em;
 	color:lightgray;
 }
+/* 모달 버튼 파란 글씨 */
+.modal-click-btn{
+	color:#0095F6;
+	cursor:pointer;
+}
+.modal-click-btn:hover{
+	color:#0b5ed7;
+}
+/* 모달 버튼 빨간 글씨 */
+.modal-click-btn-negative{
+	color:#dc3545;
+	cursor:pointer;
+}
+.modal-click-btn-negative:hover{
+	color:#d63384;
+}
+/* 모달 버튼 회색 글씨 */
+.modal-click-btn-neutral{
+	color:#6c757d;
+	cursor:pointer;
+}
+.modal-click-btn-neutral:hover{
+	color:#343a40;
+}
+/* 모달 버튼 초록 글씨 */
+.modal-click-btn-green{
+	color:#198754;
+	cursor:pointer;
+}
+.modal-click-btn-green:hover{
+	color:#20c997;
+}
+/* 모달이 사이즈가 커지면 스크롤이 생기고 헤더 고정 */
+.modal-content{
+	max-height:100%;
+	overflow-y:auto
+}
+.modal-header{
+	position:sticky; 
+	top:0; 
+	z-index:1; 
+	background-color:white
+}
 </style>
 <div id="app">
 	<div class="container-fluid mt-4" style="position:relative">
@@ -102,7 +145,7 @@
 						<h5 class="m-0">게시물 통계</h5>
 				</div>
 				<div class="admin-menu" @click="changeAdminMenu(6)" :class="{'selected':adminMenu==6}">
-						<h5 class="m-0">조회 통계</h5>
+						<h5 class="m-0">검색 통계</h5>
 				</div>
 			</div>
 		</div>
@@ -290,8 +333,8 @@
 									<td style="vertical-align:middle">{{member.memberEmail}}</td>
 									<td style="vertical-align:middle; text-align:center">{{member.memberFollow}}</td>
 									<td style="vertical-align:middle; text-align:center">{{member.memberReport}}</td>
-									<td style="vertical-align:middle" v-if="member.memberSuspensionStatus==0" @click="showSuspensionModal(index, 0)">정지</td>
-									<td style="vertical-align:middle" v-else @click="showSuspensionModal(index, 1)">일반</td>
+									<td class="modal-click-btn-negative" style="vertical-align:middle" v-if="member.memberSuspensionStatus==0" @click="showSuspensionModal(index, 0)">정지</td>
+									<td class="modal-click-btn" style="vertical-align:middle" v-else @click="showSuspensionModal(index, 1)">일반</td>
 								</tr>
 							</tbody>
 						</table>
@@ -622,32 +665,139 @@
 				<hr>
 				<div class="row">
 					<div class="col">
-						<h3 @click="showReportContentModal">신고 내용 관리</h3>
+						<h3 @click="showReportContentModal" class="modal-click-btn">신고 내용 관리</h3>
+					</div>
+				</div>
+				<hr>
+			<!-- 검색 리스트 -->
+				<div class="row">
+					<div class="row">
+						<div class="col-2 d-flex align-items-center">
+							<span>이름</span>
+						</div>
+						<div class="col-4 p-0">
+							<input class="form-control" v-model="reportSearchOption.memberName">
+						</div>
+						<div class="col-2 d-flex align-items-center">
+							<span>닉네임</span>
+						</div>
+						<div class="col-4 p-0">
+							<input class="form-control" v-model="reportSearchOption.memberNick">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-2 d-flex align-items-center">
+							<span>신고</span>
+						</div>
+						<div class="col-4 p-0">
+							<div class="row">
+								<div class="col-5">
+									<input class="form-control" v-model="reportSearchOption.reportMinCount">
+								</div>
+								<div class="col-2 d-flex align-items-center justify-content-center">
+									<span>~</span>
+								</div>
+								<div class="col-5">
+									<input class="form-control" v-model="reportSearchOption.reportMaxCount">
+								</div>
+							</div>
+						</div>
+						<div class="col-2 p-0">
+							<select class="form-control" v-model="reportSearchOption.reportTable">
+								<option value="">신고 위치(선택)</option>
+								<option value="board">게시물</option>
+								<option value="member">회원</option>
+								<option value="reply">댓글</option>
+								<option value="dm">메세지</option>
+							</select>
+						</div>
+						<div class="col-2 p-0">
+							<select class="form-control" v-model="reportSearchOption.reportResult">
+								<option value="">처리 여부(전체)</option>
+								<option value="0">미처리</option>
+								<option value="1">처리</option>
+								<option value="2">유예</option>
+							</select>
+						</div>
+						<div class="col-2 p-0">
+							<select class="form-control" v-model="reportSearchOption.order">
+								<option value="">정렬순서(선택)</option>
+								<option value="count desc">신고 많은순</option>
+								<option value="count asc">신고 적은순</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="offset-8 col p-0">
+							<button type="button" class="col-6 btn btn-secondary" @click="resetReportSearchOption">초기화</button>
+							<button type="button" class="col-6 btn btn-primary" @click="getReportListWithSearchOption">검색</button>
+						</div>
 					</div>
 				</div>
 			<!-- 신고 리스트 -->
-				<div class="row">
+				<div class="row mt-4">
 					<div class="col">
 						<table class="table">
 							<thead>
 								<tr>
-									<th>회원정보</th>
-									<th>신고 위치</th>
-									<th>신고개수</th>
-									<th>처리여부</th>
-									<th>비고</th>
+									<th style="vertical-align:middle; text-align:left">회원정보</th>
+									<th style="vertical-align:middle; text-align:center">신고 위치</th>
+									<th style="vertical-align:middle; text-align:center">신고개수</th>
+									<th style="vertical-align:middle; text-align:center">처리여부</th>
+									<th style="vertical-align:middle; width:15%">&nbsp&nbsp&nbsp비고</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr v-for="(report, index) in reportList" :key="index">
-									<td>{{report.memberName}}{{report.memberNick}}</td>
-									<td>{{report.reportTable}}</td>
-									<td>{{report.count}}</td>
-									<td>{{report.reportCheck}}</td>
-									<td>내용보기</td>
+									<td>
+										<div class="row">
+											<div class="col-3">
+												<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+report.imageURL">
+											</div>
+											<div class="col-9">
+												<div class="ms-2" style="font-weight:bold; font-size:1.2em">{{report.memberNick}}</div>
+												<div class="ms-2">{{report.memberName}}</div>
+											</div>
+										</div>
+									</td>
+									<td style="vertical-align:middle; text-align:center" v-if="report.reportTable=='board'">게시물</td>
+									<td style="vertical-align:middle; text-align:center" v-if="report.reportTable=='member'">회원</td>
+									<td style="vertical-align:middle; text-align:center">{{report.count}}<i class="fa-solid fa-angles-up ms-2" style="color:blue" v-if="reportDifference[index].count"></i></td>
+									<td style="vertical-align:middle; text-align:center" v-if="report.reportResult==0">미처리</td>
+									<td style="vertical-align:middle; text-align:center" v-if="report.reportResult==1">처리완료</td>
+									<td style="vertical-align:middle;">
+										<span class="modal-click-btn" @click="showReportDetailModal(index)">내용보기</span>
+										<i class="fa-solid fa-sort-up ms-2" style="color:blue" v-if="reportDifference[index].index>0"></i>
+										<i class="fa-solid fa-sort-down ms-2" style="color:red" v-if="reportDifference[index].index<0"></i>
+										<span class="ms-2" v-if="reportDifference[index].index==16">new</span>
+									</td>
 								</tr>
 							</tbody>
 						</table>
+					</div>
+				</div>
+			<!-- 리스트 끝 -->
+			<!-- 페이지네이션 -->
+				<div class="row mt-4" id="paging">
+					<div class="col d-flex justify-content-center align-items-center">
+						<ul class="pagination">
+							<li class="page-item" @click="reportFirstPage" :class="{disabled:this.reportSearchPagination.first}">
+								<span class="page-link"><i class="fa-solid fa-angles-left"></i></span>
+							</li>
+							<li class="page-item" @click="reportPrevPage" :class="{disabled:!this.reportSearchPagination.prev}">
+								<span class="page-link"><i class="fa-solid fa-angle-left"></i></span>
+							</li>
+							<li class="page-item" v-for="index in (reportSearchPagination.finishBlock-reportSearchPagination.startBlock+1)" :key="index"
+								 :class="{active:(index+reportSearchPagination.startBlock-1)==reportSearchOption.page}">
+								<span class="page-link" @click="reportSearchOption.page=index+reportSearchPagination.startBlock-1">{{index+reportSearchPagination.startBlock-1}}</span>
+							</li>
+							<li class="page-item" @click="reportNextPage" :class="{disabled:!this.reportSearchPagination.next}">
+								<span class="page-link"><i class="fa-solid fa-angle-right"></i></span>
+							</li>
+							<li class="page-item" @click="reportLastPage" :class="{disabled:this.reportSearchPagination.last}">
+								<span class="page-link"><i class="fa-solid fa-angles-right"></i></span>
+							</li>
+						</ul>
 					</div>
 				</div>
 			</div>
@@ -843,21 +993,109 @@
 					</div>
 				</div>
 			</div>
-		<!--------------------------- 조회 통계 --------------------------->
+		<!--------------------------- 검색 통계 --------------------------->
 			<div class="col" v-show="adminMenu==6">
 				<div class="row">
 					<div class="col">
-						<h2>조회 통계</h2>
+						<h2>검색 통계</h2>
 					</div>
 				</div>
 				<hr>
+				<!-- 검색조건 -->
+				<div class="row">
+					<div class="col-2 d-flex align-items-center justify-content-center">
+						<span>성별</span>
+					</div>						
+					<div class="col-2 p-0">
+						<select class="form-control" v-model="searchStatsSearch.memberGender">
+							<option value="">전체(선택)</option>
+							<option value="0">여성</option>
+							<option value="1">남성</option>
+						</select>
+					</div>
+					<div class="col-2 d-flex align-items-center justify-content-center">
+						<span>생일 </span>
+					</div>
+					<div class="col-6 p-0 m-0">
+						<div class="row p-0 m-0">
+							<div class="col-5 p-0">
+								<input class="form-control" type="date" v-model="searchStatsSearch.memberBeginBirth">
+							</div>
+							<div class="col-2 d-flex align-items-center justify-content-center">
+								<span> ~ </span>
+							</div>
+							<div class="col-5 p-0">
+								<input class="form-control" type="date" v-model="searchStatsSearch.memberEndBirth">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-11">
+						<div class="row">
+							<div class="col-2 d-flex align-items-center justify-content-center">
+								<span>기간설정 </span>
+							</div>
+							<div class="col-4">
+								<input class="form-control" type="date" v-model="searchStatsSearch.searchBeginDate">
+							</div>
+							<div class="col-1 d-flex align-items-center justify-content-center">
+								<span> 부터 </span>
+							</div>
+							<div class="col-4">
+								<input class="form-control" type="date" v-model="searchStatsSearch.searchEndDate">
+							</div>
+							<div class="col-1 d-flex align-items-center">
+								<span> 까지</span>
+							</div>
+						</div>
+					</div>
+					<div class="col-1 p-0">
+						<button type="button" class="btn btn-secondary w-100" @click="getSearchTagStats(true)">검색</button>
+					</div>
+				</div>
+				<!-- 검색 닉네임 통계 -->
+				<div class="row mt-4">
+					<div class="col">
+						<h4 class="m-0">검색 닉네임 통계</h4>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col" style="position:relative">
+						<div class="chart-arrow-left" :class="{'chart-disabled':searchStatsSearch.nickPage==1}">
+							<i class="fa-solid fa-chevron-left" @click="searchNickStatsPrev"></i>
+						</div>
+						<div class="chart-arrow-right" :class="{'chart-disabled':!searchNickChartRight}">
+							<i class="fa-solid fa-chevron-right" @click="searchNickStatsNext"></i>
+						</div>
+						<canvas ref="searchNickChart"></canvas>
+					</div>
+				</div>
+				<hr>
+				<!-- 검색 태그 수 통계 -->
+				<div class="row mt-4">
+					<div class="col">
+						<h4 class="m-0">검색 태그 통계</h4>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col" style="position:relative">
+						<div class="chart-arrow-left" :class="{'chart-disabled':searchStatsSearch.tagPage==1}">
+							<i class="fa-solid fa-chevron-left" @click="searchTagStatsPrev"></i>
+						</div>
+						<div class="chart-arrow-right" :class="{'chart-disabled':!searchTagChartRight}">
+							<i class="fa-solid fa-chevron-right" @click="searchTagStatsNext"></i>
+						</div>
+						<canvas ref="searchTagChart"></canvas>
+					</div>
+				</div>
 			</div>
-		<!--------------------------- 조회 통계 끝 --------------------------->
+		<!--------------------------- 검색 통계 끝 --------------------------->
 		</div>
 	</div>
 	<!-- ---------------------------------신고 내용 관리 모달-------------------------- -->
 	<div class="modal" tabindex="-1" role="dialog" id="reportContentModal" data-bs-backdrop="static" ref="reportContentModal">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title">신고 내용 관리</h5>
@@ -867,38 +1105,37 @@
 				</div>
 				<div class="modal-body">
 				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
-					<div class="row">
-						<div class="col">
+					<div class="row mb-3">
+						<div class="col-10 m-0 p-0">
 							<input class="form-control rounded" placeholder="신규 내용 추가" type="text" v-model="newReportContent">
 						</div>
-						<div class="col">
-							<button class="btn btn-primary" @click="insertReportContent">등록</button>
+						<div class="col p-0 m-0">
+							<button class="btn btn-primary w-100" @click="insertReportContent">등록</button>
 						</div>
 					</div>
-					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo">
+					<div class="row d-flex justify-content-center" v-for="(report, index) in reportContentList" :key="report.reportListNo">
 						<div class="row" v-if="!reportContentListEdit[index]">
-							<div class="col">
-								<span>{{report.reportListContent}}</span>
+							<div class="col-10 p-2">
+								<h5 class="m-0">{{report.reportListContent}}</h5>
 							</div>
-							<div class="col">
-								<i class="fa-solid fa-pen-to-square" @click="reportContentListEdit[index]=true"></i>
-								<i class="fa-solid fa-trash" @click="deleteReportContent(report.reportListNo)"></i>
+							<div class="col d-flex align-items-center">
+								<i class="fa-solid fa-pen-to-square modal-click-btn-neutral" @click="reportContentListEdit[index]=true" style="font-size:1.2em"></i>
+								<i class="fa-solid fa-trash ms-2 modal-click-btn-negative" @click="deleteReportContent(report.reportListNo)" style="font-size:1.2em"></i>
 							</div>
 						</div>
-						<div class="row" v-if="reportContentListEdit[index]">
-							<div class="col">
+						<div class="row d-flex justify-content-center p-0" v-if="reportContentListEdit[index]">
+							<div class="col-10">
 								<input class="form-control" v-model="reportContentListSub[index].reportListContent">
 							</div>
-							<div class="col">
-								<i class="fa-solid fa-xmark" @click="hideReportContentEdit(index)"></i>
-								<i class="fa-solid fa-check" @click="updateReportContent(index, report.reportListNo)"></i>
+							<div class="col d-flex align-items-center p-1">
+								<i class="fa-solid fa-xmark modal-click-btn-negative" @click="hideReportContentEdit(index)" style="font-size:1.2em"></i>
+								<i class="fa-solid fa-check ms-3 modal-click-btn-green" @click="updateReportContent(index, report.reportListNo)" style="font-size:1.2em"></i>
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-primary">확인</button>
-					<button type="button" class="btn btn-secondary" @click="hideReportContentModal">취소</button>
+					<button type="button" class="btn btn-secondary" @click="hideReportContentModal">닫기</button>
 				</div>
 			</div>
 		</div>
@@ -906,27 +1143,67 @@
 	<!-- ---------------------------------신고 내용 관리 모달 끝-------------------------- -->
 	<!-- ---------------------------------정지 모달-------------------------- -->
 	<div class="modal" tabindex="-1" role="dialog" id="suspensionModal" data-bs-backdrop="static" ref="suspensionModal">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title">회원 차단</h5>
+					<h5 class="modal-title">회원 정지</h5>
 					<button type="button" class="btn-close" @click="hideSuspensionModal" aria-label="Close">
 					<span aria-hidden="true"></span>
 					</button>
 				</div>
 				<div class="modal-body">
+					<div class="row mb-3" v-if="suspensionIndex[0]>=0">
+						<div class="row">
+							<div class="col-3 d-flex justify-content-center item-aligns-center">
+								<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+memberList[suspensionIndex[0]].imageURL">
+							</div>
+							<div class="col-9">
+								<div class="ms-2" style="font-weight:bold; font-size:1.2em">{{memberList[suspensionIndex[0]].memberNick}}</div>
+								<div class="ms-2">{{memberList[suspensionIndex[0]].memberName}}</div>
+							</div>
+						</div>
+					</div>
 				    <!-- 이미 정지당한 사람 페이지 -->
 					<div class="row" v-if="suspensionIndex[1]==0">
-						<div class="row">
+						<div class="row mb-4">
 							<div class="col">
-								정지 사유 : {{memberList[suspensionIndex[0]].memberSuspensionContent}} 
+								<div class="row">
+									<div class="row">
+										<div class="col-3" style="text-align:right">
+										정지 횟수 :
+										</div>
+										<div class="col-9 p-0">
+										{{memberList[suspensionIndex[0]].memberSuspensionTimes}}
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="row">
+										<div class="col-3" style="text-align:right">
+										정지 사유 :
+										</div>
+										<div class="col-9 p-0">
+										{{memberList[suspensionIndex[0]].memberSuspensionContent}}
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="row">
+										<div class="col-3" style="text-align:right">
+										기간 :
+										</div>
+										<div class="col-9 p-0">
+										{{memberList[suspensionIndex[0]].memberSuspensionDays}}
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col">
-								기간 : {{memberList[suspensionIndex[0]].memberSuspensionDays}}
+								<h5>정지내역 수정</h5>
 							</div>
-						</div>
+						</div>						
 						<div class="row">
 							<div class="col">
 								<select class="form-control rounded" v-model="suspensionContent[0]">
@@ -945,20 +1222,49 @@
 						</div>
 					</div>
 					<!-- 일반 사람 페이지 -->
-					<div class="row" v-else>
-						<div class="col">
-							<select class="form-control rounded" v-model="suspensionContent[0]">
-								<option value="" selected>기한(선택)</option>
-								<option value="1">1일</option>
-								<option value="7">7일</option>
-								<option value="30">30일</option>
-								<option value="365">1년</option>
-								<option value="99999">영구</option>
-							</select>
-							<select class="form-control rounded" v-model="suspensionContent[1]">
-								<option value="" selected>내용(선택)</option>>
-								<option class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo">{{report.reportListContent}}</option>
-							</select>
+					<div class="row" v-if="suspensionIndex[1]==1">
+						<div class="row mb-4">
+							<div class="col" v-if="memberList[suspensionIndex[0]].memberSuspensionTimes>0">
+								<div class="row">
+									<div class="col-3" style="text-align:right">
+									정지 횟수 :
+									</div>
+									<div class="col-9 p-0">
+									{{memberList[suspensionIndex[0]].memberSuspensionTimes}}
+									</div>
+								</div>
+							</div>
+							<div class="col" v-else>
+								<div class="row">
+									<div class="col-3" style="text-align:right">
+									정지 횟수 :
+									</div>
+									<div class="col-9 p-0">
+									0
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
+								<h5>정지내역 입력</h5>
+							</div>
+						</div>	
+						<div class="row">
+							<div class="col">
+								<select class="form-control rounded" v-model="suspensionContent[0]">
+									<option value="" selected>기한(선택)</option>
+									<option value="1">1일</option>
+									<option value="7">7일</option>
+									<option value="30">30일</option>
+									<option value="365">1년</option>
+									<option value="99999">영구</option>
+								</select>
+								<select class="form-control rounded" v-model="suspensionContent[1]">
+									<option value="" selected>내용(선택)</option>>
+									<option class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo">{{report.reportListContent}}</option>
+								</select>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -979,7 +1285,79 @@
 		</div>
 	</div>
 	<!-- ---------------------------------정지 모달 끝-------------------------- -->
-	
+	<!-- ---------------------------------신고 세부 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="reportDetailModal" data-bs-backdrop="static" ref="reportDetailModal">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">신고 내용 관리</h5>
+					<button type="button" class="btn-close" @click="hideReportDetailModal" aria-label="Close">
+					<span aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="modal-body">
+				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
+					<div class="row" >
+						<div class="col-3 d-flex justify-content-center item-aligns-center">
+							<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+reportDetailData.imageURL">
+						</div>
+						<div class="col-9">
+							<div class="ms-2" style="font-weight:bold; font-size:1.2em">{{reportDetailData.memberNick}}</div>
+							<div class="ms-2">{{reportDetailData.memberName}}</div>
+						</div>
+					</div>
+					<!-- 게시물 신고내용일 경우 출력 -->
+					<div class="row p-2" v-if="reportDetailData.reportTable=='board'">
+						<div class="col">
+							<div class="row">
+								<div class="col-12" v-for="(image, index) in reportDetailContent.boardAttachmentList" style="position:relative">
+									<img style="height:auto; display:block" class="w-100" :src="'${pageContext.request.contextPath}'+image.imageURL">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-2 text-center">
+									내용
+								</div>
+								<div class="col">
+									{{reportDetailContent.boardWithNickDto.boardContent}}
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-2 text-center">
+									태그
+								</div>
+								<div class="col">
+									<span v-for="(tag,index) in reportDetailContent.boardTagList" :key="index">\#{{tag.tagName}}&nbsp</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row p-3">
+						<div class="col">
+							<table class="table">
+								<thead>
+									<tr class="p-2">
+										<th style="padding-left:2.5em"> 신고항목</th>
+										<th style="text-align:center">신고수</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-for="(report, index) in reportDetailCountList">
+										<td style="padding-left:1.5em"> {{report.reportContent}}</td>
+										<td style="text-align:center"> {{report.count}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" @click="hideReportDetailModal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ---------------------------------신고 세부 모달 끝-------------------------- -->
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <!-- SockJS라이브러리 의존성 추가  -->
@@ -993,6 +1371,8 @@
 	let cumulativeChart;
 	let boardTimeChart;
 	let boardTagChart;
+	let searchTagChart;
+	let searchNickChart;
 	Vue.createApp({
 		data() {
 			return {
@@ -1035,7 +1415,22 @@
 				reportContentListSub:[],
 				reportContentListEdit:[],
 				reportList:[],
+				reportListBefore:[],
 				reportSocket:null,
+				reportSearchOption:{
+					page:1, reportTable:"", reportMinCount:"", reportMaxCount:"", memberNick:"", memberName:"", reportResult:"", order:"",
+					memberNo:memberNo
+				},
+				reportSearchPagination:{
+					begin:"", end:"", totalPage:"",	startBlock:"", finishBlock:"", first:false, last:false, prev:false,
+					next:false, nextPage:"", prevPage:"",
+				},
+				reportDifference:[],
+				reportDetailModal:null,
+				/* 리포트 내용보기 인덱스 */
+				reportDetailData:{},
+				reportDetailContent:{},
+				reportDetailCountList:[],
 				/*---------------------------회원 통계 데이터 --------------------------- */
 				memberLoginSearch:{
 					stat:"member_login",
@@ -1089,6 +1484,26 @@
 				},
 				boardTimeChartLeft:true,
 				boardTagChartRight:true,
+				/*---------------------------검색 통계 데이터 --------------------------- */
+				searchStatsSearch:{
+					tagPage:1,
+					nickPage:1,
+					memberGender:"",
+					memberBeginBirth:"",
+					memberEndBirth:"",
+					searchBeginDate:"",
+					searchEndDate:"",
+				},
+				searchTagList:{
+					name:[],
+					count:[],
+				},
+				searchNickList:{
+					name:[],
+					count:[],
+				},
+				searchTagChartRight:true,
+				searchNickChartRight:true,
 				/*---------------------------정지 데이터 --------------------------- */
 				suspensionModal:null,
 				suspensionIndex:[],
@@ -1102,7 +1517,7 @@
 			},
 			tagSecondHalfList(){
 				return this.tagList.slice(Math.ceil(this.tagList.length/2));
-			}
+			},
 		},
 		methods: {
 			//메소드영역
@@ -1302,25 +1717,73 @@
 				this.reportContentListSub[index].reportListContent = this.reportContentList[index].reportListContent; 
 			},
 			async loadReportList(){
-				const resp = await axios.get(contextPath+"/rest/report/");
-				this.reportList=[...resp.data];
+				const resp = await axios.get(contextPath+"/rest/report/", {params:this.reportSearchOption});
+				this.reportListBefore=[...resp.data.reportList];
+				this.reportSearchPagination=resp.data.paginationVO;
+				this.reportList=_.cloneDeep(this.reportListBefore);
 			},
  			connectReportServer(){
 				const url = contextPath+"/ws/admin/report";
 				this.socket = new SockJS(url);
 				
 				this.socket.onopen = ()=>{
+					const joinData = {memberNo:memberNo, data:1}
+					this.socket.send(JSON.stringify(joinData))
 				};
 				this.socket.onclose= ()=>{
+					console.log("연결종료")
 				};
 				this.socket.onerror= ()=>{
+					console.log("연결종료")
 				};
 				//메세지를 수신하면 수신된 메세지로 태그를 만들어서 추가
 				this.socket.onmessage=(e)=>{
 					const data = JSON.parse(e.data);
-					console.log(data);
-					this.reportList = [...data];
+					if(data.data==1){
+						this.socket.send(JSON.stringify(this.reportSearchOption));
+					}
+					else{
+						this.reportListBefore = _.cloneDeep(this.reportList);
+						
+						this.reportList = [...data.reportList];
+						this.reportPagination=[data.paginationVO];
+					}
 				};
+			},
+			//신고 검색 버튼 클릭시
+			async getReportListWithSearchOption(){
+				this.reportSearchOption.page=1;
+				const resp = await axios.get(contextPath+"/rest/report/", {params:this.reportSearchOption});
+				this.reportListBefore=[...resp.data.reportList];
+				this.reportSearchPagination=resp.data.paginationVO;
+				this.reportList=_.cloneDeep(this.reportListBefore);
+			},
+			//페이지네이션 처음, 이전, 다음 끝 버튼 누를 때
+			reportFirstPage(){
+				if(!this.reportSearchPagination.first) this.reportSearchOption.page=1;
+			},
+			reportPrevPage(){
+				if(this.reportSearchPagination.prev) this.reportSearchOption.page=this.reportSearchPagination.prevPage;
+			},
+			reportNextPage(){
+				if(this.reportSearchPagination.next) this.reportSearchOption.page=this.reportSearchPagination.nextPage;
+			},
+			reportLastPage(){
+				if(!this.reportSearchPagination.last) this.reportSearchOption.page=this.reportSearchPagination.totalPage;
+			},
+			//리포트 리스트 초기화 버튼 클릭시
+			resetReportSearchOption(){
+				this.reportSearchOption.memberName="";
+				this.reportSearchOption.memberNick="";
+				this.reportSearchOption.reportTable="";
+				this.reportSearchOption.reportMinCount="";
+				this.reportSearchOption.reportMaxCount="";
+				this.reportSearchOption.reportResult="";
+				this.reportSearchOption.order="";
+			},
+			//리포트리스트, 비포 객체 배열 비교 함수
+			compareReport (obj1, obj2){
+				return obj1.reportTableNo==obj2.reportTableNo && obj1.reportTable==obj2.reportTable && obj1.reportMemberNo==obj2.reportMemberNo;
 			},
 			/*------------------------------ 신고관리 끝 ------------------------------*/
 			/*------------------------------ 멤버통계 시작 ------------------------------*/
@@ -1603,8 +2066,112 @@
 				this.boardTagSearch.page++;
 				this.getBoardTagStats();
 			},
-		
-		/*------------------------------ 게시물통계통계 끝 ------------------------------*/
+		/*------------------------------ 게시물통계 끝 ------------------------------*/
+		/*------------------------------ 검색통계 시작 ------------------------------*/
+			async getSearchNickStats(buttonClick){
+				if(buttonClick){
+					this.searchStatsSearch.nickPage=1;
+				}
+				const resp = await axios.post(contextPath+"/rest/admin/stats/searchNick", this.searchStatsSearch)
+				this.searchNickChartRight=true;
+				if(resp.data.length<15){
+					this.searchNickChartRight=false;
+				}
+				this.searchNickList.name = _.map(resp.data, 'name');
+				this.searchNickList.count = _.map(resp.data, 'count');
+				//캔버스 사용 초기화
+				if(searchNickChart!=null) {
+					searchNickChart.destroy();
+				}
+				searchNickChart = this.$refs.searchNickChart;
+				
+				searchNickChart = new Chart(searchNickChart, {
+					type: "bar",
+					data: {
+						labels: this.searchNickList.name,
+						datasets: [
+							{
+								label: "생성 개수",
+								data: this.searchNickList.count,
+								borderWidth: 1,
+								backgroundColor: [
+									"navy",
+								],
+								borderColor: [
+									"navy",
+								],
+							},
+						],
+					},
+					options: {
+						scales: {
+							y: {beginAtZero: true,},
+						},
+					},
+				});
+			},
+			async getSearchTagStats(buttonClick){
+				if(buttonClick){
+					this.searchStatsSearch.tagPage=1;
+					this.searchStatsSearch.nickPage=1;
+					this.getSearchNickStats();
+				}
+				const resp = await axios.post(contextPath+"/rest/admin/stats/searchTag", this.searchStatsSearch)
+				this.searchTagChartRight=true;
+				if(resp.data.length<15){
+					this.searchTagChartRight=false;
+				}
+				this.searchTagList.name = _.map(resp.data, 'name');
+				this.searchTagList.count = _.map(resp.data, 'count');
+				//캔버스 사용 초기화
+				if(searchTagChart!=null) {
+					searchTagChart.destroy();
+				}
+				searchTagChart = this.$refs.searchTagChart;
+				
+				searchTagChart = new Chart(searchTagChart, {
+					type: "bar",
+					data: {
+						labels: this.searchTagList.name,
+						datasets: [
+							{
+								label: "생성 개수",
+								data: this.searchTagList.count,
+								borderWidth: 1,
+								backgroundColor: [
+									"navy",
+								],
+								borderColor: [
+									"navy",
+								],
+							},
+						],
+					},
+					options: {
+						scales: {
+							y: {beginAtZero: true,},
+						},
+					},
+				});
+			},
+			//차트 좌우버튼 클릭시
+			searchTagStatsPrev(){
+				this.searchStatsSearch.tagPage++;
+				this.getSearchTagStats();
+			},
+			searchTagStatsNext(){
+				this.searchStatsSearch.tagPage--;
+				this.getSearchTagStats();
+			},
+			searchNickStatsPrev(){
+				this.searchStatsSearch.nickPage--;
+				this.getSearchNickStats();
+			},
+			searchNickStatsNext(){
+				this.searchStatsSearch.nickPage++;
+				this.getSearchNickStats();
+			},
+		/*------------------------------ 검색통계 끝 ------------------------------*/
 		/*------------------------------ 정지모달 시작 ------------------------------*/
  			showSuspensionModal(index, status){
 				if(this.suspensionModal==null) return;
@@ -1634,25 +2201,30 @@
 				const resp = await axios.put(contextPath+"/rest/suspension/", data);
 				this.memberList[this.suspensionIndex[0]]=resp.data;
 				this.hideSuspensionModal();
-			}
+			},
 			
-		
 		/*------------------------------ 정지모달 끝 ------------------------------*/
-
+		/*------------------------------ 신고 세부 모달 시작 ------------------------------*/
+ 			showReportDetailModal(index){
+				this.reportDetailData=this.reportList[index];
+				this.loadDetailCount();
+				if(this.reportDetailModal==null) return;
+				this.reportDetailModal.show();
+			},
+			hideReportDetailModal(){
+				if(this.reportDetailModal==null) return;
+				this.reportDetailModal.hide();
+			},
+			async loadDetailCount(){
+				const resp = await axios.get(contextPath+"/rest/report/detail?reportTable="+this.reportDetailData.reportTable+"&reportTableNo="+this.reportDetailData.reportTableNo);
+				this.reportDetailCountList = [...resp.data.reportDetailCountVO];
+				this.reportDetailContent=resp.data.boardListVO;
+			},
+		
+		/*------------------------------ 신고 세부 모달 끝 ------------------------------*/
 		},
 		created(){
 			//데이터 불러오는 영역
-			this.loadMemberList();
-			this.loadReportList();
-			this.connectReportServer();
-			this.getMemberLoginStats();
-			this.getMemberJoinStats();
-			this.getMemberCumulativeStats();
-			this.getBoardTimeStats();
-			this.getBoardTagStats();
-			this.loadReportContent();
-			this.loadBoardList();
-			this.loadTagList();
 		},
 		watch:{
 			//감시영역
@@ -1683,6 +2255,59 @@
 					this.makeQueryForTagOrderList();
 				}
 			},
+			"reportSearchOption.page":function(newVal, oldVal){
+				this.loadReportList();
+			},
+			reportList:{
+				deep:true,
+				handler(){
+					this.reportDifference=this.reportList.map((obj1, indexAfter)=>{
+						const indexBefore  = this.reportListBefore.findIndex(obj => this.compareReport(obj1, obj));
+						const obj2 = this.reportListBefore[indexBefore];
+						//index에 올라가는 등수 반환 커졌으면(순위가 올라가면) +, 작아졌으면(순위가 내려가면) -
+						if(obj2!=undefined){
+							return {count:obj1.count != obj2.count, index:indexBefore-indexAfter};
+						}
+						else{
+							return{count:false, index:16};
+						}
+					})
+				}
+			},
+			adminMenu(){
+				if(this.adminMenu==1){
+					//회원관리
+					this.loadMemberList();
+					this.loadReportContent();
+				}
+				else if(this.adminMenu==2){
+					//게시물 관리
+					this.loadBoardList();
+					this.loadTagList();
+				}
+				else if(this.adminMenu==3){
+					//신고 관리
+					this.connectReportServer();
+					this.loadReportList();
+					this.loadReportContent();
+				}
+				else if(this.adminMenu==4){
+					//회원 통계
+					this.getMemberLoginStats();
+					this.getMemberJoinStats();
+					this.getMemberCumulativeStats();
+				}
+				else if(this.adminMenu==5){
+					//게시물 통계
+					this.getBoardTimeStats();
+					this.getBoardTagStats();
+				}
+				else if(this.adminMenu==6){
+					//조회 통계
+					this.getSearchTagStats();
+					this.getSearchNickStats();
+				}
+			}
 		},
 		mounted(){
 			//쿼리 초기화 및 변화 감지
@@ -1692,6 +2317,7 @@
 			//모달 선언
 			this.reportContentModal = new bootstrap.Modal(this.$refs.reportContentModal);
 			this.suspensionModal = new bootstrap.Modal(this.$refs.suspensionModal);
+			this.reportDetailModal = new bootstrap.Modal(this.$refs.reportDetailModal);
 		},
 	}).mount("#app");
 </script>

@@ -1,12 +1,12 @@
 package com.kh.insider.restcontroller;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,13 +15,18 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.insider.dto.BlockDto;
 import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.dto.ReportDto;
-import com.kh.insider.dto.ReportManagementDto;
+import com.kh.insider.dto.ReportResultDto;
 import com.kh.insider.repo.BlockRepo;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.ReportManagementRepo;
 import com.kh.insider.repo.ReportRepo;
+import com.kh.insider.repo.ReportResultRepo;
 import com.kh.insider.service.AdminReportService;
+import com.kh.insider.vo.PaginationVO;
+import com.kh.insider.vo.ReportDetailVO;
+import com.kh.insider.vo.ReportResponseVO;
+import com.kh.insider.vo.ReportSearchVO;
 
 @RequestMapping("/rest/report")
 @RestController
@@ -38,6 +43,8 @@ public class ReportRestController {
 	private MemberWithProfileRepo memberWithProfileRepo;
 	@Autowired
 	private BlockRepo blockRepo;
+	@Autowired
+	private ReportResultRepo reportResultRepo;
 	
 	@PostMapping("/")
 	public MemberWithProfileDto insert(@RequestBody ReportDto reportDto, HttpSession session) throws IOException {
@@ -53,13 +60,20 @@ public class ReportRestController {
 		if(checkReportDto==null) {
 			reportRepo.insert(reportDto);
 			String board = reportDto.getReportTable();
+			
+			//리포트 관리 결과 테이블에 추가
+			ReportResultDto reportResultDto = reportResultRepo.selectOne(reportDto);
+			if(reportResultDto==null) {
+				reportResultRepo.insert(reportDto);
+			}
+			
 			//신고 수 추가
 			switch(board) {
 			case "board" : 
 				boardRepo.addReport(reportDto.getReportTableNo());
 			}
 			//최신 현황을 admin report 게시판으로 전송
-			adminReportService.sendDataToAllCilients();
+			adminReportService.sendSearchOptionRequest();
 		}
 		else {
 			reportRepo.update(reportDto);
@@ -78,7 +92,31 @@ public class ReportRestController {
 	}
 	
 	@GetMapping("/")
-	public List<ReportManagementDto> selectList(){
-		return reportManagementRepo.selectList();
+	public ReportResponseVO selectList(@ModelAttribute ReportSearchVO vo){
+		//전체 게시물 수 반환
+		int count = reportManagementRepo.selectCount(vo);
+		vo.setCount(count);
+		ReportResponseVO responseVO = new ReportResponseVO();
+		responseVO.setReportList(reportManagementRepo.selectList(vo));
+		
+		PaginationVO paginationVO = new PaginationVO();
+		paginationVO.setCount(count);
+		paginationVO.setPage(vo.getPage());
+		paginationVO.setSize(vo.getSize());
+		
+		responseVO.setPaginationVO(paginationVO);
+		return responseVO;
+	}
+	@GetMapping("/detail")
+	public ReportDetailVO selectReportDetailCount(@ModelAttribute ReportDto reportDto){
+		ReportDetailVO reportDetailVO = new ReportDetailVO();
+		reportDetailVO.setReportDetailCountVO(reportRepo.selectDetailCount(reportDto));
+		
+		switch(reportDto.getReportTable()) {
+		case "board":
+			reportDetailVO.setBoardListVO(boardRepo.selectOneBoard(reportDto.getReportTableNo()));
+			break;
+		}
+		return reportDetailVO;
 	}
 }
