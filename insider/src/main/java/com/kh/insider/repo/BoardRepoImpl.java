@@ -51,10 +51,18 @@ public class BoardRepoImpl implements BoardRepo {
 	public List<BoardListVO> selectListWithAttach(AdminBoardSearchVO vo) {
 		return sqlSession.selectList("board.boardListTreeSelect",vo);
 	}
+	
 	@Override
-	public List<BoardListVO> selectListWithFollow(BoardSearchVO vo) {
-		return sqlSession.selectList("board.boardListWithFollow", vo);
+	public List<BoardListVO> selectListWithFollowNew(BoardSearchVO vo) {
+		return sqlSession.selectList("board.boardListWithFollowNew", vo);
 	}
+
+
+	@Override
+	public List<BoardListVO> selectListWithFollowOld(BoardSearchVO vo) {
+		return sqlSession.selectList("board.boardListWithFollowOld", vo);
+	}
+	
 	@Override
 	public List<BoardListVO> selectListWithoutFollow(BoardSearchVO vo) {
 		return sqlSession.selectList("board.boardListWithoutFollow", vo);
@@ -142,4 +150,7 @@ public class BoardRepoImpl implements BoardRepo {
 		int result = sqlSession.update("board.edit", boardDto);
 		return result > 0;
 	}
+
+
+	
 }

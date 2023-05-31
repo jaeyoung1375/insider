@@ -36,8 +36,10 @@ public interface BoardRepo {
 	//컨텐트까지 포함한 리스트 출력(팔로우, 차단 x)
 	List<BoardListVO> selectListWithAttach(AdminBoardSearchVO vo);
 	int selectAdminCount(AdminBoardSearchVO vo);
-	//팔로우 차단 구현 리스트 출력
-	List<BoardListVO> selectListWithFollow(BoardSearchVO vo);
+	//팔로우 차단 구현 리스트 출력(3일 이내)
+	List<BoardListVO> selectListWithFollowNew(BoardSearchVO vo);
+	//팔로우 차단 구현 리스트 출력(3일 이후)
+	List<BoardListVO> selectListWithFollowOld(BoardSearchVO vo);	 
 	//차단 구현 리스트 출력
 	List<BoardListVO> selectListWithoutFollow(BoardSearchVO vo);
 	

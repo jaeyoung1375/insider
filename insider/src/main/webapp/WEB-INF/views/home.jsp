@@ -12,7 +12,8 @@
     }
 
     h4{
-        margin: 0px 0px 4px 0px;
+    	height: 25px;
+    	margin: 0px 0px 6px 0px;
     }
     
     h5 {
@@ -121,7 +122,7 @@
 	<div class="container" style="margin-top: 20px; max-width: 1000px">
         <div class="row" v-for="(board, index) in boardList" :key="board.boardNo">
             <!--●●●●●●●●●●●●●●피드공간●●●●●●●●●●●●●●●●●●●●●●-->
-            <div class="col" style="max-width: 620px; margin: 0 auto;">
+            <div class="col" style="max-width: 620px; margin: 0 auto 10px auto;">
                 <!--피드001-->
                 <div class="head_feed bg-white" style="border: 0.5px solid #b4b4b4; border-radius: 10px;">
                     <div class="d-flex flex-column">
@@ -129,7 +130,7 @@
                         <div style="padding: 8px 8px 4px 8px;">
                             <div class="d-flex">
                                 <div class="p-2"><a style="padding: 0 0 0 0" :href="'${pageContext.request.contextPath}/member/'+board.boardWithNickDto.memberNick"><img class="profile" :src="profileUrl(index)"></a></div>
-                                <div class="p-2" style="margin-top: 8px;"><h4><a class="btn btn-none" style="padding: 0 0 0 0" :href="'${pageContext.request.contextPath}/member/'+board.boardWithNickDto.memberNick"><b>{{board.boardWithNickDto.memberNick}}</b></a><b>  · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
+                                <div class="p-2" style="margin-top: 8px;"><h4><a class="btn btn-none" style="padding: 0 0 0 0" :href="'${pageContext.request.contextPath}/member/'+board.boardWithNickDto.memberNick"><b>{{board.boardWithNickDto.memberNick}}</b></a><b style="color: gray;">  · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
                                 <div v-if="followCheckIf(index)" @click="follow(board.boardWithNickDto.memberNo)" class="p-2 me-5" style="margin-top: 8px;"><h4><b style="font-size: 15px; color:blue; cursor: pointer;">팔로우</b></h4></div>
                                  <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> 
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
@@ -436,6 +437,8 @@ Vue.createApp({
             //목록을 위한 데이터
             page:1,
             boardList:[],
+            boardOldList:[],
+            boardAllList:[],
             finish:false,
             //안전장치
             loading:false,
@@ -493,11 +496,11 @@ Vue.createApp({
     //메소드
     methods:{
     	//전체 리스트 불러오기
-        async loadList(){
+        async loadNewList(){
             if(this.loading == true) return; //로딩중이면
             if(this.finish == true) return; //다 불러왔으면
             this.loading = true;
-            const resp = await axios.get("${pageContext.request.contextPath}/rest/board/page/"+ this.page);
+            const resp = await axios.get("${pageContext.request.contextPath}/rest/board/old/"+ this.page);
             //console.log(resp.data);
             //console.log(resp.data[0].boardLike);
             
@@ -529,7 +532,13 @@ Vue.createApp({
         //게시물 삭제
         deletePost(boardNo){
         	//window.location.href = "${pageContext.request.contextPath}/search";
-        	window.location.href = "${pageContext.request.contextPath}/board/delete?boardNo=" + boardNo;
+        	const confirmed = confirm("게시물을 삭제하시겠습니까?");
+        	if(confirmed){
+        		window.location.href = "${pageContext.request.contextPath}/board/delete?boardNo=" + boardNo;
+        	}
+        	else{
+        		return;
+        	}
         },
         
         //로그인한 회원이 좋아요 눌렀는지 확인
@@ -843,7 +852,7 @@ Vue.createApp({
        //percent가 변하면 percent의 값을 읽어와서 80% 이상인지 판정
        percent(){
             if(this.percent >= 80) {
-                this.loadList();
+                this.loadNewList();
             }
        }
     },
@@ -884,7 +893,7 @@ Vue.createApp({
     },
     created(){
     	this.followCheck();
-    	this.loadList();
+    	this.loadNewList();
     },
 }).mount("#app");
 </script>

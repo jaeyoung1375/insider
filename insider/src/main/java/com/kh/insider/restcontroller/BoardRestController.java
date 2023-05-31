@@ -38,16 +38,29 @@ public class BoardRestController {
 	private BoardSearchService boardSearchService;
 	
 	
-	//무한스크롤
-	@GetMapping("/page/{page}")
-	public List<BoardListVO> paging(@PathVariable int page, HttpSession session) {
+	//무한스크롤 팔로우(3일 이내)
+	@GetMapping("/new/{page}")
+	public List<BoardListVO> pagingNew(@PathVariable int page, HttpSession session) {
 		long memberNo=(Long)session.getAttribute("memberNo");
 		
 		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
+		boardSearchVO.setLoginMemberNo(memberNo);
 		boardSearchVO.setBoardCount(2);
-		return boardRepo.selectListWithoutFollow(boardSearchVO);
+		return boardRepo.selectListWithFollowNew(boardSearchVO);
 		//return boardRepo.selectListWithFollow(boardSearchVO);
 	}
+	
+	@GetMapping("/old/{page}")
+	public List<BoardListVO> pagingOld(@PathVariable int page, HttpSession session) {
+		long memberNo=(Long)session.getAttribute("memberNo");
+		
+		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
+		boardSearchVO.setLoginMemberNo(memberNo);
+		boardSearchVO.setBoardCount(2);
+		return boardRepo.selectListWithFollowOld(boardSearchVO);
+		//return boardRepo.selectListWithFollow(boardSearchVO);
+	}
+	
 	//검색 페이지 리스트 출력을 위한 계층형 조회
 	@GetMapping("/list/{page}")
 	public List<BoardListVO> boardList(@PathVariable int page, HttpSession session){
