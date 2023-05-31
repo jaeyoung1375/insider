@@ -590,7 +590,23 @@ $(document).ready(function() {
     		
     		const resp = await axios.delete("${pageContext.request.contextPath}/rest/attachment/delete/"+ this.path[index], { params: { boardNo: boardNo } });
     		this.path.splice(index,1);
-    		this.loadImage();
+    		console.log(this.path);
+    		//this.loadImage();
+    		this.files = [];
+    		let num = -1;
+    		for(let i=0; i<this.path.length; i++){
+      			this.files = [
+      				...this.files,
+      				{
+      					file:"",
+      					preview:"${pageContext.request.contextPath}/rest/attachment/download/" + this.path[i],
+      					number : i
+      				}
+      			] 
+      			num = i;
+      		} 
+    		this.uploadImageIndex = num + 1;
+    		
     	},
     	
     	loadImage(){
