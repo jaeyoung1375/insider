@@ -13,6 +13,9 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
 
 <style>
+	.hover {
+		background-color: rgb(244, 246, 248)
+	}
 	.content-body .fa-x,
 	.content-body .fa-trash,
 	.content-body .fa-heart {
@@ -183,13 +186,34 @@
 					<!-- 채팅방 목록 -->
 					<div class="card col-3" style="width:290px;border-radius:0;border-top:none;padding:0;">
 						<div class="card-body" style="padding:0;padding-top:10px;">
-						<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo">
-						    <div>
-						    <a :href="'channel?room=' + room.roomNo" style="color: black; text-decoration: none;">
-							    {{room.roomName}}
-							</a>
-						    </div>
-						</div>
+							<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo" class="roomList" :class="{'hover': isHovered[index] }"
+         						@mouseover="isHovered[index] = true" @mouseleave="isHovered[index] = false" style="padding-bottom: 5px;padding-top: 4px;padding-left: 13px;cursor:pointer;">
+							    <div style="position:relative; height: 2.4em; display: flex; align-items: center;">
+							    	<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"style="border-radius: 50%; position:absolute; 
+								    	width:34px; height:34px; margin-top:0em;cursor:pointer;">
+				          			<img v-else src="https://via.placeholder.com/34x34?text=P" style="border-radius: 50%; position:absolute; margin-top:0em;">
+								    <a :href="'channel?room=' + room.roomNo" style="color: black; text-decoration: none;">
+								    <span style="font-size:0.87em;padding-left:3.2em; word-wrap:normal;">
+									    {{room.roomName}}
+			   						</span>
+			   						<span style="color:#eb4d4b; font-size:0.85em;padding-left:1.5em; padding-top:0.1em">
+			   						 	5
+			   						</span>
+									</a>
+			   						<span style="color:#eb4d4b; position:absolute;right:15px; top:13px;font-size: 10px;">
+			   							<i class="fa-solid fa-circle"></i>
+			   						</span>
+							    </div>
+			   					<div style="word-wrap:normal;margin-top:3px; display: flex; align-items: center;">
+			   						<span v-if="room.messageContent" style="font-size:0.8em;word-wrap:normal;display: inline-block;width: 75%;text-overflow: 
+			   							ellipsis;white-space: nowrap;overflow: hidden;vertical-align:bottom; text-overflow: ellipsis; padding-left:3.5em; color:#303952;">
+			   							{{JSON.parse(room.messageContent).content}}
+			   						</span>
+				   					<span style="font-size:0.7em;word-wrap:normal;color:gray; top:3px; padding-left: 0.2em; display: inline-block;">
+					   					&nbsp; {{dateCount(room.messageSendTimeAuto)}}
+				   					</span>
+				   				</div>
+							</div>
 						</div>
 					</div>
 					
@@ -249,7 +273,7 @@
 		        </div>
 		        <div v-if="searchDmList.length==0" >
 			        <div v-for="(member,index) in dmMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
-			          <img src="https://via.placeholder.com/40x40?text=P" style="border-radius: 50%; position:absolute; top:0.3em" >
+			          <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:45px; height:45px;">
 			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
 			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
@@ -260,7 +284,7 @@
 		        </div>
 		        <div v-if="searchDmList.length>0">
 			        <div v-for="(member,index) in searchDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
-			          <img src="https://via.placeholder.com/40x40?text=P" style="border-radius: 50%; position:absolute; top:0.3em" >
+			          <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:40px; height:40px;">
 			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
 			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
@@ -292,7 +316,8 @@
 		        </div>
 		        <div v-if="searchDmList.length==0" >
 			        <div v-for="(member,index) in dmMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
-			          <img src="https://via.placeholder.com/40x40?text=P" style="border-radius: 50%; position:absolute; top:0.3em" >
+			          <img v-if="dmMemberList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:40px; height:40px;">
+			          <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
 			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
 			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
@@ -303,7 +328,8 @@
 		        </div>
 		        <div v-if="searchDmList.length>0">
 			        <div v-for="(member,index) in searchDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
-			          <img src="https://via.placeholder.com/40x40?text=P" style="border-radius: 50%; position:absolute; top:0.3em" >
+			          <img v-if="searchDmList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:40px; height:40px;">
+			          <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
 			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
 			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
@@ -432,6 +458,8 @@
    					roomName: "",
    					roomType: "",
    					roomRename:"",
+   					
+   					isHovered: [],
                     
                 };
             },
@@ -808,7 +836,29 @@
 				            });
 				    }
 				},
-       		},
+		        //날짜 계산 함수
+				dateCount(date) {
+		        	const curTime = new Date();
+		        	const postTime = new Date(date);
+		        	const duration = Math.floor((curTime - postTime) / (1000 * 60));
+		        	
+		        	if(duration < 1){
+		        		return "방금 전";
+		        	}
+		        	else if(duration < 60){
+		        		return duration + "분 전";
+		        	}
+		        	else if(duration < 1440) {
+		        		const hours = Math.floor(duration / 60);
+		        		return hours + "시간 전"
+		        	} 
+		        	else {
+		        		const days = Math.floor(duration / 1440);
+		        		return days + "일 전";
+		        		//return day + "일 전";
+		        	}
+				},
+            },
             watch:{
             	//검색
             	keyword:_.throttle(function(){
