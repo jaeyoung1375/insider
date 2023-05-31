@@ -11,5 +11,5 @@ public class SearchDto {
 	public String searchTagName;
 	public Long searchMemberNo;
 	public Date searchTime;
-	public int searchDelete;
+	public Integer searchDelete;
 }

@@ -115,7 +115,10 @@
 	.childShow{
 		display: none;
 	}
-
+/* 차단 관련 css */
+.report-content:hover{
+	background-color:rgba(34, 34, 34, 0.05);
+}
 </style>
 <div id="app">
 	<div class="container" style="margin-top: 20px; max-width: 1000px">
@@ -128,8 +131,8 @@
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼ID▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div style="padding: 8px 8px 4px 8px;">
                             <div class="d-flex">
-                                <div class="p-2"><a style="padding: 0 0 0 0" :href="'${pageContext.request.contextPath}/member/'+board.boardWithNickDto.memberNick"><img class="profile" :src="profileUrl(index)"></a></div>
-                                <div class="p-2" style="margin-top: 8px;"><h4><a class="btn btn-none" style="padding: 0 0 0 0" :href="'${pageContext.request.contextPath}/member/'+board.boardWithNickDto.memberNick"><b>{{board.boardWithNickDto.memberNick}}</b></a><b>  · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
+                                <div class="p-2"><a style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><img class="profile" :src="profileUrl(index)"></a></div>
+                                <div class="p-2" style="margin-top: 8px;"><h4><a class="btn btn-none" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a><b>  · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
                                 <div v-if="followCheckIf(index)" @click="follow(board.boardWithNickDto.memberNo)" class="p-2 me-5" style="margin-top: 8px;"><h4><b style="font-size: 15px; color:blue; cursor: pointer;">팔로우</b></h4></div>
                                  <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> 
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
@@ -175,12 +178,12 @@
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼멘트▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-1">
                             <h4 class="mt-1"><b>좋아요 {{boardLikeCount[index]}}개</b></h4>
-                            <h4><a class="btn btn-none" style="padding: 0 0 0 0" :href="'${pageContext.request.contextPath}/member/'+board.boardWithNickDto.memberNick"><b>{{board.boardWithNickDto.memberNick}}</b></a></h4>
+                            <h4><a class="btn btn-none" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a></h4>
                             <p style="height: 20px;overflow: hidden; width: 400px;white-space: nowrap;text-overflow: ellipsis;margin-bottom:5px;">
                             	<span class="textHide">
                             		{{board.boardWithNickDto.boardContent}}
                             		<br v-if="boardList[index].boardTagList.length > 0"><br v-if="boardList[index].boardTagList.length > 0">
-                            		<a href="#" v-for="(tag, index3) in boardList[index].boardTagList" :key="index3" style="margin-right: 0.5em;">\#{{tag.tagName}}</a>
+                            		<a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in boardList[index].boardTagList" :key="index3" style="margin-right: 0.5em;">\#{{tag.tagName}}</a>
                             	</span>
                             </p>                            
                             
@@ -250,7 +253,7 @@
 					<h5 class="card-title"></h5>
 					<p class="card-text" style="margin-left: 0.5em;">{{boardList[detailIndex].boardWithNickDto.boardContent}}
 					<br v-if="boardList[detailIndex].boardTagList.length > 0"><br v-if="boardList[detailIndex].boardTagList.length > 0">
-                            	<a href="#" v-for="(tag, index3) in boardList[detailIndex].boardTagList" :key="index3" style="margin-right: 0.5em;">\#{{tag.tagName}}</a>
+                            	<a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in boardList[detailIndex].boardTagList" :key="index3" style="margin-right: 0.5em;">\#{{tag.tagName}}</a>
 					</p>
 					
 					
@@ -372,8 +375,8 @@
 						</div>
 					</div>
 					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo" style="border-top:var(--bs-modal-border-width) solid var(--bs-modal-border-color)">
-						<div class="col d-flex p-2" @click="reportContent(report.reportListContent)" style="cursor:pointer">
-							<h5 style="margin:0;">{{report.reportListContent}}</h5>
+						<div class="col d-flex p-3 report-content" @click="reportContent(report.reportListContent)" style="cursor:pointer">
+							<h5 style="margin:0; margin-left:1em">{{report.reportListContent}}</h5>
 						</div>
 					</div>
 				</div>
@@ -388,7 +391,7 @@
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-body">
-					<div class="row mb-2">
+					<div class="row mt-2 mb-2">
 						<div class="col d-flex justify-content-center align-items-center">
 							<i class="fa-regular fa-circle-check" style="color:#198754; font-size:10em"></i>
 						</div>
@@ -408,8 +411,8 @@
 							<span> 안전하게 유지하는 데 도움이 됩니다.</span>
 						</div>
 					</div>
-					<div class="row">
-						<div class="col d-flex p-3" @click="blockUser" style="color:#dc3545; cursor:pointer" v-if="reportBoardData[2]!=null && reportBoardData[2].length>0">
+					<div class="row mt-2">
+						<div class="col d-flex p-3 justify-content-center" @click="blockUser" style="color:#dc3545; cursor:pointer" v-if="reportBoardData[2]!=null && reportBoardData[2].length>0">
 							<h5 style="margin:0;">{{reportBoardData[2]}}님 차단</h5>
 						</div>
 					</div>
@@ -838,6 +841,18 @@ Vue.createApp({
 			}
 		},
 		/*----------------------신고----------------------*/
+		/*----------------------태그, 닉네임 클릭 시 검색기록 넣고 이동----------------------*/
+		async moveToTagPage(tagName){
+			const data={searchTagName:tagName, searchDelete:1};
+			const resp = await axios.post(contextPath+"/rest/search/", data);
+			window.location.href=contextPath+"/tag/"+tagName;
+		},
+		async moveToMemberPage(searchMemberNo, memberNick){
+			const data={searchMemberNo:searchMemberNo, searchDelete:1};
+			const resp = await axios.post(contextPath+"/rest/search/", data);
+			window.location.href=contextPath+"/member/"+memberNick;
+		},
+		/*----------------------태그, 닉네임 클릭 시 검색기록 넣고 이동----------------------*/
     },
     watch: {
        //percent가 변하면 percent의 값을 읽어와서 80% 이상인지 판정
