@@ -249,7 +249,7 @@
 		        </div>
 		        <div v-if="searchDmList.length==0" >
 			        <div v-for="(member,index) in dmMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
-			          <img src="https://via.placeholder.com/40x40?text=P" style="border-radius: 50%; position:absolute; top:0.3em" >
+			          <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:45px; height:45px;">
 			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
 			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
@@ -260,7 +260,7 @@
 		        </div>
 		        <div v-if="searchDmList.length>0">
 			        <div v-for="(member,index) in searchDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
-			          <img src="https://via.placeholder.com/40x40?text=P" style="border-radius: 50%; position:absolute; top:0.3em" >
+			          <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:40px; height:40px;">
 			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
 			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
@@ -292,7 +292,8 @@
 		        </div>
 		        <div v-if="searchDmList.length==0" >
 			        <div v-for="(member,index) in dmMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
-			          <img src="https://via.placeholder.com/40x40?text=P" style="border-radius: 50%; position:absolute; top:0.3em" >
+			          <img v-if="dmMemberList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:40px; height:40px;">
+			          <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
 			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
 			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
@@ -303,7 +304,8 @@
 		        </div>
 		        <div v-if="searchDmList.length>0">
 			        <div v-for="(member,index) in searchDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
-			          <img src="https://via.placeholder.com/40x40?text=P" style="border-radius: 50%; position:absolute; top:0.3em" >
+			          <img v-if="searchDmList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:40px; height:40px;">
+			          <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
 			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
 			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
