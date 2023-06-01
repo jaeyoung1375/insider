@@ -210,6 +210,11 @@ board_like_time date default sysdate,
 like_check char(1) default 0 not null
 );
 
+--like에 멤버닉, 어태치먼트 넘버 추가
+CREATE OR REPLACE VIEW like_with_nick as
+SELECT l.*, m.attachment_no, m.member_nick FROM board_like l
+inner JOIN MEMBER_WITH_PROFILE m ON l.member_no=m.member_no;
+
 
 -- reply에 멤버닉, 어태치먼트 넘버 추가
 CREATE OR REPLACE VIEW reply_with_nick as
