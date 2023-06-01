@@ -19,4 +19,24 @@ public class NoticeServiceImpl implements NoticeService{
 	public List<NoticeVO> selectNotice(Long memberNo) {
 		return sqlSession.selectList("notice.selectList",memberNo);
 	}
+
+	@Transactional
+	@Override
+	public void check(Long memberNo) {
+		sqlSession.update("notice.checkBL", memberNo);
+		sqlSession.update("notice.checkAL", memberNo);
+		sqlSession.update("notice.checkFollow", memberNo);
+		sqlSession.update("notice.checkBR", memberNo);
+		sqlSession.update("notice.checkAR", memberNo);
+	}
+
+	@Override
+	public int isInsider(Long memberNo) {
+		if(sqlSession.selectOne("notice.isNotice", memberNo)==null) {
+			return 0;
+		}
+		return sqlSession.selectOne("notice.isNotice",memberNo);
+	}
+
+
 }
