@@ -15,6 +15,7 @@ public class ReportManagementDto {
 	private String memberNick;
 	private Integer attachmentNo;
 	private Date reportTime;
+	private int managedCount;
 	
 	private Integer memberSuspensionDays;
 	private Date memberSuspensionLiftDate;

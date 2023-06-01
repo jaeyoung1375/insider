@@ -123,8 +123,14 @@ rs.*,
 m.member_name, m.member_nick, m.attachment_no,
 rr.report_result,
 ms.member_suspension_days, ms.member_suspension_lift_date, ms.member_suspension_status, ms.member_suspension_times, ms.member_suspension_content from
-(SELECT r.report_member_no, r.report_table_no, r.report_table, count(*) AS count, min(report_time) AS report_time
-FROM report r GROUP BY r.report_member_no, r.report_table_no, r.report_table) rs
+(
+SELECT r.report_member_no, r.report_table_no, r.report_table,
+  COUNT(*) AS count,
+  MIN(report_time) AS report_time,
+  SUM(CASE WHEN report_check = 0 THEN 1 ELSE 0 END) AS managed_count
+FROM report r
+GROUP BY r.report_member_no, r.report_table_no, r.report_table
+) rs
 INNER JOIN member_with_profile m ON rs.report_member_no=m.member_no
 LEFT OUTER JOIN report_result rr ON rs.report_table_no=rr.report_table_no AND rs.report_table=rr.report_table
 LEFT OUTER JOIN MEMBER_SUSPENSION ms ON rs.report_member_no=ms.member_no;

@@ -24,6 +24,7 @@
 	width:500px;
 	background-color:white;
 }
+/* 게시물 네모박스 */
 .box {
 	position: relative;
 	width: 30%;

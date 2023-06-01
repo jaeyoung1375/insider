@@ -41,6 +41,16 @@
 		background-color: #d23430;
 		border-color: #d23430;
 	}
+/* 녹색버튼 */
+	.btn.btn-success{
+		background-color: #02b875;
+		border-color:#02b875;
+		font-weight:500;
+	}
+	.btn.btn-success:hover{
+		background-color: #02925d;
+		border-color: #02925d;
+	}	
 /* input, textarea 클릭 시 그림자효과 조정 (rounded)와 함께 씀 */
 	.form-control:focus{
 	    border-color:#dee2e6;
@@ -63,6 +73,12 @@
 	}
 
 /* 페이지네이션 */
+	.page-item{
+		cursor:pointer;
+	}
+	.page-item.disabled{
+		cursor:not-allowed;
+	}
 	.page-item>.page-link{
 	  color:#3F3F3F;
 	}

@@ -17,6 +17,27 @@ public class AdminBoardSearchVO {
 	private Integer boardMaxLike;
 	private Integer boardHide;
 	
+	private String boardContent;
+	private String boardContentProhibit;
+	private String tag;
+	
+	private List<String> tagList;
+	
+	public void makeTagList() {
+		if(this.tag==null || this.tag.length()==0) return;
+		String[] temp = this.tag.split("#");
+		List<String> list  = new ArrayList<>();
+		for(String str :temp) {
+			String tempString = str;
+			tempString = tempString.replace("#", "");
+			tempString = tempString.trim();
+			if(tempString.length()>0) {
+				list.add(tempString);
+			}
+		}
+		this.tagList = list;
+	}
+	
 	private int page=1;
 	private int size=18;
 	private int count;
