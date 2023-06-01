@@ -48,4 +48,14 @@
 		    dm.message_no DESC
 	</select>
 	
+	<!-- 특정 채팅방에 참여한 모든 회원 조회 -->
+	<select id="findUsersByRoomNo" parameterType="map" resultType="DmMemberInfoDto">
+		SELECT member_nick, member_name, member_no FROM (
+		    SELECT member_nick, member_name, member_no, ROW_NUMBER() OVER (PARTITION BY member_no ORDER BY member_no) as rn
+		    FROM dm_member_info
+		    WHERE room_no = #{roomNo} AND member_no != #{memberNo}
+		) WHERE rn = 1
+	</select>
+	
+	
 </mapper>

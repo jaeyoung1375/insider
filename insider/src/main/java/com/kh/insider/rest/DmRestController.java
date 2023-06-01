@@ -100,7 +100,6 @@ public class DmRestController {
 		return dmMemberInfoRepo.dmMemberList(memberNo);
 	}	
 	
-	
 	//채팅방 생성
 	@PostMapping("/createChatRoom")
 	public DmRoomVO createRoom(HttpSession session) {
@@ -179,5 +178,12 @@ public class DmRestController {
         boolean existsRoomNo = dmServiceImpl.existsByRoomNo(roomNo);
         return existsRoomNo;
     }
-
+    
+    //채팅방에 참여한 회원 목록
+    @GetMapping("/users/{roomNo}")
+    public List<DmMemberInfoDto> getUsersByRoomNo(HttpSession session, @PathVariable int roomNo) {
+    	long memberNo = (Long) session.getAttribute("memberNo");
+        return dmMemberInfoRepo.findUsersByRoomNo(memberNo, roomNo);
+    }
+    
 }

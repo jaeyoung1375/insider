@@ -185,7 +185,7 @@
 							<span style="position:absolute; top:21px; right:0; margin-right:19px;">
 								<i class="fa-solid fa-file-pen fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showRoomNameModal()"></i>
 								<i class="fa-solid fa-door-open fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showExitModal()"></i>
-								<i class="fa-solid fa-circle-info fa-xl" style="cursor:pointer; color: #b2bec3"></i>
+								<i class="fa-solid fa-circle-info fa-xl" style="cursor:pointer; color: #b2bec3" @click="showMembersInRoomModal()"></i>
 							</span>
 						</div>
 					</div>
@@ -423,6 +423,35 @@
 		  </div>
 		</div>
 		
+		<!-- 채팅방에 참여 중인 회원 -->
+		<div class="modal fade" tabindex="-1" id="membersInRoomModal" data-bs-backdrop="static" ref="membersInRoomModal">
+		  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down" style="width:400px; margin: 0; position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);">
+		    <div class="modal-content" style="align-content: center;flex-wrap: wrap;">
+		      <div class="modal-header" style="width:300px;">
+		        <h4 class="modal-title" style="font-weight: bold; color: #222f3e;">대화 상대</h4>
+		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		      </div>
+		      <div class="modal-body" style="width:300px;">
+		        <div v-for="(member,index) in membersInRoomList" :key="index" style="margin-top:20px;position:relative;">
+		          <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:40px; height:40px;">
+			      <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
+		          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+		          <br>
+		          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+		          <span style="position:absolute;right:0;top:10px;">
+		            <button class="btn btn-outline-secondary" style="padding: 0.3rem 0.2rem;font-weight: 100;line-height: 1;font-size:0.8em; margin-right: 0.5em;"data-bs-dismiss="modal" aria-label="Close" >
+		              차단
+		            </button>
+		            <button class="btn btn-outline-danger" style="padding: 0.3rem 0.2rem;font-weight: 100;line-height: 1;font-size:0.8em;"data-bs-dismiss="modal"  aria-label="Close" >
+		              신고
+		            </button>
+		          </span>
+		        </div>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
 	</div>
     
 	<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
@@ -472,6 +501,8 @@
    					
    					isHovered: [],
    					scrollContainer: null, //스크롤
+   					
+   					membersInRoomList:[], //채팅방 회원 목록
                     
                 };
             },
@@ -557,13 +588,22 @@
                     this.roomNameModal.hide();
                     this.roomName = "";
                 },
-				showDeleteMsgModalModal(){
+				showDeleteMsgModal(){
                     if(this.deleteMsgModal == null) return;
                     this.deleteMsgModal.show();
                 },
-                hideDeleteMsgModalModal(){
+                hideDeleteMsgModal(){
                     if(this.deleteMsgModal == null) return;
                     this.deleteMsgModal.hide();
+                },
+				showMembersInRoomModal(){
+                    if(this.membersInRoomModal == null) return;
+                    this.fetchUsersByRoomNo(this.roomNo);
+                    this.membersInRoomModal.show();
+                },
+                hideMembersInRoomModal(){
+                    if(this.membersInRoomModal == null) return;
+                    this.membersInRoomModal.hide();
                 },
 			    connect(){
             		const url = "${pageContext.request.contextPath}/ws/channel";
@@ -653,7 +693,7 @@
             	   const url = "${pageContext.request.contextPath}/rest/dmMemberList";
             	    try {
             	      const resp = await axios.get(url);
-            	      this.dmMemberList.splice(0); //전체삭제
+            	      this.dmMemberList.splice(0);
 	                  this.dmMemberList.push(...resp.data);
             	    } 
             	    catch (error) {
@@ -669,7 +709,7 @@
 				                keyword: this.keyword
 				            }
 				        });
-				        this.searchDmList.splice(0); //전체삭제
+				        this.searchDmList.splice(0);
 	                    this.searchDmList.push(...resp.data);
 				    } catch (error) {
 				        console.error(error);
@@ -702,6 +742,20 @@
 				    } catch (error) {
 				        console.error(error);
 				    }
+				},
+				//채팅방에 참여한 회원 목록
+				async fetchUsersByRoomNo() {
+					const roomNo = new URLSearchParams(location.search).get("room");
+					const url = "${pageContext.request.contextPath}/rest/users/"+roomNo;
+					console.log("roomNo : ", roomNo);
+					try {
+						const resp = await axios.get(url);
+						console.log("resp : ", resp);
+						this.membersInRoomList.splice(0);
+						this.membersInRoomList.push(...resp.data);
+					} catch (error) {
+						console.error(error);
+					}
 				},
 				//채팅방 생성 및 입장, 초대
 				async createRoomAndInvite() {
@@ -936,6 +990,7 @@
 				this.inviteModal = new bootstrap.Modal(this.$refs.inviteModal);
 				this.roomNameModal = new bootstrap.Modal(this.$refs.roomNameModal);
 				this.deleteMsgModal = new bootstrap.Modal(this.$refs.deleteMsgModal);
+				this.membersInRoomModal = new bootstrap.Modal(this.$refs.membersInRoomModal);
 	        },
         }).mount("#app");
     </script>
