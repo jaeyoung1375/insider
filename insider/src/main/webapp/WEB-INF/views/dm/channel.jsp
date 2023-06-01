@@ -13,6 +13,13 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
 
 <style>
+    .card-scroll{
+       	overflow-y: auto;
+       	-ms-overflow-style: none;
+	}        
+    .card-scroll::-webkit-scrollbar {
+		display: none;
+	} 
 	.hover {
 		background-color: rgb(244, 246, 248)
 	}
@@ -68,6 +75,7 @@
 	    display: flex;
 	    font-weight: normal;
 	    padding-top: 0.35em;
+	    padding-right: 0.4em;
 	    align-items: flex-end;
 	}
 	.message-wrapper > .message > .content-wrapper > .content-body > .message-wrapper {
@@ -111,7 +119,7 @@
 	
 	.message-wrapper > .message.my > .content-wrapper > .content-header {
 	    text-align: right;
-	    padding-right: 0.5em;
+	    padding-right: 0.9em;
 	}
 	.message-wrapper > .message.my > .content-wrapper > .content-body {
 	    flex-direction: row-reverse;
@@ -133,11 +141,12 @@
 	}
 	.message-wrapper > .message.my > .content-wrapper > .content-footer > .heart {
 	    padding-left: 0.65em;
+	    padding-right:0.02em;
 	}
 	.message-wrapper > .message.my > .content-wrapper > .content-footer >.heart-number {
 	    padding-left: 0.28em;
 	    font-size: 0.7em;
-	    padding-right: 1.1em;
+	    padding-right: 1.5em;
 	    color: #c23616;
 	}
 </style>
@@ -185,14 +194,14 @@
 				<div class="row" style="width:1000px;margin-left:7px; margin-right:100px; margin-top:0; height:70vh">
 					<!-- 채팅방 목록 -->
 					<div class="card col-3" style="width:290px;border-radius:0;border-top:none;padding:0;">
-						<div class="card-body" style="padding:0;padding-top:10px;">
+						<div class="card-body card-scroll" style="padding:0;padding-top:10px; max-height: 633px;">
 							<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo" class="roomList" :class="{'hover': isHovered[index] }"
          						@mouseover="isHovered[index] = true" @mouseleave="isHovered[index] = false" style="padding-bottom: 5px;padding-top: 4px;padding-left: 13px;cursor:pointer;">
 							    <div style="position:relative; height: 2.4em; display: flex; align-items: center;">
+								    <a :href="'channel?room=' + room.roomNo" style="color: black; text-decoration: none;">
 							    	<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"style="border-radius: 50%; position:absolute; 
 								    	width:34px; height:34px; margin-top:0em;cursor:pointer;">
 				          			<img v-else src="https://via.placeholder.com/34x34?text=P" style="border-radius: 50%; position:absolute; margin-top:0em;">
-								    <a :href="'channel?room=' + room.roomNo" style="color: black; text-decoration: none;">
 								    <span style="font-size:0.87em;padding-left:3.2em; word-wrap:normal;">
 									    {{room.roomName}}
 			   						</span>
@@ -205,11 +214,11 @@
 			   						</span>
 							    </div>
 			   					<div style="word-wrap:normal;margin-top:3px; display: flex; align-items: center;">
-			   						<span v-if="room.messageContent" style="font-size:0.8em;word-wrap:normal;display: inline-block;width: 75%;text-overflow: 
+			   						<span v-if="room.messageContent" style="font-size:0.8em;word-wrap:normal;display: inline-block;width: 73%;text-overflow: 
 			   							ellipsis;white-space: nowrap;overflow: hidden;vertical-align:bottom; text-overflow: ellipsis; padding-left:3.5em; color:#303952;">
 			   							{{JSON.parse(room.messageContent).content}}
 			   						</span>
-				   					<span v-if="room.messageSendTime" style="font-size:0.7em;word-wrap:normal;color:gray; top:3px; padding-left: 0.2em; display: inline-block;">
+				   					<span v-if="room.messageSendTime" style="font-size:0.7em;word-wrap:normal;color:gray; top:3px; display: inline-block;">
 					   					&nbsp; {{dateCount(room.messageSendTimeAuto)}}
 				   					</span>
 				   				</div>
@@ -219,7 +228,7 @@
 					
 					<!-- 채팅창 -->
 					<div class="card col-8" style="border-radius:0;border-top:none;border-left:0;padding-right:0;">
-						<div class="card-body" style="padding:0;" v-show="isRoomJoin">
+						<div class="card-body card-scroll" ref="scrollContainer" style="padding:0; max-height: 570px;" v-show="isRoomJoin">
 					        <div class="message-wrapper">
 					            <div class="message" v-for="(message, index) in messageList" :key="message.no" :class="{my:checkMyMessage(index)}">
 					                <div class="profile-wrapper" v-if="!checkMyMessage(index)">
@@ -245,11 +254,13 @@
 						                </div>
 						            </div>
 					            </div>
-					        </div>
-					        <div class="row justify-content-between" style="margin-top:10px;margin-bottom:10px;padding-left:calc(var(--bs-gutter-x) * .5);padding-right:calc(var(--bs-gutter-x) * .5);height:38px;">
-						        <!-- 입력창 -->
-						        <input type="text" v-model="text" v-on:input="text=$event.target.value" placeholder="메세지 입력" style="border-radius: 3rem;width:75%;">
-						        <button v-on:click="sendMessage" style="border-radius: 3rem; width:25%;">전송</button>
+						      </div>
+					        <div class="input-wrapper" style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 5px;">
+						        <div class="row justify-content-between" style="margin-top:10px;margin-bottom:10px;padding-left:calc(var(--bs-gutter-x) * .5);padding-right:calc(var(--bs-gutter-x) * .5);height:38px;">
+							        <!-- 입력창 -->
+							        <input type="text" v-model="text" v-on:input="text=$event.target.value" placeholder="메세지 입력" style="border-radius: 3rem;width:75%;">
+							        <button @click="sendMessage" style="border-radius: 3rem; width:25%;">전송</button>
+						        </div>
 					        </div>
 						</div>
 					</div>
@@ -460,6 +471,7 @@
    					roomRename:"",
    					
    					isHovered: [],
+   					scrollContainer: null, //스크롤
                     
                 };
             },
@@ -477,6 +489,11 @@
             	    try {
             	        const resp = await axios.get(url);
             	        this.messageList = resp.data.map(msg => JSON.parse(msg.messageContent));
+        				//스크롤 바닥으로 이동
+        				this.$nextTick(() => {
+                            const scrollContainer = this.$refs.scrollContainer;
+                            scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'smooth' });
+                        });
             	    } 
             	    catch (err) {
             	        console.error("메세지를 불러올 수 없습니다.");
@@ -865,7 +882,6 @@
 		        	else {
 		        		const days = Math.floor(duration / 1440);
 		        		return days + "일 전";
-		        		//return day + "일 전";
 		        	}
 				},
             },
