@@ -37,6 +37,16 @@ public class BoardRestController {
 	@Autowired
 	private BoardSearchService boardSearchService;
 	
+	//무한스크롤
+		@GetMapping("/page/{page}")
+		public List<BoardListVO> paging(@PathVariable int page, HttpSession session) {
+			long memberNo=(Long)session.getAttribute("memberNo");
+			
+			BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
+			boardSearchVO.setBoardCount(2);
+			return boardRepo.selectListWithoutFollow(boardSearchVO);
+			//return boardRepo.selectListWithFollow(boardSearchVO);
+	}
 	
 	//무한스크롤 팔로우(3일 이내)
 	@GetMapping("/new/{page}")

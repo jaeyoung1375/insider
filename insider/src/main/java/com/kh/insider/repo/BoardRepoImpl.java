@@ -50,8 +50,11 @@ public class BoardRepoImpl implements BoardRepo {
 	@Override
 	public List<BoardListVO> selectListWithAttach(AdminBoardSearchVO vo) {
 		return sqlSession.selectList("board.boardListTreeSelect",vo);
+	}	
+	@Override
+	public List<BoardListVO> selectListWithFollow(BoardSearchVO vo) {
+		return sqlSession.selectList("board.boardListWithFollow", vo);
 	}
-	
 	@Override
 	public List<BoardListVO> selectListWithFollowNew(BoardSearchVO vo) {
 		return sqlSession.selectList("board.boardListWithFollowNew", vo);

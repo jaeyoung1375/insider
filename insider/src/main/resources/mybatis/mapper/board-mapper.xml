@@ -200,7 +200,37 @@
 		select * from board_tag where board_no=#{boardNo} order by board_tag_no asc
 	</select>
 	
-	<!-- 계층형 조회 메인 구문 팔로우, 차단 구현 -->
+	<!-- 계층형 조회 메인 구문 팔로우, 차단 구현 (전체 기간) -->
+	<select id="boardListWithFollow" resultMap="boardListVO">
+		<bind name="followExist" value="followDtoList!=null and followDtoList.size()>0"></bind>
+		<bind name="blockExist" value="blockDtoList!=null and blockDtoList.size()>0"></bind>
+		<include refid="topNheader"></include>
+	 		select * from board_with_nick 
+	 		<where>
+	 			<choose>
+		 			<when test="followExist">
+		 				and member_no in
+		 				<foreach collection="followDtoList" open="(" close=")" item="followDto" separator=",">
+		 					#{followDto.followFollower}
+		 				</foreach>
+		 			</when>
+		 			<otherwise>
+		 				and member_no in(-1)
+		 			</otherwise>
+	 			</choose>
+	 			<if test="blockExist">
+	 				and member_no not in
+	 				<foreach collection="blockDtoList" open="(" close=")" item="blockDto" separator=",">
+	 					#{blockDto.blockNo}
+	 				</foreach>
+	 			</if>
+	 		</where>
+	 		order by board_no asc
+	 	<include refid="topNfooter"></include>	
+	</select>
+	
+	
+	<!-- 계층형 조회 메인 구문 팔로우, 차단 구현 (3일 이내) -->
 	<select id="boardListWithFollowNew" resultMap="boardListVO">
 		<bind name="followExist" value="followDtoList!=null and followDtoList.size()>0"></bind>
 		<bind name="blockExist" value="blockDtoList!=null and blockDtoList.size()>0"></bind>
@@ -237,7 +267,7 @@
 
 
 
-	<!-- 계층형 조회 메인 구문 팔로우, 차단 구현 -->
+	<!-- 계층형 조회 메인 구문 팔로우, 차단 구현 (3일 이후) -->
 	<select id="boardListWithFollowOld" resultMap="boardListVO">
 		<bind name="followExist" value="followDtoList!=null and followDtoList.size()>0"></bind>
 		<bind name="blockExist" value="blockDtoList!=null and blockDtoList.size()>0"></bind>
