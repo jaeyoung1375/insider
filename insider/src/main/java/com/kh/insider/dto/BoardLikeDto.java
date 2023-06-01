@@ -9,4 +9,6 @@ public class BoardLikeDto {
 	private Long memberNo;
 	private Integer boardNo;
 	private Date boardLikeTime;
+	private int attachmentNo;
+	private String memberNick;
 }
