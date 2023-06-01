@@ -9,4 +9,6 @@ public class ReplyLikeDto {
 	private Long memberNo;
 	private Integer replyNo;
 	private Date replyLikeTime;
+	
+	private int replyLikeCheck;
 }

@@ -4,47 +4,51 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
  <mapper namespace="notice">
 
-	<select id="selectList" resultType="NoticeVO" parameterType="int">
-	select * from (
-		select b.board_no"board_no", bl.member_no, m.member_nick, mp.attachment_no, bl.like_check "check", bl.board_like_time "alarm_time", 0 "type", to_char(bl."like_member_count") "etc"   from board b
-    inner join (
-            select bl.*"like_member_count" from board_like bl
+<select id="selectList" resultType="NoticeVO" parameterType="Long">
+    select * from (
+        select b.board_no as "board_no", bl.member_no, m.member_nick, mp.attachment_no, bl.board_like_check as "check", bl.board_like_time as "alarm_time", 0 as "type" from board b
+        inner join (
+            select bl.*, to_char(bl.board_like_time, 'YYYY-MM-DD') as "board_like_time" from board_like bl
             inner join (
-            select bl.board_no, to_char(bl.board_like_time, 'YYYY-MM-DD'), max(bl.board_like_time)"board_like_time"  from board b
-            inner join board_like bl on b.board_no = bl.board_no
-            where b.member_no = #{memberNo} group by bl.board_no, to_char(bl.board_like_time)) 
-    ) bl on b.board_no = bl.board_no
-    left outer join member_profile mp on bl.member_no = mp.member_no
-    inner join member m on bl.member_no = m.member_no
-    where b.member_no = #{memberNo} 
+                select bl.board_no, max(bl.board_like_time) as "board_like_time" from board b
+                inner join board_like bl on b.board_no = bl.board_no
+                where b.member_no = #{memberNo}
+                group by bl.board_no
+            ) 
+        ) bl on b.board_no = bl.board_no
+        left outer join member_profile mp on bl.member_no = mp.member_no
+        inner join member m on bl.member_no = m.member_no
+        where b.member_no = #{memberNo}
     
-union
-
-select null"board_no", m.member_no, m.member_nick,mp.attachment_no, f.follow_check"check", f.follow_time"alarm_time", 2"type", f.follow_allow"etc" from follow f
+    union
+    
+    select null as "board_no", m.member_no, m.member_nick, mp.attachment_no, f.follow_check as "check", f.follow_time as "alarm_time", 1 as "type" from follow f
     inner join member m on f.member_no = m.member_no
     left outer join member_profile mp on m.member_no = mp.member_no
     where f.follow_follower = #{memberNo}
-
-union
-
-select br2.board_no, m.member_no, m.member_nick, mp.attachment_no, r.reply_check"check", r.reply_time"alarm_time", 3"type", to_char(br2."etc") from board_reply br
+    
+    union
+    
+    select br2.board_no, m.member_no, m.member_nick, mp.attachment_no, r.reply_check as "check", r.reply_time as "alarm_time", 2 as "type" from board_reply br
+    inner join reply r on br.reply_no = r.reply_no
+    inner join (
+        select b.board_no, to_char(r.reply_time, 'YYYY-MM-DD'), max(r.reply_time) as "alarm_time" from board_reply br
+        inner join board b on br.board_no = b.board_no
         inner join reply r on br.reply_no = r.reply_no
-        inner join (
-            select b.board_no, to_char(r.reply_time, 'YYYY-MM-DD'), max(r.reply_time)"alarm_time",count(r.reply_no)"etc" from board_reply br
-            inner join board b on br.board_no = b.board_no
-            inner join reply r on br.reply_no = r.reply_no
-            where b.member_no = #{memberNo} group by b.board_no, to_char(r.reply_time, 'YYYY-MM-DD')
-        )br2 on br.board_no = br2.board_no and br2."alarm_time" = r.reply_time
-        inner join member m on m.member_no = r.reply_member_no
-        left outer join member_profile mp on mp.member_no = m.member_no
-	</select>
+        where b.member_no = #{memberNo}
+        group by b.board_no, to_char(r.reply_time, 'YYYY-MM-DD')
+    ) br2 on br.board_no = br2.board_no and br2.alarm_time = r.reply_time
+    inner join member m on m.member_no = r.reply_member_no
+    left outer join member_profile mp on mp.member_no = m.member_no)
+</select>
+
 	
 	<update id="checkBL" parameterType="int">
-		update board_like set like_check = 1 where board_no in (
+		update board_like set board_like_check = 1 where board_no in (
 		    select b.board_no from board  b
 		        inner join board_like bl on b.board_no = bl.board_no
 		    where b.member_no = #{memberNo}
-	    ) and like_check = 0
+	    ) and board_like_check = 0
 	</update>
 
 	<update id="checkFollow" parameterType="int">
@@ -60,12 +64,21 @@ select br2.board_no, m.member_no, m.member_nick, mp.attachment_no, r.reply_check
 		) and reply_check = 0
 	</update>
 	
+	<update id="checkBR2" parameterType="int">
+		update reply_like set reply_like_check = 1 where reply_no in (
+		    select r.reply_no from reply r
+<!-- 		    댓글좋아요 rl 별칭없음 -->
+		        inner join reply_like rl on r.reply_no = rl.reply_no		
+		    where b.member_no = #{memberNo}
+	    ) and reply_like_check = 0
+	</update>
+	
 	<select id="isNotice" resultType="int" parameterType="int">
 		select * from (
 			select board_no "no" from board_like where board_no in (
 			        select b.board_no from board  b
 			        inner join board_like bl on b.board_no = bl.board_no
-			    where b.member_no = #{memberNo}) and like_check = 0
+			    where b.member_no = #{memberNo}) and board_like_check = 0
 			    
 			union
 

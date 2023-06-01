@@ -313,7 +313,7 @@ $(document).ready(function() {
 		      	
 		      	<!-- 1-1. 사진 첨부전, 업로드 버튼 영역 -->
 			      <div :class="{'hidefile':files.length > 0}">
-				      <div class="card-body text-center" style="margin-top: 20%;">
+				      <div class="card-body text-center" style="margin-top: 11%;">
 				        <h1 class="card-title" ><i class="fa-regular fa-images"></i></h1>
 				        <p class="card-text fs-5">사진을 선택하세요.</p>
 				        <label for="upload" class="input-upload">업로드</label>

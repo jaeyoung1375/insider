@@ -6,55 +6,55 @@ import com.kh.insider.vo.NoticeVO;
 
 public class NoticeRepoImpl implements NoticeRepo {
 
-	private final NoticeVO alarmVO;
+	private final NoticeVO noticeVO;
 
-    public NoticeRepoImpl(NoticeVO alarmVO) {
-        this.alarmVO = alarmVO;
+    public NoticeRepoImpl(NoticeVO noticeVO) {
+        this.noticeVO = noticeVO;
     }
 
-    @Override
-    public int getBoardNo() {
-        return alarmVO.getBoardNo();
-    }
-
-    @Override
-    public Date getBoardTime() {
-        return alarmVO.getBoardTime();
-    }
-
-    @Override
-    public Date getBoardLikeTime() {
-        return alarmVO.getBoardLikeTime();
-    }
-
-    @Override
-    public Long getMemberNo() {
-        return alarmVO.getMemberNo();
-    }
-
-    @Override
-    public String getMemberNick() {
-        return alarmVO.getMemberNick();
-    }
-
-    @Override
-    public int getReplyNo() {
-        return alarmVO.getReplyNo();
-    }
-
-    @Override
-    public Date getReplyTime() {
-        return alarmVO.getReplyTime();
-    }
-
-    @Override
-    public long getFollowFollower() {
-        return alarmVO.getFollowFollower();
-    }
-
-    @Override
-    public Date getFollowTime() {
-        return alarmVO.getFollowTime();
-    }
+//    @Override
+//    public int getBoardNo() {
+//        return noticeVO.getBoardNo();
+//    }
+//
+//    @Override
+//    public Date getBoardTime() {
+//        return noticeVO.getBoardTime();
+//    }
+//
+//    @Override
+//    public Date getBoardLikeTime() {
+//        return noticeVO.getBoardLikeTime();
+//    }
+//
+//    @Override
+//    public Long getMemberNo() {
+//        return noticeVO.getMemberNo();
+//    }
+//
+//    @Override
+//    public String getMemberNick() {
+//        return noticeVO.getMemberNick();
+//    }
+//
+//    @Override
+//    public int getReplyNo() {
+//        return noticeVO.getReplyNo();
+//    }
+//
+//    @Override
+//    public Date getReplyTime() {
+//        return noticeVO.getReplyTime();
+//    }
+//
+//    @Override
+//    public long getFollowFollower() {
+//        return noticeVO.getFollowFollower();
+//    }
+//
+//    @Override
+//    public Date getFollowTime() {
+//        return noticeVO.getFollowTime();
+//    }
 
 }

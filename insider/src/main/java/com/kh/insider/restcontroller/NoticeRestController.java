@@ -14,6 +14,9 @@ import com.kh.insider.dto.MemberDto;
 import com.kh.insider.service.NoticeService;
 import com.kh.insider.vo.NoticeVO;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/rest/notice")
 public class NoticeRestController {
@@ -25,21 +28,23 @@ public class NoticeRestController {
 	@GetMapping("/")
 	public List<NoticeVO> selectList(
 									HttpSession session){
-		Long memberNo = (Long) session.getAttribute("login");
+		Long memberNo = (Long) session.getAttribute("memberNo");
+	    List<NoticeVO> noticeList = noticeService.selectNotice(memberNo);
+	    log.debug("notice목록: {}", noticeList);
 		return noticeService.selectNotice(memberNo);
 	}
 	
 	@PutMapping("/check")
 	public void checkAlarm(
 							HttpSession session) {
-		Long memberNo = (Long)session.getAttribute("login");
+		Long memberNo = (Long)session.getAttribute("memberNo");
 		noticeService.check(memberNo);
 	}
 	
 	@GetMapping("/is_insider")
 	public Integer isInsider(
 						HttpSession session) {
-		Long memberNo = (Long)session.getAttribute("login");
+		Long memberNo = (Long)session.getAttribute("memberNo");
 		return noticeService.isInsider(memberNo);
 	}
 	

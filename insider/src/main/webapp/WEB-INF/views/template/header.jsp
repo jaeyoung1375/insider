@@ -219,27 +219,28 @@
 							<li class="nav-item mt-2">
 								<a class="nav-link" href="${pageContext.request.contextPath}/search"><i class="fa-regular fa-solid fa-magnifying-glass" style="font-size: 45px;"></i></a>
 							</li>
-						<!-- 알림 -->
-							 <li class="nav-item mt-2">
-								 <a class="nav-link notice" @click="toggleModal">
-									 <i class="fa-regular fa-heart"></i>
-									 <i class="fa-solid fa-circle" v-show="hasNewNotification" style="display:none;position: absolute;font-size: 0.3em;color: #eb6864;left: 39%;top: 70%;"></i>
-								 </a>
-								  
-								 <div class="modal-window" v-if="showModal">
-								 	<div class="modal-content">
-								 	<div class="modal-header"></div>
-								 	<div class="modal-body">
-								 		<ul class="notification-list">
-								 			<li v-for="notification in notifications">
-								 				{{ notification.memberNick }} liked your post (Board No: {{ notification.boardNo }}, Like Time: {{ notification.boardLikeTime }})
-								 			</li>
-								 		</ul>
-								 	</div>
-								 	<div class="modal-footer"></div>
-								 	</div>
-								 </div>
-							 </li>
+							<!-- 알림 -->
+							<li class="nav-item mt-2">
+							  <a class="nav-link notice" @click="toggleModal">
+							    <i class="fa-regular fa-heart"></i>
+							    <i class="fa-solid fa-circle" v-show="hasNewNotification" style="display:none;position: absolute;font-size: 0.3em;color: #eb6864;left: 39%;top: 70%;"></i>
+							  </a>
+							  <div class="modal-window" v-if="showModal">
+							    <div class="modal-content">
+							      <div class="modal-header"></div>
+							      <div class="modal-body">
+							        <ul class="notification-list">
+							          <li v-for="notification in notifications">
+							            <div v-for="(value, key) in notification">
+							              {{ key }}: {{ value }}
+							            </div>
+							          </li>
+							        </ul>
+							      </div>
+							      <div class="modal-footer"></div>
+							    </div>
+							  </div>
+							</li>
 						<!-- dm -->
 							<li class="nav-item mt-2">
 								<a class="nav-link" href="${pageContext.request.contextPath}/dm/channel"><i class="fa-regular fa-message mt-1" style="font-size: 45px;"></i></a>
@@ -305,22 +306,16 @@
 	      
 	      loadNotifications() {
 	    	  axios
-	    	    .get("${pageContext.request.contextPath}/rest/notice")
+	    	    .get("${pageContext.request.contextPath}/rest/notice/")
 	    	    .then((response) => {
 	    	      const result = response.data;
 	    	      if (result.length > 0) {
 	    	        // 알림이 있을 경우 처리 로직
 	    	        this.notifications = result.map((notice) => {
-	    	          const memberNick = notice.memberNick;
-	    	          const boardNo = notice.boardNo;
-	    	          const boardLikeTime = notice.boardLikeTime;
-	    	          return {
-	    	            memberNick,
-	    	            boardNo,
-	    	            boardLikeTime,
-	    	          };
+	    	          return notice;
 	    	        });
 	    	        this.hasNewNotification = true;
+	    	        
 	    	      } else {
 	    	        // 알림이 없을 경우 처리 로직
 	    	        this.notifications = [];
