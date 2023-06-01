@@ -74,7 +74,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            z-index: 99999;
+            z-index: 5555;
             
             background-color: rgba(0, 0, 0, 0.2);
 /*             display: none; */
@@ -232,8 +232,12 @@
     
 <!-- ---------------------------------게시물 상세보기 모달-------------------------- -->
 
-<div v-if="detailView" class="container-fluid fullscreen">
-	<div class="row fullscreen-container">
+<div v-if="detailView" class="container-fluid fullscreen" @click="closeDetail">
+	
+	<div class="p-4 mt-2 ms-4 d-flex justify-content-end">
+		<h2 class="btn btn-none" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
+	</div>
+	<div class="row fullscreen-container" @click.stop >
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
                 <div class="carousel-indicators">
@@ -312,7 +316,7 @@
 						&nbsp;
 						<i class="fa-regular fa-message mb-1" style="font-size: 25px; "></i>
 					</p>
-					<p class="card-text" style="margin: 0 0 4px 0"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount[detailIndex]}}개</b></p>
+					<p class="card-text" style="margin: 0 0 4px 0; cursor: pointer;" @click="showLikeListModal(boardList[detailIndex].boardWithNickDto.boardNo)"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount[detailIndex]}}개</b></p>
 					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(boardList[detailIndex].boardWithNickDto.boardTimeAuto)}}</p>
 					
 				</div>
@@ -323,7 +327,6 @@
 				</div>
 								        	
         	</div>
-			<button @click="closeDetail()">닫기</button>
         </div>
 	</div>
 </div>
@@ -441,7 +444,7 @@
 	</div>
 	
 <!-- ---------------------------------좋아요 목록 모달-------------------------- -->
-<div class="modal" tabindex="-1" role="dialog" id="likeListModal" data-bs-backdrop="static" ref="likeListModal">
+<div class="modal" tabindex="-1" role="dialog" id="likeListModal" data-bs-backdrop="static" ref="likeListModal" style="z-index:9999;">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -647,11 +650,11 @@ Vue.createApp({
         
         //좋아요 리스트
         async likeListLoad(boardNo) {
-        	console.log(boardNo);
+        	//console.log(boardNo);
         	const resp = await axios.get("${pageContext.request.contextPath}/rest/board/like/list/" + boardNo);
-        	console.log(resp);
+        	//console.log(resp);
         	this.likeList = [...resp.data];
-        	console.log(this.likeList);
+        	//console.log(this.likeList);
         },
         
         //댓글 좋아요
