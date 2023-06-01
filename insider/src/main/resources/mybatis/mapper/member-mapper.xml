@@ -63,9 +63,6 @@
 		select count(*) from member where member_nick = #{memberNick}
 	</select>
 	
-	<update id="updateTempPassword">
-		update member set member_password = #{memberPassword} where member_email = #{memberEmail}
-	</update>
 	
 	<!-- 추천 친구목록 조회 -->
 <select id="recommendFriends" resultType="MemberWithProfileDto">

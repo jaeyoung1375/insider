@@ -213,21 +213,26 @@ public class MemberController {
       }
    }
    
-   @GetMapping("/passwordChange")
-   public String passwordChange() {
-      return "member/passwordChange";
+   @GetMapping("/passwordSearch")
+   public String passwordSearch() {
+      return "member/passwordSearch";
+   }
+   
+   @GetMapping("/resetPassword")
+   public String resetPassword() {
+	   return "/member/resetPassword";
    }
    
    @PostMapping("/passwordChange")
    @ResponseBody
-   public String passwordChange(@RequestBody MemberDto dto) {
-      // 임시 비밀번호
-      String generatTempPassword = memberService.generatTempPassword();
-      dto.setMemberPassword(generatTempPassword);
-      memberRepo.updateTempPassword(dto);
-      
-      return generatTempPassword;
+   public void passwordChange(@RequestBody MemberDto member) {
+	   member.setMemberEmail(member.getMemberEmail());
+	   member.setMemberPassword(member.getMemberPassword());
+
+	   memberRepo.changePassword(member);
    }
+   
+  
    
    
    @GetMapping("/facebook/auth")

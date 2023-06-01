@@ -110,6 +110,41 @@
 		p .card-text {
   		margin: 0 0 4px;
 	}
+	
+.follow-button {
+  position: relative;
+  padding: 10px;
+  background-color: #3897f0;
+  color: #fff;
+  font-weight: bold;
+}
+
+.follow-button.loading {
+  pointer-events: none; /* 클릭 이벤트 비활성화 */
+}
+
+.follow-button.loading::after {
+  content: "";
+  position: absolute;
+  top: calc(50% - 10px);
+  left: calc(50% - 10px);
+  width: 20px;
+  height: 20px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}	
+
+	
+	
+	
    
 </style>
 
@@ -149,9 +184,29 @@
               </c:when>
               <c:otherwise> <!-- 본인 프로필이 아니라면 -->
                     <div class="col-5">
-               <button class="btn btn-primary" @click="follow(${memberDto.memberNo})" v-if="followCheckIf(${memberDto.memberNo})">팔로우</button>
-               <button class="btn btn-secondary" @click="unFollow(${memberDto.memberNo})" v-else>팔로잉</button>
-               
+              <button class="btn btn-primary"
+        @click="follow(${memberDto.memberNo})"
+        v-if="followCheckIf(${memberDto.memberNo})"
+        :class="{'loading': isLoading}"
+        :disabled="isLoading || isFollowing"
+>
+  <span v-if="!isLoading && !isFollowing">팔로우</span>
+  <span v-else>
+    <i class="fa-solid fa-spinner fa-spin"></i>
+  </span>
+</button>
+
+<button class="btn btn-secondary"
+        @click="unFollow(${memberDto.memberNo})"
+        v-else
+        :class="{'loading': isLoading}"
+        :disabled="isLoading || isUnfollowing"
+>
+  <span v-if="!isLoading && !isUnfollowing">팔로잉</span>
+  <span v-else>
+    <i class="fa-solid fa-spinner fa-spin"></i>
+  </span>
+</button>
                </div>
                <div class="col-5"  style=" width:70%;">
                <button class="btn btn-secondary">메시지 보내기</button>
@@ -849,6 +904,10 @@
 			itemsPerPage : 4,
 			followBtn : false,
 			followerBtn : false,
+			// 팔로우 버튼 로딩
+			isLoading: false,
+			isFollowing: false,
+		    isUnfollowing: false
          };
       },
       computed: {
@@ -1003,18 +1062,24 @@
          
          //팔로우
          async follow(followNo) {
-         	//const loginNo = sessionStorage.getItem('memberNo');
-         	//console.log(followNo);
+        	  this.isLoading = true; 
+        	 
          	const resp = await axios.post("${pageContext.request.contextPath}/rest/follow/"+followNo);
-         	//if(loginNo == this.boardList.boardWithNickDto.memberNo)
          	await this.followCheck();
          	
+         
+         	
+         	 await new Promise(resolve => setTimeout(resolve, 1000)); // 1.5초 대기
          	this.totalFollowerCount();    
          	this.totalFollowCount();
          	this.followerListPaging();
          	this.followListPaging();
          	
-         	this.followBtn = true;
+         	
+             this.isLoading = false;
+             this.isFollowing = true;
+             this.isUnfollowing = false; // 추가: 언팔로우 상태 초기화
+         	
          	
          },
          
@@ -1034,7 +1099,6 @@
 		      this.totalFollowCount();
 		      this.followerListPaging();
 		      this.followListPaging();
-		      console.log("list 전: "+this.followCheckList);
 		      const index = this.followCheckList.findIndex(item => item === memberNo);
 		      if (index !== -1) {
 		        this.followCheckList.splice(index, 1);
@@ -1083,23 +1147,37 @@
 		
 		
 	     //팔로우 되있는사람 -> 팔로우 삭제
-	      async unFollow(memberNo) {
+	 async unFollow(memberNo) {
 			  try {
+				  this.isLoading = true;
 			    const response = await axios.post("/rest/follow/unFollow", null, {
 			      params: {
-			        //memberNo: this.memberNo,
-			        followFollower:memberNo
+			        followFollower: memberNo
 			      }
 			    });
 			    if (response.data) {
 			      // 언팔로우 성공 처리   
+			     
+			      // followCheckList 업데이트
+			      const index = this.followCheckList.indexOf(memberNo);
+			      if (index > -1) {
+			    	  this.followCheckList.splice(index, 1);
+			      }
+			      
+			      await new Promise(resolve => setTimeout(resolve, 1000)); // 1.5초 대기
+
 			      console.log("언팔로우 성공");
 			      this.totalFollowCount();
 			      this.totalFollowerCount();
 			      this.followListPaging();
-			      this.followerListPaging();
-			  	this.followBtn = false;
-			
+			      await this.$nextTick(); // 다음 UI 업데이트를 기다립니다.
+				
+			      
+			      this.isLoading = false;
+			      this.isFollowing = false; // 추가: 팔로우 상태 초기화
+			      this.isUnfollowing = true;
+			      
+			      console.log("followCheckList : "+this.followCheckList);
 			    } else {
 			      // 언팔로우 실패 처리
 			      console.log("언팔로우 실패");
@@ -1109,7 +1187,7 @@
 			    console.error("언팔로우 요청 실패", error);
 			  }
 			},
-			
+						
 		 
          // 팔로우 v-if 여부체크 함수
         	followCheckIf(memberNo){
@@ -1122,6 +1200,8 @@
          	const resp = await axios.post("${pageContext.request.contextPath}/rest/follow/check");
     
          	const newData = memberNo;
+         	
+         	  this.followCheckList = []; // followCheckList 초기화
          	// this.followCheckList = resp.data;
          	this.followCheckList.push(...resp.data);
          	this.followCheckList.push(parseInt(newData));
@@ -1198,6 +1278,8 @@
 		        memberNo: this.memberNo
 		      }
 		    });
+		    
+		    
 		
 		    const newData = resp.data;
 		    for (const item of newData) {
@@ -1209,19 +1291,20 @@
 		
 		    this.followPage++;
 		    console.log("res: ", resp.data.length);
-		    console.log("follow: ", this.myFollowList.length);
+		    console.log("팔로우체크 " + this.followCheckList); 
 		
 		    if (resp.data.length < 3) {
 		      this.followFinish = true;
 		    }
 		    
-		    this.followCheck();
+		  // this.followCheck();
 		  } catch (error) {
 		    console.error("Error occurred during followListPaging: ", error);
 		  }
 		  
 		  this.followLoading = false;
 		},
+		
 		
 		
 		
@@ -1661,6 +1744,7 @@
     			this.boardList();
     		}
     	},
+    	
     	
    	
       },

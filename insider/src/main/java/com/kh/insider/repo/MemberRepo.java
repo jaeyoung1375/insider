@@ -18,8 +18,6 @@ public interface MemberRepo {
 	public int isEmailDuplicated(String memberEmail) throws Exception;
 	// 닉네임 중복확인
 	public int isNickDuplicated(String memberNick) throws Exception;
-	// 임시 비밀번호로 변경
-	public void updateTempPassword(MemberDto dto);
 	
 	// 친구 추천목록 조회
 	public List<MemberProfileDto> recommendFriends(long memberNo);
