@@ -10,9 +10,9 @@
 	position: absolute;
 	z-index: 2;
 	display: block;
-	width: 2.375rem;
+	width: 2.7rem;
 	height: 2.375rem;
-	line-height: 2.375rem;
+	line-height: 3.1rem;
 	text-align: center;
 	pointer-events: none;
 	color: #aaa;
@@ -26,7 +26,7 @@
 }
 .box {
 	position: relative;
-	width: 30.9%;
+	width: 30%;
 	font-size:1.2em;
 }
 .box::after {
@@ -34,7 +34,7 @@
 	content: "";
 	padding-bottom: 100%;
 }
-.content {
+.content,.content-box {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -49,11 +49,11 @@
 	z-index: 1;
 	margin-top:0.5em;
 	margin-right:0.5em;
-	color:lightgray;
+	color:white;
 }
 .like-comment{
 	position: absolute;
-	z-index: 1;
+	z-index: 10;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
@@ -61,8 +61,9 @@
 	cursor:default;
 	display:none;
 }
-.box:hover{
+.box:hover .content-box{
 	background-color:rgba(34, 34, 34, 0.13);
+	z-index:5;
 }
 .box:hover .like-comment{
 	display:block;
@@ -105,70 +106,75 @@
 </style>
 <div class="container-fluid mt-4" id="app">
 	<div class="row">
-		<div class="offset-md-2 col-md-8 p-0">
+		<div class="col p-0">
 		<!-- 검색창 -->
-			<div class="row text-center search-dropdown w-100 p-0 m-auto">
-				<div class="row w-100 p-0 m-0" @click="loadSearchedList">
-					<div class="col form-group has-search p-0 m-0">
-						<span class="fa-solid fa-search form-control-feedback"></span>
-						<input type="text" class="form-control rounded  w-100 m-0" placeholder="검색" v-model="searchInput" @blur="hideAllList"  @focus="searchInputChanged" 
-							@input="searchInputChanged" ref="searchInput">
-					</div>
-				</div>
-			<!-- 검색기록 -->
-				<div class="search-dropdown-content" v-show="searchedListShow">
-					<div v-for="(searched, index) in searchedList" :key="index">
-						<div class="row searched-menu p-3" v-if="searched.memberNick==null">
-							<div class="offset-2 col-6 p-2 searched-menu-option" style="text-align:left; font-weight:bold; font-size:1.2em" @click="moveToTagDetail(searched.searchTagName)">
-								# {{searched.searchTagName}}
-							</div>
-							<div class="col-3 d-flex align-items-center text-left">
-								팔로우 : {{searched.follow}}
-							</div>
-							<!-- 삭제 마크 -->
-							<div class="col-1 d-flex justify-content-center align-items-center">
-								<i class="fa-solid fa-xmark" @click="deleteSearched(index)"></i>
+			<div class="row">
+				<div class="offset-1 col-10">
+					<div class="row text-center search-dropdown w-100 p-0 m-auto">
+						<div class="row w-100 p-0 m-0" @click="loadSearchedList">
+						<!-- 검색창 -->
+							<div class="col form-group has-search p-0 m-0">
+								<span class="fa-solid fa-search form-control-feedback"></span>
+								<input type="text" class="form-control rounded  w-100 m-0" placeholder="검색" v-model="searchInput" @blur="hideAllList"  @focus="searchInputChanged" 
+									@input="searchInputChanged" ref="searchInput" style="height:3em">
 							</div>
 						</div>
-						<div class="row searched-menu p-3" v-else>
-							<div class="col-2">
-								<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+searched.imageURL">
-							</div>
-							<div class="col-6 searched-menu-option"  @click="moveToMemberDetail(searched.searchMemberNo)">
-								<div style="text-align:left; font-weight:bold; font-size:1.2em">{{searched.memberNick}}</div>
-								<div style="text-align:left;">{{searched.memberName}}</div>
-							</div>
-							<div class="col-3 d-flex align-items-center text-left">
-								팔로우 : {{searched.follow}}
-							</div>
-							<!-- 삭제 마크 -->
-							<div class="col-1 d-flex justify-content-center align-items-center">
-								<i class="fa-solid fa-xmark" @click="deleteSearched(index)"></i>
+					<!-- 검색기록 -->
+						<div class="search-dropdown-content" v-show="searchedListShow">
+							<div v-for="(searched, index) in searchedList" :key="index">
+								<div class="row searched-menu p-3" v-if="searched.memberNick==null">
+									<div class="offset-2 col-6 p-2 searched-menu-option" style="text-align:left; font-weight:bold; font-size:1.2em" @click="moveToTagDetail(searched.searchTagName)">
+										# {{searched.searchTagName}}
+									</div>
+									<div class="col-3 d-flex align-items-center text-left">
+										팔로우 : {{searched.follow}}
+									</div>
+									<!-- 삭제 마크 -->
+									<div class="col-1 d-flex justify-content-center align-items-center">
+										<i class="fa-solid fa-xmark" @click="deleteSearched(index)"></i>
+									</div>
+								</div>
+								<div class="row searched-menu p-3" v-else>
+									<div class="col-2">
+										<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+searched.imageURL">
+									</div>
+									<div class="col-6 searched-menu-option"  @click="moveToMemberDetail(searched.searchMemberNo, searched.memberNick)">
+										<div style="text-align:left; font-weight:bold; font-size:1.2em">{{searched.memberNick}}</div>
+										<div style="text-align:left;">{{searched.memberName}}</div>
+									</div>
+									<div class="col-3 d-flex align-items-center text-left">
+										팔로우 : {{searched.follow}}
+									</div>
+									<!-- 삭제 마크 -->
+									<div class="col-1 d-flex justify-content-center align-items-center">
+										<i class="fa-solid fa-xmark" @click="deleteSearched(index)"></i>
+									</div>
+								</div>
 							</div>
 						</div>
-					</div>
-				</div>
-			<!-- 추천 검색어 리스트 -->
-				<div class="search-dropdown-content" v-show="recommandListShow">
-					<div v-for="(recommand, index) in recommandList" :key="index">
-						<div class="row search-recommand-menu p-3" v-if="recommand.nick==null" @click="moveToTagDetail(recommand.name)">
-							<div class="col-6 offset-2 p-2" style="text-align:left; font-weight:bold; font-size:1.2em">
-								# {{recommand.name}}
-							</div>
-							<div class="col-4 d-flex align-items-center text-left">
-								팔로우 : {{recommand.follow}}
-							</div>
-						</div>
-						<div class="row search-recommand-menu p-3" v-else @click="moveToMemberDetail(recommand.memberNo)">
-							<div class="col-2">
-								<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+recommand.imageURL">
-							</div>
-							<div class="col-6">
-								<div style="text-align:left; font-weight:bold; font-size:1.2em">{{recommand.nick}}</div>
-								<div style="text-align:left;">{{recommand.name}}</div>
-							</div>
-							<div class="col-4 d-flex align-items-center text-left">
-								팔로우 : {{recommand.follow}}
+					<!-- 추천 검색어 리스트 -->
+						<div class="search-dropdown-content" v-show="recommandListShow">
+							<div v-for="(recommand, index) in recommandList" :key="index">
+								<div class="row search-recommand-menu p-3" v-if="recommand.nick==null" @click="moveToTagDetail(recommand.name)">
+									<div class="col-6 offset-2 p-2" style="text-align:left; font-weight:bold; font-size:1.2em">
+										# {{recommand.name}}
+									</div>
+									<div class="col-4 d-flex align-items-center text-left">
+										팔로우 : {{recommand.follow}}
+									</div>
+								</div>
+								<div class="row search-recommand-menu p-3" v-else @click="moveToMemberDetail(recommand.memberNo)">
+									<div class="col-2">
+										<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+recommand.imageURL">
+									</div>
+									<div class="col-6">
+										<div style="text-align:left; font-weight:bold; font-size:1.2em">{{recommand.nick}}</div>
+										<div style="text-align:left;">{{recommand.name}}</div>
+									</div>
+									<div class="col-4 d-flex align-items-center text-left">
+										팔로우 : {{recommand.follow}}
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -176,10 +182,11 @@
 			</div>
 			
 		<!-- 리스트 -->
-			<div class="row">
+			<div class="row d-flex justify-content-center mt-3">
 				<div class="box m-2" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)">
 					<img class='content' v-if="board.boardAttachmentList.length>0" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
 					<img class='content' v-else src="${pageContext.request.contextPath}/static/image/noimage.png">
+					<div class="content-box"></div>
 					<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
 					<div class="like-comment">
 						<span><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
@@ -257,10 +264,12 @@
 			async moveToTagDetail(tagName){
 				const data={searchTagName:tagName};
 				const resp = await axios.post(contextPath+"/rest/search/", data);
+				window.location.href=contextPath+"/tag/"+tagName;
 			},
-			async moveToMemberDetail(searchMemberNo){
+			async moveToMemberDetail(searchMemberNo, memberNick){
 				const data={searchMemberNo:searchMemberNo};
 				const resp = await axios.post(contextPath+"/rest/search/", data);
+				window.location.href=contextPath+"/member/"+memberNick;
 			},
 			//검색기록 출력
 			async loadSearchedList(){
