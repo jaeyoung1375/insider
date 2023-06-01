@@ -14,7 +14,7 @@ public class ForbiddenRepoImpl implements ForbiddenRepo{
 	private SqlSession sqlSession;
 
 	@Override
-	public List<ForbiddenDto> selectList(String forbiddenWord) {
+	public List<String> selectList(String forbiddenWord) {
 		return sqlSession.selectList("forbidden.selectList", forbiddenWord);
 	}
 

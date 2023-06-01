@@ -5,8 +5,8 @@
     "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
     
 <mapper namespace="forbidden">
-	<select id="selectList" resultType="forbiddenDto">
-		select * from forbidden
+	<select id="selectList" resultType="String">
+		select forbidden_word from forbidden
 		<if test="forbiddenWord!=null and !forbiddenWord.equals('')">
 			where instr(forbidden_word, #{forbiddenWord})>0
 		</if>

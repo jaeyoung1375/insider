@@ -142,6 +142,56 @@
 	z-index:1; 
 	background-color:white
 }
+.modal-body{
+	display:inline-block;
+	width:25%;
+	positon:absolute;
+	left:0;
+	z-index:1; 
+	background-color:white
+}
+.modal-header-custom{
+	display:inline-block;
+	width:100%;
+	position: absolute;
+	z-index: 1;
+	top: 0;
+	margin-left:0.5em;
+	transform: translate(0%, 0%);
+}
+.modal-side-custom{
+	display:inline-block;
+	position: sticky;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 25%; /* 원하는 고정 너비 설정 */
+	background-color: white;
+	height:100%;
+	z-index: 1;
+}
+.modal-body-custom{
+	max-height:100%;
+	overflow-y:auto;
+	width:100%
+}
+.fullscreen{
+	position:fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 99999;
+	background-color: rgba(0, 0, 0, 0.2);
+}
+.fullscreen > .fullscreen-container{
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 1200px;
+	height: 700px;
+	transform: translate(-50%, -50%);
+}
 </style>
 <div id="app">
 	<div class="container-fluid mt-4" style="position:relative">
@@ -1648,41 +1698,34 @@
 	</div>
 	<!-- ---------------------------------게시물 미리보기 모달 끝-------------------------- -->
 	<!-- ---------------------------------금지어 관리 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="forbiddenModal" data-bs-backdrop="static" ref="forbiddenModal">
-		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
-			<div class="modal-content">
-				<div class="modal-header">
+	<div v-if="forbiddenModal" class="fullscreen container-fluid">
+		<div class="row fullscreen-container">
+			<div class="row">
+				<div class="col">
 					<h5 class="modal-title">금지어 관리</h5>
-					<button type="button" class="btn-close" @click="hideForbiddenModal" aria-label="Close">
-					<span aria-hidden="true"></span>
-					</button>
+					<button type="button" class="btn-close" @click="hideForbiddenModal">
 				</div>
-				<div class="modal-body">
-					<div class="row">
-						<div class="col-3">
+			</div>
+			<div class="row">
+				<div class="col-3">
+					<button @click="moveScroll('ㄷ')">가</button>
+				</div>
+				<div class="col-9">
+					<div class="row" v-for="(forbidden, index) in forbiddenList" :key="index" ref="scrollItems">
+						<div class="offset-2 col-6 d-flex align-items-center p-2">
+							{{forbidden}}
 						</div>
-						<div class="col-9">
-							<div class="row">
-								<div class="col">
-									<div class="row" v-for="(forbidden, list) in forbiddenList">
-										<div class="offset-2 col-6 d-flex align-items-center p-2">
-											{{forbidden.forbiddenWord}}
-										</div>
-										<div class="col-1 d-flex align-items-center justify-content-center p-2">
-											<i class="fa-solid fa-xmark modal-click-btn-negative" @click="deleteForbiddenWord(forbidden.forbiddenWord)"></i>
-										</div>
-									</div>
-								</div>
-							</div>
+						<div class="col-1 d-flex align-items-center justify-content-center p-2">
+							<i class="fa-solid fa-xmark modal-click-btn-negative" @click="deleteForbiddenWord(forbidden)"></i>
 						</div>
 					</div>
 				</div>
-				<div class="modal-footer">
-					<input class="form-control" type="text" v-model="forbiddenWord">
-					<button type="button" class="btn btn-secondary m-0 w-25" @click="searchForbiddenList">검색</button>
-					<button type="button" class="btn btn-primary m-0 w-25" @click="addForbiddenWord">입력</button>
-					<button type="button" class="btn btn-secondary m-0 w-25" @click="hideForbiddenModal">닫기</button>
-				</div>
+			</div>
+			<div class="row">
+				<input class="form-control" type="text" v-model="forbiddenWord">
+				<button type="button" class="btn btn-secondary m-0 w-25" @click="searchForbiddenList">검색</button>
+				<button type="button" class="btn btn-primary m-0 w-25" @click="addForbiddenWord">입력</button>
+				<button type="button" class="btn btn-secondary m-0 w-25" @click="hideForbiddenModal">닫기</button>
 			</div>
 		</div>
 	</div>
@@ -1741,9 +1784,10 @@
 				boardViewModal:null,
 				boardViewNo:"",
 				boardViewContent:{},
-				forbiddenModal:null,
+				forbiddenModal:false,
 				forbiddenList:[],
 				forbiddenWord:"",
+				forbiddenListCopy:[],
 				/*---------------------------신고 데이터 --------------------------- */
 				reportContentModal:null,
 				newReportContent:"",
@@ -2030,14 +2074,13 @@
 				if(this.boardViewModal==null) return;
 				this.boardViewModal.hide();
 			},
+			/* 금지어 메서드 */
  			showForbiddenModal(){
-				if(this.forbiddenModal==null) return;
-				this.forbiddenModal.show();
+				this.forbiddenModal=true;
 				this.loadForbiddenList();
 			},
 			hideForbiddenModal(){
-				if(this.forbiddenModal==null) return;
-				this.forbiddenModal.hide();
+				this.forbiddenModal=false;
 			},
 			async loadForbiddenList(){
 				const resp = await axios.get("/rest/admin/forbidden");
@@ -2055,6 +2098,19 @@
 			async deleteForbiddenWord(forbiddenWord){
 				const resp = await axios.delete("/rest/admin/forbidden?forbiddenWord="+forbiddenWord);
 				this.loadForbiddenList();
+			},
+			moveScroll(word){
+				this.forbiddenListCopy = _.cloneDeep(this.forbiddenList);
+				this.forbiddenListCopy.push(word);
+				this.forbiddenListCopy.sort();
+				const index = this.forbiddenListCopy.indexOf(word);
+				const scrollItems = this.$refs.scrollItems;
+				if (index-2>0) {
+					scrollItems[index-2].scrollIntoView();
+				}
+				else{
+					scrollItems[0].scrollIntoView();
+				}
 			},
 			/*------------------------------ 게시물관리 끝 ------------------------------*/
 			/*------------------------------ 신고관리 시작 ------------------------------*/
@@ -2750,7 +2806,6 @@
 			this.reportSuspensionModal = new bootstrap.Modal(this.$refs.reportSuspensionModal);
 			this.reportDetailModal = new bootstrap.Modal(this.$refs.reportDetailModal);
 			this.boardViewModal = new bootstrap.Modal(this.$refs.boardViewModal);
-			this.forbiddenModal = new bootstrap.Modal(this.$refs.forbiddenModal);
 		},
 	}).mount("#app");
 </script>
