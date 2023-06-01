@@ -203,7 +203,7 @@
 								    	width:34px; height:34px; margin-top:0em;cursor:pointer;">
 				          			<img v-else src="https://via.placeholder.com/34x34?text=P" style="border-radius: 50%; position:absolute; margin-top:0em;">
 								    <span style="font-size:0.87em;padding-left:3.2em; word-wrap:normal;">
-									    {{room.roomName}}
+									     {{ room.roomName.length > 11 ? room.roomName.slice(0, 11) + '...' : room.roomName }}
 			   						</span>
 			   						<span style="color:#eb4d4b; font-size:0.85em;padding-left:1.5em; padding-top:0.1em">
 			   						 	5
@@ -218,7 +218,7 @@
 			   							ellipsis;white-space: nowrap;overflow: hidden;vertical-align:bottom; text-overflow: ellipsis; padding-left:3.5em; color:#303952;">
 			   							{{JSON.parse(room.messageContent).content}}
 			   						</span>
-				   					<span v-if="room.messageSendTime" style="font-size:0.7em;word-wrap:normal;color:gray; top:3px; display: inline-block;">
+				   					<span v-if="room.messageSendTime" style="font-size:0.7em;word-wrap:normal;color:gray; top:3px; display: inline-block; padding-left:1.1em;">
 					   					&nbsp; {{dateCount(room.messageSendTimeAuto)}}
 				   					</span>
 				   				</div>
