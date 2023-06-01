@@ -25,6 +25,8 @@ public class DmRoomVO {
 	private List<Long> memberList;
 	private int roomType;
 	
+	private String roomRename;
+	
     //채팅방의 사용자를 저장할 저장소
     private Set<DmUserVO> users = new CopyOnWriteArraySet<>();
 

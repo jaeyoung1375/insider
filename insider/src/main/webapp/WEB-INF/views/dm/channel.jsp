@@ -209,7 +209,7 @@
 			   							ellipsis;white-space: nowrap;overflow: hidden;vertical-align:bottom; text-overflow: ellipsis; padding-left:3.5em; color:#303952;">
 			   							{{JSON.parse(room.messageContent).content}}
 			   						</span>
-				   					<span style="font-size:0.7em;word-wrap:normal;color:gray; top:3px; padding-left: 0.2em; display: inline-block;">
+				   					<span v-if="room.messageSendTime" style="font-size:0.7em;word-wrap:normal;color:gray; top:3px; padding-left: 0.2em; display: inline-block;">
 					   					&nbsp; {{dateCount(room.messageSendTimeAuto)}}
 				   					</span>
 				   				</div>
@@ -359,17 +359,17 @@
 					다른 사람의 채팅방에는 메시지가 계속 표시됩니다.
 		      </div>
 		      <div class="modal-footer btn-center">
-		        <button type="button" class="btn" @click="leaveTheRoom" data-bs-dismiss="modal" aria-label="Close" style="color:red; margin-right: 11em; height: 2em;">나가기</button>
+		        <button type="button" class="btn" @click="leaveTheRoom" data-bs-dismiss="modal" aria-label="Close" style="color:red; margin-right: 10.8em; height: 2em;">나가기</button>
 		      </div>
 		      <div class="modal-footer btn-center">
-		        <button type="button" class="btn" data-bs-dismiss="modal" style="margin-right: 11em; height: 2em;">취소</button>
+		        <button type="button" class="btn" data-bs-dismiss="modal" style="margin-right: 11.3em; height: 2em;">취소</button>
 		      </div>
 		    </div>
 		  </div>
 		</div>
 		
 		<!-- 채팅방 이름 변경 -->
-		<div class="modal fade" id="roomNameModal" tabindex="-1" data-bs-backdrop="static"  ref="roomReName" aria-hidden="true">
+		<div class="modal fade" id="roomNameModal" tabindex="-1" data-bs-backdrop="static"  ref="roomNameModal" aria-hidden="true">
 		  <div class="modal-dialog modal-dialog-centered" style="width:450px;">
 		    <div class="modal-content">
 		      <div class="modal-header">
@@ -385,7 +385,7 @@
 		        	:disabled="!roomName" style="color:#0652DD; margin-right: 11em; height: 2em;">수정</button>
 		      </div>
 		      <div class="modal-footer btn-center">
-		        <button type="button" class="btn" data-bs-dismiss="modal" style="margin-right: 11em; height: 2em;">취소</button>
+		        <button type="button" class="btn" data-bs-dismiss="modal" @click="hideRoomNameModal" style="margin-right: 11em; height: 2em;">취소</button>
 		      </div>
 		    </div>
 		  </div>
@@ -538,6 +538,7 @@
                 hideRoomNameModal(){
                     if(this.roomNameModal == null) return;
                     this.roomNameModal.hide();
+                    this.roomName = "";
                 },
 				showDeleteMsgModalModal(){
                     if(this.deleteMsgModal == null) return;
@@ -807,15 +808,24 @@
 				//채팅방 이름 변경
 				async changeRoomName() {
 				    try {
-				    	const renameUrl = "${pageContext.request.contextPath}/rest/roomRenameInsert";
+				    	const checkUrl = "${pageContext.request.contextPath}/rest/existsRoomNo";
+				        const renameUrl = "${pageContext.request.contextPath}/rest/changeRoomRename";
+				        const insertUrl = "${pageContext.request.contextPath}/rest/roomRenameInsert";
+				        
+				        const resp = await axios.get(checkUrl, { params: { roomNo: this.roomNo } });
 				        const data = {
-				            roomNo: this.roomNo,
-				           	memberNo: this.memberNo,
-				            roomRename: roomNameInput.value
+					            roomNo: this.roomNo,
+					            memberNo: this.memberNo,
+					            roomRename: roomNameInput.value
+					    };
+				        if (resp.data === true) {
+				            await axios.put(renameUrl, data);
+				            console.log("채팅방 이름이 성공적으로 변경되었습니다.");
+				        } else {
+				            await axios.post(insertUrl, data);
+				            console.log("채팅방 이름이 성공적으로 추가되었습니다.");
 				        }
-				        await axios.post(renameUrl, data);
-				        console.log("채팅방 이름 변경이 성공적으로 수행되었습니다.");
-
+				
 				        this.dmRoomList = [];
 				        await this.fetchDmRoomList();
 				    } catch (error) {
@@ -908,7 +918,7 @@
 				this.createRoomModal = new bootstrap.Modal(this.$refs.memberListModal);
 				this.exitModal = new bootstrap.Modal(this.$refs.exitModal);
 				this.inviteModal = new bootstrap.Modal(this.$refs.inviteModal);
-				this.roomNameModal = new bootstrap.Modal(this.$refs.roomReName);
+				this.roomNameModal = new bootstrap.Modal(this.$refs.roomNameModal);
 				this.deleteMsgModal = new bootstrap.Modal(this.$refs.deleteMsgModal);
 	        },
         }).mount("#app");

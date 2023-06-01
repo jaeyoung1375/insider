@@ -54,6 +54,7 @@ public class DmServiceImpl implements DmService {
 	
 	@Autowired
 	private DmRoomRenameRepo dmRoomRenameRepo;
+	
 
 	//여러 개의 방을 관리할 저장소
 	Map<Integer, DmRoomVO> rooms = Collections.synchronizedMap(new HashMap<>());
@@ -400,7 +401,7 @@ public class DmServiceImpl implements DmService {
         return dmRoomRepo.find(roomNo);
     }
     
-    //채팅방 이름 변경
+    //채팅방 이름 나에게만 변경
     public void RenameInsert(DmRoomVO dmRoomVO) {
         DmRoomRenameDto dmRoomRenameDto = new DmRoomRenameDto();
         dmRoomRenameDto.setRenameNo(dmRoomRenameRepo.sequence()); 
@@ -409,5 +410,15 @@ public class DmServiceImpl implements DmService {
         dmRoomRenameDto.setRoomRename(dmRoomVO.getRoomRename());
         dmRoomRenameRepo.RenameInsert(dmRoomRenameDto);
     }
+    
+    //변경된 채팅방 이름 수정
+	public void updateReName(DmRoomRenameDto dmRoomRenameDto) {
+	    dmRoomRenameRepo.updateRoomRename(dmRoomRenameDto);
+	}
+	
+	//변경된 이름의 채팅방 번호 확인
+	public boolean existsByRoomNo(int roomNo) {
+		return dmRoomRenameRepo.existsByRoomNo(roomNo);
+	}
 	
 }
