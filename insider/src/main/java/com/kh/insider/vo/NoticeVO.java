@@ -24,6 +24,10 @@ public class NoticeVO {
 	private int replyNo;
 	//댓글 시간
 	private Date replyTime;
+	//댓글 좋아요
+	private int replyLike;
+	//댓글 좋아요 시간
+	private Date replyLikeTime;
 	//팔로워
 	private long followFollower;
 	//팔로우 시간

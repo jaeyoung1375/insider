@@ -6,13 +6,13 @@
 
 	<select id="selectList" resultType="NoticeVO" parameterType="int">
 	select * from (
-		select b.board_no"board_no", bl.member_no, m.member_nick, mp.attachment_no, bl.like_check "check", bl.like_time "alarm_time", 0 "type", to_char(bl."like_member_count") "etc"   from board b
+		select b.board_no"board_no", bl.member_no, m.member_nick, mp.attachment_no, bl.like_check "check", bl.board_like_time "alarm_time", 0 "type", to_char(bl."like_member_count") "etc"   from board b
     inner join (
             select bl.*"like_member_count" from board_like bl
             inner join (
-            select bl.board_no, to_char(bl.like_time, 'YYYY-MM-DD'), max(bl.like_time)"like_time", count(bl.member_no)"like_member_count" from board b
+            select bl.board_no, to_char(bl.board_like_time, 'YYYY-MM-DD'), max(bl.board_like_time)"board_like_time"  from board b
             inner join board_like bl on b.board_no = bl.board_no
-            where b.member_no = #{memberNo} group by bl.board_no, to_char(bl.like_time, 'YYYY-MM-DD')) 
+            where b.member_no = #{memberNo} group by bl.board_no, to_char(bl.board_like_time)) 
     ) bl on b.board_no = bl.board_no
     left outer join member_profile mp on bl.member_no = mp.member_no
     inner join member m on bl.member_no = m.member_no
@@ -20,21 +20,21 @@
     
 union
 
-select null"board_no", m.member_no, m.member_nick,mp.attachment_no, f.follow_check"check", f.follow_date"alarm_time", 2"type", f.follow_confirm"etc" from follow f
+select null"board_no", m.member_no, m.member_nick,mp.attachment_no, f.follow_check"check", f.follow_time"alarm_time", 2"type", f.follow_allow"etc" from follow f
     inner join member m on f.member_no = m.member_no
     left outer join member_profile mp on m.member_no = mp.member_no
     where f.follow_follower = #{memberNo}
 
 union
 
-select br2.board_no, m.member_no, m.member_nick, mp.attachment_no, r.reply_check"check", r.reply_date"alarm_time", 3"type", to_char(br2."etc") from board_reply br
+select br2.board_no, m.member_no, m.member_nick, mp.attachment_no, r.reply_check"check", r.reply_time"alarm_time", 3"type", to_char(br2."etc") from board_reply br
         inner join reply r on br.reply_no = r.reply_no
         inner join (
-            select b.board_no, to_char(r.reply_date, 'YYYY-MM-DD'), max(r.reply_date)"alarm_time",count(r.reply_no)"etc" from board_reply br
+            select b.board_no, to_char(r.reply_time, 'YYYY-MM-DD'), max(r.reply_time)"alarm_time",count(r.reply_no)"etc" from board_reply br
             inner join board b on br.board_no = b.board_no
             inner join reply r on br.reply_no = r.reply_no
-            where b.member_no = #{memberNo} group by b.board_no, to_char(r.reply_date, 'YYYY-MM-DD')
-        )br2 on br.board_no = br2.board_no and br2."alarm_time" = r.reply_date
+            where b.member_no = #{memberNo} group by b.board_no, to_char(r.reply_time, 'YYYY-MM-DD')
+        )br2 on br.board_no = br2.board_no and br2."alarm_time" = r.reply_time
         inner join member m on m.member_no = r.reply_member_no
         left outer join member_profile mp on mp.member_no = m.member_no
 	</select>

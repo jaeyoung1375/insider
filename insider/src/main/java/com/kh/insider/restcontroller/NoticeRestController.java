@@ -21,27 +21,10 @@ public class NoticeRestController {
 	@Autowired
 	private NoticeService noticeService;
 	
-	
-	// findByNo를 사용하여 memberNo에 관련된 나머지 데이터를 불러와야함
-	@GetMapping("")
+	@GetMapping("/")
 	public List<NoticeVO> selectList(
 									HttpSession session){
 		Long memberNo = (Long) session.getAttribute("login");
 		return noticeService.selectNotice(memberNo);
 	}
-	
-	@PutMapping("/check")
-	public void checkAlarm(
-							HttpSession session) {
-		Long memberNo = (Long)session.getAttribute("login");
-		noticeService.check(memberNo);
-	}
-	
-	@GetMapping("/is_insider")
-	public Integer isInsider(
-						HttpSession session) {
-		Long memberNo = (Long)session.getAttribute("login");
-		return noticeService.isInsider(memberNo);
-	}
-	
 }
