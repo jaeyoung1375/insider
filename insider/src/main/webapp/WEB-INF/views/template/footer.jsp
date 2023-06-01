@@ -1,10 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 		</section>
-		<footer style="position:fixed; bottom:0; width:100%; border:1px solid lightgray"">
-			<h1>푸터</h1>
-			<h1>memberNo : ${sessionScope.memberNo}</h1>
-			<h1>memberLevel : ${sessionScope.memberLevel}</h1>
+		<footer style="position:fixed; left:0; bottom:0; width:15%; border:1px solid lightgray"">
+			<h5>푸터</h5>
+			<h5>memberNo : ${sessionScope.memberNo}</h5>
+			<h5>memberLevel : ${sessionScope.memberLevel}</h5>
 		</footer>
 	</main>
 </body>

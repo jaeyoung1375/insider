@@ -33,6 +33,33 @@
 	text-align: right;
 	font-weight:bold;
 }
+/* 모달 버튼 파란 글씨 */
+.modal-click-btn{
+	color:#0095F6;
+	cursor:pointer;
+}
+.modal-click-btn:hover{
+	color:#0b5ed7;
+}
+/* 모달 버튼 빨간 글씨 */
+.modal-click-btn-negative{
+	color:#dc3545;
+	cursor:pointer;
+}
+.modal-click-btn-negative:hover{
+	color:#d63384;
+}
+/* 모달이 사이즈가 커지면 스크롤이 생기고 헤더 고정 */
+.modal-content{
+	max-height:100%;
+	overflow-y:auto
+}
+.modal-header{
+	position:sticky; 
+	top:0; 
+	z-index:1; 
+	background-color:white
+}
 </style>
 <div class="container-fluid mt-4" id="app">
 	<div class="row">
@@ -129,7 +156,7 @@
 					<hr>
 					<div class="row mt-5">
 						<div class="col">
-							<h5 @click="showPasswordCheckModal" style="cursor:pointer">비밀번호 변경</h5>
+							<h5 class="modal-click-btn" @click="showPasswordCheckModal" style="cursor:pointer">비밀번호 변경</h5>
 						</div>
 					</div>
 				</div>
@@ -386,7 +413,7 @@
 					</div>
 					<div class="row">
 						<div class="col">
-							<span @click="showBlockModal" style="cursor:pointer">차단한 계정 확인하고 관리하기</span>
+							<span class="modal-click-btn" @click="showBlockModal" style="cursor:pointer">차단한 계정 확인하고 관리하기</span>
 						</div>
 					</div>
 				</div>
@@ -524,16 +551,17 @@
 					<div class="row" v-for="(block, index) in blockList" :key="index">
 						<div class="col-8">
 							<div class="row">
-								<div class="col-3">
-									프로필
+								<div class="col-3 d-flex justify-content-center item-aligns-center">
+									<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+block.imageURL">
 								</div>
 								<div class="col-9">
-									{{block.memberName}}, {{block.memberNick}}
+									<div class="ms-2" style="font-weight:bold; font-size:1.2em">{{block.memberNick}}</div>
+									<div class="ms-2">{{block.memberName}}</div>
 								</div>
 							</div>
 						</div>
-						<div class="col-4">
-							<span @click="removeBlockList(block.blockNo, index)">차단 해제</span>
+						<div class="col-4 d-flex align-items-center justify-content-end">
+							<span class="d-flex align-items-center modal-click-btn pe-2" @click="removeBlockList(block.blockNo, index)">차단 해제</span>
 						</div>
 					</div>
 				</div>
