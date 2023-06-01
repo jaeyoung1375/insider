@@ -51,6 +51,7 @@
     .carousel-inner img {
         width: 470px;
         height: 480px;
+        object-fit: cover;
     }
     
     .like {
@@ -133,13 +134,10 @@
                         <div style="padding: 8px 8px 4px 8px;">
                             <div class="d-flex">
 
-                                <div class="p-2"><a style="padding: 0 0 0 0" :href="'${pageContext.request.contextPath}/member/'+board.boardWithNickDto.memberNick"><img class="profile" :src="profileUrl(index)"></a></div>
-                                <div class="p-2" style="margin-top: 8px;"><h4><a class="btn btn-none" style="padding: 0 0 0 0" :href="'${pageContext.request.contextPath}/member/'+board.boardWithNickDto.memberNick"><b>{{board.boardWithNickDto.memberNick}}</b></a><b style="color: gray;">  · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
+                                <div class="p-2"><a style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><img class="profile rounded-circle" :src="profileUrl(index)" style="object-fit: cover;"></a></div>
+                                <div class="p-2" style="margin-top: 8px;"><h4><a class="btn btn-none" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a><b style="color: gray;">  · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
 
-                                <div class="p-2"><a style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><img class="profile" :src="profileUrl(index)"></a></div>
-                                <div class="p-2" style="margin-top: 8px;"><h4><a class="btn btn-none" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a><b>  · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
-
-                                <div v-if="followCheckIf(index)" @click="follow(board.boardWithNickDto.memberNo)" class="p-2 me-5" style="margin-top: 8px;"><h4><b style="font-size: 15px; color:blue; cursor: pointer;">팔로우</b></h4></div>
+                                <div v-if="followCheckIfNew(index)" @click="follow(board.boardWithNickDto.memberNo)" class="p-2 me-5" style="margin-top: 8px;"><h4><b style="font-size: 15px; color:blue; cursor: pointer;">팔로우</b></h4></div>
                                  <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> 
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
 
@@ -189,7 +187,7 @@
                             	<span class="textHide">
                             		{{board.boardWithNickDto.boardContent}}
                             		<br v-if="boardList[index].boardTagList.length > 0"><br v-if="boardList[index].boardTagList.length > 0">
-                            		<a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in boardList[index].boardTagList" :key="index3" style="margin-right: 0.5em;">\#{{tag.tagName}}</a>
+                            		<a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in boardList[index].boardTagList" :key="index3" style="margin-right: 0.5em; color:blue; cursor: pointer;">\#{{tag.tagName}}</a>
                             	</span>
                             </p>                            
                             
@@ -217,102 +215,18 @@
          </div>
      </div>
      
-     <div v-if="boardOldList.length == 0" class="col" style="max-width: 620px; margin: 0 auto 10px auto;">
-     	<h2>모두 확인했습니다</h2>
-     	<h5>최근 3일 동안 올라온 게시물을 모두 확인했습니다.</h5>
-     	<h5 style="color: blue; cursor: pointer;">이전 게시물 보기</h5>     	
+     <div v-if="newListFinish"  style="max-width: 620px;  margin: 10px auto 10px auto;">
+     	<img src="${pageContext.request.contextPath}/static/image/check.png" class="justify-content-center align-items-center" style="width: 150px; height: 150px; margin-left: 230px; margin-bottom: 20px;">
+     	<h3 class="justify-content-center text-center">모두 확인했습니다</h3>
+     	<h6 class="justify-content-center text-center" style="color:gray; ">최근 3일 동안 올라온 게시물을 모두 확인했습니다.</h6>
+     	<h6 class="justify-content-center text-center" @click="loadOldList()" style="color: blue; cursor: pointer;">이전 게시물 보기</h6>     	
      </div>
      
      
-<!--         <div class="row" v-for="(board, index) in boardList" :key="board.boardNo"> -->
-<!--             ●●●●●●●●●●●●●●피드공간●●●●●●●●●●●●●●●●●●●●●● -->
-<!--             <div class="col" style="max-width: 620px; margin: 0 auto 10px auto;"> -->
-<!--                 피드001 -->
-<!--                 <div class="head_feed bg-white" style="border: 0.5px solid #b4b4b4; border-radius: 10px;"> -->
-<!--                     <div class="d-flex flex-column"> -->
-<!--                         ▼▼▼▼▼▼▼▼▼▼▼▼▼ID▼▼▼▼▼▼▼▼▼▼▼▼▼ -->
-<!--                         <div style="padding: 8px 8px 4px 8px;"> -->
-<!--                             <div class="d-flex"> -->
-<%--                                 <div class="p-2"><a style="padding: 0 0 0 0" :href="'${pageContext.request.contextPath}/member/'+board.boardWithNickDto.memberNick"><img class="profile" :src="profileUrl(index)"></a></div> --%>
-<%--                                 <div class="p-2" style="margin-top: 8px;"><h4><a class="btn btn-none" style="padding: 0 0 0 0" :href="'${pageContext.request.contextPath}/member/'+board.boardWithNickDto.memberNick"><b>{{board.boardWithNickDto.memberNick}}</b></a><b style="color: gray;">  · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div> --%>
-<!--                                 <div v-if="followCheckIf(index)" @click="follow(board.boardWithNickDto.memberNo)" class="p-2 me-5" style="margin-top: 8px;"><h4><b style="font-size: 15px; color:blue; cursor: pointer;">팔로우</b></h4></div> -->
-<!--                                  <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div>  -->
-<!--                             메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
-
-<!--                                 <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo, board.boardWithNickDto.memberNo)"></i></div> -->
-<!--                             </div> -->
-<!--                         </div> -->
-<!--                         ▲▲▲▲▲▲▲▲▲▲▲▲▲ID▲▲▲▲▲▲▲▲▲▲▲▲▲ -->
-<!--                         ▼▼▼▼▼▼▼▼▼▼▼▼▼사진▼▼▼▼▼▼▼▼▼▼▼▼▼ -->
-<!--                         <div style="padding: 4px 8px 8px 8px;"> -->
-<!--                             <div :id="'carouselExampleIndicators'+index" class="carousel slide"> -->
-                                
-<!--                                 <div class="carousel-indicators"> -->
-<!--                                   <button v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#carouselExampleIndicators'+index" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button> -->
-<!--                                 </div> -->
-                               
-<!--                                 <div class="carousel-inner"> -->
-<!--                                   <div  v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}"> -->
-<%--                                    	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,index)">  --%>
-<!--                                   </div> -->
-<!--                                 </div> -->
-                               
-<!--                                 <button class="carousel-control-prev" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="prev"> -->
-<!--                                   <span class="carousel-control-prev-icon" aria-hidden="true"></span> -->
-<!--                                   <span class="visually-hidden">Previous</span> -->
-<!--                                 </button> -->
-<!--                                 <button  class="carousel-control-next" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="next"> -->
-<!--                                   <span class="carousel-control-next-icon" aria-hidden="true"></span> -->
-<!--                                   <span class="visually-hidden">Next</span> -->
-<!--                                 </button> -->
-<!--                               </div> -->
-<!--                         ▲▲▲▲▲▲▲▲▲▲▲▲▲사진▲▲▲▲▲▲▲▲▲▲▲▲▲ -->
-<!--                         ▼▼▼▼▼▼▼▼▼▼▼▼▼좋아요▼▼▼▼▼▼▼▼▼▼▼▼▼ -->
-<!--                         <div class="p-1" style="height: 40px;"> -->
-<!--                             <div class="d-flex"> -->
-<!--                                 <div class="p-2"><i :class="{'fa-heart': true, 'like':isLiked[index], 'fa-solid': isLiked[index], 'fa-regular': !isLiked[index]}" @click="likePost(board.boardWithNickDto.boardNo,index)" style="font-size: 32px;"></i></div> -->
-<!--                                 <div class="p-2"><img src="/static/image/dm.png"></div> -->
-<!--                                 <div class="p-2"><img src="/static/image/message_ico.png"></div> -->
-<!--                                 <div class="p-2 flex-grow-1"><h5><img src="/static/image/save_post.png"></h5></div> -->
-<!--                             </div> -->
-<!--                         </div> -->
-<!--                         ▲▲▲▲▲▲▲▲▲▲▲▲▲좋아요▲▲▲▲▲▲▲▲▲▲▲▲▲ -->
-<!--                         ▼▼▼▼▼▼▼▼▼▼▼▼▼멘트▼▼▼▼▼▼▼▼▼▼▼▼▼ -->
-<!--                         <div class="p-1"> -->
-<!--                             <h4 class="mt-1"><b>좋아요 {{boardLikeCount[index]}}개</b></h4> -->
-<%--                             <h4><a class="btn btn-none" style="padding: 0 0 0 0" :href="'${pageContext.request.contextPath}/member/'+board.boardWithNickDto.memberNick"><b>{{board.boardWithNickDto.memberNick}}</b></a></h4> --%>
-<!--                             <p style="height: 20px;overflow: hidden; width: 400px;white-space: nowrap;text-overflow: ellipsis;margin-bottom:5px;"> -->
-<!--                             	<span class="textHide"> -->
-<!--                             		{{board.boardWithNickDto.boardContent}} -->
-<!--                             		<br v-if="boardList[index].boardTagList.length > 0"><br v-if="boardList[index].boardTagList.length > 0"> -->
-<!--                             		<a href="#" v-for="(tag, index3) in boardList[index].boardTagList" :key="index3" style="margin-right: 0.5em;">\#{{tag.tagName}}</a> -->
-<!--                             	</span> -->
-<!--                             </p>                             -->
-                            
-<!--                             <h6 style="cursor: pointer; color:gray; display:none;">더 보기</h6> -->
-<!--                         </div> -->
-<!--                         ▲▲▲▲▲▲▲▲▲▲▲▲▲멘트▲▲▲▲▲▲▲▲▲▲▲▲▲ -->
-<!--                         ▼▼▼▼▼▼▼▼▼▼▼▼▼댓글 모달창 열기▼▼▼▼▼▼▼▼▼▼▼▼▼ -->
-<!--              			<div class="p-1"> -->
-<!--              				<h6 @click="detailViewOn(index)" style="cursor: pointer; color:gray;">댓글 보기</h6>              -->
-<!--              			</div>            -->
-<!--                         ▲▲▲▲▲▲▲▲▲▲▲▲▲댓글 모달창 열기▲▲▲▲▲▲▲▲▲▲▲▲▲ -->
-<!--                         ▼▼▼▼▼▼▼▼▼▼▼▼▼댓글입력창▼▼▼▼▼▼▼▼▼▼▼▼▼ -->
-<!--                         <div class="p-1"> -->
-<!--                             <div class="d-flex"> -->
-<!-- <!--                                 <div class="p-2"><img src="/static/image/emoticon.png"></div> --> -->
-<!--                                 <div class="p-1"><input class="form-control" type="text" placeholder="댓글 달기..." v-model="replyContent" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(index),detailViewOn(index)" -->
-<!--                                                         style="border: 2px solid white; width: 24em;"></div> -->
-<!--                                 <div class="p-2 flex-grow-1"><h5 style="color: dodgerblue" @click="replyInsert(index),detailViewOn(index)">게시</h5></div> -->
-<!--                             </div> -->
-<!--                         </div> -->
-<!--                         ▲▲▲▲▲▲▲▲▲▲▲▲▲댓글입력창▲▲▲▲▲▲▲▲▲▲▲▲▲ -->
-<!--                     </div> -->
-<!--                 </div> -->
-<!--             </div> -->
-<!--          </div> -->
+     
+     
     
-    
+ 
     
     </div>
     
@@ -355,7 +269,7 @@
 					<h5 class="card-title"></h5>
 					<p class="card-text" style="margin-left: 0.5em;">{{boardList[detailIndex].boardWithNickDto.boardContent}}
 					<br v-if="boardList[detailIndex].boardTagList.length > 0"><br v-if="boardList[detailIndex].boardTagList.length > 0">
-                            	<a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in boardList[detailIndex].boardTagList" :key="index3" style="margin-right: 0.5em;">\#{{tag.tagName}}</a>
+                            	<a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in boardList[detailIndex].boardTagList" :key="index3" style="margin-right: 0.5em; color: blue; cursor: pointer;">\#{{tag.tagName}}</a>
 					</p>
 					
 					
@@ -541,14 +455,17 @@ Vue.createApp({
             //목록을 위한 데이터
             page:1,
             boardList:[],
-            boardOldList:[],
-            boardAllList:[],
             finish:false,
+            
+            newListFinish:false, //최근 3일 로드 끝
+            oldListStart:false, // 3일 이후 로드 시작
+            
             //안전장치
             loading:false,
             //▲▲▲▲▲▲▲▲▲▲▲▲▲무한 페이징▲▲▲▲▲▲▲▲▲▲▲▲▲
+            
 			loginMemberNo:"${sessionScope.memberNo}", // 로그인한 세션 값
-			followCheckList:[],
+			followCheckList:[], // 팔로우 체크 변수
 			
 			//게시물 좋아요 기능 전용 변수
 			boardLikeCount:[], // 좋아요 수를 저장할 변수
@@ -620,6 +537,32 @@ Vue.createApp({
             //this.boardListCount=[...resp.data.boardLike]
 			
             //this.boardLikeCount.push(...resp.data.boardLike);
+            this.boardList.push(...resp.data);
+            this.page++;
+            
+            if(resp.data < 2) { //데이터가 2개 미만이면 더 읽을게 없다
+            	this.finish = true; 
+            	this.newListFinish = true;
+        		this.page = 1;
+            }
+
+            this.loading = false;
+        },
+        
+        async loadOldList(){
+        	this.finish = false;
+        	this.oldListStart = true;
+            if(this.loading == true) return; //로딩중이면
+            if(this.finish == true) return; //다 불러왔으면
+            this.loading = true;
+            const resp = await axios.get("${pageContext.request.contextPath}/rest/board/old/"+ this.page);
+           
+            
+            for (const board of resp.data) {
+            	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+            	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
+              }
+
             this.boardList.push(...resp.data);
             this.page++;
             
@@ -729,10 +672,11 @@ Vue.createApp({
         }, */
         
         // 팔로우 v-if 여부체크 함수
-       	followCheckIf(index){
+       	followCheckIfNew(index){
         	const board = this.boardList[index];
        		return !this.followCheckList.includes(board.boardWithNickDto.memberNo);
         },
+        	
         
      	 //팔로우 여부 체크
         async followCheck() {
@@ -967,8 +911,13 @@ Vue.createApp({
     watch: {
        //percent가 변하면 percent의 값을 읽어와서 80% 이상인지 판정
        percent(){
-            if(this.percent >= 80) {
+            if(this.percent >= 80 && !this.newListFinish) {
                 this.loadNewList();
+                console.log("로드new");
+            }
+            else if(this.oldListStart && this.percent >= 80){
+               	this.loadOldList();            	
+                console.log("로드old");
             }
        }
     },
