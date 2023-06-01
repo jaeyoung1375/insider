@@ -183,7 +183,7 @@
 	 				<foreach collection="tagList" item="tag" separator=",">
 						#{tag}
 			 		</foreach>
-	 				))
+	 				)GROUP by board_no HAVING count(DISTINCT tag_name)=#{tagListLength})
 	 			</if>
 	 			<!-- 금지어 -->
 	 			<if test="boardContentProhibit!=null and boardContentProhibit==1">

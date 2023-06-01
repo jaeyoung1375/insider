@@ -22,7 +22,7 @@ public class AdminBoardSearchVO {
 	private String tag;
 	
 	private List<String> tagList;
-	
+	private Integer tagListLength;
 	public void makeTagList() {
 		if(this.tag==null || this.tag.length()==0) return;
 		String[] temp = this.tag.split("#");
@@ -36,6 +36,7 @@ public class AdminBoardSearchVO {
 			}
 		}
 		this.tagList = list;
+		this.tagListLength=list.size();
 	}
 	
 	private int page=1;
