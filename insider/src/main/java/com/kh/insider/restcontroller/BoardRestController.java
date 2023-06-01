@@ -106,4 +106,10 @@ public class BoardRestController {
 		
 		return boardLikeRepo.check(boardLikeDto);
 	}
+	
+	//좋아요 목록 불러오기
+	@GetMapping("/like/list/{boardNo}")
+	public List<BoardLikeDto> likeList(@PathVariable int boardNo){
+		return boardLikeRepo.list(boardNo);
+	}
 }

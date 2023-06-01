@@ -181,7 +181,7 @@
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲좋아요▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼멘트▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-1">
-                            <h4 class="mt-1"><b>좋아요 {{boardLikeCount[index]}}개</b></h4>
+                            <h4 class="mt-1"><b @click="showLikeListModal(board.boardWithNickDto.boardNo)" style="cursor: pointer;">좋아요 {{boardLikeCount[index]}}개</b></h4>
                             <h4><a class="btn btn-none" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a></h4>
                             <p style="height: 20px;overflow: hidden; width: 400px;white-space: nowrap;text-overflow: ellipsis;margin-bottom:5px;">
                             	<span class="textHide">
@@ -278,8 +278,8 @@
 							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="42" height="42" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
 							<img v-else src="https://via.placeholder.com/42x42?text=profile" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
 							
-							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; font-weight: bold;">{{replyList[index].memberNick}}
-							</p>							
+							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; font-weight: bold;">{{replyList[index].memberNick}}</p>
+												
 						</a>
 						<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em;">{{replyList[index].replyContent}}</p>
 <!-- 						<p style="padding-left:4.0em;margin-bottom:1px;font-size:0.8em; color:gray;"> -->
@@ -439,6 +439,35 @@
 			</div>
 		</div>
 	</div>
+	
+<!-- ---------------------------------좋아요 목록 모달-------------------------- -->
+<div class="modal" tabindex="-1" role="dialog" id="likeListModal" data-bs-backdrop="static" ref="likeListModal">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content">
+				<div class="modal-header">
+        			<h5 class="modal-title col-7" style="font-weight:bold;">좋아요</h5>
+        			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="hideLikeListModal"></button>
+      			</div>
+				<div class="modal-body p-0">
+					<div class="row p-2 mt-2"  v-for="(like,index) in likeList" :key="index">
+						<div class="col d-flex">
+							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick">
+								<img v-if="like.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ like.attachmentNo" width="50" height="50" style="border-radius: 70%;">
+								<img v-else src="https://via.placeholder.com/50x50?text=profile" style="border-radius: 70%; ">
+							</a>
+							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick" style="color:black;text-decoration:none; position:relative;">
+								<h6 style="margin: 14px 0 0 10px;">{{like.memberNick}}</h6>
+							</a>
+						</div>
+					</div>
+					
+					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo">
+				
+				</div>
+			</div>
+		</div>
+	</div>
+	
 
 </div>
   소셜유저 : ${sessionScope.socialUser}		
@@ -470,6 +499,9 @@ Vue.createApp({
 			//게시물 좋아요 기능 전용 변수
 			boardLikeCount:[], // 좋아요 수를 저장할 변수
             isLiked : [], // 로그인 회원이 좋아요 체크 여부
+            likeList : [],
+            likeListData : [],
+            likeListModal : false,
             
 			//게시물 댓글 좋아요 기능 전용 변수
 			replyLikeCount : [], // 댓글 좋아요 수 저장 변수
@@ -611,6 +643,15 @@ Vue.createApp({
             }
             
             this.boardLikeCount[index] = resp.data.count;
+        },
+        
+        //좋아요 리스트
+        async likeListLoad(boardNo) {
+        	console.log(boardNo);
+        	const resp = await axios.get("${pageContext.request.contextPath}/rest/board/like/list/" + boardNo);
+        	console.log(resp);
+        	this.likeList = [...resp.data];
+        	console.log(this.likeList);
         },
         
         //댓글 좋아요
@@ -810,13 +851,30 @@ Vue.createApp({
         	this.detailView = true;
         	this.detailIndex = index;
         	this.replyLoad(index);
+        	document.body.style.overflow = "hidden";
         },
         
         //상세보기 모달창 닫기
         closeDetail() {
         	this.detailView = false;
         	this.replyList = [];
+        	document.body.style.overflow = "unset";
         },
+        
+        //좋아요 모달창 열기
+        showLikeListModal(boardNo){
+			if(this.likeListModal==null) return;
+			this.likeListLoad(boardNo);
+			this.likeListModal.show();
+			this.likeListData=[boardNo];
+		},
+		
+		//좋아요 모달창 닫기
+		hideLikeListModal(){
+			if(this.likeListModal==null) return;
+			this.likeList=[];
+			this.likeListModal.hide();
+		},
         
 //         //게시물 길이 확인
 // 		boardTextCheck(index) {
@@ -936,7 +994,7 @@ Vue.createApp({
 		this.additionalMenuModal = new bootstrap.Modal(this.$refs.additionalMenuModal);
 		this.reportMenuModal = new bootstrap.Modal(this.$refs.reportMenuModal);
 		this.blockModal = new bootstrap.Modal(this.$refs.blockModal);
-		//this.boardModal = new bootstrap.Modal(this.$refs.modal03);
+		this.likeListModal = new bootstrap.Modal(this.$refs.likeListModal);
     },
     updated(){
     	$(".textHide").each(function(){
