@@ -17,4 +17,6 @@ public interface TagFollowRepo {
 	void delete(TagFollowDto tagFollowDto);
 	//단일조회
 	TagFollowDto selectOne(TagFollowDto tagFollowDto);
+	//팔로우한 태그 문자열 반환
+	List<String> selectFollowTagList(long memberNo);
 }
