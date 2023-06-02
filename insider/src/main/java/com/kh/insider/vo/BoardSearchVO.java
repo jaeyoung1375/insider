@@ -3,6 +3,7 @@ package com.kh.insider.vo;
 import java.util.List;
 
 import com.kh.insider.dto.BlockDto;
+import com.kh.insider.dto.BoardTagDto;
 import com.kh.insider.dto.FollowDto;
 
 import lombok.Data;
@@ -11,6 +12,7 @@ import lombok.Data;
 public class BoardSearchVO {
 	private List<FollowDto> followDtoList;
 	private List<BlockDto> blockDtoList;
+	private List<String> tagList; 
 	private int page;
 	private int boardCount;
 	private long loginMemberNo;

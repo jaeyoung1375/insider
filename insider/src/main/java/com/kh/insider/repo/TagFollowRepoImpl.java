@@ -41,6 +41,11 @@ public class TagFollowRepoImpl implements TagFollowRepo {
 	public 	TagFollowDto selectOne(TagFollowDto tagFollowDto) {
 		return sqlSession.selectOne("tagFollow.selectOne", tagFollowDto);
 	}
+
+	@Override
+	public List<String> selectFollowTagList(long memberNo) {
+		return sqlSession.selectList("tagFollow.selectFollowTagList", memberNo);
+	}
 	
 
 }
