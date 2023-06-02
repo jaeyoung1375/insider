@@ -17,6 +17,7 @@ import com.kh.insider.dto.BoardLikeDto;
 import com.kh.insider.repo.BoardLikeRepo;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.service.BoardSearchService;
+import com.kh.insider.service.ForbiddenService;
 import com.kh.insider.vo.BoardLikeVO;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
@@ -36,6 +37,8 @@ public class BoardRestController {
 	private BoardLikeRepo boardLikeRepo;
 	@Autowired
 	private BoardSearchService boardSearchService;
+	@Autowired
+	private ForbiddenService forbiddenService;
 	
 	//무한스크롤
 		@GetMapping("/page/{page}")
@@ -56,7 +59,10 @@ public class BoardRestController {
 		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
 		boardSearchVO.setLoginMemberNo(memberNo);
 		boardSearchVO.setBoardCount(2);
-		return boardRepo.selectListWithFollowNew(boardSearchVO);
+		
+		//금지어 정규표현식 검사 후 반환
+		List<BoardListVO> boardList = boardRepo.selectListWithFollowNew(boardSearchVO);
+		return forbiddenService.changeForbiddenWords(boardList);
 		//return boardRepo.selectListWithFollow(boardSearchVO);
 	}
 	
@@ -67,7 +73,10 @@ public class BoardRestController {
 		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
 		boardSearchVO.setLoginMemberNo(memberNo);
 		boardSearchVO.setBoardCount(2);
-		return boardRepo.selectListWithFollowOld(boardSearchVO);
+		
+		//금지어 정규표현식 검사 후 반환
+		List<BoardListVO> boardList =boardRepo.selectListWithFollowOld(boardSearchVO);
+		return forbiddenService.changeForbiddenWords(boardList);
 		//return boardRepo.selectListWithFollow(boardSearchVO);
 	}
 	

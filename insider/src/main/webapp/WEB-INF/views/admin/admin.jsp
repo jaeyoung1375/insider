@@ -142,54 +142,34 @@
 	z-index:1; 
 	background-color:white
 }
-.modal-body{
-	display:inline-block;
-	width:25%;
-	positon:absolute;
-	left:0;
+
+.modal-header-custom{
+	position:sticky; 
+	top:0; 
 	z-index:1; 
 	background-color:white
 }
-.modal-header-custom{
-	display:inline-block;
-	width:100%;
-	position: absolute;
-	z-index: 1;
-	top: 0;
-	margin-left:0.5em;
-	transform: translate(0%, 0%);
-}
-.modal-side-custom{
-	display:inline-block;
-	position: sticky;
-	left: 0;
-	top: 0;
-	bottom: 0;
-	width: 25%; /* 원하는 고정 너비 설정 */
-	background-color: white;
-	height:100%;
-	z-index: 1;
-}
-.modal-body-custom{
-	max-height:100%;
-	overflow-y:auto;
-	width:100%
-}
+.card-scroll{
+	overflow-y: auto;
+	-ms-overflow-style: none;
+	position: relative;
+} 
 .fullscreen{
 	position:fixed;
 	top: 0;
 	left: 0;
 	right: 0;
 	bottom: 0;
-	z-index: 99999;
+	z-index: 5000;
 	background-color: rgba(0, 0, 0, 0.2);
 }
 .fullscreen > .fullscreen-container{
+	background-color:white;
 	position: absolute;
 	left: 50%;
 	top: 50%;
-	width: 1200px;
-	height: 700px;
+	width: 40%;
+	max-height: 80%;
 	transform: translate(-50%, -50%);
 }
 </style>
@@ -1700,32 +1680,63 @@
 	<!-- ---------------------------------금지어 관리 모달-------------------------- -->
 	<div v-if="forbiddenModal" class="fullscreen container-fluid">
 		<div class="row fullscreen-container">
-			<div class="row">
-				<div class="col">
+			<div class="row p-3 m-0">
+				<div class="col-10">
 					<h5 class="modal-title">금지어 관리</h5>
+				</div>
+				<div class="col-2 d-flex justify-content-center align-items-center">
 					<button type="button" class="btn-close" @click="hideForbiddenModal">
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-3">
-					<button @click="moveScroll('ㄷ')">가</button>
-				</div>
-				<div class="col-9">
-					<div class="row" v-for="(forbidden, index) in forbiddenList" :key="index" ref="scrollItems">
-						<div class="offset-2 col-6 d-flex align-items-center p-2">
-							{{forbidden}}
+			<hr>
+			<div class="row m-0 p-0 mb-2">
+				<div class="col-3 d-flex align-items-center justify-content-center">
+					<div class="row">
+						<div class="col">
+							<div class="row m-0 p-0">
+								<div class="col p-2 d-flex justify-content-center item-aligns-center" @click="moveScroll('a')" style="cursor:pointer">
+									a-z
+								</div>
+							</div> 
+							<div class="row m-0 p-0" v-for="(word, index) in dictionary" :key="index">
+								<div class="col p-2 d-flex justify-content-center item-aligns-center" @click="moveScroll(word)" style="cursor:pointer">
+									{{word}}
+								</div>
+							</div>
 						</div>
-						<div class="col-1 d-flex align-items-center justify-content-center p-2">
-							<i class="fa-solid fa-xmark modal-click-btn-negative" @click="deleteForbiddenWord(forbidden)"></i>
+					</div>
+				</div>
+				<div class="col-9 p-0">
+					<div class="card bg-light" style="border:0px solid white">
+						<div class="card-body card-scroll" ref="scrollContainer" style="height:600px; background-color:white;">
+							<div class="row" v-for="(forbidden, index) in forbiddenList" :key="index" ref="scrollItems">
+								<div class="offset-2 col-6 d-flex align-items-center p-2">
+									{{forbidden}}
+								</div>
+								<div class="col-1 d-flex align-items-center justify-content-center p-2">
+									<i class="fa-solid fa-xmark modal-click-btn-negative" @click="deleteForbiddenWord(forbidden)"></i>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="row">
-				<input class="form-control" type="text" v-model="forbiddenWord">
-				<button type="button" class="btn btn-secondary m-0 w-25" @click="searchForbiddenList">검색</button>
-				<button type="button" class="btn btn-primary m-0 w-25" @click="addForbiddenWord">입력</button>
-				<button type="button" class="btn btn-secondary m-0 w-25" @click="hideForbiddenModal">닫기</button>
+			<hr class="mt-2">
+			<div class="row m-0 p-0 mt-2 mb-3">
+				<div class="col">
+					<div class="row">
+						<div class="col">
+							<input class="form-control" type="text" v-model="forbiddenWord">
+						</div>
+					</div>
+					<div class="row mt-2">
+						<div class="col d-flex justify-content-end">
+							<button type="button" class="btn btn-secondary m-0 w-25" @click="searchForbiddenList">검색</button>
+							<button type="button" class="btn btn-primary m-0 w-25" @click="addForbiddenWord">입력</button>
+							<button type="button" class="btn btn-secondary m-0 w-25" @click="hideForbiddenModal">닫기</button>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -1788,6 +1799,7 @@
 				forbiddenList:[],
 				forbiddenWord:"",
 				forbiddenListCopy:[],
+				dictionary:['가','나','다','라','마','바','사','아','자','차','카','타','파','하'],
 				/*---------------------------신고 데이터 --------------------------- */
 				reportContentModal:null,
 				newReportContent:"",
@@ -2078,9 +2090,11 @@
  			showForbiddenModal(){
 				this.forbiddenModal=true;
 				this.loadForbiddenList();
+	        	document.body.style.overflow = "hidden";
 			},
 			hideForbiddenModal(){
 				this.forbiddenModal=false;
+	        	document.body.style.overflow = "unset";
 			},
 			async loadForbiddenList(){
 				const resp = await axios.get("/rest/admin/forbidden");
@@ -2105,11 +2119,8 @@
 				this.forbiddenListCopy.sort();
 				const index = this.forbiddenListCopy.indexOf(word);
 				const scrollItems = this.$refs.scrollItems;
-				if (index-2>0) {
-					scrollItems[index-2].scrollIntoView();
-				}
-				else{
-					scrollItems[0].scrollIntoView();
+				if (index>=0) {
+					scrollItems[index].scrollIntoView();
 				}
 			},
 			/*------------------------------ 게시물관리 끝 ------------------------------*/
