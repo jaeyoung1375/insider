@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.MemberProfileDto;
+import com.kh.insider.dto.TagFollowDto;
 
 public interface MemberRepo {
 	
@@ -21,6 +22,10 @@ public interface MemberRepo {
 	
 	// 친구 추천목록 조회
 	public List<MemberProfileDto> recommendFriends(long memberNo);
+	
+	// 특정회원 해시태그 리스트 조회
+	public List<TagFollowDto> hashtagList(long memberNo);
+	
 	
 	
 	

@@ -111,37 +111,34 @@
   		margin: 0 0 4px;
 	}
 	
-.follow-button {
-  position: relative;
-  padding: 10px;
-  background-color: #3897f0;
+/* 탭 링크에 마우스를 가져다 댔을 때 스타일 변경 */
+.nav-link:hover {
+  background-color: #eee;
+  color: #333;
+}
+
+/* 활성화된 탭 링크 스타일 변경 */
+.nav-link.active {
+  background-color: #333;
   color: #fff;
-  font-weight: bold;
 }
 
-.follow-button.loading {
-  pointer-events: none; /* 클릭 이벤트 비활성화 */
+/* 탭 패널 사이즈 및 스크롤바 스타일 조정 */
+.tab-content {
+  max-height: 300px;
+  overflow-y: scroll;
 }
 
-.follow-button.loading::after {
-  content: "";
-  position: absolute;
-  top: calc(50% - 10px);
-  left: calc(50% - 10px);
-  width: 20px;
-  height: 20px;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  border-top-color: transparent;
-  animation: spin 1s linear infinite;
+/* 각 탭 패널 사이에 구분선 추가 */
+.tab-pane {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}	
-
+/* 각 탭 패널의 컨텐츠에 여백 추가 */
+.tab-pane .content {
+  margin-bottom: 10px;
+}
 	
 	
 	
@@ -184,29 +181,8 @@
               </c:when>
               <c:otherwise> <!-- 본인 프로필이 아니라면 -->
                     <div class="col-5">
-              <button class="btn btn-primary"
-        @click="follow(${memberDto.memberNo})"
-        v-if="followCheckIf(${memberDto.memberNo})"
-        :class="{'loading': isLoading}"
-        :disabled="isLoading || isFollowing"
->
-  <span v-if="!isLoading && !isFollowing">팔로우</span>
-  <span v-else>
-    <i class="fa-solid fa-spinner fa-spin"></i>
-  </span>
-</button>
-
-<button class="btn btn-secondary"
-        @click="unFollow(${memberDto.memberNo})"
-        v-else
-        :class="{'loading': isLoading}"
-        :disabled="isLoading || isUnfollowing"
->
-  <span v-if="!isLoading && !isUnfollowing">팔로잉</span>
-  <span v-else>
-    <i class="fa-solid fa-spinner fa-spin"></i>
-  </span>
-</button>
+              <button class="btn btn-primary" @click="follow(${memberDto.memberNo})" v-if="followCheckIf(${memberDto.memberNo})">팔로우</button>
+			  <button class="btn btn-secondary" @click="unFollow(${memberDto.memberNo})" v-else>팔로잉</button>
                </div>
                <div class="col-5"  style=" width:70%;">
                <button class="btn btn-secondary">메시지 보내기</button>
@@ -685,12 +661,32 @@
              <div class="modal-dialog" role="document">
     <div class="modal-content" style="max-width:400px; min-height:200px max-height:400px; overflow-y: scroll;">
       <div class="modal-header text-center" style="display:flex; justify-content: center;">
-        <h5 class="modal-title" >팔로우</h5>
+        <h5 class="modal-title" >팔로잉</h5>
       </div>
+ 		<div class="modal-header text-center" style="display:flex; justify-content: center;">
+  <ul class="nav nav-tabs" style="width: 100%;">
+    <li class="nav-item col-6">
+       <a class="nav-link" :class="{'active': activeTab === 'peopleTab'}" @click="changeTab('peopleTab')" style="font-size:17px; padding:14px 0;">사람</a>
+    </li>
+    <li class="nav-item col-6">
+      <a class="nav-link" :class="{'active': activeTab === 'hashtagsTab'}" @click="changeTab('hashtagsTab')" style="font-size:17px; padding:14px 0;">해시태그</a>
+      </li>
+  </ul>
+</div>
       <div class="modal-body" style="overflow-y: scroll; max-height:300px;"  @scroll="handleScroll">
+      		<div v-if="activeTab === 'peopleTab'">
+      		
         <div v-for="item in myFollowList" :key="item.attachmentNo">
-        
-          <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave">
+      		 	<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
+          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover(item)" style="border-radius:50%;">
+						   <div style="display: flex; flex-direction: column; justify-content: flex-start;">
+						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
+          					<p class="modalName">{{item.memberName}}</p>
+						  </div>
+          <button class="float-end btn btn-primary" @click="follow(item.followFollower)" v-show="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto; ">팔로우</button>
+          <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-show="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
+          </div>
+            <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave">
                   <!-- 프로필 미리보기 내용 -->
                    	<div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" style="border-radius: 50%;"> 
@@ -751,25 +747,35 @@
                   	 <button class="btn btn-primary" @click="follow(item.followFollower)" v-if="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="flex-grow:1;">팔로우</button>
                   	 <button class="btn btn-primary" v-if="!followCheckIf(item.followFollower)" style="width:50%;">메시지 보내기</button>
           			<button class="btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-if="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="width:50%; margin-left:20px;" >팔로잉</button>
-                    </div>
+                 </div>
+                 
           </div> <!-- 팔로우 미리보기 끝 -->
-          	<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
-          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover(item)" style="border-radius:50%;">
-						   <div style="display: flex; flex-direction: column; justify-content: flex-start;">
-						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
-          					<p class="modalName">{{item.memberName}}</p>
-						  </div>
-          <button class="float-end btn btn-primary" @click="follow(item.followFollower)" v-show="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto; ">팔로우</button>
-          <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-show="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
-			</div>
           
-        </div>
+          
+          
+			</div>
+      		</div>
+      		<div v-else-if="activeTab === 'hashtagsTab'">
+      		  	<!-- 해시태그 목록 표시 -->
+      		  	<div v-for="item in hashtagList" key="item.memberNo">
+					<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
+          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60"style="border-radius:50%;">
+						   <div style="display: flex; flex-direction: column; justify-content: flex-start;">
+						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/tag/' + item.tagName" style="margin-left:5px;">{{'#' + item.tagName }}</a>
+          					<p class="modalName" style="margin-left:5px;">게시물 {{item.tagCount}}</p>
+						  </div>
+						  <button class="float-end btn btn-secondary" @click="tagFollow(item.tagName)" style="margin-left:auto;" v-if="!tagFollowCheckIf(item.memberNo)">팔로우</button>	
+						  <button class="float-end btn btn-secondary" @click="tagUnFollow(item.tagName)" style="margin-left:auto;" v-else>팔로잉</button>					  
+      		  	</div>
+      		</div>
+      		
+ 
       </div>
      
     </div>
   </div>
 </div> 
-
+</div>
        <div class="modal" tabindex="-1" role="dialog" id="recommendFriendsAllListModal"
                             data-bs-backdrop="static"
                             ref="recommendFriendsAllListModal" @click.self="recommendFriendsAllListModalHide">
@@ -787,6 +793,7 @@
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
           					<p class="modalName">{{item.memberName}}</p>
 						  </div>
+						  
           <button class="float-end btn btn-primary" @click="follow(item.memberNo)" v-if="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로우</button>
 			</div>
           
@@ -796,6 +803,7 @@
     </div>
   </div>
 </div> 
+
 
 <!-- 팔로우 모달 목록 끝 -->
         <!-- Modal 창 영역 끝 -->
@@ -904,10 +912,8 @@
 			itemsPerPage : 4,
 			followBtn : false,
 			followerBtn : false,
-			// 팔로우 버튼 로딩
-			isLoading: false,
-			isFollowing: false,
-		    isUnfollowing: false
+			activeTab: 'peopleTab', // 초기 선택된 탭은 'peopleTab'입니다.
+			hashtagList : [], // 해시태그 리스트
          };
       },
       computed: {
@@ -958,6 +964,10 @@
          
       },
       methods: {
+    	  changeTab(tab) {
+    	      this.activeTab = tab; // 선택된 탭을 변경합니다.
+    	    },
+    	  
            showModal(){
                   if(this.modal == null) return;
                   this.modal.show();
@@ -1069,16 +1079,11 @@
          	
          
          	
-         	 await new Promise(resolve => setTimeout(resolve, 1000)); // 1.5초 대기
          	this.totalFollowerCount();    
          	this.totalFollowCount();
          	this.followerListPaging();
          	this.followListPaging();
          	
-         	
-             this.isLoading = false;
-             this.isFollowing = true;
-             this.isUnfollowing = false; // 추가: 언팔로우 상태 초기화
          	
          	
          },
@@ -1164,7 +1169,6 @@
 			    	  this.followCheckList.splice(index, 1);
 			      }
 			      
-			      await new Promise(resolve => setTimeout(resolve, 1000)); // 1.5초 대기
 
 			      console.log("언팔로우 성공");
 			      this.totalFollowCount();
@@ -1173,9 +1177,6 @@
 			      await this.$nextTick(); // 다음 UI 업데이트를 기다립니다.
 				
 			      
-			      this.isLoading = false;
-			      this.isFollowing = false; // 추가: 팔로우 상태 초기화
-			      this.isUnfollowing = true;
 			      
 			      console.log("followCheckList : "+this.followCheckList);
 			    } else {
@@ -1718,10 +1719,51 @@
            	     this.recommendFriendsList = recommendFriendsList;
             	  }
              },
-           
-           	
-
-      },
+             
+             async hashtTagList() {
+            	  try {
+            	    const resp = await axios.get("/rest/member/hashtagList", {
+            	      params: {
+            	        memberNo: this.memberNo,
+            	      },
+            	    });
+            	    
+            	    this.hashtagList.push(...resp.data);
+            	   console.log("hash : "+this.hashtagList);
+            	  } catch (error) {
+            	    console.error(error);
+            	  }
+            	},
+            	
+            	async tagUnFollow(tagName){
+            		const resp = await axios.post("/rest/follow/tagUnFollow/"+tagName);
+            		if(resp.data){
+            			console.log("언팔로우 성공");
+            		}else{
+            			console.log("언팔로우 실패");
+            		}
+            	
+      			},
+      			async tagFollow(tagName){
+            		const resp = await axios.post("/rest/follow/tagFollow/"+tagName);
+            		if(resp.data){
+            			console.log("팔로우 성공");
+            		}else{
+            			console.log("팔로우 실패");
+            		}
+      			},
+      			
+      			// 태그 팔로우 v-if 여부체크 함수
+            	tagFollowCheckIf(memberNo){
+             	
+            		return !this.hashtagList.includes(memberNo);
+             	},
+             	
+             
+      			
+      			
+      		},
+      		
       created() {
     	  // 데이터 불러오는 영역
     	  this.loadMember();
@@ -1729,6 +1771,7 @@
     	  this.totalFollowerCount();
     	  this.memberSetting();
     	  this.recommendList();
+    	  this.hashtTagList();
     	  Promise.all([this.followListPaging(), this.followerListPaging(), this.boardList()])
     	    .then(() => {
     	      this.followCheck();

@@ -49,5 +49,8 @@
 		<delete id="delete" parameterType="int">
 			delete board_attachment where board_no=#{boardNo}
 		</delete>
+		
+		
+		
    
    </mapper>

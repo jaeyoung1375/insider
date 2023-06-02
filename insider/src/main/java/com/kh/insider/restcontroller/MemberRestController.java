@@ -23,12 +23,15 @@ import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.MemberProfileDto;
 import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.dto.SettingDto;
+import com.kh.insider.dto.TagDto;
+import com.kh.insider.dto.TagFollowDto;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.FollowRepo;
 import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.repo.MemberStatsRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.SettingRepo;
+import com.kh.insider.repo.TagFollowRepo;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.MemberStatsResponseVO;
 import com.kh.insider.vo.MemberStatsSearchVO;
@@ -49,6 +52,8 @@ public class MemberRestController {
 	private FollowRepo followRepo;
 	@Autowired
 	private BoardRepo boardRepo;
+	@Autowired
+	private TagFollowRepo tagFollowRepo;
 	
 	
 	//멤버정보 불러오기
@@ -140,4 +145,15 @@ public class MemberRestController {
 		List<MemberProfileDto> recommendFriendsList = memberRepo.recommendFriends(memberNo);
 		return recommendFriendsList;
 	}
+	
+	// 특정회원 태그 목록 조회
+	@GetMapping("/hashtagList")
+	public List<TagFollowDto> hashtagList(@RequestParam long memberNo){
+		List<TagFollowDto> hashtagList = memberRepo.hashtagList(memberNo);
+		return hashtagList;
+	}
+	
+	
+	
+	
 }

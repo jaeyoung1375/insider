@@ -88,6 +88,19 @@ AND MEMBER_NO NOT IN (
 
   ]]>
 </select>
+
+	<!-- 태그 이미지 하나를 불러오기 위한 조회 -->
+	<select id="hashtagList" resultType="tagFollowDto">
+	  <![CDATA[
+SELECT MAX(ba.ATTACHMENT_NO) AS ATTACHMENT_NO, tf.TAG_NAME, (SELECT COUNT(*) FROM board_tag where tag_name = tf.tag_name) AS TAG_COUNT
+FROM board_tag bt
+JOIN tag_follow tf ON bt.TAG_NAME = tf.TAG_NAME
+JOIN board_attachment ba ON bt.BOARD_NO = ba.BOARD_NO
+WHERE tf.MEMBER_NO = #{memberNo}
+GROUP BY tf.TAG_NAME
+ORDER BY MAX(ba.ATTACHMENT_NO) DESC
+		  ]]>
+	</select>
 	
 	
 	

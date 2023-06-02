@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.MemberProfileDto;
+import com.kh.insider.dto.TagFollowDto;
 
 @Repository
 public class MemberRepoImpl implements MemberRepo{
@@ -92,5 +93,14 @@ public class MemberRepoImpl implements MemberRepo{
 	public List<MemberProfileDto> recommendFriends(long memberNo) {
 		return sqlSession.selectList("member.recommendFriends",memberNo);
 	}
+
+	@Override
+	public List<TagFollowDto> hashtagList(long memberNo) {
+
+		return sqlSession.selectList("member.hashtagList",memberNo);
+		
+	}
+
+	
 	
 }
