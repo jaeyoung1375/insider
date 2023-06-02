@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.MemberProfileDto;
+import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.dto.TagFollowDto;
 
 public interface MemberRepo {
@@ -14,7 +15,7 @@ public interface MemberRepo {
 	// 이메일 조회
 	public MemberDto findByEmail(String memberEmail);
 	// 닉네임 조회
-	public MemberDto findByNickName(String memberNick);
+	public MemberWithProfileDto findByNickName(String memberNick);
 	// 이메일 중복확인
 	public int isEmailDuplicated(String memberEmail) throws Exception;
 	// 닉네임 중복확인

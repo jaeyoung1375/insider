@@ -47,8 +47,8 @@
 		select * from member where member_email = #{memberEmail}
 	</select>
 	
-	<select id="findByNickName" resultType="MemberDto">
-		select * from member where member_nick = #{memberNick}
+	<select id="findByNickName" resultType="MemberWithProfileDto">
+		select * from member_with_profile where member_nick = #{memberNick}
 	</select>
 	
 

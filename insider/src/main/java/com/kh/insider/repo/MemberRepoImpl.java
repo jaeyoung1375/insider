@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.MemberProfileDto;
+import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.dto.TagFollowDto;
 
 @Repository
@@ -38,7 +39,7 @@ public class MemberRepoImpl implements MemberRepo{
 	}
 	
 	@Override
-	public MemberDto findByNickName(String memberNick) {
+	public MemberWithProfileDto findByNickName(String memberNick) {
 		return sqlSession.selectOne("member.findByNickName",memberNick);
 	}
 	

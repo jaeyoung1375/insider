@@ -156,7 +156,7 @@
              <input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*" style="display: none;">
                 </c:when>       
                 <c:otherwise> 
-                  <img style="border-radius: 70%;" width="150" height="150" >
+                  <img style="border-radius: 70%;" width="150" height="150" :src="profileUrl">
                 </c:otherwise>
                 </c:choose>           
             </div>
@@ -869,6 +869,7 @@
             reportBoardNo:"",  
             memberNo : "${memberDto.memberNo}",
             memberNick : "${memberDto.memberNick}",
+            attachmentNo : "${memberDto.attachmentNo}",
             member:{
                memberNo:"",
                memberName:"",
@@ -919,7 +920,7 @@
       computed: {
          profileUrl(){
             if(this.member.attachmentNo>0){
-               return contextPath+"/rest/attachment/download/"+this.member.attachmentNo;
+               return contextPath+"/rest/attachment/download/"+this.attachmentNo;
             }
             else{
                return "https://via.placeholder.com/100x100?text=profile";
