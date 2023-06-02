@@ -3,16 +3,25 @@ package com.kh.insider.restcontroller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.insider.dto.ForbiddenDto;
+import com.kh.insider.dto.ReportResultDto;
 import com.kh.insider.repo.BoardRepo;
+import com.kh.insider.repo.BoardTagRepo;
+import com.kh.insider.repo.ForbiddenRepo;
 import com.kh.insider.repo.MemberStatsRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
+import com.kh.insider.repo.ReportRepo;
+import com.kh.insider.repo.ReportResultRepo;
 import com.kh.insider.repo.SearchRepo;
 import com.kh.insider.repo.TagRepo;
 import com.kh.insider.vo.AdminBoardResponseVO;
@@ -30,6 +39,9 @@ import com.kh.insider.vo.PaginationVO;
 import com.kh.insider.vo.SearchStatsSearchVO;
 import com.kh.insider.vo.SearchStatsVO;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/rest/admin")
 public class AdminRestController {
@@ -43,12 +55,22 @@ public class AdminRestController {
 	private MemberStatsRepo memberStatsRepo;
 	@Autowired
 	private SearchRepo searchRepo;
+	@Autowired
+	private ReportResultRepo reportResultRepo;
+	@Autowired
+	private ReportRepo reportRepo;
+	@Autowired
+	private BoardTagRepo boardTagRepo;
+	@Autowired
+	private ForbiddenRepo forbiddenRepo;
 	
 	//관리자페이지 리스트 출력
 	@GetMapping("/board/list")
 	public AdminBoardResponseVO selectList(@ModelAttribute AdminBoardSearchVO vo){
 		//정렬 리스트 trim
 		vo.refreshOrderList();
+		//태그 리스트 반환
+		vo.makeTagList();
 		//전체 게시물 수 반환
 		int count = boardRepo.selectAdminCount(vo);
 		vo.setCount(count);
@@ -128,5 +150,39 @@ public class AdminRestController {
 	public List<SearchStatsVO> getSearchNickStats(@RequestBody SearchStatsSearchVO searchVO){
 		searchVO.setColumn("member_nick");
 		return searchRepo.selectStatsList(searchVO);
+	}
+	@DeleteMapping("/board")
+	public void deleteBoard(@ModelAttribute ReportResultDto reportResultDto) {
+		//태그를 지움
+		boardTagRepo.delete(reportResultDto.getReportTableNo());
+		boardRepo.delete(reportResultDto.getReportTableNo());
+		
+		
+		reportResultRepo.updateResult(reportResultDto);
+	}
+	@PutMapping("/board")
+	public void changeManageBoard(@RequestBody ReportResultDto reportResultDto) {
+		reportResultRepo.updateResult(reportResultDto);
+		//report에 reportCheck 변경
+		reportRepo.updateReportCheck(reportResultDto);
+	}
+	//금지어 출력
+	@GetMapping("/forbidden")
+	public List<String> forbiddenList(@RequestParam(required=false) String forbiddenWord) {
+		return forbiddenRepo.selectList(forbiddenWord);
+	}
+	//금지어 입력
+	@PostMapping("/forbidden")
+	public void insertForbbiden(@RequestBody ForbiddenDto forbiddenDto) {
+		ForbiddenDto newDto = forbiddenRepo.selectOne(forbiddenDto);
+		if(newDto==null) {
+			forbiddenRepo.insert(forbiddenDto.getForbiddenWord());
+		}
+		else return;
+	}
+	//금지어 삭제
+	@DeleteMapping("/forbidden")
+	public void deleteForbidden(@RequestParam String forbiddenWord) {
+		forbiddenRepo.delete(forbiddenWord);
 	}
 }

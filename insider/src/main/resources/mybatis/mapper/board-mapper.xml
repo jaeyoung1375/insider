@@ -113,6 +113,8 @@
 		<bind name="boardMaxLikeExist" value="boardMaxLike!=null and !boardMaxLike.equals('')"></bind>
 		<bind name="boardHideExist" value="boardHide!=null and !boardHide.equals('')"></bind>
 		<bind name="orderListExist" value="orderList!=null and orderList.size()>0"></bind>
+		<bind name="tagListExist" value="tagList!=null and tagList.size()>0"></bind>
+		<bind name="boardContentExist" value="boardContent!=null and !boardContent.equals('')"></bind>
 		<include refid="topNheader"></include>
 	 		select * from board_with_nick 
 	 		<where>
@@ -170,6 +172,22 @@
 			 	<!-- 숨김여부 -->
 			 	<if test="boardHideExist">
 	 				and board_hide=#{boardHide}
+	 			</if>
+	 			<!-- 내용 -->
+	 			<if test="boardContentExist">
+	 				and instr(board_content, #{boardContent})>0
+	 			</if>
+	 			<!-- 태그 -->
+	 			<if test="tagListExist">
+	 				and board_no in (select board_no from board_tag where tag_name in(
+	 				<foreach collection="tagList" item="tag" separator=",">
+						#{tag}
+			 		</foreach>
+	 				)GROUP by board_no HAVING count(DISTINCT tag_name)=#{tagListLength})
+	 			</if>
+	 			<!-- 금지어 -->
+	 			<if test="boardContentProhibit!=null and boardContentProhibit==1">
+	 				
 	 			</if>
 	 		</where>
 	 		<choose>
@@ -357,7 +375,7 @@
 
 	<!-- 신고수 추가 기능 -->
 	<update id="addReport">
-		update board set board_report = (select count(*) from report where report_table='board' and report_table_no=#{boardNo}) where board_no=#{boardNo}
+		update board set board_report = (select count(*) from report where report_table='board' and report_table_no=#{boardNo} and report_check=0) where board_no=#{boardNo}
 	</update>
 	
 	<!-- 게시물 총 개수  -->
@@ -471,6 +489,8 @@
 		<bind name="boardMaxLikeExist" value="boardMaxLike!=null and !boardMaxLike.equals('')"></bind>
 		<bind name="boardHideExist" value="boardHide!=null and !boardHide.equals('')"></bind>
 		<bind name="orderListExist" value="orderList!=null and orderList.size()>0"></bind>
+		<bind name="tagListExist" value="tagList!=null and tagList.size()>0"></bind>
+		<bind name="boardContentExist" value="boardContent!=null and !boardContent.equals('')"></bind>
  		select count(*) from board_with_nick 
  		<where>
  			<if test="memberNickExist">
@@ -527,6 +547,22 @@
 		 	<!-- 숨김여부 -->
 		 	<if test="boardHideExist">
  				and board_hide=#{boardHide}
+ 			</if>
+ 			<!-- 내용 -->
+ 			<if test="boardContentExist">
+ 				and instr(board_content, #{boardContent})>0
+ 			</if>
+ 			<!-- 태그 -->
+ 			<if test="tagListExist">
+ 				and board_no in (select board_no from board_tag where tag_name in(
+ 				<foreach collection="tagList" item="tag" separator=",">
+					#{tag}
+		 		</foreach>
+ 				))
+ 			</if>
+ 			<!-- 금지어 -->
+ 			<if test="boardContentProhibit!=null and boardContentProhibit==1">
+ 				
  			</if>
  		</where>
 	</select>

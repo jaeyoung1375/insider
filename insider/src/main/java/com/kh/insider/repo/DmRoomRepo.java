@@ -22,8 +22,4 @@ public interface DmRoomRepo {
     //채팅방 정보 변경
     void changeRoomInfo(DmRoomDto dmRoomDto);
     
-    //채팅방 이름 변경
-    void updateRoomName(DmRoomDto dmRoomDto);
-    
-    
 }
