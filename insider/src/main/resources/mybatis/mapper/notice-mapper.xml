@@ -4,43 +4,38 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
  <mapper namespace="notice">
 
-<select id="selectList" resultType="NoticeVO" parameterType="Long">
-    select * from (
-        select b.board_no as "board_no", bl.member_no, m.member_nick, mp.attachment_no, bl.board_like_check as "check", bl.board_like_time as "alarm_time", 0 as "type" from board b
-        inner join (
-            select bl.*, to_char(bl.board_like_time, 'YYYY-MM-DD') as "board_like_time" from board_like bl
-            inner join (
-                select bl.board_no, max(bl.board_like_time) as "board_like_time" from board b
-                inner join board_like bl on b.board_no = bl.board_no
-                where b.member_no = #{memberNo}
-                group by bl.board_no
-            ) 
-        ) bl on b.board_no = bl.board_no
-        left outer join member_profile mp on bl.member_no = mp.member_no
-        inner join member m on bl.member_no = m.member_no
-        where b.member_no = #{memberNo}
-    
-    union
-    
-    select null as "board_no", m.member_no, m.member_nick, mp.attachment_no, f.follow_check as "check", f.follow_time as "alarm_time", 1 as "type" from follow f
-    inner join member m on f.member_no = m.member_no
-    left outer join member_profile mp on m.member_no = mp.member_no
-    where f.follow_follower = #{memberNo}
-    
-    union
-    
-    select br2.board_no, m.member_no, m.member_nick, mp.attachment_no, r.reply_check as "check", r.reply_time as "alarm_time", 2 as "type" from board_reply br
-    inner join reply r on br.reply_no = r.reply_no
-    inner join (
-        select b.board_no, to_char(r.reply_time, 'YYYY-MM-DD'), max(r.reply_time) as "alarm_time" from board_reply br
-        inner join board b on br.board_no = b.board_no
-        inner join reply r on br.reply_no = r.reply_no
-        where b.member_no = #{memberNo}
-        group by b.board_no, to_char(r.reply_time, 'YYYY-MM-DD')
-    ) br2 on br.board_no = br2.board_no and br2.alarm_time = r.reply_time
-    inner join member m on m.member_no = r.reply_member_no
-    left outer join member_profile mp on mp.member_no = m.member_no)
-</select>
+	<select id="selectList" resultType="NoticeVO" parameterType="Long">
+		SELECT 'board_like' AS type, b.boardLikeTime AS notice_time, m.memberNo, mp.attachmentNo
+		FROM board b
+		INNER JOIN memberProfile mp ON mp.attachmentNo = b.memberNo
+		INNER JOIN member m ON m.memberNo = mp.memberNo
+		WHERE b.memberNo = #{memberNo}
+		
+		UNION
+		
+		SELECT 'reply' AS type, r.replyTime AS notice_time, m.memberNo, mp.attachmentNo
+		FROM reply r
+		INNER JOIN memberProfile mp ON mp.attachmentNo = r.memberNo
+		INNER JOIN member m ON m.memberNo = mp.memberNo
+		WHERE r.memberNo = #{memberNo}
+		
+		UNION
+		
+		SELECT 'reply_like' AS type, rl.replyLikeTime AS notice_time, m.memberNo, mp.attachmentNo
+		FROM replyLike rl
+		INNER JOIN reply r ON r.replyNo = rl.replyNo
+		INNER JOIN memberProfile mp ON mp.attachmentNo = r.memberNo
+		INNER JOIN member m ON m.memberNo = mp.memberNo
+		WHERE r.memberNo = #{memberNo}
+		
+		UNION
+		
+		SELECT 'follow' AS type, f.followTime AS notice_time, m.memberNo, mp.attachmentNo
+		FROM follow f
+		INNER JOIN memberProfile mp ON mp.attachmentNo = f.followFollower
+		INNER JOIN member m ON m.memberNo = mp.memberNo
+		WHERE f.followFollower = #{memberNo}
+	</select>
 
 	
 	<update id="checkBL" parameterType="int">
