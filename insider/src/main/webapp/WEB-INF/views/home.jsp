@@ -451,9 +451,9 @@
         			<h5 class="modal-title col-7" style="font-weight:bold;">좋아요</h5>
         			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="hideLikeListModal"></button>
       			</div>
-				<div class="modal-body p-0">
+				<div v-if="likeList.length != 0" class="modal-body p-0">				
 					<div class="row p-2 mt-2"  v-for="(like,index) in likeList" :key="index">
-						<div class="col d-flex">
+						<div  class="col d-flex">
 							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick">
 								<img v-if="like.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ like.attachmentNo" width="50" height="50" style="border-radius: 70%;">
 								<img v-else src="https://via.placeholder.com/50x50?text=profile" style="border-radius: 70%; ">
@@ -463,14 +463,22 @@
 							</a>
 						</div>
 					</div>
-					
-					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo">
-				
 				</div>
-			</div>
+				
+				<div class="modal-body p-0" v-else>
+					<div class="row p-2 mt-2" >
+						<div class="col text-center">
+							<h2 class="mt-1">아직 좋아요가 없습니다</h2><br>
+							<h3>첫 번째 좋아요를 눌러주세요</h3>
+						</div>
+	 			 	</div>		
+				</div>
+					
+				
+				
 		</div>
 	</div>
-	
+	</div>
 
 </div>
   소셜유저 : ${sessionScope.socialUser}		
