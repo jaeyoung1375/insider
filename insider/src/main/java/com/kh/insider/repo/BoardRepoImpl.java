@@ -50,11 +50,22 @@ public class BoardRepoImpl implements BoardRepo {
 	@Override
 	public List<BoardListVO> selectListWithAttach(AdminBoardSearchVO vo) {
 		return sqlSession.selectList("board.boardListTreeSelect",vo);
-	}
+	}	
 	@Override
 	public List<BoardListVO> selectListWithFollow(BoardSearchVO vo) {
 		return sqlSession.selectList("board.boardListWithFollow", vo);
 	}
+	@Override
+	public List<BoardListVO> selectListWithFollowNew(BoardSearchVO vo) {
+		return sqlSession.selectList("board.boardListWithFollowNew", vo);
+	}
+
+
+	@Override
+	public List<BoardListVO> selectListWithFollowOld(BoardSearchVO vo) {
+		return sqlSession.selectList("board.boardListWithFollowOld", vo);
+	}
+	
 	@Override
 	public List<BoardListVO> selectListWithoutFollow(BoardSearchVO vo) {
 		return sqlSession.selectList("board.boardListWithoutFollow", vo);
@@ -144,6 +155,7 @@ public class BoardRepoImpl implements BoardRepo {
 	}
 
 
+
 	@Override
 	public List<BoardListVO> selectListWithTag(BoardSearchVO vo) {
 		return sqlSession.selectList("board.selectListTagBoard", vo);
@@ -154,4 +166,5 @@ public class BoardRepoImpl implements BoardRepo {
 	public int selectListWithTagCount(BoardSearchVO vo) {
 		return sqlSession.selectOne("board.selectListTagBoardCount", vo);
 	}
+
 }
