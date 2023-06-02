@@ -50,7 +50,7 @@
 <div class="container-fluid mt-4" id="app">
 	<div class="row">
 		<div class="col-4 text-center">
-			<img class="rounded-circle" :src="'${pageContext.request.contextPath}'+mainImage" width = "150" height="150">
+			<img class="rounded-circle profile-image-box" :src="'${pageContext.request.contextPath}'+mainImage" width = "150" height="150">
 		</div>
 		<div class="col-8">
 			<div class="row">
