@@ -44,10 +44,5 @@ public class DmRoomRepoImpl implements DmRoomRepo {
         sqlSession.update("dmRoom.changeRoomInfo", dmRoomDto);
     }
 
-	@Override
-    public void updateRoomName(DmRoomDto dmRoomDto) {
-        sqlSession.update("dmRoom.updateRoomName", dmRoomDto);
-    }
-
 	
 }
