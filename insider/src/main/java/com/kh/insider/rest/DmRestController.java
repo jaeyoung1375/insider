@@ -18,6 +18,7 @@ import com.kh.insider.dto.DmMemberInfoDto;
 import com.kh.insider.dto.DmMemberListDto;
 import com.kh.insider.dto.DmMessageNickDto;
 import com.kh.insider.dto.DmRoomDto;
+import com.kh.insider.dto.DmRoomRenameDto;
 import com.kh.insider.dto.DmRoomUserProfileDto;
 import com.kh.insider.dto.DmUserDto;
 import com.kh.insider.repo.DmMemberInfoRepo;
@@ -29,6 +30,8 @@ import com.kh.insider.repo.DmUserRepo;
 import com.kh.insider.service.DmServiceImpl;
 import com.kh.insider.vo.DmRoomVO;
 import com.kh.insider.vo.DmUserVO;
+
+import lombok.val;
 
 @RestController
 @RequestMapping("/rest")
@@ -158,11 +161,31 @@ public class DmRestController {
 		return dmServiceImpl.findRoomByRoomNo(roomNo);
 	}
 	
-	//채팅방 이름 변경
+
+	//채팅방 이름 나에게만 변경
     @PostMapping("/roomRenameInsert")
     public void renameInsert(@RequestBody DmRoomVO dmRoomVO) {
         dmServiceImpl.RenameInsert(dmRoomVO);
     }
 	
-
+    //변경된 채팅방 이름 수정
+    @PutMapping("/changeRoomRename")
+    public void changeRoomRename (@RequestBody DmRoomRenameDto dmRoomRenameDto) {
+    	dmServiceImpl.updateReName(dmRoomRenameDto);
+    }
+    
+    //변경된 이름의 채팅방 번호 확인
+    @GetMapping("/existsRoomNo")
+    public boolean existsDmRoomNo(@RequestParam("roomNo") int roomNo) {
+        boolean existsRoomNo = dmServiceImpl.existsByRoomNo(roomNo);
+        return existsRoomNo;
+    }
+    
+    //채팅방에 참여한 회원 목록
+    @GetMapping("/users/{roomNo}")
+    public List<DmMemberInfoDto> getUsersByRoomNo(HttpSession session, @PathVariable int roomNo) {
+    	long memberNo = (Long) session.getAttribute("memberNo");
+        return dmMemberInfoRepo.findUsersByRoomNo(memberNo, roomNo);
+    }
+    
 }

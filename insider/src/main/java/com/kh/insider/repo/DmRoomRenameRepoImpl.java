@@ -22,4 +22,14 @@ public class DmRoomRenameRepoImpl implements DmRoomRenameRepo {
 		sqlSession.insert("dmRoomRename.RenameInsert", dmRoomRenameDto);
 	}
 
+	@Override
+	public void updateRoomRename(DmRoomRenameDto dmRoomRenameDto) {
+		sqlSession.update("dmRoomRename.updateRoomRename", dmRoomRenameDto);
+	}
+
+	@Override
+	public boolean existsByRoomNo(int roomNo) {
+		return sqlSession.selectOne("dmRoomRename.existsByRoomNo", roomNo);
+	}
+
 }

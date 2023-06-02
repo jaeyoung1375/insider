@@ -11,8 +11,21 @@
 	</select>
 	
 	<insert id="RenameInsert" parameterType="DmRoomRenameDto">
-        INSERT INTO dm_room_rename (rename_no, room_no, member_no, room_rename)
-        VALUES (#{renameNo}, #{roomNo}, #{memberNo}, #{roomRename})
-    </insert>
+    INSERT INTO dm_room_rename (rename_no, room_no, member_no, room_rename)
+    VALUES (#{renameNo}, #{roomNo}, #{memberNo}, #{roomRename})
+  </insert>
+
+  <update id="updateRoomRename" parameterType="DmRoomRenameDto">
+    UPDATE dm_room_rename
+    SET room_rename = #{roomRename}
+    WHERE room_no = #{roomNo}
+  </update>
+
+  <!-- 변경된 이름의 채팅방 번호 확인 -->
+  <select id="existsByRoomNo" resultType="boolean">
+    SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+    FROM dm_room_rename
+    WHERE room_no = #{roomNo}
+  </select>
 	
 </mapper>
