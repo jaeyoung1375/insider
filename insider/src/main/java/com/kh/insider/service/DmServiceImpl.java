@@ -54,7 +54,7 @@ public class DmServiceImpl implements DmService {
 	
 	@Autowired
 	private DmRoomRenameRepo dmRoomRenameRepo;
-	
+
 
 	//여러 개의 방을 관리할 저장소
 	Map<Integer, DmRoomVO> rooms = Collections.synchronizedMap(new HashMap<>());
@@ -391,27 +391,27 @@ public class DmServiceImpl implements DmService {
 	    dmRoomRepo.changeRoomInfo(dmRoomDto);
 	}
 
-	//특정 채팅방에 참여한 총 회원수
-    public int countUsersInRoom(int roomNo) {
-        return dmUserRepo.countUsersInRoom(roomNo);
-    }
-    
-    //특정 채팅방 정보 조회
-    public DmRoomDto findRoomByRoomNo(int roomNo) {
-        return dmRoomRepo.find(roomNo);
-    }
-    
-    //채팅방 이름 나에게만 변경
-    public void RenameInsert(DmRoomVO dmRoomVO) {
-        DmRoomRenameDto dmRoomRenameDto = new DmRoomRenameDto();
-        dmRoomRenameDto.setRenameNo(dmRoomRenameRepo.sequence()); 
-        dmRoomRenameDto.setRoomNo(dmRoomVO.getRoomNo());
-        dmRoomRenameDto.setMemberNo(dmRoomVO.getMemberNo());
-        dmRoomRenameDto.setRoomRename(dmRoomVO.getRoomRename());
-        dmRoomRenameRepo.RenameInsert(dmRoomRenameDto);
-    }
-    
-    //변경된 채팅방 이름 수정
+  //특정 채팅방에 참여한 총 회원수
+  public int countUsersInRoom(int roomNo) {
+      return dmUserRepo.countUsersInRoom(roomNo);
+  }
+
+  //특정 채팅방 정보 조회
+  public DmRoomDto findRoomByRoomNo(int roomNo) {
+      return dmRoomRepo.find(roomNo);
+  }
+
+  //채팅방 이름 나에게만 변경
+  public void RenameInsert(DmRoomVO dmRoomVO) {
+      DmRoomRenameDto dmRoomRenameDto = new DmRoomRenameDto();
+      dmRoomRenameDto.setRenameNo(dmRoomRenameRepo.sequence()); 
+      dmRoomRenameDto.setRoomNo(dmRoomVO.getRoomNo());
+      dmRoomRenameDto.setMemberNo(dmRoomVO.getMemberNo());
+      dmRoomRenameDto.setRoomRename(dmRoomVO.getRoomRename());
+      dmRoomRenameRepo.RenameInsert(dmRoomRenameDto);
+  }
+
+  //변경된 채팅방 이름 수정
 	public void updateReName(DmRoomRenameDto dmRoomRenameDto) {
 	    dmRoomRenameRepo.updateRoomRename(dmRoomRenameDto);
 	}

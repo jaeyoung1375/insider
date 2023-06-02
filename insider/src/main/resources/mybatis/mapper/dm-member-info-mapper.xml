@@ -57,5 +57,4 @@
 		) WHERE rn = 1
 	</select>
 	
-	
 </mapper>

@@ -879,28 +879,29 @@
 				//채팅방 이름 변경
 				async changeRoomName() {
 				    try {
+
 				    	const checkUrl = "${pageContext.request.contextPath}/rest/existsRoomNo";
-				        const renameUrl = "${pageContext.request.contextPath}/rest/changeRoomRename";
-				        const insertUrl = "${pageContext.request.contextPath}/rest/roomRenameInsert";
-				        
-				        const resp = await axios.get(checkUrl, { params: { roomNo: this.roomNo } });
-				        const data = {
-					            roomNo: this.roomNo,
-					            memberNo: this.memberNo,
-					            roomRename: roomNameInput.value
+              const renameUrl = "${pageContext.request.contextPath}/rest/changeRoomRename";
+              const insertUrl = "${pageContext.request.contextPath}/rest/roomRenameInsert";
+
+              const resp = await axios.get(checkUrl, { params: { roomNo: this.roomNo } });
+              const data = {
+                    roomNo: this.roomNo,
+                    memberNo: this.memberNo,
+                    roomRename: roomNameInput.value
 					    };
-				        if (resp.data === true) {
-				            await axios.put(renameUrl, data);
-				            console.log("채팅방 이름이 성공적으로 변경되었습니다.");
-				        } else {
-				            await axios.post(insertUrl, data);
-				            console.log("채팅방 이름이 성공적으로 추가되었습니다.");
-				        }
-				
-				        this.dmRoomList = [];
-				        await this.fetchDmRoomList();
+              if (resp.data === true) {
+                  await axios.put(renameUrl, data);
+                  console.log("채팅방 이름이 성공적으로 변경되었습니다.");
+              } else {
+                  await axios.post(insertUrl, data);
+                  console.log("채팅방 이름이 성공적으로 추가되었습니다.");
+              }
+
+              this.dmRoomList = [];
+              await this.fetchDmRoomList();
 				    } catch (error) {
-				        console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
+                console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
 				    }
 				},
 				//채팅방 이름 변경 확인 버튼

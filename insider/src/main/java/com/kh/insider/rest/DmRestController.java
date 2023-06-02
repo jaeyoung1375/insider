@@ -100,6 +100,7 @@ public class DmRestController {
 		return dmMemberInfoRepo.dmMemberList(memberNo);
 	}	
 	
+	
 	//채팅방 생성
 	@PostMapping("/createChatRoom")
 	public DmRoomVO createRoom(HttpSession session) {
@@ -160,6 +161,7 @@ public class DmRestController {
 		return dmServiceImpl.findRoomByRoomNo(roomNo);
 	}
 	
+
 	//채팅방 이름 나에게만 변경
     @PostMapping("/roomRenameInsert")
     public void renameInsert(@RequestBody DmRoomVO dmRoomVO) {

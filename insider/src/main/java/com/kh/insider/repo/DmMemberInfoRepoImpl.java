@@ -29,5 +29,5 @@ public class DmMemberInfoRepoImpl implements DmMemberInfoRepo{
         params.put("roomNo", roomNo);
         return sqlSession.selectList("dmMemberInfo.findUsersByRoomNo", params);
 	}
-	
+
 }
