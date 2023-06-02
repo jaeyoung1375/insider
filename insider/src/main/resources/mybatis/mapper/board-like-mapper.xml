@@ -27,4 +27,8 @@
 		select count(*) from board_like where board_no = #{boardNo}
 	</select>
 	
+	<select id="likeList" resultType="BoardLikeDto" parameterType="int">
+		select * from like_with_nick where board_no=#{boardNo}
+	</select>
+	
 </mapper>

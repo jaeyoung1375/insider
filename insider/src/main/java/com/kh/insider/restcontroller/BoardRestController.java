@@ -17,6 +17,7 @@ import com.kh.insider.dto.BoardLikeDto;
 import com.kh.insider.repo.BoardLikeRepo;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.service.BoardSearchService;
+import com.kh.insider.service.ForbiddenService;
 import com.kh.insider.vo.BoardLikeVO;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
@@ -36,18 +37,49 @@ public class BoardRestController {
 	private BoardLikeRepo boardLikeRepo;
 	@Autowired
 	private BoardSearchService boardSearchService;
-	
+	@Autowired
+	private ForbiddenService forbiddenService;
 	
 	//무한스크롤
-	@GetMapping("/page/{page}")
-	public List<BoardListVO> paging(@PathVariable int page, HttpSession session) {
+		@GetMapping("/page/{page}")
+		public List<BoardListVO> paging(@PathVariable int page, HttpSession session) {
+			long memberNo=(Long)session.getAttribute("memberNo");
+			
+			BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
+			boardSearchVO.setBoardCount(2);
+			return boardRepo.selectListWithoutFollow(boardSearchVO);
+			//return boardRepo.selectListWithFollow(boardSearchVO);
+	}
+	
+	//무한스크롤 팔로우(3일 이내)
+	@GetMapping("/new/{page}")
+	public List<BoardListVO> pagingNew(@PathVariable int page, HttpSession session) {
 		long memberNo=(Long)session.getAttribute("memberNo");
 		
 		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
+		boardSearchVO.setLoginMemberNo(memberNo);
 		boardSearchVO.setBoardCount(2);
-		return boardRepo.selectListWithoutFollow(boardSearchVO);
+		
+		//금지어 정규표현식 검사 후 반환
+		List<BoardListVO> boardList = boardRepo.selectListWithFollowNew(boardSearchVO);
+		return forbiddenService.changeForbiddenWords(boardList);
 		//return boardRepo.selectListWithFollow(boardSearchVO);
 	}
+	
+	@GetMapping("/old/{page}")
+	public List<BoardListVO> pagingOld(@PathVariable int page, HttpSession session) {
+		long memberNo=(Long)session.getAttribute("memberNo");
+		
+		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
+		boardSearchVO.setLoginMemberNo(memberNo);
+		boardSearchVO.setBoardCount(2);
+		
+		//금지어 정규표현식 검사 후 반환
+		List<BoardListVO> boardList =boardRepo.selectListWithFollowOld(boardSearchVO);
+		return forbiddenService.changeForbiddenWords(boardList);
+		//return boardRepo.selectListWithFollow(boardSearchVO);
+	}
+	
 	//검색 페이지 리스트 출력을 위한 계층형 조회
 	@GetMapping("/list/{page}")
 	public List<BoardListVO> boardList(@PathVariable int page, HttpSession session){
@@ -92,5 +124,11 @@ public class BoardRestController {
 		boardLikeDto.setMemberNo(memberNo);
 		
 		return boardLikeRepo.check(boardLikeDto);
+	}
+	
+	//좋아요 목록 불러오기
+	@GetMapping("/like/list/{boardNo}")
+	public List<BoardLikeDto> likeList(@PathVariable int boardNo){
+		return boardLikeRepo.list(boardNo);
 	}
 }

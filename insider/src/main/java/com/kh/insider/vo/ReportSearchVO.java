@@ -20,10 +20,15 @@ public class ReportSearchVO {
 	private String reportTable;
 	private Integer reportMinCount;
 	private Integer reportMaxCount;
+	private Integer reportMaxManagedCount;
+	private Integer reportMinManagedCount;
+	private Integer suspension;
+
 	private String memberNick;
 	private String memberName;
 	private Integer reportResult;
 	private String order;
+	
 	
 	private Long memberNo;
 	private Integer data;

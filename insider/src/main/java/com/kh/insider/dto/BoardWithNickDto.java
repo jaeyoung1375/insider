@@ -35,4 +35,8 @@ public class BoardWithNickDto {
 	   return timeStr;
 	}
 	
+	public String getImageURL() {
+		if(attachmentNo == null) return "https://via.placeholder.com/150x150";
+		else return "/rest/attachment/download/"+attachmentNo;
+	}
 }
