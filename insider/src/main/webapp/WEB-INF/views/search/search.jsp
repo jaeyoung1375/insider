@@ -10,9 +10,9 @@
 	position: absolute;
 	z-index: 2;
 	display: block;
-	width: 2.375rem;
+	width: 2.7rem;
 	height: 2.375rem;
-	line-height: 2.375rem;
+	line-height: 3.1rem;
 	text-align: center;
 	pointer-events: none;
 	color: #aaa;
@@ -26,7 +26,7 @@
 }
 .box {
 	position: relative;
-	width: 30.9%;
+	width: 30%;
 	font-size:1.2em;
 }
 .box::after {
@@ -34,7 +34,7 @@
 	content: "";
 	padding-bottom: 100%;
 }
-.content {
+.content,.content-box {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -49,11 +49,11 @@
 	z-index: 1;
 	margin-top:0.5em;
 	margin-right:0.5em;
-	color:lightgray;
+	color:white;
 }
 .like-comment{
 	position: absolute;
-	z-index: 1;
+	z-index: 10;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
@@ -61,8 +61,9 @@
 	cursor:default;
 	display:none;
 }
-.box:hover{
+.box:hover .content-box{
 	background-color:rgba(34, 34, 34, 0.13);
+	z-index:5;
 }
 .box:hover .like-comment{
 	display:block;
@@ -102,73 +103,135 @@
 .searched-menu-option{
 	cursor:pointer
 }
+
+.carousel-inner img {
+    width: 470px;
+    height: 480px;
+    object-fit: cover;
+}
+
+.like {
+	color:red;
+	cursor: pointer;
+	}
+
+.fa-heart {
+	cursor: pointer;
+	}
+
+.profile {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 50%;
+ }
+ 
+ .fullscreen{
+            position:fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 5555;
+            
+            background-color: rgba(0, 0, 0, 0.2);
+
+      }
+
+     .fullscreen > .fullscreen-container{
+         position: absolute;
+         left: 50%;
+         top: 50%;
+         
+         width: 1200px;
+         height: 700px;
+         
+         transform: translate(-50%, -50%);
+     }
+     
+    .card-scroll{
+        	overflow-y: auto;
+        	-ms-overflow-style: none;
+		}        
+    .card-scroll::-webkit-scrollbar {
+		    display: none;
+	}
+	.childReply{
+		padding-left: 35px;
+	} 
 </style>
 <div class="container-fluid mt-4" id="app">
 	<div class="row">
-		<div class="offset-md-2 col-md-8 p-0">
+		<div class="col p-0">
 		<!-- 검색창 -->
-			<div class="row text-center search-dropdown w-100 p-0 m-auto">
-				<div class="row w-100 p-0 m-0" @click="loadSearchedList">
-					<div class="col form-group has-search p-0 m-0">
-						<span class="fa-solid fa-search form-control-feedback"></span>
-						<input type="text" class="form-control rounded  w-100 m-0" placeholder="검색" v-model="searchInput" @blur="hideAllList"  @focus="searchInputChanged" 
-							@input="searchInputChanged" ref="searchInput">
-					</div>
-				</div>
-			<!-- 검색기록 -->
-				<div class="search-dropdown-content" v-show="searchedListShow">
-					<div v-for="(searched, index) in searchedList" :key="index">
-						<div class="row searched-menu p-3" v-if="searched.memberNick==null">
-							<div class="offset-2 col-6 p-2 searched-menu-option" style="text-align:left; font-weight:bold; font-size:1.2em" @click="moveToTagDetail(searched.searchTagName)">
-								# {{searched.searchTagName}}
-							</div>
-							<div class="col-3 d-flex align-items-center text-left">
-								팔로우 : {{searched.follow}}
-							</div>
-							<!-- 삭제 마크 -->
-							<div class="col-1 d-flex justify-content-center align-items-center">
-								<i class="fa-solid fa-xmark" @click="deleteSearched(index)"></i>
+			<div class="row">
+				<div class="offset-1 col-10">
+					<div class="row text-center search-dropdown w-100 p-0 m-auto">
+						<div class="row w-100 p-0 m-0" @click="loadSearchedList">
+						<!-- 검색창 -->
+							<div class="col form-group has-search p-0 m-0">
+								<span class="fa-solid fa-search form-control-feedback"></span>
+								<input type="text" class="form-control rounded  w-100 m-0" placeholder="검색" v-model="searchInput" @blur="hideAllList"  @focus="searchInputChanged" 
+									@input="searchInputChanged" ref="searchInput" style="height:3em">
 							</div>
 						</div>
-						<div class="row searched-menu p-3" v-else>
-							<div class="col-2">
-								<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+searched.imageURL">
-							</div>
-							<div class="col-6 searched-menu-option"  @click="moveToMemberDetail(searched.searchMemberNo)">
-								<div style="text-align:left; font-weight:bold; font-size:1.2em">{{searched.memberNick}}</div>
-								<div style="text-align:left;">{{searched.memberName}}</div>
-							</div>
-							<div class="col-3 d-flex align-items-center text-left">
-								팔로우 : {{searched.follow}}
-							</div>
-							<!-- 삭제 마크 -->
-							<div class="col-1 d-flex justify-content-center align-items-center">
-								<i class="fa-solid fa-xmark" @click="deleteSearched(index)"></i>
+					<!-- 검색기록 -->
+						<div class="search-dropdown-content" v-show="searchedListShow">
+							<div v-for="(searched, index) in searchedList" :key="index">
+								<div class="row searched-menu p-3" v-if="searched.memberNick==null">
+									<div class="offset-2 col-6 p-2 searched-menu-option" style="text-align:left; font-weight:bold; font-size:1.2em" @click="moveToTagDetail(searched.searchTagName)">
+										# {{searched.searchTagName}}
+									</div>
+									<div class="col-3 d-flex align-items-center text-left">
+										팔로우 : {{searched.follow}}
+									</div>
+									<!-- 삭제 마크 -->
+									<div class="col-1 d-flex justify-content-center align-items-center">
+										<i class="fa-solid fa-xmark" @click="deleteSearched(index)"></i>
+									</div>
+								</div>
+								<div class="row searched-menu p-3" v-else>
+									<div class="col-2">
+										<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+searched.imageURL">
+									</div>
+									<div class="col-6 searched-menu-option"  @click="moveToMemberDetail(searched.searchMemberNo, searched.memberNick)">
+										<div style="text-align:left; font-weight:bold; font-size:1.2em">{{searched.memberNick}}</div>
+										<div style="text-align:left;">{{searched.memberName}}</div>
+									</div>
+									<div class="col-3 d-flex align-items-center text-left">
+										팔로우 : {{searched.follow}}
+									</div>
+									<!-- 삭제 마크 -->
+									<div class="col-1 d-flex justify-content-center align-items-center">
+										<i class="fa-solid fa-xmark" @click="deleteSearched(index)"></i>
+									</div>
+								</div>
 							</div>
 						</div>
-					</div>
-				</div>
-			<!-- 추천 검색어 리스트 -->
-				<div class="search-dropdown-content" v-show="recommandListShow">
-					<div v-for="(recommand, index) in recommandList" :key="index">
-						<div class="row search-recommand-menu p-3" v-if="recommand.nick==null" @click="moveToTagDetail(recommand.name)">
-							<div class="col-6 offset-2 p-2" style="text-align:left; font-weight:bold; font-size:1.2em">
-								# {{recommand.name}}
-							</div>
-							<div class="col-4 d-flex align-items-center text-left">
-								팔로우 : {{recommand.follow}}
-							</div>
-						</div>
-						<div class="row search-recommand-menu p-3" v-else @click="moveToMemberDetail(recommand.memberNo)">
-							<div class="col-2">
-								<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+recommand.imageURL">
-							</div>
-							<div class="col-6">
-								<div style="text-align:left; font-weight:bold; font-size:1.2em">{{recommand.nick}}</div>
-								<div style="text-align:left;">{{recommand.name}}</div>
-							</div>
-							<div class="col-4 d-flex align-items-center text-left">
-								팔로우 : {{recommand.follow}}
+					<!-- 추천 검색어 리스트 -->
+						<div class="search-dropdown-content" v-show="recommandListShow">
+							<div v-for="(recommand, index) in recommandList" :key="index">
+								<div class="row search-recommand-menu p-3" v-if="recommand.nick==null" @click="moveToTagDetail(recommand.name)">
+									<div class="col-6 offset-2 p-2" style="text-align:left; font-weight:bold; font-size:1.2em">
+										# {{recommand.name}}
+									</div>
+									<div class="col-4 d-flex align-items-center text-left">
+										팔로우 : {{recommand.follow}}
+									</div>
+								</div>
+								<div class="row search-recommand-menu p-3" v-else @click="moveToMemberDetail(recommand.memberNo)">
+									<div class="col-2">
+										<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+recommand.imageURL">
+									</div>
+									<div class="col-6">
+										<div style="text-align:left; font-weight:bold; font-size:1.2em">{{recommand.nick}}</div>
+										<div style="text-align:left;">{{recommand.name}}</div>
+									</div>
+									<div class="col-4 d-flex align-items-center text-left">
+										팔로우 : {{recommand.follow}}
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -176,12 +239,13 @@
 			</div>
 			
 		<!-- 리스트 -->
-			<div class="row">
+			<div class="row d-flex justify-content-center mt-3">
 				<div class="box m-2" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)">
-					<img class='content' v-if="board.boardAttachmentList.length>0" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
+					<img class='content' @click="detailViewOn(index)" v-if="board.boardAttachmentList.length>0" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
 					<img class='content' v-else src="${pageContext.request.contextPath}/static/image/noimage.png">
+					<div class="content-box"  @click="detailViewOn(index)"></div>
 					<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
-					<div class="like-comment">
+					<div class="like-comment" @click="detailViewOn(index)">
 						<span><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
 						<span class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
 					</div>
@@ -189,7 +253,140 @@
 			</div>
 		</div>
 	</div>
+	
+	<!-- ---------------------------------게시물 상세보기 모달-------------------------- -->
+
+	<div v-if="detailView" class="container-fluid fullscreen" @click="closeDetail">
+	
+		<div class="p-4 mt-2 ms-4 d-flex justify-content-end">
+			<h2 class="btn btn-none" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
+		</div>
+		<div class="row fullscreen-container" @click.stop >
+			<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
+				<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
+	                <div class="carousel-indicators">
+	                  <button v-for="(attach, index2) in boardList[detailIndex].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
+	                </div>
+	               
+	                <div class="carousel-inner">
+	                  <div  v-for="(attach, index2) in boardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
+	                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" style="width:700px; height:700px;"> 
+	                  </div>
+	                </div>
+	               
+	                <button class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="prev">
+	                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+	                  <span class="visually-hidden">Previous</span>
+	                </button>
+	                <button  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="next">
+	                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+	                  <span class="visually-hidden">Next</span>
+	                </button>
+	                
+	           </div>
+			</div>
+	           
+	        <div class="col-4" style="padding-left: 0;">
+	        	<div class="card bg-light" style="border-radius:0; max-height: 700px">
+	           		<div class="card-header">
+		           		<img class="profile" :src="profileUrl(detailIndex)">
+	           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardList[detailIndex].boardWithNickDto.memberNick"><b>{{boardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
+	           		</div>
+					
+					<div class="card-body card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
+						<h5 class="card-title"></h5>
+						<p class="card-text" style="margin-left: 0.5em;">{{boardList[detailIndex].boardWithNickDto.boardContent}}
+						<br v-if="boardList[detailIndex].boardTagList.length > 0"><br v-if="boardList[detailIndex].boardTagList.length > 0">
+	                            	<a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in boardList[detailIndex].boardTagList" :key="index3" style="margin-right: 0.5em; color: blue; cursor: pointer;">\#{{tag.tagName}}</a>
+						</p>
+						
+						
+						<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
+							<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="color:black;text-decoration:none; position:relative;">
+								<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="42" height="42" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
+								<img v-else src="https://via.placeholder.com/42x42?text=profile" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
+								
+								<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; font-weight: bold;">{{replyList[index].memberNick}}</p>
+													
+							</a>
+							<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em;">{{replyList[index].replyContent}}</p>
+	<!-- 						<p style="padding-left:4.0em;margin-bottom:1px;font-size:0.8em; color:gray;"> -->
+							<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
+								<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
+								<i :class="{'fa-heart': true, 'like':isReplyLiked[index],'ms-2':true, 'fa-solid': isReplyLiked[index], 'fa-regular': !isReplyLiked[index]}" @click="likeReply(reply.replyNo,index)" style="font-size: 0.9em;"></i>
+								&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+								<i v-if="replyList[index].replyMemberNo == loginMemberNo" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="color:red; cursor: pointer;"></i>
+								
+								
+							</p>
+							
+	<!-- 						<p v-if="replyList[index].replyParent == 0"> -->
+	<!-- 							<span @click="showReReply(reply.replyNo, index)" style="cursor:pointer; padding-left:4em; font-size:0.8em; color:gray;">{{replyStatus(index)}}</span> -->
+	<!-- 						</p> -->
+						</div>
+						
+						<div v-else class="card-text" style="position: relative;">
+							<b style="margin-left: 0.5em;">첫 댓글을 작성해보세요</b>
+						</div>
+						
+						
+					</div>
+					<hr style="margin-top: 0; margin-bottom: 0;">
+					
+					<div class="card-body"  style="height:110px; padding-top: 0px; padding-left: 0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
+						<h5 class="card-title"></h5>
+						<p class="card-text" style="margin: 0 0 4px 0">
+							<i :class="{'fa-heart': true, 'like':isLiked[detailIndex],'ms-2':true, 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}" @click="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
+							&nbsp;
+							<i class="fa-regular fa-message mb-1" style="font-size: 25px; "></i>
+						</p>
+						<p class="card-text" style="margin: 0 0 4px 0; cursor: pointer;" @click="showLikeListModal(boardList[detailIndex].boardWithNickDto.boardNo)"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount[detailIndex]}}개</b></p>
+						<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(boardList[detailIndex].boardWithNickDto.boardTimeAuto)}}</p>
+						
+					</div>
+					
+					<div class="input-group">
+						<input ref="replyInput" type="text" class="form-control" :placeholder="placeholder" v-model="replyContent" style="border: none;" aria-label="Recipient's username" aria-describedby="button-addon2" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(detailIndex)">
+						<button class="btn" type="button" id="button-addon2" style="border-top-right-radius: 0!important;" @click="replyInsert(detailIndex)">작성</button>
+					</div>
+									        	
+	        	</div>
+					
+			</div>
+		</div>
+	</div>
+	
+	
+	<!-- ---------------------------------좋아요 목록 모달-------------------------- -->
+<div class="modal" tabindex="-1" role="dialog" id="likeListModal" data-bs-backdrop="static" ref="likeListModal" style="z-index:9999;">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content">
+				<div class="modal-header">
+        			<h5 class="modal-title col-7" style="font-weight:bold;">좋아요</h5>
+        			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="hideLikeListModal"></button>
+      			</div>
+				<div class="modal-body p-0">
+					<div class="row p-2 mt-2"  v-for="(like,index) in likeList" :key="index">
+						<div class="col d-flex">
+							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick">
+								<img v-if="like.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ like.attachmentNo" width="50" height="50" style="border-radius: 70%;">
+								<img v-else src="https://via.placeholder.com/50x50?text=profile" style="border-radius: 70%; ">
+							</a>
+							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick" style="color:black;text-decoration:none; position:relative;">
+								<h6 style="margin: 14px 0 0 10px;">{{like.memberNick}}</h6>
+							</a>
+						</div>
+					</div>
+					
+				
+				</div>
+			</div>
+		</div>
+	</div>
+	
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script>
 	Vue.createApp({
 		data() {
@@ -204,11 +401,39 @@
 				loading:false,
 				finish:false,
 				searchedList:[],
+				
+				//상세보기 및 댓글
+				detailView:false,
+				detailIndex:"",
+				replyList:[],
+				replyParent:0,
+				replyContent:"",
+				placeholder:"댓글 입력..",
+				boardLikeCount:[], // 좋아요 수를 저장할 변수
+	            isLiked : [], // 로그인 회원이 좋아요 체크 여부
+	            likeList : [],
+	            likeListData : [],
+	            likeListModal : false,
+	            
+	          	
+	            //게시물 댓글 좋아요 기능 전용 변수
+				replyLikeCount : [], // 댓글 좋아요 수 저장 변수
+				isReplyLiked : [], // 로그인 회원이 댓글 좋아요 체크 여부 
 			};
 		},
 		computed: {
-
 			//계산영역
+			profileUrl(index){
+	    		 return index => {
+	    		      const board = this.boardList[index];
+	    		      if (board && board.boardWithNickDto && board.boardWithNickDto.attachmentNo > 0) {
+	    		        return contextPath + "/rest/attachment/download/" + board.boardWithNickDto.attachmentNo;
+	    		      }
+	    		      else {
+	    		        return "https://via.placeholder.com/100x100?text=profile";
+	    		      }
+	    		    };
+	    		  },
 		},
 		methods: {
 			//메소드영역
@@ -223,6 +448,10 @@
 				if(this.loading||this.finish) return;
 				this.loading=true;
 				const resp = await axios.get(contextPath+"/rest/board/list/"+this.page);
+				for (const board of resp.data) {
+	            	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+	            	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
+	              }
 				this.boardList.push(...resp.data);
 				this.page++;
 				if(resp.data.length<10){//데이터가 10개 미만이면 불러오는걸 막음
@@ -257,10 +486,12 @@
 			async moveToTagDetail(tagName){
 				const data={searchTagName:tagName};
 				const resp = await axios.post(contextPath+"/rest/search/", data);
+				window.location.href=contextPath+"/tag/"+tagName;
 			},
-			async moveToMemberDetail(searchMemberNo){
+			async moveToMemberDetail(searchMemberNo, memberNick){
 				const data={searchMemberNo:searchMemberNo};
 				const resp = await axios.post(contextPath+"/rest/search/", data);
+				window.location.href=contextPath+"/member/"+memberNick;
 			},
 			//검색기록 출력
 			async loadSearchedList(){
@@ -279,7 +510,171 @@
 				setTimeout(()=>{
 					this.searchedListShow=true;
 				},150);
-			}
+			},
+			
+			
+			 //상세보기 모달창 열기
+	        detailViewOn(index) {
+	        	this.detailView = true;
+	        	this.detailIndex = index;
+	        	this.replyLoad(index);
+	        	document.body.style.overflow = "hidden";
+	        },
+	        
+	        //상세보기 모달창 닫기
+	        closeDetail() {
+	        	this.detailView = false;
+	        	this.replyList = [];
+	        	document.body.style.overflow = "unset";
+	        },
+	        
+	      //댓글 조회
+	        async replyLoad(index) {
+	        	this.replyList = [];
+	        	this.isReplyLiked = [];
+	        	this.replyLikeCount = [];
+	        	const resp = await axios.get("${pageContext.request.contextPath}/rest/reply/"+ this.boardList[index].boardWithNickDto.boardNo);
+	            
+	        	for (const reply of resp.data) {
+	            	this.isReplyLiked.push(await this.likeReplyChecked(reply.replyNo));
+	            	this.replyLikeCount.push(reply.replyLike);
+	              }
+	        	
+	        	this.replyList=[...resp.data];
+	        },
+	        
+	        //댓글 등록
+	        async replyInsert(index) {
+	        	  const boardNo = this.boardList[index].boardWithNickDto.boardNo;
+	        	  
+	        	  const requestData = {
+	        	    replyOrigin: boardNo,
+	        	    replyContent: this.replyContent,
+	        	    replyParent : this.replyParent
+	        	  };
+	        	  this.replyContent='';
+	        	  
+	        	  try {
+	        	    const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+	        	    this.replyLoad(index);	    
+	        	  } 
+	        	  catch (error) {
+	        	    console.error(error);
+	        	  }
+	        },
+	        
+	        //댓글 삭제
+	        async replyDelete(index,index2) {
+	        	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList[index].replyNo);
+	        	this.replyLoad(index2);
+	        },
+	        
+	        //대댓글
+	        reReply(replyNo) {
+	        	if(replyNo==this.replyParent){
+	        		this.replyParent = 0;
+	        		this.placeholder = "댓글 입력.."
+	        	}
+	        	else{
+	        		this.replyParent = replyNo;
+	        		this.placeholder = "답글 입력..";
+	        		this.$refs.replyInput.focus();
+	        	}
+	        },
+	        
+	      //댓글 좋아요
+	        async likeReply(replyNo, index) {
+	        	const resp = await axios.post("${pageContext.request.contextPath}/rest/reply/like", {replyNo:replyNo});
+	        	
+	        	if(resp.data.result) {
+	        		this.isReplyLiked[index] = true;
+	        	}
+	        	else {
+	        		this.isReplyLiked[index] = false;
+	        	}
+	        	this.replyLikeCount[index] = resp.data.count;
+	        },
+	        
+	        //로그인한 회원이 댓글 좋아요 눌렀는지 확인
+	        async likeReplyChecked(replyNo) {
+	        	const resp = await axios.post("${pageContext.request.contextPath}/rest/reply/check", {replyNo:replyNo});
+	        	return resp.data;
+	        },
+			
+	        //게시글 날짜 계산 함수
+	        dateCount(date) {
+	        	const curTime = new Date();
+	        	const postTime = new Date(date);
+	        	const duration = Math.floor((curTime - postTime) / (1000 * 60));
+	        	
+	        	if(duration < 1){
+	        		return "방금 전";
+	        	}
+	        	else if(duration < 60){
+	        		return duration + "분 전";
+	        	}
+	        	else if(duration < 1440) {
+	        		const hours = Math.floor(duration / 60);
+	        		return hours + "시간 전"
+	        	} 
+	        	else {
+	        		const days = Math.floor(duration / 1440);
+	        		return days + "일 전";
+	        		//return day + "일 전";
+	        	}
+	        		//return Math.floor(time) + "시간 전";
+	        	
+	        },
+	        
+	        //로그인한 회원이 좋아요 눌렀는지 확인
+	        async likeChecked(boardNo) {
+	        	const resp = await axios.post("${pageContext.request.contextPath}/rest/board/check", {boardNo:boardNo});			
+	        	return resp.data;
+	        },
+	        
+	        //로그인한 회원이 댓글 좋아요 눌렀는지 확인
+	        async likeReplyChecked(replyNo) {
+	        	const resp = await axios.post("${pageContext.request.contextPath}/rest/reply/check", {replyNo:replyNo});
+	        	return resp.data;
+	        },
+	        
+	        //좋아요
+	        async likePost(boardNo, index) {
+	            const resp = await axios.post("${pageContext.request.contextPath}/rest/board/like", {boardNo:boardNo});
+	            if(resp.data.result){
+	            	this.isLiked[index] = true;
+	            }
+	            else {
+	            	this.isLiked[index] = false;
+	            }
+	            
+	            this.boardLikeCount[index] = resp.data.count;
+	        },
+	        
+	      //좋아요 리스트
+	        async likeListLoad(boardNo) {
+	        	//console.log(boardNo);
+	        	const resp = await axios.get("${pageContext.request.contextPath}/rest/board/like/list/" + boardNo);
+	        	//console.log(resp);
+	        	this.likeList = [...resp.data];
+	        	//console.log(this.likeList);
+	        },
+	        
+	        //좋아요 모달창 열기
+	        showLikeListModal(boardNo){
+				if(this.likeListModal==null) return;
+				this.likeListLoad(boardNo);
+				this.likeListModal.show();
+				this.likeListData=[boardNo];
+			},
+			
+			//좋아요 모달창 닫기
+			hideLikeListModal(){
+				if(this.likeListModal==null) return;
+				this.likeList=[];
+				this.likeListModal.hide();
+			},
+			
 		},
 		created(){
 			//데이터 불러오는 영역
@@ -304,7 +699,9 @@
 				const current = window.scrollY;
 				const percent = (current/height)*100;
 				this.percent = Math.round(percent);
-			}, 250))
+			}, 250));
+			
+			this.likeListModal = new bootstrap.Modal(this.$refs.likeListModal);
 		}
 	}).mount("#app");
 </script>

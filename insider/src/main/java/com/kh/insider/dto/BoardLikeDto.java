@@ -11,4 +11,8 @@ public class BoardLikeDto {
 	private Date boardLikeTime;
 	
 	private int boardLikeCheck;
+
+	private int attachmentNo;
+	private String memberNick;
+
 }

@@ -1,5 +1,7 @@
 package com.kh.insider.repo;
 
+import java.util.List;
+
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -31,6 +33,11 @@ public class BoardLikeRepoImpl implements BoardLikeRepo {
 	@Override
 	public int count(int boardNo) {
 		return sqlSession.selectOne("boardLike.count", boardNo);
+	}
+
+	@Override
+	public List<BoardLikeDto> list(int boardNo) {
+		return sqlSession.selectList("boardLike.likeList", boardNo);
 	}
 
 }
