@@ -168,7 +168,7 @@ public class AdminRestController {
 	}
 	//금지어 출력
 	@GetMapping("/forbidden")
-	public List<ForbiddenDto> forbiddenList(@RequestParam(required=false) String forbiddenWord) {
+	public List<String> forbiddenList(@RequestParam(required=false) String forbiddenWord) {
 		return forbiddenRepo.selectList(forbiddenWord);
 	}
 	//금지어 입력
