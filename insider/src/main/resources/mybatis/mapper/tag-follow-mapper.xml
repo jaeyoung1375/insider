@@ -21,4 +21,7 @@
 	<select id="selectOne" resultType="tagFollowDto">
 		select * from tag_follow where tag_name=#{tagName} and member_no=#{memberNo}
 	</select>
+	<select id="selectFollowTagList" resultType="String">
+		select tag_name from tag_follow where member_no = #{memberNo}
+	</select>
 </mapper>
