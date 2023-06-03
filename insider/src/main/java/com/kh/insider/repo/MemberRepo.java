@@ -43,4 +43,7 @@ public interface MemberRepo {
 	
 	// 닉네임
 	String nick(long memberNo);
+	
+	//팔로우 수 갱신
+	public void updateFollow(long memberNo);
 }

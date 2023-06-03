@@ -239,4 +239,8 @@ ORDER BY MAX(ba.ATTACHMENT_NO) DESC
 		<include refid="topNfooter"></include>
 	</select>
 	
+	<!-- 팔로우 인원수 갱신 -->
+	<update id="updateFollow">
+		update member set member_follow=(select count(*) from follow where follow_follower=#{memberNo}) where member_no=#{memberNo}
+	</update>
 </mapper>
