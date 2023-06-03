@@ -92,39 +92,7 @@
 	color:white;
 }
 /* 게시물 네모박스 css 끝 */
-/* 모달 버튼 파란 글씨 */
-.modal-click-btn{
-	color:#0095F6;
-	cursor:pointer;
-}
-.modal-click-btn:hover{
-	color:#0b5ed7;
-}
-/* 모달 버튼 빨간 글씨 */
-.modal-click-btn-negative{
-	color:#d9534f;
-	cursor:pointer;
-}
-.modal-click-btn-negative:hover{
-	color:#d63384;
-}
-/* 모달 버튼 회색 글씨 */
-.modal-click-btn-neutral{
-	color:#6c757d;
-	cursor:pointer;
-	text-decoration: none;
-}
-.modal-click-btn-neutral:hover{
-	color:#343a40;
-}
-/* 모달 버튼 초록 글씨 */
-.modal-click-btn-green{
-	color:#198754;
-	cursor:pointer;
-}
-.modal-click-btn-green:hover{
-	color:#20c997;
-}
+
 /* 모달이 사이즈가 커지면 스크롤이 생기고 헤더 고정 */
 .modal-content{
 	max-height:100%;

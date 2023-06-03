@@ -75,6 +75,9 @@
 			<if test="memberName!=null and !memberName.equals('')">
 				,member_name=#{memberName}
 			</if>
+			<if test="memberNick!=null and !memberNick.equals('')">
+				,member_nick=#{memberNick}
+			</if>
 			<if test="memberEmail!=null and !memberEmail.equals('')">
 				,member_email=#{memberEmail}
 			</if>
