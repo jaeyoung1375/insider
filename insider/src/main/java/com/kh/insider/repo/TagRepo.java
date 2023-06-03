@@ -20,4 +20,6 @@ public interface TagRepo {
 	
 	//태그 사용가능 여부 변경
 	int updateAvailable(TagDto tagDto);
+	
+	
 }

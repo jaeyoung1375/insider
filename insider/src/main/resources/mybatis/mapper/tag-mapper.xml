@@ -31,6 +31,8 @@
 		update tag set tag_available=#{tagAvailable} where tag_name=#{tagName}
 	</update>
 	
+
+	
 <!-- 조건검색 태그 리스트 -->
 	<select id="tagCountList" resultType="tagCountVO">
 		<bind name="memberNickExist" value="memberNick!=null and !memberNick.equals('')"></bind>
