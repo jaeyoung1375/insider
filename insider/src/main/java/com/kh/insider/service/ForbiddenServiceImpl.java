@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.kh.insider.dto.ReplyDto;
 import com.kh.insider.repo.ForbiddenRepo;
 import com.kh.insider.vo.BoardListVO;
 
@@ -38,5 +39,14 @@ public class ForbiddenServiceImpl implements ForbiddenService{
 			board.getBoardWithNickDto().setBoardContent(newString);
 		}
 		return boardList;
+	}
+
+	@Override
+	public List<ReplyDto> changeForrbiddenReply(List<ReplyDto> replyList) {
+		String regex = this.getForbiddenRegex();
+		for(ReplyDto replyDto:replyList) {
+			replyDto.setReplyContent(replyDto.getReplyContent().replaceAll(regex, "##"));
+		}
+		return replyList;
 	}
 }

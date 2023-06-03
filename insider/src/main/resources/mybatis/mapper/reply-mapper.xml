@@ -32,5 +32,7 @@
   	<update id="updateLikeCount">
   		update reply set reply_like	= #{count} where reply_no = #{replyNo}
   	</update>
-  	
+  	<update id="addReport">
+		update reply set reply_report = (select count(*) from report where report_table='reply' and report_table_no=#{replyNo} and report_check=0) where reply_no=#{replyNo}
+	</update>
   </mapper>

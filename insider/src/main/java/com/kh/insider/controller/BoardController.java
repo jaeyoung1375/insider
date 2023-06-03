@@ -36,6 +36,7 @@ import com.kh.insider.repo.ReportRepo;
 import com.kh.insider.repo.ReportResultRepo;
 import com.kh.insider.repo.TagRepo;
 import com.kh.insider.service.BoardAttachService;
+import com.kh.insider.service.ReportService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -74,6 +75,8 @@ public class BoardController {
 	private ReportResultRepo reportResultRepo;
 	@Autowired
 	private ReportRepo reportRepo;
+	@Autowired
+	private ReportService reportService;
 
 	
 	@GetMapping("/list")
@@ -345,14 +348,7 @@ public class BoardController {
 		boardRepo.delete(boardNo);
 		
 		//리포트가 있으면 찾아서 상태 변경해줌
-		ReportDto reportDto = new ReportDto();
-		reportDto.setReportTable("board");
-		reportDto.setReportTableNo(boardNo);
-		ReportResultDto reportResultDto = reportResultRepo.selectOne(reportDto);
-		if(reportResultDto!=null) {
-			reportResultDto.setReportResult(2);
-			reportResultRepo.updateResult(reportResultDto);
-		}
+		reportService.manageDeleted("board", boardNo);
 		return "redirect:/";
 	}
 	

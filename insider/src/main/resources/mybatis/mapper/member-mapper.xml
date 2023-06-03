@@ -243,4 +243,8 @@ ORDER BY MAX(ba.ATTACHMENT_NO) DESC
 	<update id="updateFollow">
 		update member set member_follow=(select count(*) from follow where follow_follower=#{memberNo}) where member_no=#{memberNo}
 	</update>
+	<!-- 리포트 인원수 갱신 -->
+	<update id="addReport">
+		update member set member_report = (select count(*) from report where report_table='member' and report_table_no=#{memberNo} and report_check=0) where member_no=#{memberNo}
+	</update>
 </mapper>

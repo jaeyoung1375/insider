@@ -1567,21 +1567,26 @@
 									<span v-for="(tag,index) in reportDetailContent.boardTagList" :key="index">\#{{tag.tagName}}&nbsp</span>
 								</div>
 							</div>
-							<div class="row mt-3">
-								<div class="col">
-									<button class="btn btn-secondary w-100" type="button" @click="boardManage">관리처리 및 신고수 초기화</button>
-								</div>
-							</div>
+						</div>
+					</div>
+			<!----------- 게시물 신고내용일 경우 출력 --------->
+			<!----------- 댓글 신고내용일 경우 출력 --------->
+					<div class="row p-2" v-if="reportDetailData.reportTable=='reply'">
+						<div class="col">
 							<div class="row">
-								<div class="col">
-									<button class="btn btn-danger w-100" type="button" @click="boardDelete(reportDetailContent.boardWithNickDto.boardNo, 0)">게시물 삭제</button>
+								<div class="col-12" v-for="(reply, index) in reportDetailContent" style="position:relative">
+									{{reply.replyContent}}
 								</div>
 							</div>
 						</div>
 					</div>
-			<!----------- 게시물 신고내용일 경우 출력 --------->
+			<!----------- 댓글 신고내용일 경우 출력 --------->
+			<!----------- 회원 신고내용일 경우 출력 --------->
+			<!----------- 회원 신고내용일 경우 출력 --------->
 				</div>
 				<div class="modal-footer">
+					<button class="btn btn-success" type="button" @click="reportManage(1)">관리처리</button>
+					<button class="btn btn-danger" type="button" @click="reportManage(2)">게시물 삭제</button>
 					<button type="button" class="btn btn-secondary" @click="hideReportDetailModal">닫기</button>
 				</div>
 			</div>
@@ -2664,29 +2669,34 @@
 			async loadDetailCount(){
 				const resp = await axios.get(contextPath+"/rest/report/detail?reportTable="+this.reportDetailData.reportTable+"&reportTableNo="+this.reportDetailData.reportTableNo);
 				this.reportDetailCountList = [...resp.data.reportDetailCountVO];
-				this.reportDetailContent=resp.data.boardListVO;
-			},
-			//신고관리 페이지에서 게시물 즉시 삭제
-			async boardDelete(boardNo, board){
-				const data={reportTableNo:boardNo, reportTable:'board', reportResult:2};
-				const resp = await axios.delete(contextPath+"/rest/admin/board", {params:data});
-				this.reportDetailData.reportResult=2;
-				if(board==0){
-					this.loadReportList();
-					this.hideReportDetailModal();
+				//게시글 신고일 경우
+				if(this.reportDetailData.reportTable=='board'){
+					this.reportDetailContent=resp.data.boardListVO;
 				}
+				//댓글 신고일 경우
+				else if(this.reportDetailData.reportTable=='reply'){
+					this.reportDetailContent=resp.data.replyList;
+				}
+				//멤버 신고일 경우
 				else{
-					this.hideBoardViewModal();
-					this.loadBoardList();
+					
 				}
 			},
-			async boardManage(){
-				const data={reportTableNo:this.reportDetailData.reportTableNo, reportTable:'board', reportResult:1};
-				const resp = await axios.put(contextPath+"/rest/admin/board", data);
-				this.reportDetailData.reportResult=1;
+			//게시물 관리에서 삭제 기능
+			async boardDelete(boardNo){
+				const data={reportTableNo:boardNo, reportTable:'board', reportResult:2};
+				const resp = await axios.delete(contextPath+"/rest/admin/board", data);
+				this.reportDetailData.reportResult=2;
+				this.hideBoardViewModal();
+				this.loadBoardList();
+			},
+			//신고관리에서 관리처리, 신고수 초기화 및 게시물 삭제
+			async reportManage(reportResult){
+				const data={reportTableNo:this.reportDetailData.reportTableNo, reportTable:this.reportDetailData.reportTable, reportResult:reportResult};
+				const resp = await axios.put(contextPath+"/rest/admin/reportManage", data);
 				this.loadReportList();
 				this.hideReportDetailModal();
-			}
+			},
 		/*------------------------------ 신고 세부 모달 끝 ------------------------------*/
 		},
 		created(){

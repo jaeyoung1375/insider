@@ -87,7 +87,8 @@ public class BoardRestController {
 		
 		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
 		boardSearchVO.setBoardCount(15);
-		return boardRepo.selectListWithoutFollow(boardSearchVO);
+		
+		return forbiddenService.changeForbiddenWords(boardRepo.selectListWithoutFollow(boardSearchVO));
 	}
 	//좋아요
 	@PostMapping("/like")

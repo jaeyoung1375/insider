@@ -10,4 +10,6 @@ public interface ReplyRepo {
 	boolean delete(int replyNo);
 	ReplyDto selectOne(int replyNo);
 	void updateLikeCount(int count, int replyNo);
+	//신고 개수 추가
+	void addReport(int replyNo);
 }

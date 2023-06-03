@@ -18,6 +18,8 @@ import com.kh.insider.dto.ReplyLikeDto;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.ReplyLikeRepo;
 import com.kh.insider.repo.ReplyRepo;
+import com.kh.insider.service.ForbiddenService;
+import com.kh.insider.service.ReportService;
 import com.kh.insider.vo.ReplyLikeVO;
 
 @RestController
@@ -31,11 +33,15 @@ public class ReplyRestController {
 	private ReplyLikeRepo replyLikeRepo;
 	@Autowired
 	private BoardRepo boardRepo;
+	@Autowired
+	private ReportService reportService;
+	@Autowired
+	private ForbiddenService forbiddenService;
 	
 	//댓글 조회
 	@GetMapping("/{replyOrigin}")
 	public List<ReplyDto> list(@PathVariable int replyOrigin) {
-		return replyRepo.selectList(replyOrigin);
+		return forbiddenService.changeForrbiddenReply(replyRepo.selectList(replyOrigin));
 	}
 	
 	//댓글 등록
@@ -57,6 +63,9 @@ public class ReplyRestController {
 		replyRepo.delete(replyNo);
 		
 		boardRepo.updateReply(replyDto.getReplyOrigin());
+		
+		//리포트가 있으면 찾아서 상태 변경해줌
+		reportService.manageDeleted("reply", replyNo);
 	}
 	
 	
