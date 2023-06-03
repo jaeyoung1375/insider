@@ -6,7 +6,6 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,28 +15,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.BoardDto;
-import com.kh.insider.dto.BoardWithNickDto;
 import com.kh.insider.dto.FollowWithProfileDto;
-import com.kh.insider.dto.FollowerWithProfileDto;
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.MemberProfileDto;
 import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.dto.SettingDto;
-import com.kh.insider.dto.TagDto;
 import com.kh.insider.dto.TagFollowDto;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.FollowRepo;
 import com.kh.insider.repo.MemberRepo;
-import com.kh.insider.repo.MemberStatsRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.SettingRepo;
 import com.kh.insider.repo.TagFollowRepo;
 import com.kh.insider.vo.BoardListVO;
-import com.kh.insider.vo.MemberStatsResponseVO;
-import com.kh.insider.vo.MemberStatsSearchVO;
-import com.kh.insider.vo.MemberWithProfileResponseVO;
-import com.kh.insider.vo.MemberWithProfileSearchVO;
-import com.kh.insider.vo.PaginationVO;
 
 @RestController
 @RequestMapping("/rest/member")
@@ -138,6 +128,17 @@ public class MemberRestController {
 		return getTotalPost;
 	}
 	
+	//닉네임 중복 확인
+	@GetMapping("/checkNick/{memberNick}")
+	public boolean checkNick(@PathVariable String memberNick) {
+		MemberWithProfileDto memberDto = memberRepo.findByNickName(memberNick);
+		if(memberDto==null) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 	// 친구 추천목록 조회
 	@GetMapping("/recommendFriendsList")
 	public List<MemberProfileDto> recommendFriendsList(HttpSession session){
@@ -152,8 +153,4 @@ public class MemberRestController {
 		List<TagFollowDto> hashtagList = memberRepo.hashtagList(memberNo);
 		return hashtagList;
 	}
-	
-	
-	
-	
 }

@@ -600,4 +600,8 @@
  			</if>
  		</where>
 	</select>
+	<!-- 댓글 리플라이 카운트 업데이트 -->
+	<update id="updateReply">
+		update board set board_reply=(select count(*) from reply where reply_origin=#{boardNo}) where board_no=#{boardNo}
+	</update>
 </mapper>

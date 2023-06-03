@@ -141,7 +141,7 @@
                                  <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> 
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
 
-                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo, board.boardWithNickDto.memberNo)"></i></div>
+                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo, board.boardWithNickDto.memberNo, 'board')"></i></div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲ID▲▲▲▲▲▲▲▲▲▲▲▲▲-->
@@ -287,14 +287,20 @@
 						</a>
 						<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em;">{{replyList[index].replyContent}}</p>
 <!-- 						<p style="padding-left:4.0em;margin-bottom:1px;font-size:0.8em; color:gray;"> -->
-						<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
-							<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
-							<i :class="{'fa-heart': true, 'like':isReplyLiked[index],'ms-2':true, 'fa-solid': isReplyLiked[index], 'fa-regular': !isReplyLiked[index]}" @click="likeReply(reply.replyNo,index)" style="font-size: 0.9em;"></i>
-							&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-							<i v-if="replyList[index].replyMemberNo == loginMemberNo" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="color:red; cursor: pointer;"></i>
-							
-							
-						</p>
+						<div class="row">
+							<div class="col-10">
+								<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
+									<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
+									<i :class="{'fa-heart': true, 'like':isReplyLiked[index],'ms-2':true, 'fa-solid': isReplyLiked[index], 'fa-regular': !isReplyLiked[index]}" @click="likeReply(reply.replyNo,index)" style="font-size: 0.9em;"></i>
+									&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+									<i v-if="replyList[index].replyMemberNo == loginMemberNo" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="color:red; cursor: pointer;"></i>
+								</p>
+							</div>
+						<!-- 댓글 신고창 -->
+							<div class="col-2 p-0 d-flex justify-content-center">
+								<p class="d-flex align-items-center"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse;" @click="showAdditionalMenuModal(reply.replyNo, reply.replyMemberNo, 'reply')"></i></p>
+							</div>
+						</div>
 						
 <!-- 						<p v-if="replyList[index].replyParent == 0"> -->
 <!-- 							<span @click="showReReply(reply.replyNo, index)" style="cursor:pointer; padding-left:4em; font-size:0.8em; color:gray;">{{replyStatus(index)}}</span> -->
@@ -341,7 +347,7 @@
     
     
 <!-- ---------------------------------추가 메뉴 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="additionalMenuModal" data-bs-backdrop="static" ref="additionalMenuModal">
+	<div class="modal" tabindex="-1" role="dialog" id="additionalMenuModal" data-bs-backdrop="static" ref="additionalMenuModal" style="z-index:9999">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-body p-0">
@@ -377,9 +383,9 @@
 		</div>
 	</div>
 <!-- ---------------------------------신고 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal">
+	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal" style="z-index:9999">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
-			<div class="modal-content">
+			<div class="modal-content" >
 				<div class="modal-header">
 					<h5 class="modal-title" style="font-weight:bold; text-align:center">신고</h5>
 					<button type="button" class="btn-close" @click="hideReportMenuModal" aria-label="Close">
@@ -406,7 +412,7 @@
 		</div>
 	</div>
 <!-- ---------------------------------신고 후 차단 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="blockModal" data-bs-backdrop="static" ref="blockModal">
+	<div class="modal" tabindex="-1" role="dialog" id="blockModal" data-bs-backdrop="static" ref="blockModal" style="z-index:9999">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-body">
@@ -431,8 +437,8 @@
 						</div>
 					</div>
 					<div class="row mt-2">
-						<div class="col d-flex p-3 justify-content-center" @click="blockUser" style="color:#dc3545; cursor:pointer" v-if="reportBoardData[2]!=null && reportBoardData[2].length>0">
-							<h5 style="margin:0;">{{reportBoardData[2]}}님 차단</h5>
+						<div class="col d-flex p-3 justify-content-center" @click="blockUser" style="color:#dc3545; cursor:pointer" v-if="reportBoardData[3]!=null && reportBoardData[3].length>0">
+							<h5 style="margin:0;">{{reportBoardData[3]}}님 차단</h5>
 						</div>
 					</div>
 				</div>
@@ -908,10 +914,10 @@ Vue.createApp({
         
         /*----------------------신고----------------------*/
         //신고 모달 show, hide
-		showAdditionalMenuModal(boardNo, reportMemberNo){
+		showAdditionalMenuModal(boardNo, reportMemberNo, reportTable){
 			if(this.additionalMenuModal==null) return;
 			this.additionalMenuModal.show();
-			this.reportBoardData=[boardNo, reportMemberNo];
+			this.reportBoardData=[boardNo, reportMemberNo, reportTable];
 		},
 		hideAdditionalMenuModal(){
 			if(this.additionalMenuModal==null) return;
@@ -946,13 +952,13 @@ Vue.createApp({
 			const data={
 				reportContent:reportContent,
 				reportTableNo:this.reportBoardData[0],
-				reportTable:"board",
+				reportTable:this.reportBoardData[2],
 				reportMemberNo:this.reportBoardData[1],
 			}
 			const resp = await axios.post(contextPath+"/rest/report/", data)
 			this.hideReportMenuModal();
 			if(resp.data.length!=0){
-				this.reportBoardData[2] = resp.data.memberNick;
+				this.reportBoardData[3] = resp.data.memberNick;
 			}
 			this.showBlockModal();
 		},

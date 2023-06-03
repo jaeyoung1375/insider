@@ -18,7 +18,7 @@
 	</insert>
 	<!-- 태그 팔로우 수 추가 -->
 	<update id="updateFollow">
-		update tag set tag_follow=#{tagFollow} where tag_name=#{tagName}
+		update tag set tag_follow=(select count(*) from tag_follow where tag_name=#{tagName}) where tag_name=#{tagName}
 	</update>
 	<select id="selectOne" resultType="tagDto">
 		select * from tag where tag_name=#{tagName}

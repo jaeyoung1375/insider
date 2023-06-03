@@ -18,14 +18,14 @@ public class ForbiddenServiceImpl implements ForbiddenService{
 	public String getForbiddenRegex() {
 		List<String> forbiddenWords = forbiddenRepo.selectList("");
 		StringBuffer sb = new StringBuffer();
-		sb.append("(.?)(");
+		sb.append("(");
 		for(int i=0; i<forbiddenWords.size(); i++) {
 			sb.append(forbiddenWords.get(i));
 			if(i<forbiddenWords.size()-1) {
 				sb.append("|");
 			}
 		}
-		sb.append(")(.?)");
+		sb.append(")");
 		return sb.toString();
 	}
 
@@ -34,7 +34,7 @@ public class ForbiddenServiceImpl implements ForbiddenService{
 		String regex = this.getForbiddenRegex();
 		for(BoardListVO board : boardList) {
 			String oldString = board.getBoardWithNickDto().getBoardContent();
-			String newString = oldString.replaceAll(regex, "###");
+			String newString = oldString.replaceAll(regex, "##");
 			board.getBoardWithNickDto().setBoardContent(newString);
 		}
 		return boardList;
