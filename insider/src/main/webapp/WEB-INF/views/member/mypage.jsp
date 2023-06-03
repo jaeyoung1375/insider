@@ -473,7 +473,12 @@
                     </div>
                      
                        <div class="modal-header" style="display:flex; justify-content: center;">
-                        <a href="#" class="btn report" style="color:red;">신고</a>
+                        <div class="row" @click="showReportMenuModal">
+                        	<div class="col modal-btn-click-negative d-flex justify-content-center align-items-center">
+                        		<h5>신고</h5>
+                        	</div>
+                        </div>
+
                     </div>
                         <div class="modal-header" style="display:flex; justify-content: center;">
                           <a @click="accountView">이 계정 정보</a>
@@ -506,7 +511,7 @@
                     </div>
                    
                     <div class="modal-header" style="display:flex; justify-content: center;">
-                          <a @click="blockResultModalShow">차단</a>
+                          <a @click="blockUser">차단</a>
                     </div>
                    
                 </div>      
@@ -806,8 +811,39 @@
 
 
 <!-- 팔로우 모달 목록 끝 -->
+<!-- 차단 관련 모달 -->
+<!-- ---------------------------------신고 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal" style="z-index:9999">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content" >
+				<div class="modal-header">
+					<h5 class="modal-title" style="font-weight:bold; text-align:center">신고</h5>
+					<button type="button" class="btn-close" @click="hideReportMenuModal" aria-label="Close">
+					<span aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="modal-body">
+				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
+					<div class="row">
+						<div class="col d-flex p-3">
+							<h5 style="margin:0;">이 게시물을 신고하는 이유</h5>
+						</div>
+					</div>
+					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo" style="border-top:var(--bs-modal-border-width) solid var(--bs-modal-border-color)">
+						<div class="col d-flex p-3 report-content" @click="reportContent(report.reportListContent)" style="cursor:pointer">
+							<h5 style="margin:0; margin-left:1em">{{report.reportListContent}}</h5>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" @click="hideReportMenuModal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+<!-- 차단 관련 모달 끝 -->
         <!-- Modal 창 영역 끝 -->
-        
         
       
       </div> <!-- vue 끝 -->
@@ -856,7 +892,6 @@
             followerHoverModal : null,
             recommendFriendsAllListModal : null,
             selectedItem: null,
-            reportContentList:[],
             followCheckList:[],
             myFollowerList: [],
             myFollowList: [],
@@ -915,6 +950,12 @@
 			followerBtn : false,
 			activeTab: 'peopleTab', // 초기 선택된 탭은 'peopleTab'입니다.
 			hashtagList : [], // 해시태그 리스트
+			/*----------------------신고----------------------*/
+			//추가 메뉴 모달 및 신고 모달
+			reportMenuModal:null,
+			//신고 메뉴 리스트
+			reportContentList:[],
+			/*----------------------신고----------------------*/
          };
       },
       computed: {
@@ -1760,9 +1801,43 @@
             		return !this.hashtagList.includes(memberNo);
              	},
              	
-             
-      			
-      			
+                /*----------------------신고----------------------*/
+                //신고 모달 show, hide
+        		showReportMenuModal(){
+        			if(this.reportMenuModal==null) return;
+        			this.reportMenuModal.show();
+        			this.myOptionModalHide();
+        			this.loadReportContent();
+        		},
+        		hideReportMenuModal(){
+        			if(this.reportMenuModal==null) return;
+        			this.reportMenuModal.hide();
+        		},
+        		//신고 목록 불러오기
+        		async loadReportContent(){
+        			const resp = await axios.get(contextPath+"/rest/reportContent/");
+        			this.reportContentList = [...resp.data];
+        		},
+        		//신고
+        		async reportContent(reportContent){
+        			const data={
+        				reportContent:reportContent,
+        				reportTableNo:${memberDto.memberNo},
+        				reportTable:'member',
+        				reportMemberNo:${memberDto.memberNo},
+        			}
+        			const resp = await axios.post(contextPath+"/rest/report/", data)
+        			this.hideReportMenuModal();
+        		},
+        		//차단
+        		async blockUser(){
+        			const resp = await axios.put(contextPath+"/rest/block/"+${memberDto.memberNo});
+        			if(resp.data){
+        				this.blockModalHide();
+        				this.blockResultModalShow();
+        			}
+        		},
+        		/*----------------------신고----------------------*/
       		},
       		
       created() {
@@ -1813,8 +1888,8 @@
            		this.percent = Math.round(percent);
            		console.log(percent);
             },250));
-            
-          
+            /* 리포트 모달 */
+            this.reportMenuModal = new bootstrap.Modal(this.$refs.reportMenuModal);
       },
       
    }).mount("#app");

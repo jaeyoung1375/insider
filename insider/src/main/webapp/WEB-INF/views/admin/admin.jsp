@@ -826,6 +826,7 @@
 									<td class="modal-click-btn" style="vertical-align:middle; text-align:center" v-else @click="showReportSuspensionModal(index, 1)">일반</td>
 									<td style="vertical-align:middle; text-align:center" v-if="report.reportTable=='board'">게시물</td>
 									<td style="vertical-align:middle; text-align:center" v-if="report.reportTable=='member'">회원</td>
+									<td style="vertical-align:middle; text-align:center" v-if="report.reportTable=='reply'">댓글</td>
 									<td style="vertical-align:middle; text-align:center">{{report.managedCount}}
 										<span v-if="report.reportResult==1">({{report.count}})</span>
 										<i class="fa-solid fa-angles-up ms-2" style="color:blue" v-if="reportDifference[index].count"></i>

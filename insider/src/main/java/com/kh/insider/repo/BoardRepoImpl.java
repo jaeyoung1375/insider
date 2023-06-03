@@ -167,4 +167,10 @@ public class BoardRepoImpl implements BoardRepo {
 		return sqlSession.selectOne("board.selectListTagBoardCount", vo);
 	}
 
+
+	@Override
+	public void updateReply(int boardNo) {
+		sqlSession.update("board.updateReply", boardNo);
+	}
+
 }

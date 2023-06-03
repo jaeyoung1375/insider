@@ -66,4 +66,7 @@ public interface BoardRepo {
 	List<BoardListVO> selectListWithTag(BoardSearchVO vo);
 	//태그 조회 개수 반환
 	int selectListWithTagCount(BoardSearchVO vo);
+	
+	//리플 개수 업데이트
+	void updateReply(int boardNo);
 }
