@@ -583,21 +583,21 @@
 				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
 				    <div class="row">
 						<div class="col">
-							<span>비밀번호 확인</span>
+							<span>신규 닉네임 입력</span>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col">
 							<input class="form-control rounded" placeholder="닉네임 입력" type="text" v-model="changeMemberNick" 
-									:class="{'is-invalid':changeMemberNick.length>0 && newMemberNickAvailable}" @blur="checkMemberNick">
+									:class="{'is-invalid':(changeMemberNick.length>0 && !newMemberNickAvailable) || changeMemberNick==member.memberNick}" @blur="checkMemberNick">
 							<div class="invalid-feedback">이미 사용중인 닉네임입니다</div>
 							<div v-show="passwordCheck">&nbsp</div>
 						</div>
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" @click="sendNewMemberNick">변경</button>
-					<button type="button" class="btn btn-secondary" @click="hideChangeMemberNickModal">닫기</button>
+					<button type="button" class="btn btn-primary m-0" @click="sendNewMemberNick">변경</button>
+					<button type="button" class="btn btn-secondary m-0 me-2" @click="hideChangeMemberNickModal">닫기</button>
 				</div>
 			</div>
 		</div>
