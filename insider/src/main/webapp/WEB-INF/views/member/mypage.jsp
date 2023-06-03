@@ -764,8 +764,8 @@
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/tag/' + item.tagName" style="margin-left:5px;">{{'#' + item.tagName }}</a>
           					<p class="modalName" style="margin-left:5px;">게시물 {{item.tagCount}}</p>
 						  </div>
-						  <button class="float-end btn btn-secondary" @click="tagFollow(item.tagName)" style="margin-left:auto;" v-if="!tagFollowCheckIf(item.memberNo)">팔로우</button>	
-						  <button class="float-end btn btn-secondary" @click="tagUnFollow(item.tagName)" style="margin-left:auto;" v-else>팔로잉</button>					  
+							  <button class="float-end btn btn-secondary" @click="tagFollow(item.tagName)" style="margin-left:auto;" v-show="tagFollowCheckIf(item.tagName)">팔로우</button>	
+							  <button class="float-end btn btn-secondary" @click="tagUnFollow(item.tagName)" style="margin-left:auto;" v-show="!tagFollowCheckIf(item.tagName)">팔로잉</button>					  
       		  	</div>
       		</div>
       		
@@ -915,6 +915,8 @@
 			followerBtn : false,
 			activeTab: 'peopleTab', // 초기 선택된 탭은 'peopleTab'입니다.
 			hashtagList : [], // 해시태그 리스트
+			hashtagFollowCheckList : [], // 해시태그 팔로우 체크 
+			isFollowing : false, // 해시태그 팔로잉 여부
          };
       },
       computed: {
@@ -1730,40 +1732,68 @@
             	    });
             	    
             	    this.hashtagList.push(...resp.data);
+            	    this.hashtagFollowCheck();
             	   console.log("hash : "+this.hashtagList);
+      	   
             	  } catch (error) {
             	    console.error(error);
             	  }
             	},
             	
-            	async tagUnFollow(tagName){
-            		const resp = await axios.post("/rest/follow/tagUnFollow/"+tagName);
-            		if(resp.data){
-            			console.log("언팔로우 성공");
-            		}else{
-            			console.log("언팔로우 실패");
-            		}
-            	
-      			},
-      			async tagFollow(tagName){
-            		const resp = await axios.post("/rest/follow/tagFollow/"+tagName);
-            		if(resp.data){
-            			console.log("팔로우 성공");
-            		}else{
-            			console.log("팔로우 실패");
-            		}
+            	async tagUnFollow(tagName) {
+            		  try {
+            		    const resp = await axios.post("/rest/follow/tagUnFollow/" + tagName);
+            		    if (resp.data) {
+            		      console.log("언팔로우 성공");
+
+            		      // Remove unfollowed tagName from hashtagList
+            		      const index = this.hashtagList.findIndex(item => item.tagName === tagName);
+            		      if (index !== -1) {
+            		        this.hashtagList.splice(index, 1);
+            		      }
+
+            		      console.log("hashtagList: " + this.hashtagList);
+            		      this.hashtagFollowCheck();
+            		    } else {
+            		      console.log("언팔로우 실패");
+            		    }
+            		  } catch (error) {
+            		    console.error(error);
+            		  }
+            		},
+
+      			async tagFollow(tagName) {
+      			  const resp = await axios.post("/rest/follow/tagFollow/" + tagName);
+      			  if (resp.data) {
+      				
+      			    console.log("팔로우 성공");
+      			    console.log("hashtagList: " + this.hashtagList);
+      			    
+      			    this.hashtagFollowCheck();
+
+      			    // Add followed tagName to hashtagList
+      			    
+      			  } else {
+      			    console.log("팔로우 실패");
+      			  }
       			},
       			
       			// 태그 팔로우 v-if 여부체크 함수
-            	tagFollowCheckIf(memberNo){
-             	
-            		return !this.hashtagList.includes(memberNo);
-             	},
-             	
-             
+      		tagFollowCheckIf(tagName) {
+				  return !this.hashtagFollowCheckList.includes(tagName);
+			},
       			
-      			
-      		},
+				
+			async hashtagFollowCheck() {
+				  try {
+				    const resp = await axios.post("/rest/follow/hashTagCheck");
+				    this.hashtagFollowCheckList = resp.data;
+				    console.log("hashtagFollowCheckList : "+this.hashtagFollowCheckList);
+				  } catch (error) {
+				    console.error(error);
+				  }
+				}
+      },
       		
       created() {
     	  // 데이터 불러오는 영역
@@ -1773,6 +1803,7 @@
     	  this.memberSetting();
     	  this.recommendList();
     	  this.hashtTagList();
+    	  this.hashtagFollowCheck();
     	  Promise.all([this.followListPaging(), this.followerListPaging(), this.boardList()])
     	    .then(() => {
     	      this.followCheck();

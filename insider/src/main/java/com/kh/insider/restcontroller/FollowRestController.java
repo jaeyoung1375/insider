@@ -1,6 +1,8 @@
 package com.kh.insider.restcontroller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -111,9 +113,10 @@ public class FollowRestController {
 		dto.setMemberNo(memberNo);
 		dto.setTagName(tagName);
 		
+		
 		TagFollowDto checkDto = tagFollowRepo.selectOne(dto);
 		if(checkDto == null) {
-			tagFollowRepo.insert(checkDto);
+			tagFollowRepo.insert(dto);
 			return true;
 		}else {
 			return false;
@@ -165,4 +168,14 @@ public class FollowRestController {
 		
 		 return followRepo.check(memberNo);
 	}
+	
+	@PostMapping("/hashTagCheck")
+	public List<String> hashTagCheck(HttpSession session) {
+		long memberNo = (long) session.getAttribute("memberNo");
+		
+		return tagFollowRepo.selectFollowTagList(memberNo);
+	}
+		
+	
+	
 }
