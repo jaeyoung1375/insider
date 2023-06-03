@@ -17,6 +17,31 @@
 		select * from follow_with_profile where member_no=#{memberNo}
 	</select>
 	
+	 <!-- SQL 구문 조각 생성 -->
+	 <sql id="topNheader">
+	 	select * from (
+	 		select rownum rn, TMP.*from(
+	 		</sql>
+	 <sql id="topNfooter">
+	 		)TMP
+	 	)where rn between #{begin} and #{end}
+	 </sql>
+	 
+	
+	<!-- 팔로우 무한 스크롤 -->
+	<select id="getFollowListPaging" resultType="followWithProfileDto">
+		<include refid="topNheader"></include>
+			select * from follow_with_profile where member_no=#{memberNo}
+		<include refid="topNfooter"></include>	
+	</select>
+	
+	<!-- 팔로워 무한 스크롤 -->
+	<select id="getFollowerListPaging" resultType="followWithProfileDto">
+		<include refid="topNheader"></include>
+			select * from follower_with_profile where follow_follower=#{memberNo}
+		<include refid="topNfooter"></include>	
+	</select>
+	
 
 	<select id="getFollowNo" resultType="long">
 		select follow_follower from follow where member_no=#{memberNo}

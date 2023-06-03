@@ -15,7 +15,7 @@ import com.kh.insider.vo.BoardTimeStatsSearchVO;
 public interface BoardRepo {
 	List<BoardDto> selectListPaging(int page);
 	
-	List<BoardDto> myPageSelectListPaging(int page, int memberNo);
+	List<BoardListVO> myPageSelectListPaging(int page, long memberNo);
 
 	int sequence();
 	
@@ -66,4 +66,7 @@ public interface BoardRepo {
 	List<BoardListVO> selectListWithTag(BoardSearchVO vo);
 	//태그 조회 개수 반환
 	int selectListWithTagCount(BoardSearchVO vo);
+	
+	//리플 개수 업데이트
+	void updateReply(int boardNo);
 }

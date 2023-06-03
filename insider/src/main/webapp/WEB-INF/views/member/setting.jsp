@@ -33,22 +33,6 @@
 	text-align: right;
 	font-weight:bold;
 }
-/* 모달 버튼 파란 글씨 */
-.modal-click-btn{
-	color:#0095F6;
-	cursor:pointer;
-}
-.modal-click-btn:hover{
-	color:#0b5ed7;
-}
-/* 모달 버튼 빨간 글씨 */
-.modal-click-btn-negative{
-	color:#dc3545;
-	cursor:pointer;
-}
-.modal-click-btn-negative:hover{
-	color:#d63384;
-}
 /* 모달이 사이즈가 커지면 스크롤이 생기고 헤더 고정 */
 .modal-content{
 	max-height:100%;
@@ -179,13 +163,27 @@
 						<div class="col-9 d-flex align-items-center">
 							<div class="row">
 								<div class="row">
-									<div class="col">
-										<span>{{member.memberName}}</span>
+									<div class="col-2 d-flex justify-content-center align-items-center detail-option">
+										<span>닉네임</span>
+									</div>
+									<div class="col-8">
+										<span class="ms-2">{{member.memberNick}}</span>
+									</div>
+									<div class="col-2 d-flex justify-content-center align-items-center">
+										<span class="modal-click-btn" @click="showChangeMemberNickModal">변경</span>
 									</div>
 								</div>
-								<div class="row">
-									<div class="col">
-										<span @click="openFileInput" style="cursor:default">프로필 사진 변경</span>
+								<div class="row mt-3 pe-0">
+									<div class="col-2 d-flex justify-content-center align-items-center detail-option">
+										<span>이름</span>
+									</div>
+									<div class="col pe-0">
+										<input class="form-control" v-model="member.memberName"></input>
+									</div>
+								</div>
+								<div class="row mt-2">
+									<div class="offset-2 col">
+										<span @click="openFileInput" class="modal-click-btn">프로필 사진 변경</span>
 										<input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*" style="display: none;">
 									</div>
 								</div>
@@ -515,14 +513,14 @@
 					</div>
 					<div class="row">
 						<div class="col">
-							<input class="form-control rounded" placeholder="비밀번호 입력" type="password" v-model="newPassword">
+							<input class="form-control rounded" placeholder="비밀번호 입력" type="password" v-model="newPassword" :class="{'is-invalid':!showPasswordWarning}" @input="validatePassword()">
 							<div class="invalid-feedback">올바른 비밀번호를 입력하세요</div>
 							<div v-show="passwordCheck">&nbsp</div>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col">
-							<input class="form-control rounded" placeholder="비밀번호 확인" type="password" v-model="newPasswordCheck">
+							<input class="form-control rounded" placeholder="비밀번호 확인" type="password" v-model="newPasswordCheck" :class="{'is-invalid':!showPasswordCheckWarning}" @blur="validatePasswordCheck()">
 							<div class="invalid-feedback">올바른 비밀번호를 입력하세요</div>
 							<div v-show="passwordCheck">&nbsp</div>
 						</div>
@@ -571,6 +569,39 @@
 			</div>
 		</div>
 	</div>
+	<!-- ---------------------------------닉네임 변경 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="changeMemberNickModal" data-bs-backdrop="static" ref="changeMemberNickModal">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">닉네임 변경</h5>
+					<button type="button" class="btn-close" @click="hideChangeMemberNickModal" aria-label="Close">
+					<span aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="modal-body">
+				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
+				    <div class="row">
+						<div class="col">
+							<span>신규 닉네임 입력</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<input class="form-control rounded" placeholder="닉네임 입력" type="text" v-model="changeMemberNick" 
+									:class="{'is-invalid':(changeMemberNick.length>0 && !newMemberNickAvailable) || changeMemberNick==member.memberNick}" @blur="checkMemberNick">
+							<div class="invalid-feedback">이미 사용중인 닉네임입니다</div>
+							<div v-show="passwordCheck">&nbsp</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary m-0" @click="sendNewMemberNick">변경</button>
+					<button type="button" class="btn btn-secondary m-0 me-2" @click="hideChangeMemberNickModal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <!-- 우편번호 찾기 CDN -->
@@ -588,6 +619,7 @@
 				member:{
 					memberNo:"",
 					memberName:"",
+					memberNick:"",
 					memberEmail:"",
 					memberLat:"",
 					memberLon:"",
@@ -617,7 +649,9 @@
 				passwordCheck:true,
 				newPassword:"",
 				newPasswordCheck:"",
-				
+				showPasswordWarning:true,
+				showPasswordCheckWarning:true,
+				isValid:false,
 				/* ------------지도------------ */
 				mapContainer:null,
 				options:null,
@@ -627,6 +661,9 @@
 				currentAddr:"",
 				geocoder:null,
 				blockList:[],
+				changeMemberNickModal:null,
+				changeMemberNick:"",
+				newMemberNickAvailable:true,
 			};
 		},
 		computed: {
@@ -638,9 +675,6 @@
 				else{
 					return "https://via.placeholder.com/100x100?text=profile";
 				}
-			},
-			isValid(){
-				return this.newPassword.length>0 && this.newPassword==this.newPasswordCheck;
 			},
 			mapLevel(){
 				if(this.setting.settingDistance<=5) return 8;
@@ -766,7 +800,24 @@
 				const resp = await axios.put(contextPath+"/rest/member/setting/password", sendNewPassword)
 				this.hidePasswordChangeModal();
 			},
-			
+            validatePassword(){
+                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$#!%^*?&])[A-Za-z\d@$#^!%*?&]{8,16}$/;
+
+                if(passwordRegex.test(this.newPassword)){
+                    this.showPasswordWarning = true;
+                }else{
+                    this.showPasswordWarning = false;
+                }
+            },
+            validatePasswordCheck(){
+            	const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$#!%^*?&])[A-Za-z\d@$#^!%*?&]{8,16}$/;
+                if(this.newPassword == this.newPasswordCheck){
+                    this.showPasswordCheckWarning = true;
+                }else{
+                    this.showPasswordCheckWarning = false;
+                }
+				this.isValid= passwordRegex.test(this.newPassword) && this.showPasswordCheckWarning && this.showPasswordWarning && this.newPassword==this.newPasswordCheck;
+            },
 			/*------------------------우편번호 찾기------------------------*/
 			findAddress(){
 				new daum.Postcode({
@@ -793,9 +844,6 @@
 					},
 				}).open();
 			},
-			
-
-			
 			/*------------------------GPS 찾기------------------------*/
 			getGps(){
 				if (navigator.geolocation) {
@@ -897,6 +945,30 @@
 				const resp = await axios.delete(contextPath+"/rest/block/"+blockNo);
 				this.blockList.splice(index,1);
 			},
+			/* --------------------------닉네임 변경----------------------------- */
+ 			showChangeMemberNickModal(){
+				if(this.changeMemberNickModal==null) return;
+				this.changeMemberNickModal.show();
+			},
+			hideChangeMemberNickModal(){
+				if(this.changeMemberNickModal==null) return;
+				this.changeMemberNickModal.hide();
+				this.changeMemberNick="";
+			},
+			async checkMemberNick(){
+				const resp = await axios.get(contextPath+"/rest/member/checkNick/"+this.changeMemberNick);
+				this.newMemberNickAvailable=resp.data;
+			},
+			async sendNewMemberNick(){
+				if(this.changeMemberNick==this.member.memberNick){
+					this.hideChangeMemberNickModal();
+					return;
+				}
+				const data = {memberNick:this.changeMemberNick}
+				const resp = await axios.put(contextPath+"/rest/member/", data)
+				this.member.memberNick=this.changeMemberNick;
+				this.hideChangeMemberNickModal();
+			},
 		},
 		created(){
 			//세팅데이터 로드
@@ -909,6 +981,7 @@
 			this.passwordCheckModal = new bootstrap.Modal(this.$refs.passwordCheckModal);
 			this.passwordChangeModal = new bootstrap.Modal(this.$refs.passwordChangeModal);
 			this.blockModal = new bootstrap.Modal(this.$refs.blockModal);
+			this.changeMemberNickModal = new bootstrap.Modal(this.$refs.changeMemberNickModal);
 
 			//쿼리 초기화 및 변화 감지
 			this.initializePageFromQuery();

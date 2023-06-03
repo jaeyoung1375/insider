@@ -47,8 +47,8 @@
 		select * from member where member_email = #{memberEmail}
 	</select>
 	
-	<select id="findByNickName" resultType="MemberDto">
-		select * from member where member_nick = #{memberNick}
+	<select id="findByNickName" resultType="MemberWithProfileDto">
+		select * from member_with_profile where member_nick = #{memberNick}
 	</select>
 	
 
@@ -63,9 +63,45 @@
 		select count(*) from member where member_nick = #{memberNick}
 	</select>
 	
-	<update id="updateTempPassword">
-		update member set member_password = #{memberPassword} where member_email = #{memberEmail}
-	</update>
+	
+	<!-- 추천 친구목록 조회 -->
+<select id="recommendFriends" resultType="MemberWithProfileDto">
+  <![CDATA[
+SELECT *
+FROM member_with_profile
+WHERE (
+    MEMBER_NO != #{memberNo}
+    AND (
+        SQRT(POWER(MEMBER_LON - (SELECT MEMBER_LON FROM member WHERE MEMBER_NO = #{memberNo}), 2) + POWER(MEMBER_LAT - (SELECT MEMBER_LAT FROM member WHERE MEMBER_NO = #{memberNo}), 2)) * 111.319 <= 5
+    )
+    AND MEMBER_NO NOT IN (
+        SELECT DISTINCT follow_follower
+        FROM follow
+        WHERE member_no = #{memberNo}
+    )
+)
+AND MEMBER_NO NOT IN (
+    SELECT follow_follower
+    FROM follow
+    WHERE member_no = #{memberNo}
+)
+
+  ]]>
+</select>
+
+	<!-- 태그 이미지 하나를 불러오기 위한 조회 -->
+	<select id="hashtagList" resultType="tagFollowDto">
+	  <![CDATA[
+SELECT MAX(ba.ATTACHMENT_NO) AS ATTACHMENT_NO, tf.TAG_NAME, (SELECT COUNT(*) FROM board_tag where tag_name = tf.tag_name) AS TAG_COUNT
+FROM board_tag bt
+JOIN tag_follow tf ON bt.TAG_NAME = tf.TAG_NAME
+JOIN board_attachment ba ON bt.BOARD_NO = ba.BOARD_NO
+WHERE tf.MEMBER_NO = #{memberNo}
+GROUP BY tf.TAG_NAME
+ORDER BY MAX(ba.ATTACHMENT_NO) DESC
+		  ]]>
+	</select>
+	
 	
 	
 	<!-- 회원정보 수정(패스워드 x)-->
@@ -74,6 +110,9 @@
 		<set>	
 			<if test="memberName!=null and !memberName.equals('')">
 				,member_name=#{memberName}
+			</if>
+			<if test="memberNick!=null and !memberNick.equals('')">
+				,member_nick=#{memberNick}
 			</if>
 			<if test="memberEmail!=null and !memberEmail.equals('')">
 				,member_email=#{memberEmail}
@@ -200,4 +239,8 @@
 		<include refid="topNfooter"></include>
 	</select>
 	
+	<!-- 팔로우 인원수 갱신 -->
+	<update id="updateFollow">
+		update member set member_follow=(select count(*) from follow where follow_follower=#{memberNo}) where member_no=#{memberNo}
+	</update>
 </mapper>

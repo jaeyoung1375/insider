@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.FollowDto;
+import com.kh.insider.dto.TagFollowDto;
 import com.kh.insider.repo.FollowRepo;
 import com.kh.insider.repo.MemberRepo;
+import com.kh.insider.repo.TagFollowRepo;
+import com.kh.insider.repo.TagRepo;
 
 @RestController
 @RequestMapping("/rest/follow")
@@ -22,6 +25,10 @@ public class FollowRestController {
 	private FollowRepo followRepo;
 	@Autowired
 	private MemberRepo memberRepo;
+	@Autowired
+	private TagFollowRepo tagFollowRepo;
+	@Autowired
+	private TagRepo tagRepo;
 	
 	//팔로우 및 팔로워 반환(필요한 사람이 VO 적절하게 만들어서 쓰세요
 //	@GetMapping("/")
@@ -40,6 +47,7 @@ public class FollowRestController {
 		FollowDto checkDto = followRepo.selectOne(followDto);
 		if(checkDto==null) {
 			followRepo.insert(followDto);
+			memberRepo.updateFollow(followDto.getFollowFollower());
 			return true;
 		}else {
 			return false;
@@ -76,6 +84,7 @@ public class FollowRestController {
 		FollowDto checkDto = followRepo.selectOne(followDto);
 		if(checkDto != null) {
 			followRepo.delete(followDto);
+			memberRepo.updateFollow(followDto.getFollowFollower());
 			return true;
 		}else {
 			return false;
@@ -93,11 +102,53 @@ public class FollowRestController {
 		FollowDto checkDto = followRepo.selectOne(followDto);
 		if(checkDto != null) {
 			followRepo.delete(followDto);
+			memberRepo.updateFollow(followDto.getFollowFollower());
 			return true;
 		}else {
 			return false;
 		}
 	}
+	
+	@PostMapping("/tagFollow/{tagName}")
+	public boolean tagFollow(@PathVariable String tagName,HttpSession session) {
+		long memberNo = (long)session.getAttribute("memberNo");
+		
+		TagFollowDto dto = new TagFollowDto();
+		dto.setMemberNo(memberNo);
+		dto.setTagName(tagName);
+		
+		TagFollowDto checkDto = tagFollowRepo.selectOne(dto);
+		if(checkDto == null) {
+			tagFollowRepo.insert(checkDto);
+			tagRepo.updateFollow(tagName);
+			return true;
+		}else {
+			return false;
+		}
+		
+	}
+	
+	
+	@PostMapping("/tagUnFollow/{tagName}")
+	public boolean tagUnFollow(@PathVariable String tagName,HttpSession session) {
+		long memberNo = (long)session.getAttribute("memberNo");
+		
+		TagFollowDto dto = new TagFollowDto();
+		dto.setMemberNo(memberNo);
+		dto.setTagName(tagName);
+		
+		TagFollowDto checkDto = tagFollowRepo.selectOne(dto);
+		if(checkDto != null) {
+			tagFollowRepo.delete(checkDto);
+			tagRepo.updateFollow(tagName);
+			return true;
+		}else {
+			return false;
+		}
+		
+	}
+	
+	
 	
 	
 	

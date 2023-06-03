@@ -349,7 +349,7 @@
 	                    }
 	                },
 	                validatePassword(){
-	                    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+	                    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$#!%^*?&])[A-Za-z\d@$#^!%*?&]{8,16}$/;
 	
 	                    if(passwordRegex.test(this.password)){
 	                        this.showPasswordWarning = false;

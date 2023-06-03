@@ -24,12 +24,16 @@ import com.kh.insider.dto.BoardAttachmentDto;
 import com.kh.insider.dto.BoardDto;
 import com.kh.insider.dto.BoardTagDto;
 import com.kh.insider.dto.MemberDto;
+import com.kh.insider.dto.ReportDto;
+import com.kh.insider.dto.ReportResultDto;
 import com.kh.insider.dto.TagDto;
 import com.kh.insider.repo.BoardAttachmentRepo;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.BoardTagRepo;
 import com.kh.insider.repo.MemberProfileRepo;
 import com.kh.insider.repo.MemberRepo;
+import com.kh.insider.repo.ReportRepo;
+import com.kh.insider.repo.ReportResultRepo;
 import com.kh.insider.repo.TagRepo;
 import com.kh.insider.service.BoardAttachService;
 
@@ -66,6 +70,10 @@ public class BoardController {
 	
 	@Autowired
 	private BoardAttachmentRepo boardAttachmentRepo;
+	@Autowired
+	private ReportResultRepo reportResultRepo;
+	@Autowired
+	private ReportRepo reportRepo;
 
 	
 	@GetMapping("/list")
@@ -288,6 +296,16 @@ public class BoardController {
 	public String delete(@RequestParam int boardNo) {		
 		boardTagRepo.delete(boardNo);
 		boardRepo.delete(boardNo);
+		
+		//리포트가 있으면 찾아서 상태 변경해줌
+		ReportDto reportDto = new ReportDto();
+		reportDto.setReportTable("board");
+		reportDto.setReportTableNo(boardNo);
+		ReportResultDto reportResultDto = reportResultRepo.selectOne(reportDto);
+		if(reportResultDto!=null) {
+			reportResultDto.setReportResult(2);
+			reportResultRepo.updateResult(reportResultDto);
+		}
 		return "redirect:/";
 	}
 	

@@ -21,8 +21,8 @@ public class TagRepoImpl implements TagRepo{
 	}
 
 	@Override
-	public void updateFollow(TagDto tagDto) {
-		sqlSession.update("tag.updateFollow", tagDto);
+	public void updateFollow(String tagName) {
+		sqlSession.update("tag.updateFollow", tagName);
 	}
 
 	@Override

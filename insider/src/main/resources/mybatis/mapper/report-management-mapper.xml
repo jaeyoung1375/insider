@@ -19,6 +19,9 @@
 		<bind name="reportTableExist" value="reportTable!=null and !reportTable.equals('')"></bind>
 		<bind name="reportMinCountExist" value="reportMinCount!=null and !reportMinCount.equals('')"></bind>
 		<bind name="reportMaxCountExist" value="reportMaxCount!=null and !reportMaxCount.equals('')"></bind>
+		<bind name="reportMinManagedCountExist" value="reportMinManagedCount!=null and !reportMinManagedCount.equals('')"></bind>
+		<bind name="reportMaxManagedCountExist" value="reportMaxManagedCount!=null and !reportMaxManagedCount.equals('')"></bind>
+		<bind name="suspensionExist" value="suspension!=null and !suspension.equals('')"></bind>
 		<bind name="reportResultExist" value="reportResult!=null and !reportResult.equals('')"></bind>
 		<bind name="orderExist" value="order!=null and !order.equals('')"></bind>
 		<include refid="topNheader"></include>
@@ -35,6 +38,33 @@
 		 		<when test="reportMaxCountExist">
 		 			<![CDATA[
 		 			and count <= #{reportMaxCount}
+		 			]]>
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
+		<!-- 관리 후 신고 -->
+		 	<choose>
+		 		<when test="reportMinManagedCountExist and reportMaxManagedCountExist">
+		 			and managed_count between #{reportMinManagedCount} and #{reportMaxManagedCount}
+		 		</when>
+		 		<when test="reportMinCountExist">
+		 			and managed_count >= #{reportMinManagedCount}
+		 		</when>
+		 		<when test="reportMaxCountExist">
+		 			<![CDATA[
+		 			and managed_count <= #{reportMaxManagedCount}
+		 			]]>
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
+		<!-- 차단여부 -->
+		 	<choose>
+		 		<when test="suspensionExist and suspension==0">
+		 			and member_suspension_status=0
+		 		</when>
+		 		<when test="suspensionExist and suspension==1">
+		 			<![CDATA[
+		 			and member_suspension_status is null or member_suspension_status=1
 		 			]]>
 		 		</when>
 		 		<otherwise></otherwise>
@@ -61,7 +91,7 @@
 				order by ${order}, report_time asc
 			</when>
 			<otherwise>
-				order by count desc, report_time asc
+				order by managed_count desc, report_time asc
 			</otherwise>
 		</choose>
 		<include refid="topNfooter"></include>
@@ -73,6 +103,9 @@
 		<bind name="reportTableExist" value="reportTable!=null and !reportTable.equals('')"></bind>
 		<bind name="reportMinCountExist" value="reportMinCount!=null and !reportMinCount.equals('')"></bind>
 		<bind name="reportMaxCountExist" value="reportMaxCount!=null and !reportMaxCount.equals('')"></bind>
+		<bind name="reportMinManagedCountExist" value="reportMinManagedCount!=null and !reportMinManagedCount.equals('')"></bind>
+		<bind name="reportMaxManagedCountExist" value="reportMaxManagedCount!=null and !reportMaxManagedCount.equals('')"></bind>
+		<bind name="suspensionExist" value="suspension!=null and !suspension.equals('')"></bind>
 		<bind name="reportResultExist" value="reportResult!=null and !reportResult.equals('')"></bind>
 		<bind name="orderExist" value="order!=null and !order.equals('')"></bind>
 		select count(*) from report_management 
@@ -88,6 +121,33 @@
 		 		<when test="reportMaxCountExist">
 		 			<![CDATA[
 		 			and count <= #{reportMaxCount}
+		 			]]>
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
+		<!-- 관리 후 신고 -->
+		 	<choose>
+		 		<when test="reportMinManagedCountExist and reportMaxManagedCountExist">
+		 			and managed_count between #{reportMinManagedCount} and #{reportMaxManagedCount}
+		 		</when>
+		 		<when test="reportMinCountExist">
+		 			and managed_count >= #{reportMinManagedCount}
+		 		</when>
+		 		<when test="reportMaxCountExist">
+		 			<![CDATA[
+		 			and managed_count <= #{reportMaxManagedCount}
+		 			]]>
+		 		</when>
+		 		<otherwise></otherwise>
+		 	</choose>
+		<!-- 차단여부 -->
+		 	<choose>
+		 		<when test="suspensionExist and suspension==0">
+		 			and member_suspension_status=0
+		 		</when>
+		 		<when test="suspensionExist and suspension==1">
+		 			<![CDATA[
+		 			and member_suspension_status is null or member_suspension_status=1
 		 			]]>
 		 		</when>
 		 		<otherwise></otherwise>

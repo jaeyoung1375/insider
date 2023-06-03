@@ -1,7 +1,6 @@
 package com.kh.insider.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -18,10 +17,12 @@ import com.kh.insider.dto.DmMessageDeletedDto;
 import com.kh.insider.dto.DmMessageDto;
 import com.kh.insider.dto.DmPrivacyRoomDto;
 import com.kh.insider.dto.DmRoomDto;
+import com.kh.insider.dto.DmRoomRenameDto;
 import com.kh.insider.dto.DmUserDto;
 import com.kh.insider.repo.DmMessageDeletedRepo;
 import com.kh.insider.repo.DmMessageRepo;
 import com.kh.insider.repo.DmPrivacyRoomRepo;
+import com.kh.insider.repo.DmRoomRenameRepo;
 import com.kh.insider.repo.DmRoomRepo;
 import com.kh.insider.repo.DmUserRepo;
 import com.kh.insider.vo.ChannelReceiveVO;
@@ -50,6 +51,10 @@ public class DmServiceImpl implements DmService {
 	
 	@Autowired
 	private DmPrivacyRoomRepo dmPrivacyRoomRepo;
+	
+	@Autowired
+	private DmRoomRenameRepo dmRoomRenameRepo;
+
 
 	//여러 개의 방을 관리할 저장소
 	Map<Integer, DmRoomVO> rooms = Collections.synchronizedMap(new HashMap<>());
@@ -386,19 +391,34 @@ public class DmServiceImpl implements DmService {
 	    dmRoomRepo.changeRoomInfo(dmRoomDto);
 	}
 
-	//채팅방 이름 변경
-	public void updateReName(DmRoomDto dmRoomDto) {
-	    dmRoomRepo.updateRoomName(dmRoomDto);
+  //특정 채팅방에 참여한 총 회원수
+  public int countUsersInRoom(int roomNo) {
+      return dmUserRepo.countUsersInRoom(roomNo);
+  }
+
+  //특정 채팅방 정보 조회
+  public DmRoomDto findRoomByRoomNo(int roomNo) {
+      return dmRoomRepo.find(roomNo);
+  }
+
+  //채팅방 이름 나에게만 변경
+  public void RenameInsert(DmRoomVO dmRoomVO) {
+      DmRoomRenameDto dmRoomRenameDto = new DmRoomRenameDto();
+      dmRoomRenameDto.setRenameNo(dmRoomRenameRepo.sequence()); 
+      dmRoomRenameDto.setRoomNo(dmRoomVO.getRoomNo());
+      dmRoomRenameDto.setMemberNo(dmRoomVO.getMemberNo());
+      dmRoomRenameDto.setRoomRename(dmRoomVO.getRoomRename());
+      dmRoomRenameRepo.RenameInsert(dmRoomRenameDto);
+  }
+
+  //변경된 채팅방 이름 수정
+	public void updateReName(DmRoomRenameDto dmRoomRenameDto) {
+	    dmRoomRenameRepo.updateRoomRename(dmRoomRenameDto);
 	}
 	
-	//특정 채팅방에 참여한 총 회원수
-    public int countUsersInRoom(int roomNo) {
-        return dmUserRepo.countUsersInRoom(roomNo);
-    }
-    
-    //특정 채팅방 정보 조회
-    public DmRoomDto findRoomByRoomNo(int roomNo) {
-        return dmRoomRepo.find(roomNo);
-    }
+	//변경된 이름의 채팅방 번호 확인
+	public boolean existsByRoomNo(int roomNo) {
+		return dmRoomRenameRepo.existsByRoomNo(roomNo);
+	}
 	
 }
