@@ -45,4 +45,10 @@ public class ReportRepoImpl implements ReportRepo {
 	public void updateReportCheck(ReportResultDto reportResultDto) {
 		sqlSession.update("report.updateReportCheck", reportResultDto);
 	}
+
+	@Override
+	public void deleteDeletedReport() {
+		sqlSession.delete("report.deleteDeletedReport");
+	}
+
 }

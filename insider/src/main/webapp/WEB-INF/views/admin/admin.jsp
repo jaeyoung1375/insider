@@ -2669,7 +2669,7 @@
 			//신고관리 페이지에서 게시물 즉시 삭제
 			async boardDelete(boardNo, board){
 				const data={reportTableNo:boardNo, reportTable:'board', reportResult:2};
-				const resp = await axios.delete(contextPath+"/rest/admin/board", {params:data});
+				const resp = await axios.put(contextPath+"/rest/admin/reportManage", data);
 				this.reportDetailData.reportResult=2;
 				if(board==0){
 					this.loadReportList();
@@ -2682,7 +2682,7 @@
 			},
 			async boardManage(){
 				const data={reportTableNo:this.reportDetailData.reportTableNo, reportTable:'board', reportResult:1};
-				const resp = await axios.put(contextPath+"/rest/admin/board", data);
+				const resp = await axios.put(contextPath+"/rest/admin/reportManage", data);
 				this.reportDetailData.reportResult=1;
 				this.loadReportList();
 				this.hideReportDetailModal();

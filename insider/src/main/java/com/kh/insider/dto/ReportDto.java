@@ -10,7 +10,7 @@ public class ReportDto {
 	private long memberNo;
 	private String reportContent;
 	private long reportMemberNo;
-	private int reportTableNo;
+	private long reportTableNo;
 	private String reportTable;
 	private Date reportTime;
 	private int reportCheck;

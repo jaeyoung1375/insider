@@ -46,4 +46,6 @@ public interface MemberRepo {
 	
 	//팔로우 수 갱신
 	public void updateFollow(long memberNo);
+	//리포트 수 갱신
+	public void addReport(long memberNo);
 }

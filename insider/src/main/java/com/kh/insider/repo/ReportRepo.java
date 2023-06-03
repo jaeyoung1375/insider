@@ -13,4 +13,6 @@ public interface ReportRepo {
 	List<ReportDto> selectList();
 	List<ReportDetailCountVO> selectDetailCount(ReportDto reportDto);
 	void updateReportCheck(ReportResultDto reportResultDto);
+	//삭제된 게시물의 신고 내역 삭제
+	void deleteDeletedReport();
 }

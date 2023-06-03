@@ -45,8 +45,10 @@ public class ReplyRepoImpl implements ReplyRepo{
 		sqlSession.update("reply.updateLikeCount",param);
 	}
 
-
-
+	@Override
+	public void addReport(int replyNo) {
+		sqlSession.update("reply.addReport", replyNo);
+	}
 
 	
 }

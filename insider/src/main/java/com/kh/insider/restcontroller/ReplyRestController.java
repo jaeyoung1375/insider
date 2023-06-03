@@ -15,9 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.ReplyDto;
 import com.kh.insider.dto.ReplyLikeDto;
+import com.kh.insider.dto.ReportDto;
+import com.kh.insider.dto.ReportResultDto;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.ReplyLikeRepo;
 import com.kh.insider.repo.ReplyRepo;
+import com.kh.insider.repo.ReportRepo;
+import com.kh.insider.repo.ReportResultRepo;
+import com.kh.insider.service.ReportService;
 import com.kh.insider.vo.ReplyLikeVO;
 
 @RestController
@@ -31,6 +36,8 @@ public class ReplyRestController {
 	private ReplyLikeRepo replyLikeRepo;
 	@Autowired
 	private BoardRepo boardRepo;
+	@Autowired
+	private ReportService reportService;
 	
 	//댓글 조회
 	@GetMapping("/{replyOrigin}")
@@ -57,6 +64,9 @@ public class ReplyRestController {
 		replyRepo.delete(replyNo);
 		
 		boardRepo.updateReply(replyDto.getReplyOrigin());
+		
+		//리포트가 있으면 찾아서 상태 변경해줌
+		reportService.manageDeleted("reply", replyNo);
 	}
 	
 	

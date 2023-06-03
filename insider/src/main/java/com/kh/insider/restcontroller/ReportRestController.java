@@ -18,7 +18,9 @@ import com.kh.insider.dto.ReportDto;
 import com.kh.insider.dto.ReportResultDto;
 import com.kh.insider.repo.BlockRepo;
 import com.kh.insider.repo.BoardRepo;
+import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
+import com.kh.insider.repo.ReplyRepo;
 import com.kh.insider.repo.ReportManagementRepo;
 import com.kh.insider.repo.ReportRepo;
 import com.kh.insider.repo.ReportResultRepo;
@@ -45,6 +47,10 @@ public class ReportRestController {
 	private BlockRepo blockRepo;
 	@Autowired
 	private ReportResultRepo reportResultRepo;
+	@Autowired
+	private MemberRepo memberRepo;
+	@Autowired
+	private ReplyRepo replyRepo;
 	
 	@PostMapping("/")
 	public MemberWithProfileDto insert(@RequestBody ReportDto reportDto, HttpSession session) throws IOException {
@@ -59,7 +65,7 @@ public class ReportRestController {
 		ReportDto checkReportDto = reportRepo.seletcOne(reportDto);
 		if(checkReportDto==null) {
 			reportRepo.insert(reportDto);
-			String board = reportDto.getReportTable();
+			String tableName = reportDto.getReportTable();
 			
 			//리포트 관리 결과 테이블에 추가
 			ReportResultDto reportResultDto = reportResultRepo.selectOne(reportDto);
@@ -68,9 +74,16 @@ public class ReportRestController {
 			}
 			
 			//신고 수 추가
-			switch(board) {
+			switch(tableName) {
 			case "board" : 
-				boardRepo.addReport(reportDto.getReportTableNo());
+				boardRepo.addReport((int) reportDto.getReportTableNo());
+				break;
+			case "member":
+				memberRepo.addReport(reportDto.getReportTableNo());
+				break;
+			case "reply" :
+				replyRepo.addReport((int) reportDto.getReportTableNo());
+				break;
 			}
 			//최신 현황을 admin report 게시판으로 전송
 			adminReportService.sendSearchOptionRequest();
@@ -114,7 +127,7 @@ public class ReportRestController {
 		
 		switch(reportDto.getReportTable()) {
 		case "board":
-			reportDetailVO.setBoardListVO(boardRepo.selectOneBoard(reportDto.getReportTableNo()));
+			reportDetailVO.setBoardListVO(boardRepo.selectOneBoard((int)reportDto.getReportTableNo()));
 			break;
 		}
 		return reportDetailVO;
