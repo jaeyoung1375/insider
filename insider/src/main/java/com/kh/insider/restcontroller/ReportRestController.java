@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.BlockDto;
 import com.kh.insider.dto.MemberWithProfileDto;
+import com.kh.insider.dto.ReplyDto;
 import com.kh.insider.dto.ReportDto;
 import com.kh.insider.dto.ReportResultDto;
 import com.kh.insider.repo.BlockRepo;
@@ -128,6 +129,12 @@ public class ReportRestController {
 		switch(reportDto.getReportTable()) {
 		case "board":
 			reportDetailVO.setBoardListVO(boardRepo.selectOneBoard((int)reportDto.getReportTableNo()));
+			break;
+		case "member":
+			break;
+		case "reply":
+			ReplyDto replyDto = replyRepo.selectOne((int)reportDto.getReportTableNo());
+			reportDetailVO.setReplyList(replyRepo.selectList(replyDto.getReplyOrigin()));
 			break;
 		}
 		return reportDetailVO;

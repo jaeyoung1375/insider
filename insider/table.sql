@@ -127,7 +127,7 @@ ms.member_suspension_days, ms.member_suspension_lift_date, ms.member_suspension_
 SELECT r.report_member_no, r.report_table_no, r.report_table,
   COUNT(*) AS count,
   MIN(report_time) AS report_time,
-  SUM(CASE WHEN report_check = 0 THEN 1 ELSE 0 END) AS managed_count
+  SUM(CASE WHEN report_check = 0 or report_check=2 THEN 1 ELSE 0 END) AS managed_count
 FROM report r
 GROUP BY r.report_member_no, r.report_table_no, r.report_table
 ) rs

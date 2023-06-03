@@ -15,13 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.ReplyDto;
 import com.kh.insider.dto.ReplyLikeDto;
-import com.kh.insider.dto.ReportDto;
-import com.kh.insider.dto.ReportResultDto;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.ReplyLikeRepo;
 import com.kh.insider.repo.ReplyRepo;
-import com.kh.insider.repo.ReportRepo;
-import com.kh.insider.repo.ReportResultRepo;
+import com.kh.insider.service.ForbiddenService;
 import com.kh.insider.service.ReportService;
 import com.kh.insider.vo.ReplyLikeVO;
 
@@ -38,11 +35,13 @@ public class ReplyRestController {
 	private BoardRepo boardRepo;
 	@Autowired
 	private ReportService reportService;
+	@Autowired
+	private ForbiddenService forbiddenService;
 	
 	//댓글 조회
 	@GetMapping("/{replyOrigin}")
 	public List<ReplyDto> list(@PathVariable int replyOrigin) {
-		return replyRepo.selectList(replyOrigin);
+		return forbiddenService.changeForrbiddenReply(replyRepo.selectList(replyOrigin));
 	}
 	
 	//댓글 등록

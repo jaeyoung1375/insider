@@ -160,6 +160,8 @@ public class AdminRestController {
 	@DeleteMapping("/board")
 	public void deleteBoard(@ModelAttribute ReportResultDto reportResultDto) {
 		//태그를 지움
+		boardTagRepo.delete((int)reportResultDto.getReportTableNo());
+		boardRepo.delete((int)reportResultDto.getReportTableNo());
 		
 		reportRepo.updateReportCheck(reportResultDto);
 		reportResultRepo.updateResult(reportResultDto);
@@ -194,11 +196,9 @@ public class AdminRestController {
 				memberRepo.addReport(reportResultDto.getReportTableNo());
 				break;
 			case "reply" :
-				replyRepo.addReport((int)reportResultDto.getReportTableNo());
+				replyRepo.delete((int)reportResultDto.getReportTableNo());
 				break;
 			}
-			//삭제된 게시물의 신고내역 삭제
-			reportRepo.deleteDeletedReport();
 		}
 		//결과 테이블 상태 변경
 		reportResultRepo.updateResult(reportResultDto);

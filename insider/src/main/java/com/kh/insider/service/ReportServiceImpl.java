@@ -24,7 +24,6 @@ public class ReportServiceImpl implements ReportService{
 		if(reportResultDto!=null) {
 			reportResultDto.setReportResult(2);
 			reportRepo.updateReportCheck(reportResultDto);
-			reportRepo.deleteDeletedReport();
 			reportResultRepo.updateResult(reportResultDto);
 		}		
 	}
@@ -38,7 +37,6 @@ public class ReportServiceImpl implements ReportService{
 		if(reportResultDto!=null) {
 			reportResultDto.setReportResult(2);
 			reportRepo.updateReportCheck(reportResultDto);
-			reportRepo.deleteDeletedReport();
 			reportResultRepo.updateResult(reportResultDto);
 		}			
 	}
