@@ -217,24 +217,30 @@
                <div class="row mt-4">
                   <span style="font-size:12px;">
                   <h5>${memberDto.memberName}</h5>
-                  Aespa fashion 에스파 패션             
-               팬 페이지
-               for aespa 💙
-               #aespastyles_ (member)
-               est june 2020 ✨ | twitter:
-               twitter.com/aespastyles?s=21      
+             		${memberDto.memberMsg}     
                </span>
                </div>
                
             </div>
             </div>
             <!-- 친구 추천 목록 -->
+    
             <div  style="display: flex; flex-direction: column; width: 930px; height:280px; background-color: white; border:1px solid gray; margin: 0 auto;" v-if="recommendFriends">
         		<div class="recommend-id" style="display:flex; justify-content: space-between;">
         			<span style="color:gray; font-weight: bold;">추천계정</span>
         			<a class="" style="text-decoration: none; font-weight: bold;" @click="recommendFriendsAllListModalShow">모두 보기</a>
         		</div>  
-			<div class="card-container" style="display:flex; margin-top:20px;">
+        	<div v-if="recommendFriendsList.length === 0">
+        		<div class="text-center">
+	        		<i class="fa-sharp fa-solid fa-circle-exclamation"></i> &nbsp;추천을 읽어들일 수 없습니다. <br>
+	        		<i class="fa-solid fa-spinner fa-spin" v-show="isLoading"></i>
+	        		<div class="text-center">        		
+	        			<i class="fa-solid fa-rotate-right fa-xl"  @click="recommendListReloading" v-show="!isLoading"></i>
+	        		</div>
+        		</div>
+        	</div>
+        	
+			<div class="card-container" style="display:flex; margin-top:20px;" v-else>
 			<!-- 이전 페이지로 이동하는 버튼 -->
 				<div class="button-container" style="display: flex; justify-content: center; align-items: center;">
 					<i class="fa-solid fa-arrow-left"  @click="currentPage--" :class="{'hide' : currentPage === 0}" style="height:24px; weight:24px; margin-left:5px;"></i>
@@ -256,7 +262,8 @@
 			      </div>
 			      <div class="recommend-name d-flex justify-content-center align-items-start">
 			      <!-- 다음 페이지로 이동하는 버튼 -->
-			        <button class="btn btn-primary" style="width:85px; margin-top:8px;" @click="follow(item.memberNo)">팔로우</button>
+			        <button class="btn btn-primary" style="width:85px; margin-top:8px;" @click="follow(item.memberNo)" v-show="followCheckIf(item.memberNo)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로우</button>
+			        <button class="btn btn-secondary" style="width:85px; margin-top:8px;" @click="unFollow(item.memberNo)" v-show="!followCheckIf(item.memberNo)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로잉</button>
 			      </div>
 			    </div>
 			  </div>
@@ -299,10 +306,20 @@
    <p>사진을 공유하면 회원님의 프로필에 표시됩니다.</p>
   
    </div>
+   <div class="mypage-tab" v-if="isOwner">
+    <ul class="nav nav-tabs" style="width: 100%;">
+    <li class="nav-item col-6">
+       <a class="nav-link" :class="{'active': actTab === 'boardTab'}" @click="changeTab2('boardTab')" style="font-size:17px; padding:14px 0;">게시물</a>
+    </li>
+    <li class="nav-item col-6">
+      <a class="nav-link" :class="{'active': actTab === 'bookmarkTab'}" @click="changeTab2('bookmarkTab')" style="font-size:17px; padding:14px 0;">저장됨</a>
+      </li>
+  </ul>
+  </div>
    
   
 
-    <div style="margin-bottom:10px;display: flex; width: 110%;"> 
+    <div style="margin-bottom:10px;display: flex; width: 110%;" v-if="actTab == 'boardTab'"> 
     	 <div style="margin-bottom:10px;display: flex;flex-wrap:wrap; width: 100%;">
 	    	<div v-for="(board,index) in myBoardList" :key="index" style="margin-right: 10px;">
     		 <div class="media-height" style="margin-right: 10px; position:relative;">
@@ -318,6 +335,11 @@
     	</div>
      
     	</div>
+    </div>
+    <div style="margin-bottom:10px;display: flex; width: 110%;" v-else-if="actTab == 'bookmarkTab'"> 
+	    <div style="margin-bottom:10px;display: flex;flex-wrap:wrap; width: 100%;">
+	    북마크
+	    </div>
     </div>
     
 </div>
@@ -570,7 +592,7 @@
                             data-bs-backdrop="static"
                             ref="followerModal" @click.self="followerModalHide">	
             <div class="modal-dialog" role="document">
-                   <div class="modal-content" style="max-width:400px; min-height:200px max-height:400px;">
+                   <div class="modal-content" style="max-width:400px; min-height:300px; max-height:300px;">
                        <div class="modal-header text-center" style="display:flex; justify-content: center;">
 							<h5 class="modal-title">팔로워</h5>
                        </div>
@@ -664,7 +686,7 @@
                             data-bs-backdrop="static"
                             ref="followModal" @click.self="followModalHide">
              <div class="modal-dialog" role="document">
-    <div class="modal-content" style="max-width:400px; min-height:200px max-height:400px;">
+    <div class="modal-content" style="max-width:400px; min-height:200px; max-height:400px;">
       <div class="modal-header text-center" style="display:flex; justify-content: center;">
         <h5 class="modal-title" >팔로잉</h5>
       </div>
@@ -690,6 +712,7 @@
 						  </div>
           <button class="float-end btn btn-primary" @click="follow(item.followFollower)" v-show="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto; ">팔로우</button>
           <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-show="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
+          
           </div>
             <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave">
                   <!-- 프로필 미리보기 내용 -->
@@ -759,11 +782,21 @@
           
           
 			</div>
+			<i class="fa-solid fa-spinner fa-spin" v-show="followLoading && !followFinish"></i>
       		</div>
       		<div v-else-if="activeTab === 'hashtagsTab'">
       		  	<!-- 해시태그 목록 표시 -->
-      		  	<div v-for="item in hashtagList" key="item.memberNo">
-					<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
+      		  		<!-- 해시태그 목록이 없을 때 -->
+					<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; min-height:200px;" @scroll="handleScroll" v-if="hashtagList.length === 0">
+						<div class="text-center" style="margin-left:20px;">
+						<i class="fa-solid fa-hashtag fa-2xl" style="font-size:62px; margin-bottom:10px;"></i>
+						<h2 style="margin-top:10px;">팔로우하는 해시태그</h2>
+						<h6 style="font-size:12px;">해시태그를 팔로우하면 여기에 표시됩니다.</h6>
+						</div>
+					</div>
+					<!-- 해시태그 목록이 있을 때 -->
+      		  		<div v-for="item in hashtagList" key="item.memberNo" v-else>
+					<div  style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll">
           			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60"style="border-radius:50%;">
 						   <div style="display: flex; flex-direction: column; justify-content: flex-start;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/tag/' + item.tagName" style="margin-left:5px;">{{'#' + item.tagName }}</a>
@@ -771,16 +804,17 @@
 						  </div>
 							  <button class="float-end btn btn-primary" @click="tagFollow(item.tagName)" style="margin-left:auto;" v-show="tagFollowCheckIf(item.tagName)">팔로우</button>	
 							  <button class="float-end btn btn-secondary" @click="tagUnFollow(item.tagName)" style="margin-left:auto;" v-show="!tagFollowCheckIf(item.tagName)">팔로잉</button>					  
+					</div>
       		  	</div>
       		</div>
       		
  
-      </div>
-     
+    
     </div>
   </div>
 </div> 
 </div>
+		<!-- 추천 친구 목록 모달 -->
        <div class="modal" tabindex="-1" role="dialog" id="recommendFriendsAllListModal"
                             data-bs-backdrop="static"
                             ref="recommendFriendsAllListModal" @click.self="recommendFriendsAllListModalHide">
@@ -799,7 +833,8 @@
           					<p class="modalName">{{item.memberName}}</p>
 						  </div>
 						  
-          <button class="float-end btn btn-primary" @click="follow(item.memberNo)" v-if="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로우</button>
+          <button class="float-end btn btn-primary" @click="follow(item.memberNo)" v-show="followCheckIf(item.memberNo)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로우</button>
+          <button class="float-end btn btn-secondary" @click="unFollow(item.memberNo)" v-show="!followCheckIf(item.memberNo)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
 			</div>
           
         </div>
@@ -958,6 +993,8 @@
 			//신고 메뉴 리스트
 			reportContentList:[],
 			/*----------------------신고----------------------*/
+			isLoading : false, // 추천 목록 로딩
+			actTab : 'boardTab', // 초기 선택된 탭은 'boardTab'입니다.
          };
       },
       computed: {
@@ -1010,6 +1047,9 @@
       methods: {
     	  changeTab(tab) {
     	      this.activeTab = tab; // 선택된 탭을 변경합니다.
+    	    },
+    	  changeTab2(tab){
+    	    	this.actTab = tab;
     	    },
     	  
            showModal(){
@@ -1116,7 +1156,6 @@
          
          //팔로우
          async follow(followNo) {
-        	  this.isLoading = true; 
         	 
          	const resp = await axios.post("${pageContext.request.contextPath}/rest/follow/"+followNo);
          	await this.followCheck();
@@ -1198,7 +1237,6 @@
 	     //팔로우 되있는사람 -> 팔로우 삭제
 	 async unFollow(memberNo) {
 			  try {
-				  this.isLoading = true;
 			    const response = await axios.post("/rest/follow/unFollow", null, {
 			      params: {
 			        followFollower: memberNo
@@ -1508,7 +1546,8 @@
            	},
            	
            	
-           	handleScroll() {
+           	async handleScroll() {
+           		
            	  const modalElement = this.$refs.followModal;
            	  const bodyElement = modalElement.querySelector('.modal-body');
            	  const contentHeight = bodyElement.scrollHeight;
@@ -1516,13 +1555,16 @@
            	  const visibleHeight = bodyElement.clientHeight;
            	  const scrollPercentage = (currentScroll / (contentHeight - visibleHeight)) * 100;
            	  this.followPercent = Math.round(scrollPercentage);
+           	  
+           	 
 	
            	  if (this.followPercent >= 80) {
+
            	    this.followListPaging();
            	  }
            	},
            	
-          	handleScroll2() {
+          	async handleScroll2() {
              	  const modalElement = this.$refs.followerModal;
              	  const bodyElement = modalElement.querySelector('.modal-body');
              	  const contentHeight = bodyElement.scrollHeight;
@@ -1872,6 +1914,16 @@
         			}
         		},
         		/*----------------------신고----------------------*/
+        		
+        		// 추천목록 reload
+        		async recommendListReloading(){
+        			this.isLoading = true;
+        			
+        			 await new Promise(resolve => setTimeout(resolve, 1500)); // 1.5초 대기
+        			
+        			this.recommendList();
+        			this.isLoading = false;
+        		},
       		},
       		
       created() {
@@ -1895,6 +1947,7 @@
     	// percent가 변하면 percent의 값을 읽어와서 80% 이상인지 판정
     	percent(){
     		if(this.percent >= 80){
+    			
     			this.boardList();
     		}
     	},
@@ -1921,7 +1974,6 @@
 			
 
            		this.percent = Math.round(percent);
-           		console.log(percent);
             },250));
             /* 리포트 모달 */
             this.reportMenuModal = new bootstrap.Modal(this.$refs.reportMenuModal);

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bookmark">
+	<insert id="insert">
+		insert into bookmark values(#{boardNo}, #{memberNo})
+	</insert>
+	
+	<select id="selectAll">
+		select * from bookmark
+	</select>
+	
+	<select id="selectOne">
+		select * from bookmark where member_no = #{memberNo} and board_no = #{boardNo}
+	</select>
+	
+	<select id="findByNo">
+		select * from bookmark where member_no = #{memberNo}
+	</select>
+	
+	<delete id="delete">
+		delete from bookmark where board_no = #{boardNo} and member_no = #{memberNo}
+	</delete>
+
+</mapper>
