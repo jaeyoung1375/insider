@@ -16,15 +16,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.BoardDto;
 import com.kh.insider.dto.FollowWithProfileDto;
-import com.kh.insider.dto.FollowerWithProfileDto;
 import com.kh.insider.dto.MemberDto;
+import com.kh.insider.dto.MemberProfileDto;
 import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.dto.SettingDto;
+import com.kh.insider.dto.TagFollowDto;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.FollowRepo;
 import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.SettingRepo;
+import com.kh.insider.repo.TagFollowRepo;
+import com.kh.insider.vo.BoardListVO;
 
 @RestController
 @RequestMapping("/rest/member")
@@ -39,6 +42,8 @@ public class MemberRestController {
 	private FollowRepo followRepo;
 	@Autowired
 	private BoardRepo boardRepo;
+	@Autowired
+	private TagFollowRepo tagFollowRepo;
 	
 	
 	//멤버정보 불러오기
@@ -81,23 +86,36 @@ public class MemberRestController {
 	}
 
 	
-	// 팔로워 목록 불러오기
-	@GetMapping("/followerList")
-	public List<FollowerWithProfileDto> followerList(@RequestParam long memberNo){
-		List<FollowerWithProfileDto> followerList = followRepo.getFollowerList(memberNo);
-		return followerList;
-	}
+//	// 팔로워 목록 불러오기
+//	@GetMapping("/followerList")
+//	public List<FollowerWithProfileDto> followerList(@RequestParam long memberNo){
+//		List<FollowerWithProfileDto> followerList = followRepo.getFollowerList(memberNo);
+//		return followerList;
+//	}
+//	
+//	// 팔로우 목록 불러오기
+//	@GetMapping("/followList")
+//	public List<FollowWithProfileDto> followList(@RequestParam long memberNo){
+//			List<FollowWithProfileDto> followList = followRepo.getFollowList(memberNo);
+//		return followList;
+//	}
 	
-	// 팔로우 목록 불러오기
-		@GetMapping("/followList")
-		public List<FollowWithProfileDto> followList(@RequestParam long memberNo){
-			List<FollowWithProfileDto> followList = followRepo.getFollowList(memberNo);
+	// 팔로우 목록 불러오기(무한스크롤)
+		@GetMapping("/followListPaging/{page}")
+		public List<FollowWithProfileDto> followList(@PathVariable int page, @RequestParam long memberNo){
+				List<FollowWithProfileDto> followList = followRepo.getFollowListPaging(page, memberNo);
 			return followList;
 		}
-		
-	// 마이페이지 게시물 목록
+	// 팔로우 목록 불러오기(무한스크롤)
+		@GetMapping("/followerListPaging/{page}")
+		public List<FollowWithProfileDto> followerList(@PathVariable int page, @RequestParam long memberNo){
+				List<FollowWithProfileDto> followerList = followRepo.getFollowerListPaging(page, memberNo);
+			return followerList;
+		}	
+				
+	// 마이페이지 게시물 목록(무한스크롤)
 	@GetMapping("/page/{page}")
-	public List<BoardDto> paging(@PathVariable int page, @RequestParam int memberNo){
+	public List<BoardListVO> paging(@PathVariable int page, @RequestParam long memberNo){
 		
 		return boardRepo.myPageSelectListPaging(page, memberNo);
 	}
@@ -113,12 +131,26 @@ public class MemberRestController {
 	//닉네임 중복 확인
 	@GetMapping("/checkNick/{memberNick}")
 	public boolean checkNick(@PathVariable String memberNick) {
-		MemberDto memberDto = memberRepo.findByNickName(memberNick);
+		MemberWithProfileDto memberDto = memberRepo.findByNickName(memberNick);
 		if(memberDto==null) {
 			return true;
 		}
 		else {
 			return false;
 		}
+	}
+	// 친구 추천목록 조회
+	@GetMapping("/recommendFriendsList")
+	public List<MemberProfileDto> recommendFriendsList(HttpSession session){
+		long memberNo = (long)session.getAttribute("memberNo");
+		List<MemberProfileDto> recommendFriendsList = memberRepo.recommendFriends(memberNo);
+		return recommendFriendsList;
+	}
+	
+	// 특정회원 태그 목록 조회
+	@GetMapping("/hashtagList")
+	public List<TagFollowDto> hashtagList(@RequestParam long memberNo){
+		List<TagFollowDto> hashtagList = memberRepo.hashtagList(memberNo);
+		return hashtagList;
 	}
 }

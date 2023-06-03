@@ -13,6 +13,13 @@ public interface FollowRepo {
 	List<FollowDto> selectList(long memberNo);
 	//내가 팔로우 한 사람들의 리스트 반환
 	List<FollowWithProfileDto> getFollowList(long memberNo);
+	
+	// 팔로우 리스트 무한스크롤
+	List<FollowWithProfileDto> getFollowListPaging(int page, long memberNo);
+	
+	// 팔로워 리스트 무한스크롤
+	List<FollowWithProfileDto> getFollowerListPaging(int page, long memberNo);
+	
 	//나를 팔로우 한 팔로워들의 리스트를 반환
 	List<FollowerWithProfileDto> getFollowerList(long memberNo);
 	void changeAllow(FollowDto followDto);

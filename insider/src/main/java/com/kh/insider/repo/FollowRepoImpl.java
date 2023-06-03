@@ -1,6 +1,7 @@
 package com.kh.insider.repo;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,27 @@ public class FollowRepoImpl implements FollowRepo {
 	public List<FollowWithProfileDto> getFollowList(long memberNo) {
 		return sqlSession.selectList("follow.getFollowList", memberNo);
 	}
+	
+	// 팔로우 목록 무한스크롤
+	@Override
+	public List<FollowWithProfileDto> getFollowListPaging(int page, long memberNo) {
+		int end = page * 6;
+		int begin = end-9;
+		Map param = Map.of("begin",begin, "end",end, "memberNo",memberNo);
+			
+		return sqlSession.selectList("follow.getFollowListPaging",param);
+	}
+	
+	// 팔로우 목록 무한스크롤
+		@Override
+		public List<FollowWithProfileDto> getFollowerListPaging(int page, long memberNo) {
+			int end = page * 6;
+			int begin = end-9;
+			Map param = Map.of("begin",begin, "end",end, "memberNo",memberNo);
+				
+			return sqlSession.selectList("follow.getFollowerListPaging",param);
+		}
+		
 	
 	@Override
 	public List<FollowerWithProfileDto> getFollowerList(long memberNo) {
@@ -65,6 +87,8 @@ public class FollowRepoImpl implements FollowRepo {
 	public List<Long> check(long memberNo) {
 		return sqlSession.selectList("follow.getFollowNo",memberNo);
 	}
+
+
 
 
 

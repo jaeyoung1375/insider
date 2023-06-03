@@ -1,6 +1,11 @@
 package com.kh.insider.repo;
 
+import java.util.List;
+
 import com.kh.insider.dto.MemberDto;
+import com.kh.insider.dto.MemberProfileDto;
+import com.kh.insider.dto.MemberWithProfileDto;
+import com.kh.insider.dto.TagFollowDto;
 
 public interface MemberRepo {
 	
@@ -10,13 +15,18 @@ public interface MemberRepo {
 	// 이메일 조회
 	public MemberDto findByEmail(String memberEmail);
 	// 닉네임 조회
-	public MemberDto findByNickName(String memberNick);
+	public MemberWithProfileDto findByNickName(String memberNick);
 	// 이메일 중복확인
 	public int isEmailDuplicated(String memberEmail) throws Exception;
 	// 닉네임 중복확인
 	public int isNickDuplicated(String memberNick) throws Exception;
-	// 임시 비밀번호로 변경
-	public void updateTempPassword(MemberDto dto);
+	
+	// 친구 추천목록 조회
+	public List<MemberProfileDto> recommendFriends(long memberNo);
+	
+	// 특정회원 해시태그 리스트 조회
+	public List<TagFollowDto> hashtagList(long memberNo);
+	
 	
 	
 	
