@@ -111,6 +111,9 @@ ORDER BY MAX(ba.ATTACHMENT_NO) DESC
 			<if test="memberName!=null and !memberName.equals('')">
 				,member_name=#{memberName}
 			</if>
+			<if test="memberNick!=null and !memberNick.equals('')">
+				,member_nick=#{memberNick}
+			</if>
 			<if test="memberEmail!=null and !memberEmail.equals('')">
 				,member_email=#{memberEmail}
 			</if>
@@ -236,4 +239,8 @@ ORDER BY MAX(ba.ATTACHMENT_NO) DESC
 		<include refid="topNfooter"></include>
 	</select>
 	
+	<!-- 팔로우 인원수 갱신 -->
+	<update id="updateFollow">
+		update member set member_follow=(select count(*) from follow where follow_follower=#{memberNo}) where member_no=#{memberNo}
+	</update>
 </mapper>
