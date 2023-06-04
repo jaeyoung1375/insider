@@ -50,11 +50,27 @@
         SELECT COUNT(*) FROM dm_user WHERE room_no = #{roomNo}
     </select>
     
+    <!-- 특정 회원이 특정 채팅방에서 읽지 않은 메세지 수(본인이 전송한 메세지는 제외) -->
+    <select id="getUnreadMessageNum" resultType="long">
+		SELECT COUNT(*) AS unread_message
+		FROM dm_message
+		WHERE room_no = #{roomNo}
+		    AND message_send_time > (
+		        SELECT MAX(join_time)
+		        FROM dm_user
+		        WHERE member_no = #{memberNo}
+		            AND room_no = #{roomNo}
+		    )
+		    AND message_sender != #{memberNo}
+    </select>
     
+    
+    <!-- 읽지 않은 메세지 수 수정 -->
+	<update id="updateUnReadDm">
+		update dm_user
+		set unread_message = #{unreadMessage}
+		where member_no = #{memberNo} and room_no = #{roomNo}
+	</update>
 	
-	<!-- 특정 채팅방에 참여한 모든 회원 조회 -->
-	<select id="findUsersByRoomNo" resultType="DmUserDto">
-	  SELECT * FROM dm_user WHERE room_no = #{roomNo}
-	</select>
 	
 </mapper>

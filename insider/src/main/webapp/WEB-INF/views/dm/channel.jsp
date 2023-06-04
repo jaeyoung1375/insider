@@ -202,7 +202,7 @@
 							    	<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"style="border-radius: 50%; position:absolute; 
 								    	width:34px; height:34px; margin-top:0em;cursor:pointer;">
 				          			<img v-else src="https://via.placeholder.com/34x34?text=P" style="border-radius: 50%; position:absolute; margin-top:0em;">
-								    <span style="font-size:0.87em;padding-left:3.2em; word-wrap:normal;">
+								    <span style="font-size:0.86em;padding-left:3.2em; word-wrap:normal;">
 									     {{ room.roomName.length > 11 ? room.roomName.slice(0, 11) + '...' : room.roomName }}
 			   						</span>
 			   						<span style="color:#eb4d4b; font-size:0.85em;padding-left:1.5em; padding-top:0.1em">
@@ -214,8 +214,8 @@
 			   						</span>
 							    </div>
 			   					<div style="word-wrap:normal;margin-top:3px; display: flex; align-items: center;">
-			   						<span v-if="room.messageContent" style="font-size:0.8em;word-wrap:normal;display: inline-block;width: 73%;text-overflow: 
-			   							ellipsis;white-space: nowrap;overflow: hidden;vertical-align:bottom; text-overflow: ellipsis; padding-left:3.5em; color:#303952;">
+			   						<span v-if="room.messageContent" style="font-size:0.75em;word-wrap:normal;display: inline-block;width: 73%;text-overflow: 
+			   							ellipsis;white-space: nowrap;overflow: hidden;vertical-align:bottom; text-overflow: ellipsis; padding-left:3.5em; color:#aaa69d;">
 			   							{{JSON.parse(room.messageContent).content}}
 			   						</span>
 				   					<span v-if="room.messageSendTime" style="font-size:0.7em;word-wrap:normal;color:gray; top:3px; display: inline-block; padding-left:1.1em;">
@@ -433,7 +433,7 @@
 		      </div>
 		      <div class="modal-body" style="width:300px;">
 		        <div v-for="(member,index) in membersInRoomList" :key="index" style="margin-top:20px;position:relative;">
-		          <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:40px; height:40px;">
+		          <img v-if="member.attachmentNo > 0"  :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:40px; height:40px;">
 			      <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
 		          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
 		          <br>
@@ -488,8 +488,10 @@
                     
                     //채팅방 참가자 시간 정보 리스트
                     userTimeList:[],
-                    //읽지 않은 수
+                    //한 개의 메세지에 다른 회원이 읽지 않은 수
                     unreadCount:[],
+                    //특정 회원의 채팅방에서 읽지 않은 메세지 수
+                    unreadMessage: [],
                     
                     //초대
                     selectedMembers:[],
@@ -739,6 +741,7 @@
 				                }
 				            }
 				        });
+				        this.unreadDmCount();
 				    } catch (error) {
 				        console.error(error);
 				    }
@@ -782,7 +785,6 @@
 				            };
 				            await axios.put(updateRoomUrl, updateRoomData);
 				        }
-				        
 				        this.dmRoomList = []; //채팅방 목록 초기화
 				        await this.fetchDmRoomList(); //채팅방 목록 불러오기
 				        window.location.href = "${pageContext.request.contextPath}/dm/channel?room=" + roomNo;
@@ -879,29 +881,28 @@
 				//채팅방 이름 변경
 				async changeRoomName() {
 				    try {
-
 				    	const checkUrl = "${pageContext.request.contextPath}/rest/existsRoomNo";
-              const renameUrl = "${pageContext.request.contextPath}/rest/changeRoomRename";
-              const insertUrl = "${pageContext.request.contextPath}/rest/roomRenameInsert";
-
-              const resp = await axios.get(checkUrl, { params: { roomNo: this.roomNo } });
-              const data = {
-                    roomNo: this.roomNo,
-                    memberNo: this.memberNo,
-                    roomRename: roomNameInput.value
+				        const renameUrl = "${pageContext.request.contextPath}/rest/changeRoomRename";
+				        const insertUrl = "${pageContext.request.contextPath}/rest/roomRenameInsert";
+				        
+				        const resp = await axios.get(checkUrl, { params: { roomNo: this.roomNo } });
+				        const data = {
+					            roomNo: this.roomNo,
+					            memberNo: this.memberNo,
+					            roomRename: roomNameInput.value
 					    };
-              if (resp.data === true) {
-                  await axios.put(renameUrl, data);
-                  console.log("채팅방 이름이 성공적으로 변경되었습니다.");
-              } else {
-                  await axios.post(insertUrl, data);
-                  console.log("채팅방 이름이 성공적으로 추가되었습니다.");
-              }
-
-              this.dmRoomList = [];
-              await this.fetchDmRoomList();
+				        if (resp.data === true) {
+				            await axios.put(renameUrl, data);
+				            console.log("채팅방 이름이 성공적으로 변경되었습니다.");
+				        } else {
+				            await axios.post(insertUrl, data);
+				            console.log("채팅방 이름이 성공적으로 추가되었습니다.");
+				        }
+				
+				        this.dmRoomList = [];
+				        await this.fetchDmRoomList();
 				    } catch (error) {
-                console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
+				        console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
 				    }
 				},
 				//채팅방 이름 변경 확인 버튼
@@ -938,6 +939,34 @@
 		        		const days = Math.floor(duration / 1440);
 		        		return days + "일 전";
 		        	}
+				},
+				//읽지 않은 메세지 수 조회 및 수정
+				async unreadDmCount() {
+					const countUrl = "${pageContext.request.contextPath}/rest/unreadMessageCount";
+					const updateUrl = "${pageContext.request.contextPath}/rest/changeUnreadDm";
+				    try {
+				    	//조회
+						const roomNoArray = this.dmRoomList.map(room => room.roomNo);
+						for (const roomNo of roomNoArray) {
+							const data = {
+								roomNo: roomNo,
+								memberNo: this.memberNo
+							};
+							const resp = await axios.get(countUrl, { params: data });
+							//console.log(resp);
+							//console.log(resp.data);
+							//수정
+							const unreadMessage = resp.data[0];
+							const updateData = {
+									roomNo: roomNo,
+									memberNo: this.memberNo,
+									unreadMessage: unreadMessage
+							};
+							await axios.put(updateUrl, updateData);
+						}
+				    } catch (error) {
+				        console.error("읽지 않은 메세지 수를 가져오지 못했습니다.", error);
+				    }
 				},
             },
             watch:{
