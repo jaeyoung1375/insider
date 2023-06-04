@@ -44,8 +44,7 @@ public class ReportContentRestController {
 	@PutMapping("/")
 	public void update(@RequestBody UpdateReportContentVO updateReportContentVO) {
 		memberSuspensionRepo.updateReportContent(updateReportContentVO);
-		
-		//reportListRepo.update(updateReportContentVO);
-		//reportRepo.updateReportContent(updateReportContentVO);
+		reportListRepo.update(updateReportContentVO);
+		reportRepo.updateReportContent(updateReportContentVO);
 	}
 }

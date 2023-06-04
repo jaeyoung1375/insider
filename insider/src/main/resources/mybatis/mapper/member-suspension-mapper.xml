@@ -18,6 +18,6 @@
 		update member_suspension set member_suspension_status=0, member_suspension_times=member_suspension_times+1, member_suspension_days=#{memberSuspensionDays}, member_suspension_lift_date=sysdate+#{memberSuspensionDays} where member_no=#{memberNo}
 	</update>
 	<update id="updateReportContent">
-		UPDATE MEMBER_SUSPENSION  SET member_suspension_content=#{reportListContentAfter} WHERE member_suspension_content=#{reportListContentBefore}
+		UPDATE MEMBER_SUSPENSION SET member_suspension_content=#{reportListContentAfter} WHERE member_suspension_content=#{reportListContentBefore}
 	</update>
 </mapper>
