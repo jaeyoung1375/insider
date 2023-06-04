@@ -11,4 +11,5 @@ public class ReportDetailVO {
 	private List<ReportDetailCountVO> reportDetailCountVO;
 	private List<ReplyDto> replyList;
 	private BoardListVO boardListVO;
+	private ReportMemberDetailVO memberVO;
 }

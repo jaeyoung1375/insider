@@ -69,6 +69,8 @@ public interface BoardRepo {
 	
 	//리플 개수 업데이트
 	void updateReply(int boardNo);
+	//신고수가 1이상인 게시물 반환
+	List<BoardListVO> selectListReported(long memberNo);
 	
 	// 북마크 게시물 조회
 	List<BoardListVO> bookmarkMyPost(long memberNo);

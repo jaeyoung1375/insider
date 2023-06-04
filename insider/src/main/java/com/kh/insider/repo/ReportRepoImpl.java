@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.kh.insider.dto.ReportDto;
 import com.kh.insider.dto.ReportResultDto;
 import com.kh.insider.vo.ReportDetailCountVO;
+import com.kh.insider.vo.UpdateReportContentVO;
 
 @Repository
 public class ReportRepoImpl implements ReportRepo {
@@ -49,6 +50,11 @@ public class ReportRepoImpl implements ReportRepo {
 	@Override
 	public void deleteDeletedReport() {
 		sqlSession.delete("report.deleteDeletedReport");
+	}
+
+	@Override
+	public void updateReportContent(UpdateReportContentVO updateReportContentVO) {
+		sqlSession.update("report.updateReportContent", updateReportContentVO);
 	}
 
 }
