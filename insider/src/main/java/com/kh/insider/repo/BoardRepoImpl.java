@@ -173,10 +173,14 @@ public class BoardRepoImpl implements BoardRepo {
 		sqlSession.update("board.updateReply", boardNo);
 	}
 
-
 	@Override
 	public List<BoardListVO> selectListReported(long memberNo) {
 		return sqlSession.selectList("board.selectListReported", memberNo);
+	}
+	@Override
+	public List<BoardListVO> bookmarkMyPost(long memberNo) {
+		
+		return sqlSession.selectList("board.bookmarkMyPost",memberNo);
 	}
 
 }

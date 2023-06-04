@@ -228,3 +228,9 @@ reply_no number references reply(reply_no) on delete cascade,
 reply_like_time date default sysdate not null,
 reply_like_check NUMBER default 0 not null
 );
+
+-- 북마크 테이블 생성
+create table bookmark(
+board_no references board(board_no) on delete cascade,
+member_no references member(member_no) on delete cascade
+);
