@@ -205,8 +205,8 @@
 								    <span style="font-size:0.86em;padding-left:3.2em; word-wrap:normal;">
 									     {{ room.roomName.length > 11 ? room.roomName.slice(0, 11) + '...' : room.roomName }}
 			   						</span>
-			   						<span style="color:#eb4d4b; font-size:0.85em;padding-left:1.5em; padding-top:0.1em">
-			   						 	5
+			   						<span style="color:#eb4d4b; font-size:0.85em;padding-left:1.5em; padding-top:0.1em" v-show="unreadMessage[index] !== 0">
+			   						 	{{unreadMessage[index]}}
 			   						</span>
 									</a>
 			   						<span style="color:#eb4d4b; position:absolute;right:15px; top:13px;font-size: 10px;">
@@ -513,7 +513,7 @@
             	async loadMessage() {
             	    const roomNo = new URLSearchParams(location.search).get("room");
             	    if(roomNo==null){
-            	    	this.isRoomJoin=false;
+            	    	this.isRoomJoin=false; 
             	    	return;
             	    }
             	    this.isRoomJoin=true;
@@ -527,6 +527,8 @@
                             const scrollContainer = this.$refs.scrollContainer;
                             scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'smooth' });
                         });
+        				// 읽지 않은 메세지 수 수정
+        			    await this.updateUnreadDm(roomNo);
             	    } 
             	    catch (err) {
             	        console.error("메세지를 불러올 수 없습니다.");
@@ -957,6 +959,7 @@
 							//console.log(resp.data);
 							//수정
 							const unreadMessage = resp.data[0];
+							this.unreadMessage.push(unreadMessage); //vue에 반환
 							const updateData = {
 									roomNo: roomNo,
 									memberNo: this.memberNo,
@@ -966,6 +969,20 @@
 						}
 				    } catch (error) {
 				        console.error("읽지 않은 메세지 수를 가져오지 못했습니다.", error);
+				    }
+				},
+				//읽지 않은 메세지 수 수정
+				async updateUnreadDm(roomNo) {
+					const updateUrl = "${pageContext.request.contextPath}/rest/changeUnreadDm";
+				    try {
+						const data = {
+							roomNo: roomNo,
+							memberNo: this.memberNo,
+							unreadMessage: 0
+						};
+						await axios.put(updateUrl, data);
+				    } catch (error) {
+				        console.error("읽지 않은 메세지 수 수정 오류", error);
 				    }
 				},
             },

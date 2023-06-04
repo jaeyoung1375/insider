@@ -2,6 +2,7 @@ package com.kh.insider.service;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,6 @@ import org.springframework.web.socket.WebSocketSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kh.insider.dto.DmMessageDeletedDto;
 import com.kh.insider.dto.DmMessageDto;
-import com.kh.insider.dto.DmNoticeDto;
 import com.kh.insider.dto.DmPrivacyRoomDto;
 import com.kh.insider.dto.DmRoomDto;
 import com.kh.insider.dto.DmRoomRenameDto;
@@ -28,7 +28,6 @@ import com.kh.insider.repo.DmRoomRenameRepo;
 import com.kh.insider.repo.DmRoomRepo;
 import com.kh.insider.repo.DmUserRepo;
 import com.kh.insider.vo.ChannelReceiveVO;
-import com.kh.insider.vo.DmReadTimeVO;
 import com.kh.insider.vo.DmRoomVO;
 import com.kh.insider.vo.DmUserVO;
 import com.kh.insider.vo.MemberMessageVO;
@@ -58,9 +57,6 @@ public class DmServiceImpl implements DmService {
 	@Autowired
 	private DmRoomRenameRepo dmRoomRenameRepo;
 	
-	@Autowired
-	private DmNoticeRepo dmNoticeRepo;
-
 
 	//여러 개의 방을 관리할 저장소
 	Map<Integer, DmRoomVO> rooms = Collections.synchronizedMap(new HashMap<>());
@@ -161,6 +157,7 @@ public class DmServiceImpl implements DmService {
         for (DmUserVO user : users) {
         	DmUserDto dmUserDto = new DmUserDto();
         	dmUserDto.setReadTime(System.currentTimeMillis());
+        	dmUserDto.setReadDmTime(new Date());
         	dmUserDto.setMemberNo(user.getMemberNo());
         	dmUserDto.setRoomNo(roomNo);
         	dmUserRepo.updateReadTime(dmUserDto);
