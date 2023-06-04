@@ -320,11 +320,30 @@
 				
 				<div class="card-body"  style="height:110px; padding-top: 0px; padding-left: 0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
-					<p class="card-text" style="margin: 0 0 4px 0">
+					<!-- 북마크 오른쪽 정렬 수정 06/04 재영 -->
+					<!-- <p class="card-text" style="margin: 0 0 4px 0;">
+						
 						<i :class="{'fa-heart': true, 'like':isLiked[detailIndex],'ms-2':true, 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}" @click="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
 						&nbsp;
-						<i class="fa-regular fa-message mb-1" style="font-size: 25px; "></i>
-					</p>
+						<i class="fa-regular fa-message mb-1" style="font-size: 25px;"></i>
+						
+					</p> -->
+				<span class="card-text" style="margin: 0 0 4px 0;">
+				  <div class="d-flex">
+				    <i :class="{'fa-heart': true, 'like':isLiked[detailIndex], 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}"
+				       @click="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
+				    &nbsp;
+				    <i class="fa-regular fa-message mb-1" style="font-size: 25px;"></i>
+				    <span class="ms-auto" style="margin-right:10px;">
+				      <i class="fa-regular fa-bookmark" @click="bookmarkInsert(boardList[detailIndex].boardWithNickDto.boardNo)"
+				         v-show="bookmarkChecked(boardList[detailIndex].boardWithNickDto.boardNo)" style="font-size: 25px;"></i>
+				      <i class="fa-solid fa-bookmark" @click="bookmarkInsert(boardList[detailIndex].boardWithNickDto.boardNo)"
+				         v-show="!bookmarkChecked(boardList[detailIndex].boardWithNickDto.boardNo)" style="font-size: 25px;"></i>
+				    </span>
+				  </div>
+				</span>
+					
+					
 					<p class="card-text" style="margin: 0 0 4px 0; cursor: pointer;" @click="showLikeListModal(boardList[detailIndex].boardWithNickDto.boardNo)"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount[detailIndex]}}개</b></p>
 					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(boardList[detailIndex].boardWithNickDto.boardTimeAuto)}}</p>
 					
@@ -991,19 +1010,19 @@ Vue.createApp({
 		
 		//북마크
 		async bookmarkInsert(boardNo) {
-  const resp = await axios.post("/rest/bookmark/" + boardNo);
-
-  if (resp.data === true) {
-    this.bookmarkCheck.push({ boardNo });
-  } else {
-    const index = this.bookmarkCheck.findIndex(item => item.boardNo === boardNo);
-    if (index !== -1) {
-      this.bookmarkCheck.splice(index, 1);
-    }
-  }
-
-  console.log("북마크: " + this.bookmarkCheck.map(item => item.boardNo));
-},
+		  const resp = await axios.post("/rest/bookmark/" + boardNo);
+		
+		  if (resp.data === true) {
+		    this.bookmarkCheck.push({ boardNo });
+		  } else {
+		    const index = this.bookmarkCheck.findIndex(item => item.boardNo === boardNo);
+		    if (index !== -1) {
+		      this.bookmarkCheck.splice(index, 1);
+		    }
+		  }
+		
+		  console.log("북마크: " + this.bookmarkCheck.map(item => item.boardNo));
+		},
 		
 		bookmarkChecked(boardNo){
 			  return !this.bookmarkCheck.some(item => item.boardNo === boardNo);
@@ -1013,8 +1032,9 @@ Vue.createApp({
 			const resp = await axios.get("/rest/bookmark/selectOne");
 			this.bookmarkCheck.push(...resp.data);
 			console.log("북마크 리스트 : "+this.bookmarkCheck.map(item => item.boardNo));
-		}
+		},
 		
+		/*---------북마크 종료 ----------------- */
 		
     },
     watch: {

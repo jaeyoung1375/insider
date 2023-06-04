@@ -1926,6 +1926,10 @@
         		},
       		},
       		
+      		
+      		
+      		
+      		
       created() {
     	  // 데이터 불러오는 영역
     	  this.loadMember();
