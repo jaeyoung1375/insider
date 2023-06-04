@@ -1,12 +1,14 @@
 package com.kh.insider.restcontroller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -143,5 +145,11 @@ public class ReportRestController {
 			break;
 		}
 		return reportDetailVO;
+	}
+	//reply no로 리스트 반환
+	@GetMapping("/detail/{replyNo}")
+	public List<ReplyDto> selectReplyList(@PathVariable int replyNo){
+		ReplyDto replyDto = replyRepo.selectOne(replyNo);
+		return replyRepo.selectList(replyDto.getReplyOrigin());
 	}
 }

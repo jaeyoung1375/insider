@@ -517,7 +517,7 @@
 			<!-- 검색창 끝 -->
 			<!-- 게시물 출력 -->
 				<div class="row d-flex justify-content-center">
-					<div class="box" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @click="showBoardViewModal(index)">
+					<div class="box" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @click="showBoardViewModal(index, 0)">
 						<img class='content' v-if="board.boardAttachmentList.length>0" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
 						<img class='content' v-else src="${pageContext.request.contextPath}/static/image/noimage.png">
 						<div class="content-box"></div>
@@ -1501,7 +1501,7 @@
 	<!-- ---------------------------------신고창에서 보는 정지 모달 끝-------------------------- -->
 	<!-- ---------------------------------신고 세부 모달-------------------------- -->
 	<div class="modal" tabindex="-1" role="dialog" id="reportDetailModal" data-bs-backdrop="static" ref="reportDetailModal">
-		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%;">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title">신고 내용 관리</h5>
@@ -1610,6 +1610,24 @@
 					</div>
 			<!----------- 댓글 신고내용일 경우 출력 --------->
 			<!----------- 회원 신고내용일 경우 출력 --------->
+					<div class="row p-2" v-if="reportDetailData.reportTable=='member'">
+						<div class="col">
+							<div class="row">
+								<div class="col modal-click-btn">
+									<h5 @click="showReportedBoardModal">
+										이 유저의 신고받은 게시물 보기 ({{reportDetailContent.boardList.length}}건)
+									</h5>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col modal-click-btn">
+									<h5 @click="showReportedReplyModal">
+										이 유저의 신고받은 댓글 보기 ({{reportDetailContent.replyList.length}}건)
+									</h5>
+								</div>
+							</div>
+						</div>
+					</div>
 			<!----------- 회원 신고내용일 경우 출력 --------->
 				</div>
 				<div class="modal-footer">
@@ -1622,7 +1640,7 @@
 	</div>
 	<!-- ---------------------------------신고 세부 모달 끝-------------------------- -->
 	<!-- ---------------------------------게시물 미리보기 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="boardViewModal" data-bs-backdrop="static" ref="boardViewModal">
+	<div class="modal" tabindex="-1" role="dialog" id="boardViewModal" data-bs-backdrop="static" ref="boardViewModal" style="z-index:3000">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -1743,6 +1761,131 @@
 		</div>
 	</div>
 	<!-- ---------------------------------금지어 관리 모달 끝-------------------------- -->
+	<!-- ---------------------------------신고받은 게시물 미리보기 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="reportedBoardModal" data-bs-backdrop="static" ref="reportedBoardModal">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">신고받은 게시물 리스트</h5>
+					<button type="button" class="btn-close" @click="hideReportedBoardModal" aria-label="Close">
+					<span aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="modal-body" v-if="reportDetailData.reportTable=='member'">
+					<div class="row d-flex justify-content-center">
+						<div class="box w-25" v-for="(board, index) in reportDetailContent.boardList" :key="board.boardWithNickDto.boardNo" @click="showBoardViewModal(index, 1)">
+							<img class='content' v-if="board.boardAttachmentList.length>0" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
+							<img class='content' v-else src="${pageContext.request.contextPath}/static/image/noimage.png">
+							<div class="content-box"></div>
+							<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
+						</div>
+					</div>
+					<div class="row" v-if="reportDetailContent.boardList.length==0">
+						<div class="col d-flex justify-content-center align-items-center">
+							<h4>신고받은 게시물 없음</h4>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" @click="hideReportedBoardModal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ---------------------------------신고받은 게시물 미리보기 모달 끝-------------------------- -->
+	<!-- ---------------------------------신고받은 댓글 미리보기 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="reportedReplyModal" data-bs-backdrop="static" ref="reportedReplyModal" >
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">신고받은 댓글 리스트</h5>
+					<button type="button" class="btn-close" @click="hideReportedReplyModal" aria-label="Close">
+					<span aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="modal-body" v-if="reportDetailData.reportTable=='member'">
+					<div class="row mb-2" v-for="(reply, index) in reportDetailContent.replyList" :key="index">
+						<div class="row">
+							<div class="col-6 p-2 ps-3">
+								{{reply.replyContent}}({{reply.replyReport}}건)
+							</div>
+							<div class="col-3 p-2" d-flex justify-content-end>
+								{{reply.boardTime}}
+							</div>
+							<div class="col-3 p-2 modal-click-btn d-flex justify-content-end" @click="showReportedReplyDetailModal(reply.replyNo, index)">
+								댓글전체
+							</div>
+						</div>
+					</div>
+					<div class="row" v-if="reportDetailContent.replyList.length==0">
+						<div class="col d-flex justify-content-center align-items-center">
+							<h4>신고받은 댓글 없음</h4>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" @click="hideReportedReplyModal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ---------------------------------신고받은 댓글 미리보기 모달 끝-------------------------- -->
+	<!-- ---------------------------------신고받은 댓글 정보보기 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="reportedReplyDetailModal" data-bs-backdrop="static" ref="reportedReplyDetailModal">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">댓글 정보보기</h5>
+					<button type="button" class="btn-close" @click="hideReportedReplyDetailModal" aria-label="Close">
+					<span aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="modal-body" v-if="reportedReplyDetailList.length>0">
+					<div class="row p-2">
+						<div class="col">
+							<div class="row mb-2">
+								<div class="col" style="font-weight:bold">
+									댓글 내용
+								</div>
+							</div>
+							<div class="row">
+								<div class="col ps-4">
+									{{reportedReplyDetailList[reportedReplyDetailIndex].replyContent}}
+								</div>
+							</div>
+							<div class="row mb-2 mt-3">
+								<div class="col" style="font-weight:bold">
+									전체 댓글 내용
+								</div>
+							</div>
+							<div class="row mb-2" v-for="(reply, index) in reportedReplyDetailList" :key="index">
+								<div class="col-1" v-if="reply.replyParent!=0">
+								</div>
+								<div class="col">
+									<div class="row">
+										<div class="col ps-3">	
+											{{reply.memberNick}}
+											<i class="ms-2" style="color:#d9534f; font-weight:bold" v-if="reply.memberNick==reportDetailData.memberNick">(신고대상자)</i>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col ps-4">
+											: {{reply.replyContent}}
+											<i class="ms-2" style="color:#d9534f; font-weight:bold" v-if="index==reportedReplyDetailIndex">(신고내용)</i>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" @click="hideReportedReplyDetailModal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ---------------------------------신고받은 댓글 정보보기 모달 끝-------------------------- -->
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <!-- SockJS라이브러리 의존성 추가  -->
@@ -1821,11 +1964,19 @@
 				},
 				reportDifference:[],
 				reportDetailModal:null,
-				/* 리포트 내용보기 인덱스 */
+				/* 리포트 현황 클릭할 경우 리스트에서 반환받는 단일 객체 */
 				reportDetailData:{},
+				/* detailData로부터 상세보기를 보기 위해 필요한 정보를 반환받는 객체 */
 				reportDetailContent:{},
+				/* 리포트 현황 반환 배열 */
 				reportDetailCountList:[],
+				/* 리포트 내용보기 인덱스 */
 				reportDetailContentIndex:"",
+				reportedBoardModal:null,
+				reportedReplyModal:null,
+				reportedReplyDetailModal:null,
+				reportedReplyDetailList:[],
+				reportedReplyDetailIndex:"",
 				/*---------------------------회원 통계 데이터 --------------------------- */
 				memberLoginSearch:{
 					stat:"member_login",
@@ -2079,9 +2230,16 @@
 				const resp = await axios.put(contextPath+"/rest/tag/", data)
 				this.tagList[index].tagAvailable=resp.data;
 			},
- 			showBoardViewModal(index){
-				this.boardViewNo=this.boardList[index].boardWithNickDto.boardNo;
-				this.boardViewContent=this.boardList[index];
+ 			showBoardViewModal(index, fromModal){
+				//리포트 모달에서 온 경우
+				if(fromModal==1){
+					this.boardViewNo=this.reportDetailContent.boardList[index].boardWithNickDto.boardNo;
+					this.boardViewContent=this.reportDetailContent.boardList[index];
+				}
+				else{
+					this.boardViewNo=this.boardList[index].boardWithNickDto.boardNo;
+					this.boardViewContent=this.boardList[index];
+				}
 				if(this.boardViewModal==null) return;
 				this.boardViewModal.show();
 			},
@@ -2236,6 +2394,39 @@
 			//리포트리스트, 비포 객체 배열 비교 함수
 			compareReport (obj1, obj2){
 				return obj1.reportTableNo==obj2.reportTableNo && obj1.reportTable==obj2.reportTable && obj1.reportMemberNo==obj2.reportMemberNo;
+			},
+ 			showReportedBoardModal(){
+				if(this.reportedBoardModal==null) return;
+				this.reportedBoardModal.show();
+				this.hideReportDetailModal();
+			},
+			hideReportedBoardModal(){
+				if(this.reportedBoardModal==null) return;
+				this.reportedBoardModal.hide();
+				this.showReportDetailModal();
+			},
+ 			showReportedReplyModal(){
+				if(this.reportedReplyModal==null) return;
+				this.reportedReplyModal.show();
+				this.hideReportDetailModal();
+			},
+			hideReportedReplyModal(){
+				if(this.reportedReplyModal==null) return;
+				this.reportedReplyModal.hide();
+				this.showReportDetailModal();
+			},
+ 			async showReportedReplyDetailModal(reportNo, index){
+				const resp = await axios.get(contextPath+"/rest/report/detail/"+reportNo);
+				this.reportedReplyDetailList=[...resp.data];
+				this.reportedReplyDetailIndex=this.reportedReplyDetailList.findIndex(content=>content.replyNo==this.reportDetailContent.replyList[index].replyNo);
+				if(this.reportedReplyDetailModal==null) return;
+				this.reportedReplyDetailModal.show();
+				this.reportedReplyModal.hide();
+			},
+			hideReportedReplyDetailModal(){
+				if(this.reportedReplyDetailModal==null) return;
+				this.reportedReplyDetailModal.hide();
+				this.reportedReplyModal.show();
 			},
 			/*------------------------------ 신고관리 끝 ------------------------------*/
 			/*------------------------------ 멤버통계 시작 ------------------------------*/
@@ -2697,7 +2888,8 @@
 				this.reportDetailModal.hide();
 			},
 			async loadDetailCount(){
-				const resp = await axios.get(contextPath+"/rest/report/detail?reportTable="+this.reportDetailData.reportTable+"&reportTableNo="+this.reportDetailData.reportTableNo);
+				const resp = await axios.get(contextPath+"/rest/report/detail?reportTable="+this.reportDetailData.reportTable+
+						"&reportTableNo="+this.reportDetailData.reportTableNo+"&memberNo="+this.reportDetailData.reportMemberNo);
 				this.reportDetailCountList = [...resp.data.reportDetailCountVO];
 				//게시글 신고일 경우
 				if(this.reportDetailData.reportTable=='board'){
@@ -2827,6 +3019,9 @@
 			this.reportSuspensionModal = new bootstrap.Modal(this.$refs.reportSuspensionModal);
 			this.reportDetailModal = new bootstrap.Modal(this.$refs.reportDetailModal);
 			this.boardViewModal = new bootstrap.Modal(this.$refs.boardViewModal);
+			this.reportedBoardModal = new bootstrap.Modal(this.$refs.reportedBoardModal);
+			this.reportedReplyModal = new bootstrap.Modal(this.$refs.reportedReplyModal);
+			this.reportedReplyDetailModal = new bootstrap.Modal(this.$refs.reportedReplyDetailModal);
 		},
 	}).mount("#app");
 </script>
