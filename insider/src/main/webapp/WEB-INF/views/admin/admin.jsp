@@ -1573,9 +1573,37 @@
 			<!----------- 댓글 신고내용일 경우 출력 --------->
 					<div class="row p-2" v-if="reportDetailData.reportTable=='reply'">
 						<div class="col">
+							<div class="row mb-2">
+								<div class="col" style="font-weight:bold">
+									댓글 내용
+								</div>
+							</div>
 							<div class="row">
-								<div class="col-12" v-for="(reply, index) in reportDetailContent" style="position:relative">
-									{{reply.replyContent}}
+								<div class="col ps-4">
+									{{reportDetailContent[reportDetailContentIndex].replyContent}}
+								</div>
+							</div>
+							<div class="row mb-2 mt-3">
+								<div class="col" style="font-weight:bold">
+									전체 댓글 내용
+								</div>
+							</div>
+							<div class="row mb-2" v-for="(reply, index) in reportDetailContent" :key="index">
+								<div class="col-1" v-if="reply.replyParent!=0">
+								</div>
+								<div class="col">
+									<div class="row">
+										<div class="col ps-3">	
+											{{reply.memberNick}}
+											<i class="ms-2" style="color:#d9534f; font-weight:bold" v-if="reply.memberNick==reportDetailData.memberNick">(신고대상자)</i>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col ps-4">
+											: {{reply.replyContent}}
+											<i class="ms-2" style="color:#d9534f; font-weight:bold" v-if="index==reportDetailContentIndex">(신고내용)</i>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -1797,6 +1825,7 @@
 				reportDetailData:{},
 				reportDetailContent:{},
 				reportDetailCountList:[],
+				reportDetailContentIndex:"",
 				/*---------------------------회원 통계 데이터 --------------------------- */
 				memberLoginSearch:{
 					stat:"member_login",
@@ -2125,7 +2154,8 @@
 			async updateReportContent(index, no){
 				const data = {
 					reportListNo:no,
-					reportListContent:this.reportContentListSub[index].reportListContent,
+					reportListContentAfter:this.reportContentListSub[index].reportListContent,
+					reportListContentBefore:this.reportContentList[index].reportListContent,
 				};
 				const resp = await axios.put(contextPath+"/rest/reportContent/", data);
 				this.hideReportContentEdit(index);
@@ -2675,11 +2705,12 @@
 				}
 				//댓글 신고일 경우
 				else if(this.reportDetailData.reportTable=='reply'){
-					this.reportDetailContent=resp.data.replyList;
+					this.reportDetailContent=[...resp.data.replyList];
+					this.reportDetailContentIndex=this.reportDetailContent.findIndex(content=>content.replyNo==this.reportDetailData.reportTableNo);
 				}
 				//멤버 신고일 경우
 				else{
-					
+					this.reportDetailContent=resp.data.memberVO;
 				}
 			},
 			//게시물 관리에서 삭제 기능

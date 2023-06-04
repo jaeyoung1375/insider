@@ -379,6 +379,10 @@
 	<select id="selectOneBoard" resultMap="boardListVO">
 		select * from board_with_nick where board_no=#{boardNo}
 	</select>
+	<!-- 계층형 신고받은 게시물 조회 -->
+	<select id="selectListReported" resultMap="boardListVO">
+		select * from board_with_nick where member_no=#{memberNo} and board_report>0 order by board_report desc
+	</select>
 	<!-- 계층형 태그로 조회 -->
 	<select id="selectListTagBoard" resultMap="boardListVO">
 		<bind name="blockExist" value="blockDtoList!=null and blockDtoList.size()>0"></bind>

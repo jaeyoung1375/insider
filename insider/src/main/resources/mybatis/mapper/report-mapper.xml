@@ -42,4 +42,7 @@
 	<delete id="deleteDeletedReport">
 		delete report where report_check=2
 	</delete>
+	<update id="updateReportContent">
+		update report set report_content=#{reportListContentAfter} where report_content=#{reportListContentBefore}
+	</update>
 </mapper>

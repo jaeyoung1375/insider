@@ -28,6 +28,7 @@ import com.kh.insider.repo.ReportResultRepo;
 import com.kh.insider.service.AdminReportService;
 import com.kh.insider.vo.PaginationVO;
 import com.kh.insider.vo.ReportDetailVO;
+import com.kh.insider.vo.ReportMemberDetailVO;
 import com.kh.insider.vo.ReportResponseVO;
 import com.kh.insider.vo.ReportSearchVO;
 
@@ -131,6 +132,10 @@ public class ReportRestController {
 			reportDetailVO.setBoardListVO(boardRepo.selectOneBoard((int)reportDto.getReportTableNo()));
 			break;
 		case "member":
+			ReportMemberDetailVO reportMemberDetailVO = new ReportMemberDetailVO();
+			reportMemberDetailVO.setBoardList(boardRepo.selectListReported(reportDto.getMemberNo()));
+			reportMemberDetailVO.setReplyList(replyRepo.selectListReported(reportDto.getMemberNo()));
+			reportDetailVO.setMemberVO(reportMemberDetailVO);
 			break;
 		case "reply":
 			ReplyDto replyDto = replyRepo.selectOne((int)reportDto.getReportTableNo());
