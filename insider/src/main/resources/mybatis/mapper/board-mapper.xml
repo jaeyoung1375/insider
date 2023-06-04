@@ -379,6 +379,10 @@
 	<select id="selectOneBoard" resultMap="boardListVO">
 		select * from board_with_nick where board_no=#{boardNo}
 	</select>
+	<!-- 계층형 신고받은 게시물 조회 -->
+	<select id="selectListReported" resultMap="boardListVO">
+		select * from board_with_nick where member_no=#{memberNo} and board_report>0 order by board_report desc
+	</select>
 	<!-- 계층형 태그로 조회 -->
 	<select id="selectListTagBoard" resultMap="boardListVO">
 		<bind name="blockExist" value="blockDtoList!=null and blockDtoList.size()>0"></bind>
@@ -429,6 +433,12 @@
 	<select id="getTotalMyPost2" resultType="boardDto">
 	select A.*, B.attachment_no from board A inner join board_attachment B on A.board_no = B.board_no where member_no = #{memberNo}
 	</select>
+	
+	<select id="bookmarkMyPost" resultMap="boardListVO">
+	  SELECT * FROM board
+    	WHERE board_no IN (SELECT board_no FROM bookmark WHERE member_no = #{memberNo})
+</select>
+	
 	
 
 <!-- 통계 관련 sql -->

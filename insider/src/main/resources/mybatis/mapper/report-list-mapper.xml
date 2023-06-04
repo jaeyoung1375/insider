@@ -10,7 +10,7 @@
 		select * from report_list order by report_list_no asc
 	</select>
 	<update id="update">
-		update report_list set report_list_content=#{reportListContent} where report_list_no=#{reportListNo}
+		update report_list set report_list_content=#{reportListContentAfter} where report_list_no=#{reportListNo}
 	</update>
 	<delete id="delete">
 		delete report_list where report_list_no=#{reportListNo}

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.ReplyDto;
+import com.kh.insider.vo.UpdateReportContentVO;
 
 @Repository
 public class ReplyRepoImpl implements ReplyRepo{
@@ -48,6 +49,11 @@ public class ReplyRepoImpl implements ReplyRepo{
 	@Override
 	public void addReport(int replyNo) {
 		sqlSession.update("reply.addReport", replyNo);
+	}
+
+	@Override
+	public List<ReplyDto> selectListReported(long memberNo) {
+		return sqlSession.selectList("reply.selectListReported", memberNo);
 	}
 
 	
