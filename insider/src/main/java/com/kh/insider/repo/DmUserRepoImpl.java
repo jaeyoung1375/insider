@@ -1,6 +1,8 @@
 package com.kh.insider.repo;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,14 +60,26 @@ public class DmUserRepoImpl implements DmUserRepo {
 		return sqlSession.selectOne("dmUser.countUsersInRoom", roomNo);
 	}
 
-	///////////////////////////////////////////////////////
-	
 	@Override
-	public List<DmUserDto> findUsersByRoomNo(int roomNo) {
-		return sqlSession.selectList("dmUser.findUsersByRoomNo", roomNo);
+	public List<DmUserDto> getUnreadMessageNum(long memberNo, int roomNo) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("memberNo", memberNo);
+	    params.put("roomNo", roomNo);
+	    return sqlSession.selectList("dmUser.getUnreadMessageNum", params);
+	}
+	
+	
+	///////////////////////////////////////////////     //읽지 않은 메세지 수   --------   삭제 예정
+
+	@Override
+	public void insertUnReadDm(DmUserDto dmUserDto) {
+		sqlSession.insert("dmUser.insertUnReadDm", dmUserDto);
 	}
 
+	@Override
+	public void updateUnReadDm(DmUserDto dmUserDto) {
+		sqlSession.update("dmUser.updateUnReadDm", dmUserDto);
+	}
 
-
-
+	
 }
