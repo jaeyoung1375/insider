@@ -360,11 +360,6 @@
 <!-- ---------------------------------게시물 상세보기 모달(게시물)-------------------------- -->
 
 <div v-if="detailView" class="container-fluid fullscreen" @click.self="closeDetail">
-	
-	<div class="p-4 mt-2 ms-4 d-flex justify-content-end">
-		<h2 class="btn btn-none" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
-	</div>
-	
 	<div class="row fullscreen-container">
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
@@ -455,6 +450,7 @@
 				</div>
 								        	
         	</div> 
+			<button @click="closeDetail()">닫기</button>
         </div>
 	</div>
 </div>
@@ -851,7 +847,6 @@
 <!--                     		<span>팔로우 <span style="font-weight: bold;">{{getTotalFollowCount(item.memberNick)}}</span></span> -->
 							<span>팔로우 <span style="font-weight: bold;">{{followCounts}}</span></span>
                     	</div>
-                    	
                     </div>
                     <hr>
                     <div class="col-6">
