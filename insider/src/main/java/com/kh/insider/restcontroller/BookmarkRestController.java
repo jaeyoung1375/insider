@@ -1,8 +1,11 @@
 package com.kh.insider.restcontroller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +38,13 @@ public class BookmarkRestController {
 			bookmarkRepo.delete(dto);
 			return false;
 		}
+	}
+	
+	// 특정회원 북마크 목록
+	@GetMapping("/selectOne")
+	public List<BookmarkDto> selectOne(HttpSession session){
+		long memberNo = (long) session.getAttribute("memberNo");
+		return bookmarkRepo.findByNo(memberNo);
 	}
 	
 	

@@ -28,7 +28,7 @@ public class BookmarkRepoImpl implements BookmarkRepo {
 	@Override
 	public List<BookmarkDto> findByNo(long memberNo) {
 		
-		return sqlSession.selectOne("bookmark.findByNo",memberNo);
+		return sqlSession.selectList("bookmark.findByNo",memberNo);
 	}
 
 	@Override

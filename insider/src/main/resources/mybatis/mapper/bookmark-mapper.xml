@@ -9,15 +9,15 @@
 		insert into bookmark values(#{boardNo}, #{memberNo})
 	</insert>
 	
-	<select id="selectAll">
+	<select id="selectAll" resultType="BookmarkDto">
 		select * from bookmark
 	</select>
 	
-	<select id="selectOne">
+	<select id="selectOne" resultType="BookmarkDto">
 		select * from bookmark where member_no = #{memberNo} and board_no = #{boardNo}
 	</select>
 	
-	<select id="findByNo">
+	<select id="findByNo" resultType="BookmarkDto">
 		select * from bookmark where member_no = #{memberNo}
 	</select>
 	

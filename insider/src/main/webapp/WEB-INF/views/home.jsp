@@ -175,7 +175,10 @@
                                 <div class="p-2"><i :class="{'fa-heart': true, 'like':isLiked[index], 'fa-solid': isLiked[index], 'fa-regular': !isLiked[index]}" @click="likePost(board.boardWithNickDto.boardNo,index)" style="font-size: 32px;"></i></div>
                                 <div class="p-2"><img src="${pageContext.request.contextPath}/static/image/dm.png"></div>
                                 <div class="p-2"><img src="${pageContext.request.contextPath}/static/image/message_ico.png"></div>
-                                <div class="p-2 flex-grow-1"><h5><img src="${pageContext.request.contextPath}/static/image/save_post.png"></h5></div>
+                                <div class="p-2 flex-grow-1">
+                                <h5><i class="fa-regular fa-bookmark"  @click="bookmarkInsert(board.boardWithNickDto.boardNo)" v-show="bookmarkChecked(board.boardWithNickDto.boardNo)"></i>
+                                <i class="fa-solid fa-bookmark" @click="bookmarkInsert(board.boardWithNickDto.boardNo)" v-show="!bookmarkChecked(board.boardWithNickDto.boardNo)"></i></h5>
+                                </div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲좋아요▲▲▲▲▲▲▲▲▲▲▲▲▲-->
@@ -546,6 +549,9 @@ Vue.createApp({
 			replyContent:"",
 			placeholder:"댓글 입력..",
 // 			boardModal:null,
+
+			//북마크
+			bookmarkCheck : [],
         };
     },
     //데이터 실시간 계산 영역
@@ -982,6 +988,34 @@ Vue.createApp({
 			window.location.href=contextPath+"/member/"+memberNick;
 		},
 		/*----------------------태그, 닉네임 클릭 시 검색기록 넣고 이동----------------------*/
+		
+		//북마크
+		async bookmarkInsert(boardNo) {
+  const resp = await axios.post("/rest/bookmark/" + boardNo);
+
+  if (resp.data === true) {
+    this.bookmarkCheck.push({ boardNo });
+  } else {
+    const index = this.bookmarkCheck.findIndex(item => item.boardNo === boardNo);
+    if (index !== -1) {
+      this.bookmarkCheck.splice(index, 1);
+    }
+  }
+
+  console.log("북마크: " + this.bookmarkCheck.map(item => item.boardNo));
+},
+		
+		bookmarkChecked(boardNo){
+			  return !this.bookmarkCheck.some(item => item.boardNo === boardNo);
+			},
+		
+		async bookmarkList(){
+			const resp = await axios.get("/rest/bookmark/selectOne");
+			this.bookmarkCheck.push(...resp.data);
+			console.log("북마크 리스트 : "+this.bookmarkCheck.map(item => item.boardNo));
+		}
+		
+		
     },
     watch: {
        //percent가 변하면 percent의 값을 읽어와서 80% 이상인지 판정
@@ -1034,6 +1068,7 @@ Vue.createApp({
     created(){
     	this.followCheck();
     	this.loadNewList();
+    	this.bookmarkList();
     },
 }).mount("#app");
 </script>
