@@ -69,4 +69,7 @@ public interface BoardRepo {
 	
 	//리플 개수 업데이트
 	void updateReply(int boardNo);
+	
+	// 북마크 게시물 조회
+	List<BoardListVO> bookmarkMyPost(long memberNo);
 }

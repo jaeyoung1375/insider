@@ -176,8 +176,8 @@
                                 <div class="p-2"><img src="${pageContext.request.contextPath}/static/image/dm.png"></div>
                                 <div class="p-2"><img src="${pageContext.request.contextPath}/static/image/message_ico.png"></div>
                                 <div class="p-2 flex-grow-1">
-                                <h5><i class="fa-regular fa-bookmark"  @click="bookmarkInsert(board.boardWithNickDto.boardNo)" v-show="bookmarkChecked(board.boardWithNickDto.boardNo)"></i>
-                                <i class="fa-solid fa-bookmark" @click="bookmarkInsert(board.boardWithNickDto.boardNo)" v-show="!bookmarkChecked(board.boardWithNickDto.boardNo)"></i></h5>
+                                <h5><i class="fa-regular fa-bookmark"  @click="bookmarkInsert(board.boardWithNickDto.boardNo)" v-show="bookmarkChecked(board.boardWithNickDto.boardNo)" style="font-size:25px;"></i>
+                                <i class="fa-solid fa-bookmark" @click="bookmarkInsert(board.boardWithNickDto.boardNo)" v-show="!bookmarkChecked(board.boardWithNickDto.boardNo)" style="font-size:25px;"></i></h5>
                                 </div>
                             </div>
                         </div>

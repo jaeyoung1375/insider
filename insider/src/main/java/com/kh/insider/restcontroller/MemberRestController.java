@@ -128,6 +128,12 @@ public class MemberRestController {
 		return getTotalPost;
 	}
 	
+	@GetMapping("/bookmarkMyPost")
+	public List<BoardListVO> bookmarkMyPost(HttpSession session){
+		long memberNo = (long) session.getAttribute("memberNo");
+		return boardRepo.bookmarkMyPost(memberNo);
+	}
+	
 	//닉네임 중복 확인
 	@GetMapping("/checkNick/{memberNick}")
 	public boolean checkNick(@PathVariable String memberNick) {
