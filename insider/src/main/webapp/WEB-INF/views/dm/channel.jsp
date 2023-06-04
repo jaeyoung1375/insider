@@ -205,11 +205,11 @@
 								    <span style="font-size:0.86em;padding-left:3.2em; word-wrap:normal;">
 									     {{ room.roomName.length > 11 ? room.roomName.slice(0, 11) + '...' : room.roomName }}
 			   						</span>
-			   						<span style="color:#eb4d4b; font-size:0.85em;padding-left:1.5em; padding-top:0.1em" v-show="unreadMessage[index] !== 0">
+			   						<span v-if="unreadMessage[index] > 0" style="color:#eb4d4b; font-size:0.85em;padding-left:1.5em; padding-top:0.1em">
 			   						 	{{unreadMessage[index]}}
 			   						</span>
 									</a>
-			   						<span style="color:#eb4d4b; position:absolute;right:15px; top:13px;font-size: 10px;">
+			   						<span v-if="unreadMessage[index] > 0" style="color:#eb4d4b; position:absolute;right:15px; top:13px;font-size: 10px;">
 			   							<i class="fa-solid fa-circle"></i>
 			   						</span>
 							    </div>
