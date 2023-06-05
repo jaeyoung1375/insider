@@ -242,8 +242,10 @@
 		<!-- 리스트 -->
 			<div class="row d-flex justify-content-center mt-3">
 				<div class="box m-2" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)">
-					<img class='content' @click="detailViewOn(index)" v-if="board.boardAttachmentList.length>0" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
-					<img class='content' v-else src="${pageContext.request.contextPath}/static/image/noimage.png">
+					<video class="content" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
+							style="object-fit:cover" autoplay muted controls loop></video>
+					<img class='content' @click="detailViewOn(index)" v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video"
+							 :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
 					<div class="content-box"  @click="detailViewOn(index)"></div>
 					<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
 					<div class="like-comment" @click="detailViewOn(index)">

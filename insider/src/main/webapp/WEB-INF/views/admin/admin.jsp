@@ -98,24 +98,37 @@
 	max-height:100%;
 	overflow-y:auto
 }
-.modal-header{
+.modal-header-custom{
+	padding:1.3em;
 	position:sticky; 
+	border-bottom:1px solid lightgray;
 	top:0; 
 	z-index:1; 
-	background-color:white
+	background-color:white;
+	border-top-left-radius: 0.5rem;
+	border-top-right-radius: 0.5rem;
 }
-.modal-footer{
+.modal-footer-custom{
 	position:sticky; 
 	bottom:0; 
 	z-index:1; 
-	background-color:white
+	background-color:white;
+	border-bottom-left-radius: 0.5rem;
+	border-bottom-right-radius: 0.5rem;
 }
 
-.modal-header-custom{
+.modal-body-custom{
+	padding:1em;
 	position:sticky; 
-	top:0; 
+	top:0;
+	max-height:700px;
 	z-index:1; 
-	background-color:white
+	background-color:white;
+	overflow-y: auto;
+	-ms-overflow-style: none;
+	position: relative;
+	display:flex;
+	justify-content:center;
 }
 .card-scroll{
 	overflow-y: auto;
@@ -136,9 +149,10 @@
 	position: absolute;
 	left: 50%;
 	top: 50%;
-	width: 40%;
+	width: 500px;
 	max-height: 80%;
 	transform: translate(-50%, -50%);
+	border-radius: 0.5rem;
 }
 </style>
 <div id="app">
@@ -1640,16 +1654,20 @@
 	</div>
 	<!-- ---------------------------------신고 세부 모달 끝-------------------------- -->
 	<!-- ---------------------------------게시물 미리보기 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="boardViewModal" data-bs-backdrop="static" ref="boardViewModal" style="z-index:3000">
-		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+	<div class="fullscreen container-fluid" tabindex="-1" v-if="boardViewModal" style="z-index:3000">
+		<div class="row fullscreen-container">
 			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">게시물 미리보기</h5>
-					<button type="button" class="btn-close" @click="hideBoardViewModal" aria-label="Close">
-					<span aria-hidden="true"></span>
-					</button>
+				<div class="row modal-header-custom">
+					<div class="col-10">
+						<h5 class="modal-title">게시물 미리보기</h5>
+					</div>
+					<div class="col-2 d-flex justify-content-end align-items-center">
+						<button type="button" class="btn-close" @click="hideBoardViewModal" aria-label="Close">
+						<span aria-hidden="true"></span>
+						</button>
+					</div>
 				</div>
-				<div class="modal-body" v-if="boardViewNo>0">
+				<div class="row modal-body-custom">
 					<div class="row" >
 						<div class="col-3 d-flex justify-content-center item-aligns-center">
 							<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+boardViewContent.boardWithNickDto.imageURL">
@@ -1690,7 +1708,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="modal-footer">
+				<div class="row modal-footer-custom">
 					<button type="button" class="btn btn-secondary" @click="hideBoardViewModal">닫기</button>
 				</div>
 			</div>
@@ -1937,7 +1955,7 @@
 					begin:"", end:"", totalPage:"",	startBlock:"", finishBlock:"", first:false, last:false, prev:false,
 					next:false, nextPage:"", prevPage:"",
 				},
-				boardViewModal:null,
+				boardViewModal:false,
 				boardViewNo:"",
 				boardViewContent:{},
 				forbiddenModal:false,
@@ -2240,12 +2258,10 @@
 					this.boardViewNo=this.boardList[index].boardWithNickDto.boardNo;
 					this.boardViewContent=this.boardList[index];
 				}
-				if(this.boardViewModal==null) return;
-				this.boardViewModal.show();
+				this.boardViewModal=true;
 			},
 			hideBoardViewModal(){
-				if(this.boardViewModal==null) return;
-				this.boardViewModal.hide();
+				this.boardViewModal=false
 			},
 			/* 금지어 메서드 */
  			showForbiddenModal(){
@@ -3018,7 +3034,6 @@
 			this.suspensionModal = new bootstrap.Modal(this.$refs.suspensionModal);
 			this.reportSuspensionModal = new bootstrap.Modal(this.$refs.reportSuspensionModal);
 			this.reportDetailModal = new bootstrap.Modal(this.$refs.reportDetailModal);
-			this.boardViewModal = new bootstrap.Modal(this.$refs.boardViewModal);
 			this.reportedBoardModal = new bootstrap.Modal(this.$refs.reportedBoardModal);
 			this.reportedReplyModal = new bootstrap.Modal(this.$refs.reportedReplyModal);
 			this.reportedReplyDetailModal = new bootstrap.Modal(this.$refs.reportedReplyDetailModal);
