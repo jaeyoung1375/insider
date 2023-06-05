@@ -173,6 +173,7 @@ public class DmServiceImpl implements DmService {
 	//- 사용자가 존재하는 방의 번호를 찾는 기능
 	public int findUser(DmUserVO user) {
 		for(int roomNo : rooms.keySet()) {
+			//대기실이면 패스
 			if(roomNo==-1) {
 				continue;
 			}
@@ -228,10 +229,9 @@ public class DmServiceImpl implements DmService {
 		if(receiveVO.getType() == WebSocketConstant.CHAT) {
 			
 			int roomNo = this.findUser(user);
-			if(roomNo == -1) return;
 			
 			//(옵션)대기실인 경우 메세지 전송이 불가
-			//if(roomNo == WebSocketConstant.WAITING_ROOM_NO) return;
+			if(roomNo == WebSocketConstant.WAITING_ROOM_NO) return;
 			
 			//보낼 메세지 생성
 			MemberMessageVO msg = new MemberMessageVO();
@@ -277,6 +277,18 @@ public class DmServiceImpl implements DmService {
 	        
 	        this.exit(user, roomNo);
 	    }
+		// 읽지 않은 메시지 수
+	    else if (receiveVO.getType() == WebSocketConstant.NEW_MESSAGE) {
+	    	int roomNo = this.findUser(user);
+	    	List<DmUserDto> unreadMessage = dmUserRepo.getUnreadMessageNum(user.getMemberNo(), roomNo);
+	    	
+	    	String unreadJson = mapper.writeValueAsString(unreadMessage);
+	    	TextMessage unreadTextMessage = new TextMessage(unreadJson);
+	    	// 대기실에 있는 사용자에게 이벤트 전송
+	    	DmRoomVO waitingRoom = rooms.get(WebSocketConstant.WAITING_ROOM_NO);
+	        waitingRoom.broadcast(unreadTextMessage, waitingRoom.getUsers());
+	    }
+		
 		//회원 초대 메세지
 //	    else if (receiveVO.getType() == WebSocketConstant.INVITATION) {
 //	        int roomNo = this.findUser(user);
@@ -440,8 +452,29 @@ public class DmServiceImpl implements DmService {
    
     //읽지 않은 메세지 수 수정
    public void updateUnReadDm(DmUserDto dmUserDto) {
-       dmUserRepo.updateUnReadDm(dmUserDto);
+	   dmUserRepo.updateUnReadDm(dmUserDto);
    }
+   
+	// 읽지 않은 메시지 수 변경 감지 및 웹소켓 이벤트 발송
+   public void broadcastRoom (DmUserDto dmUserDto) throws IOException {
+	   
+	    long memberNo = dmUserDto.getMemberNo();
+	    int roomNo = dmUserDto.getRoomNo();
+	    List<DmUserDto> unreadMessages = dmUserRepo.getUnreadMessageNum(memberNo, roomNo); // 읽지 않은 메시지 수 조회
+
+	    // 웹소켓 클라이언트에게 이벤트 전송
+	    String unreadJson = mapper.writeValueAsString(unreadMessages);
+	    TextMessage unreadMessage = new TextMessage(unreadJson);
+
+	    // 대기실에 있는 사용자에게 이벤트 전송
+	    if (roomNo == WebSocketConstant.WAITING_ROOM_NO) {
+	        DmRoomVO waitingRoom = rooms.get(WebSocketConstant.WAITING_ROOM_NO);
+	        waitingRoom.broadcast(unreadMessage, waitingRoom.getUsers());
+	    }
+	    // 채팅방에 있는 사용자에게 이벤트 전송
+	    //DmRoomVO dmRoomVO = rooms.get(roomNo);
+	    //dmRoomVO.broadcast(unreadMessage, dmRoomVO.getUsers());
+	}
 
 	   
 }

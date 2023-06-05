@@ -180,7 +180,7 @@
 					
 					<!-- 채팅방 이름 -->
 					<div class="card col-8" style="border-radius:0;border-left:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
-						<div v-if="roomNo != null" >
+						<div v-if="roomNo != null">
 							채팅방 이름
 							<span style="position:absolute; top:21px; right:0; margin-right:19px;">
 								<i class="fa-solid fa-file-pen fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showRoomNameModal()"></i>
@@ -213,7 +213,7 @@
 			   							<i class="fa-solid fa-circle"></i>
 			   						</span>
 							    </div>
-			   					<div style="word-wrap:normal;margin-top:3px; display: flex; align-items: center;">
+			   					<div style="word-wrap:normal;display: flex; align-items: center;">
 			   						<span v-if="room.messageContent" style="font-size:0.75em;word-wrap:normal;display: inline-block;width: 73%;text-overflow: 
 			   							ellipsis;white-space: nowrap;overflow: hidden;vertical-align:bottom; text-overflow: ellipsis; padding-left:3.5em; color:#aaa69d;">
 			   							{{JSON.parse(room.messageContent).content}}
@@ -490,7 +490,7 @@
                     userTimeList:[],
                     //한 개의 메세지에 다른 회원이 읽지 않은 수
                     unreadCount:[],
-                    //특정 회원의 채팅방에서 읽지 않은 메세지 수
+                    //특정 회원의 채팅방에서 읽지 않은 메세지 수(비동기)
                     unreadMessage: [],
                     
                     //초대
@@ -505,7 +505,7 @@
    					scrollContainer: null, //스크롤
    					
    					membersInRoomList:[], //채팅방 회원 목록
-                    
+   					
                 };
             },
             methods:{
@@ -651,8 +651,23 @@
             		//메세지 일 때
             		else{
 	            		this.messageList.push(message);
+	            		
+	                    // 읽지 않은 메세지 수 테스트1
+	                    //if (message.unreadMessage) {
+	                    //    const waitingRoomNo = -1; // 대기실의 방 번호
+	                    //    if (this.roomNo === waitingRoomNo) {
+	                    //        this.unreadMessage = message.unreadMessage.length;
+	                    //    }
+	                    
+	                    // 읽지 않은 메세지 수 테스트2
+						if (message.type === 6) { // 새로운 메시지 수
+							if (this.roomNo === -1) { // 대기실의 방 번호
+								this.unreadMessage = message.unreadMessage.length;
+								this.updateUnreadDm(-1); // 대기실의 읽지 않은 메세지 수 업데이트
+							}
+						}
             		}
-            	},
+	            },
             	sendMessage() {
             		if(this.text.length == 0) return;
             		this.socket.send(this.jsonText);

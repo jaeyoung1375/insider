@@ -64,7 +64,6 @@
 		    AND message_sender != #{memberNo}
     </select>
     
-    
     <!-- 읽지 않은 메세지 수 수정 -->
 	<update id="updateUnReadDm">
 		update dm_user
