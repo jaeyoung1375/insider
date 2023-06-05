@@ -23,7 +23,7 @@
 </style>
 
 <%@include file="../template/header.jsp" %>
-		<div class="container col-lg-4 card p-5 mt-5" style="display:flex; justify-content: center;" id="app">
+		<div class="container col-lg-5 card p-5 mt-5" style="display:flex; justify-content: center;" id="app">
 		
 			 <h5 class="card-title text-center">로그인에 문제가 있나요?</h5>
 			 <div class="form-floating mb-3"> 
@@ -49,7 +49,7 @@
 			</div>
 			
 		</div>
-		    <div class="container col-lg-4 card p-4 mt-4" style="display:flex;">
+		    <div class="container col-lg-5 card p-4 mt-5" style="display:flex;">
 	        	<div class="text-center">
 	        		계정이 있으신가요??
 	        		<a href="login">로그인하기</a>
@@ -92,13 +92,14 @@
 	     						memberEmail : this.email
 	     					}
 	     				});
+	     				this.isDisabled = true;
 	     				 // CryptoJS 라이브러리를 사용하여 이메일 암호화
 	     	              this.encryptedEmail = CryptoJS.AES.encrypt(this.email, 'encryptionKey').toString();
 	     				// 인증번호
 	     				this.num = response.data;
 	     				// num을 다른메서드에서 쓰기 위함
 	     				this.emailVerifyCode();
-	     				this.isDisabled = true;
+	     				
 	     				
 	     				this.count = 299;
 	     				this.timer = setInterval(() => {

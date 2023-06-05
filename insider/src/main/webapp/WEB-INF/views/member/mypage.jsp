@@ -435,10 +435,15 @@
 				<div class="card-body"  style="height:110px; padding-top: 0px; padding-left: 0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
 					<p class="card-text" style="margin: 0 0 4px 0">
+						<div class="d-flex">
 						<i :class="{'fa-heart': true, 'like':isLiked[detailIndex],'ms-2':true, 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}" @click="likePost(myBoardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
 						&nbsp;
 						<i class="fa-regular fa-message mb-1" style="font-size: 25px; "></i>
-					</p>
+						<span class="ms-auto" style="margin-right:10px;">
+						<i class="fa-regular fa-bookmark"  @click="bookmarkInsert(myBoardList[detailIndex].boardWithNickDto.boardNo)" v-show="bookmarkChecked(myBoardList[detailIndex].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
+                           <i class="fa-solid fa-bookmark" @click="bookmarkInsert(myBoardList[detailIndex].boardWithNickDto.boardNo)" v-show="!bookmarkChecked(myBoardList[detailIndex].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
+                          </span>
+                      </div>
 					<p class="card-text" style="margin: 0 0 4px 0"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount[detailIndex]}}개</b></p>
 					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(myBoardList[detailIndex].boardWithNickDto.boardTimeAuto)}}</p>
 					
@@ -455,44 +460,43 @@
 	</div>
 </div>
 <!-- ---------------------------------게시물 상세보기 모달(북마크)-------------------------- -->
-<div v-if="detailView" class="container-fluid fullscreen" @click.self="closeDetail">
+<div v-if="detailView2" class="container-fluid fullscreen" @click.self="closeDetail2">
 	<div class="row fullscreen-container">
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
-			<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
+			<div :id="'detailCarousel'+ detailIndex2" class="carousel slide">
                 <div class="carousel-indicators">
-                  <button v-for="(attach, index2) in bookmarkMyPostList[detailIndex].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
+                  <button v-for="(attach, index2) in bookmarkMyPostList[detailIndex2].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex2" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
                 </div>
                
                 <div class="carousel-inner">
-                  <div  v-for="(attach, index2) in bookmarkMyPostList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
-                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(bookmarkMyPostList.boardWithNickDto.boardNo,detailIndex)" style="width:700px; height:700px;"> 
+                  <div  v-for="(attach, index2) in bookmarkMyPostList[detailIndex2].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
+                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex2)" style="width:700px; height:700px;"> 
                   </div>
                 </div>
                
-                <button class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="prev">
+                <button class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex2" data-bs-slide="prev">
                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Previous</span>
                 </button>
-                <button  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="next">
+                <button  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex2" data-bs-slide="next">
                   <span class="carousel-control-next-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Next</span>
                 </button> 
                 
            </div>
 		</div>
-           
-         <div class="col-4" style="padding-left: 0;">
+		<div class="col-4" style="padding-left: 0;">
         	<div class="card bg-light" style="border-radius:0; max-height: 700px">
            		<div class="card-header">
 	           		<!-- <img class="profile" :src="profileUrl(detailIndex)"> -->
-           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+bookmarkMyPostList[detailIndex].boardWithNickDto.memberNick"><b>{{bookmarkMyPostList[detailIndex].boardWithNickDto.memberNick}}</b></a>
+           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick"><b>{{bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick}}</b></a>
            		</div>
 				
 				<div class="card-body card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
-					<p class="card-text" style="margin-left: 0.5em;">{{bookmarkMyPostList[detailIndex].boardWithNickDto.boardContent}}
-					<br v-if="bookmarkMyPostList[detailIndex].boardTagList.length > 0"><br v-if="myBoardList[detailIndex].boardTagList.length > 0">
-                            	<a href="#" v-for="(tag, index3) in bookmarkMyPostList[detailIndex].boardTagList" :key="index3">\#{{tag.tagName}}</a>
+					<p class="card-text" style="margin-left: 0.5em;">{{bookmarkMyPostList[detailIndex2].boardWithNickDto.boardContent}}
+					<br v-if="bookmarkMyPostList[detailIndex2].boardTagList.length > 0"><br v-if="bookmarkMyPostList[detailIndex2].boardTagList.length > 0">
+                            	<a href="#" v-for="(tag, index3) in bookmarkMyPostList[detailIndex2].boardTagList" :key="index3">\#{{tag.tagName}}</a>
 					</p>
 					
 					
@@ -508,9 +512,9 @@
 <!-- 						<p style="padding-left:4.0em;margin-bottom:1px;font-size:0.8em; color:gray;"> -->
 						<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
 							<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
-							<i :class="{'fa-heart': true, 'like':isReplyLiked[index],'ms-2':true, 'fa-solid': isReplyLiked[index], 'fa-regular': !isReplyLiked[index]}" @click="likeReply(reply.replyNo,index)" style="font-size: 0.9em;"></i>
+							<i :class="{'fa-heart': true, 'like':isReplyLiked2[index],'ms-2':true, 'fa-solid': isReplyLiked2[index], 'fa-regular': !isReplyLiked2[index]}" @click="likeReply2(reply.replyNo,index)" style="font-size: 0.9em;"></i>
 							&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-							<i v-if="replyList[index].replyMemberNo == ${memberNo}" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="color:red; cursor: pointer;"></i>
+							<i v-if="replyList[index].replyMemberNo == ${memberNo}" @click="replyDelete2(index,detailIndex2)" class="fa-solid fa-xmark" style="color:red; cursor: pointer;"></i>
 							
 							
 						</p>
@@ -531,28 +535,30 @@
 				<div class="card-body"  style="height:110px; padding-top: 0px; padding-left: 0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
 					<p class="card-text" style="margin: 0 0 4px 0">
-						<i :class="{'fa-heart': true, 'like':isLiked[detailIndex],'ms-2':true, 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}" @click="likePost(bookmarkMyPostList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
+						<div class="d-flex">
+						<i :class="{'fa-heart': true, 'like':isLiked2[detailIndex2],'ms-2':true, 'fa-solid': isLiked2[detailIndex2], 'fa-regular': !isLiked2[detailIndex2]}" @click="likePost2(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo,detailIndex2)" style="font-size: 27px;"></i>
 						&nbsp;
 						<i class="fa-regular fa-message mb-1" style="font-size: 25px; "></i>
-					</p>
-					<p class="card-text" style="margin: 0 0 4px 0"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount[detailIndex]}}개</b></p>
-					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(myBoardList[detailIndex].boardWithNickDto.boardTimeAuto)}}</p>
+						<span class="ms-auto" style="margin-right:10px;">
+						<i class="fa-regular fa-bookmark"  @click="bookmarkInsert(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" v-show="bookmarkChecked(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
+                           <i class="fa-solid fa-bookmark" @click="bookmarkInsert(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" v-show="!bookmarkChecked(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
+                          </span>
+                      </div>
+					<p class="card-text" style="margin: 0 0 4px 0"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount2[detailIndex2]}}개</b></p>
+					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardTimeAuto)}}</p>
 					
 				</div>
 				
 				<div class="input-group">
-					<input ref="replyInput" type="text" class="form-control" :placeholder="placeholder" v-model="replyContent" style="border: none;" aria-label="Recipient's username" aria-describedby="button-addon2" @input="replyContent = $event.target.value" @keyup.enter="replyInsert2(detailIndex)">
-					<button class="btn" type="button" id="button-addon2" style="border-top-right-radius: 0!important;" @click="replyInsert2(detailIndex)">작성</button>
+					<input ref="replyInput" type="text" class="form-control" :placeholder="placeholder" v-model="replyContent" style="border: none;" aria-label="Recipient's username" aria-describedby="button-addon2" @input="replyContent = $event.target.value" @keyup.enter="replyInsert2(detailIndex2)">
+					<button class="btn" type="button" id="button-addon2" style="border-top-right-radius: 0!important;" @click="replyInsert2(detailIndex2)">작성</button>
 				</div>
 								        	
         	</div> 
-			<button @click="closeDetail()">닫기</button>
+			<button @click="closeDetail2()">닫기</button>
         </div>
 	</div>
 </div>
-
-
-
 
   
       <!-- Modal 창 영역 -->
@@ -1076,19 +1082,28 @@
             
           //상세보기 및 댓글
 			detailView:false,
+			detailView2:false,
 			detailIndex:"",
+			detailIndex2:"",
 			replyList:[],
+			replyList2:[],
 			replyParent:0,
 			replyContent:"",
 			placeholder:"댓글 입력..",
 			
+		  
+			
 			//게시물 좋아요 기능 전용 변수
 			boardLikeCount:[], // 좋아요 수를 저장할 변수
+			boardLikeCount2:[], // 좋아요 수를 저장할 변수
             isLiked : [], // 로그인 회원이 좋아요 체크 여부
+            isLiked2 : [], // 로그인 회원이 좋아요 체크 여부
             
 			//게시물 댓글 좋아요 기능 전용 변수
 			replyLikeCount : [], // 댓글 좋아요 수 저장 변수
+			replyLikeCount2 : [], // 댓글 좋아요 수 저장 변수
 			isReplyLiked : [], // 로그인 회원이 댓글 좋아요 체크 여부 
+			isReplyLiked2 : [], // 로그인 회원이 댓글 좋아요 체크 여부 
 			recommendFriends : false,
 			recommendFriendsList : [], // 친구 추천목록 리스트
 			currentPage: 0,
@@ -1109,6 +1124,7 @@
 			actTab : 'boardTab', // 초기 선택된 탭은 'boardTab'입니다.
 			// 북마크 
 			bookmarkMyPostList : [],
+			bookmarkCheck : [],
          };
       },
       computed: {
@@ -1711,20 +1727,24 @@
              	this.replyList=[...resp.data];
              },
              
+             //댓글 조회(북마크)
              async replyLoad2(index) {
-              	this.replyList = [];
-              	this.isReplyLiked = [];
-              	this.replyLikeCount = [];
-              	const resp = await axios.get("${pageContext.request.contextPath}/rest/reply/"+ this.bookmarkMyPostList[index].boardWithNickDto.boardNo);
-                  
-              	for (const reply of resp.data) {
-                  	this.isReplyLiked.push(await this.likeReplyChecked(reply.replyNo));
-                  	this.replyLikeCount.push(reply.replyLike);
-                    }
-              	
-              	this.replyList=[...resp.data];
-              },
+             	this.replyList = [];
+             	this.isReplyLiked2 = [];
+             	this.replyLikeCount2 = [];
+             	const resp = await axios.get("${pageContext.request.contextPath}/rest/reply/"+ this.bookmarkMyPostList[index].boardWithNickDto.boardNo);
+                 
+             	for (const reply of resp.data) {
+                 	this.isReplyLiked2.push(await this.likeReplyChecked(reply.replyNo));
+                 	this.replyLikeCount2.push(reply.replyLike);
+                   }
+             	
+             	this.replyList=[...resp.data];
+             },
              
+             
+      
+           
              //댓글 등록
              async replyInsert(index) {
              	  const boardNo = this.myBoardList[index].boardWithNickDto.boardNo;
@@ -1745,7 +1765,7 @@
              	  }
              },
              
-             //댓글 등록
+             //댓글 등록(북마크)
              async replyInsert2(index) {
              	  const boardNo = this.bookmarkMyPostList[index].boardWithNickDto.boardNo;
              	  
@@ -1765,12 +1785,20 @@
              	  }
              },
              
-             
+          
+     
              //댓글 삭제
              async replyDelete(index,index2) {
              	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList[index].replyNo);
              	this.replyLoad(index2);
              },
+             //댓글 삭제(북마크)
+             async replyDelete2(index,index2) {
+             	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList[index].replyNo);
+             	this.replyLoad2(index2);
+             },
+             
+           
              
              //대댓글
              reReply(replyNo) {
@@ -1784,6 +1812,8 @@
              		this.$refs.replyInput.focus();
              	}
              },
+             
+           
              
            	//대댓글 펼치기
              showReReply(replyNo,index){
@@ -1848,15 +1878,25 @@
              	this.replyLoad(index);
              },
              
+             //상세보기 모달창 열기
              detailViewOn2(index) {
-              	this.detailView = true;
-              	this.detailIndex = index;
-              	this.replyLoad2(index);
-              },
+             	this.detailView2 = true;
+             	this.detailIndex2 = index;
+             	this.replyLoad2(index);
+             },
              
+            
+   
              //상세보기 모달창 닫기
              closeDetail() {
              	this.detailView = false;
+             	this.replyList = [];
+             },
+             
+
+             //상세보기 모달창 닫기(북마크)
+             closeDetail2() {
+             	this.detailView2 = false;
              	this.replyList = [];
              },
              
@@ -1885,6 +1925,20 @@
                  this.boardLikeCount[index] = resp.data.count;
              },
              
+             //좋아요(북마크)
+             async likePost2(boardNo, index) {
+                 const resp = await axios.post("${pageContext.request.contextPath}/rest/board/like", {boardNo:boardNo});
+                 if(resp.data.result){
+                 	this.isLiked2[index] = true;
+                 }
+                 else {
+                 	this.isLiked2[index] = false;
+                 }
+                 
+                 this.boardLikeCount2[index] = resp.data.count;
+             },
+             
+             
              //댓글 좋아요
              async likeReply(replyNo, index) {
              	const resp = await axios.post("${pageContext.request.contextPath}/rest/reply/like", {replyNo:replyNo});
@@ -1896,6 +1950,19 @@
              		this.isReplyLiked[index] = false;
              	}
              	this.replyLikeCount[index] = resp.data.count;
+             },
+             
+             //댓글 좋아요(북마크)
+             async likeReply2(replyNo, index) {
+             	const resp = await axios.post("${pageContext.request.contextPath}/rest/reply/like", {replyNo:replyNo});
+             	
+             	if(resp.data.result) {
+             		this.isReplyLiked2[index] = true;
+             	}
+             	else {
+             		this.isReplyLiked2[index] = false;
+             	}
+             	this.replyLikeCount2[index] = resp.data.count;
              },
              
              
@@ -2080,12 +2147,46 @@
         			this.isLoading = false;
         		},
         		async bookmarkMyPost(){
-        			const resp = await axios.get("/rest/member/bookmarkMyPost");
+        			const resp = await axios.get("/rest/member/bookmarkMyPost");	
+        			
+        			for(const board of resp.data){
+        				this.isLiked2.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+        				this.boardLikeCount2.push(board.boardWithNickDto.boardLike);
+        			}
+        			
+        			  const newData = resp.data;
         			
         			this.bookmarkMyPostList.push(...resp.data);
         			
         			console.log("bookmarkMyPostList : "+this.bookmarkMyPostList);
-        		}
+        		},
+        		//북마크
+        		async bookmarkInsert(boardNo) {
+        		  const resp = await axios.post("/rest/bookmark/" + boardNo);
+        		
+        		  if (resp.data === true) {
+        		    this.bookmarkCheck.push({ boardNo });
+        		  } else {
+        		    const index = this.bookmarkCheck.findIndex(item => item.boardNo === boardNo);
+        		    if (index !== -1) {
+        		      this.bookmarkCheck.splice(index, 1);
+        		    }
+        		  }
+        		
+        		  console.log("북마크: " + this.bookmarkCheck.map(item => item.boardNo));
+        		},
+        		
+        		bookmarkChecked(boardNo){
+        			  return !this.bookmarkCheck.some(item => item.boardNo === boardNo);
+        			},
+        		
+        		async bookmarkList(){
+        			const resp = await axios.get("/rest/bookmark/selectOne");
+        			this.bookmarkCheck.push(...resp.data);
+        			console.log("북마크 리스트 : "+this.bookmarkCheck.map(item => item.boardNo));
+        		},
+        		
+        		/*---------북마크 종료 ----------------- */
       		},
       		
       		
@@ -2102,6 +2203,7 @@
     	  this.hashtTagList();
     	  this.hashtagFollowCheck();
     	  this.bookmarkMyPost();
+    	  this.bookmarkList();
     	  Promise.all([this.followListPaging(), this.followerListPaging(), this.boardList()])
     	    .then(() => {
     	      this.followCheck();
