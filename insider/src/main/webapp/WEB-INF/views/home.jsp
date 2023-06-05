@@ -184,7 +184,8 @@
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲좋아요▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼멘트▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-1">
-                            <h4 class="mt-1"><b @click="showLikeListModal(board.boardWithNickDto.boardNo)" style="cursor: pointer;">좋아요 {{boardLikeCount[index]}}개</b></h4>
+                            <h4 v-if="board.boardWithNickDto.boardLikeValid == 0" class="mt-1"><b @click="showLikeListModal(board.boardWithNickDto.boardNo)" style="cursor: pointer;">좋아요 {{boardLikeCount[index]}}개</b></h4>
+                            <h4 v-else class="mt-1"><b @click="showLikeListModal(board.boardWithNickDto.boardNo)" style="cursor: pointer;">좋아요 여러개</b></h4>
                             <h4><a class="btn btn-none" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a></h4>
                             <p style="height: 20px;overflow: hidden; width: 400px;white-space: nowrap;text-overflow: ellipsis;margin-bottom:5px;">
                             	<span class="textHide">
@@ -203,12 +204,12 @@
              			</div>           
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲댓글 모달창 열기▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼댓글입력창▼▼▼▼▼▼▼▼▼▼▼▼▼-->
-                        <div class="p-1">
-                            <div class="d-flex">
+                        <div class="p-1" v-if="board.boardWithNickDto.boardReplyValid == 0">
+                            <div class="d-flex" >
 <!--                                 <div class="p-2"><img src="/static/image/emoticon.png"></div> -->
-                                <div class="p-1"><input class="form-control" type="text" placeholder="댓글 달기..." v-model="replyContent" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(index),detailViewOn(index)"
+                                <div class="p-1"><input class="form-control" type="text" placeholder="댓글 달기..." v-model="replyContent" :disabled="board.boardWithNickDto.boardReplyValid == 1" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(index),detailViewOn(index)"
                                                         style="border: 2px solid white; width: 24em;"></div>
-                                <div class="p-2 flex-grow-1"><h5 style="color: dodgerblue" @click="replyInsert(index),detailViewOn(index)">게시</h5></div>
+                                <div class="p-2 flex-grow-1"><h5 style="color: dodgerblue; cursor: pointer;" @click="replyInsert(index),detailViewOn(index)">게시</h5></div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲댓글입력창▲▲▲▲▲▲▲▲▲▲▲▲▲-->
@@ -350,7 +351,7 @@
 				</div>
 				
 				<div class="input-group">
-					<input ref="replyInput" type="text" class="form-control" :placeholder="placeholder" v-model="replyContent" style="border: none;" aria-label="Recipient's username" aria-describedby="button-addon2" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(detailIndex)">
+					<input ref="replyInput" type="text" class="form-control" @click="disabledReply(detailIndex)" :placeholder="placeholder"  v-model="replyContent" style="border: none;" aria-label="Recipient's username" aria-describedby="button-addon2" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(detailIndex)">
 					<button class="btn" type="button" id="button-addon2" style="border-top-right-radius: 0!important;" @click="replyInsert(detailIndex)">작성</button>
 				</div>
 								        	
@@ -887,11 +888,18 @@ Vue.createApp({
 		      	   }
       	  
          },
+         
+         //댓글 사용 불가 알림
+         disabledReply(index) {
+        	 if(this.boardList[index].boardWithNickDto.boardReplyValid != 0){
+        		 alert("댓글 사용이 불가능합니다.");
+        	 }
+         },
         
         //상세보기 모달창 열기
         detailViewOn(index) {
         	this.detailView = true;
-        	this.detailIndex = index;
+        	this.detailIndex = index;f
         	this.replyLoad(index);
         	document.body.style.overflow = "hidden";
         },
