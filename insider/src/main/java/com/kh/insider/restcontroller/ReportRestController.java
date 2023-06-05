@@ -1,12 +1,14 @@
 package com.kh.insider.restcontroller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,17 +16,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.BlockDto;
 import com.kh.insider.dto.MemberWithProfileDto;
+import com.kh.insider.dto.ReplyDto;
 import com.kh.insider.dto.ReportDto;
 import com.kh.insider.dto.ReportResultDto;
 import com.kh.insider.repo.BlockRepo;
 import com.kh.insider.repo.BoardRepo;
+import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
+import com.kh.insider.repo.ReplyRepo;
 import com.kh.insider.repo.ReportManagementRepo;
 import com.kh.insider.repo.ReportRepo;
 import com.kh.insider.repo.ReportResultRepo;
 import com.kh.insider.service.AdminReportService;
 import com.kh.insider.vo.PaginationVO;
 import com.kh.insider.vo.ReportDetailVO;
+import com.kh.insider.vo.ReportMemberDetailVO;
 import com.kh.insider.vo.ReportResponseVO;
 import com.kh.insider.vo.ReportSearchVO;
 
@@ -45,6 +51,10 @@ public class ReportRestController {
 	private BlockRepo blockRepo;
 	@Autowired
 	private ReportResultRepo reportResultRepo;
+	@Autowired
+	private MemberRepo memberRepo;
+	@Autowired
+	private ReplyRepo replyRepo;
 	
 	@PostMapping("/")
 	public MemberWithProfileDto insert(@RequestBody ReportDto reportDto, HttpSession session) throws IOException {
@@ -59,7 +69,7 @@ public class ReportRestController {
 		ReportDto checkReportDto = reportRepo.seletcOne(reportDto);
 		if(checkReportDto==null) {
 			reportRepo.insert(reportDto);
-			String board = reportDto.getReportTable();
+			String tableName = reportDto.getReportTable();
 			
 			//리포트 관리 결과 테이블에 추가
 			ReportResultDto reportResultDto = reportResultRepo.selectOne(reportDto);
@@ -68,9 +78,16 @@ public class ReportRestController {
 			}
 			
 			//신고 수 추가
-			switch(board) {
+			switch(tableName) {
 			case "board" : 
-				boardRepo.addReport(reportDto.getReportTableNo());
+				boardRepo.addReport((int) reportDto.getReportTableNo());
+				break;
+			case "member":
+				memberRepo.addReport(reportDto.getReportTableNo());
+				break;
+			case "reply" :
+				replyRepo.addReport((int) reportDto.getReportTableNo());
+				break;
 			}
 			//최신 현황을 admin report 게시판으로 전송
 			adminReportService.sendSearchOptionRequest();
@@ -114,9 +131,25 @@ public class ReportRestController {
 		
 		switch(reportDto.getReportTable()) {
 		case "board":
-			reportDetailVO.setBoardListVO(boardRepo.selectOneBoard(reportDto.getReportTableNo()));
+			reportDetailVO.setBoardListVO(boardRepo.selectOneBoard((int)reportDto.getReportTableNo()));
+			break;
+		case "member":
+			ReportMemberDetailVO reportMemberDetailVO = new ReportMemberDetailVO();
+			reportMemberDetailVO.setBoardList(boardRepo.selectListReported(reportDto.getMemberNo()));
+			reportMemberDetailVO.setReplyList(replyRepo.selectListReported(reportDto.getMemberNo()));
+			reportDetailVO.setMemberVO(reportMemberDetailVO);
+			break;
+		case "reply":
+			ReplyDto replyDto = replyRepo.selectOne((int)reportDto.getReportTableNo());
+			reportDetailVO.setReplyList(replyRepo.selectList(replyDto.getReplyOrigin()));
 			break;
 		}
 		return reportDetailVO;
+	}
+	//reply no로 리스트 반환
+	@GetMapping("/detail/{replyNo}")
+	public List<ReplyDto> selectReplyList(@PathVariable int replyNo){
+		ReplyDto replyDto = replyRepo.selectOne(replyNo);
+		return replyRepo.selectList(replyDto.getReplyOrigin());
 	}
 }

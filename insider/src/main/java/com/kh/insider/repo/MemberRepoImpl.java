@@ -107,6 +107,11 @@ public class MemberRepoImpl implements MemberRepo{
 		sqlSession.update("member.updateFollow", memberNo);
 	}
 
+	@Override
+	public void addReport(long memberNo) {
+		sqlSession.update("member.addReport", memberNo);
+	}
+
 	
 	
 }

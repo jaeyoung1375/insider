@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ReportResultDto {
-	private int reportTableNo;
+	private long reportTableNo;
 	private String reportTable;
 	private int reportResult;
 }

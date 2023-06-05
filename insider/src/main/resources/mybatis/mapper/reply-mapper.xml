@@ -32,5 +32,12 @@
   	<update id="updateLikeCount">
   		update reply set reply_like	= #{count} where reply_no = #{replyNo}
   	</update>
-  	
+  	<!-- 신고 개수 갱신 -->
+  	<update id="addReport">
+		update reply set reply_report = (select count(*) from report where report_table='reply' and report_table_no=#{replyNo} and report_check=0) where reply_no=#{replyNo}
+	</update>
+	<!-- 리포트 수 이있는것만 보기 -->
+	<select id="selectListReported" resultType="ReplyDto">
+		select * from reply_with_nick where reply_member_no=#{memberNo} and reply_report>0 order by reply_report desc
+	</select>
   </mapper>

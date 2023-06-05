@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.MemberSuspensionDto;
+import com.kh.insider.vo.UpdateReportContentVO;
 
 @Repository
 public class MemberSuspensionRepoImpl implements MemberSuspensionRepo{
@@ -29,5 +30,10 @@ public class MemberSuspensionRepoImpl implements MemberSuspensionRepo{
 	@Override
 	public void addSuspension(MemberSuspensionDto memberSuspensionDto) {
 		sqlSession.update("memberSuspension.addSuspension",  memberSuspensionDto);
+	}
+
+	@Override
+	public void updateReportContent(UpdateReportContentVO updateReportContentVo) {
+		sqlSession.update("memberSuspension.updateReportContent", updateReportContentVo);
 	}
 }
