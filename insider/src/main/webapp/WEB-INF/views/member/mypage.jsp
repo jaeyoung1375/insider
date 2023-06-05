@@ -1375,39 +1375,41 @@
 		  }
 		},
 			// 팔로워 되있는 사람 -> 팔로우 삭제 (본인 프로필 일때)
-		   async myUnFollower(memberNo) {
-			  try {
-			    const response = await axios.post("/rest/follow/myUnFollow", null, {
-			      params: {
-			        memberNo: memberNo
-			      }
-			    });
-			
-			    if (response.data) {
-			      // 언팔로우 성공 처리
-			    const index = this.followCheckList.findIndex(item => item === memberNo);
-			    	  console.log("index : " +index);
-			      if(index != -1){
-			    	  this.followCheckList.splice(index,1);
-			      }
-			      
-			      console.log("언팔로우 성공");
-			      this.totalFollowerCount();
-			      this.totalFollowCount();
-			      this.followerListPaging();
-			      this.followListPaging();
-			     
-			     
-			           
-			    } else {
-			      // 언팔로우 실패 처리
-			      console.log("언팔로우 실패");
-			    }
-			  } catch (error) {
-			    // 요청 실패 처리
-			    console.error("언팔로우 요청 실패", error);
-			  }
-			},
+		  async myUnFollower(memberNo) {
+  try {
+    const response = await axios.post("/rest/follow/myUnFollow", null, {
+      params: {
+        memberNo: memberNo
+      }
+    });
+
+    if (response.data) {
+      // 언팔로우 성공 처리
+     
+      
+      // 팔로워 목록에서 해당 멤버를 실시간으로 제거하는 로직 추가
+      const followerIndex = this.myFollowerList.findIndex(item => item.memberNo === memberNo);
+      if (followerIndex !== -1) {
+        this.myFollowerList.splice(followerIndex, 1);
+      }
+      
+      console.log("언팔로우 성공");
+      console.log("this.myFollowerList: ", this.myFollowerList);
+    
+      this.totalFollowerCount();
+      this.totalFollowCount();
+      this.followerListPaging();
+      this.followListPaging();
+    } else {
+      // 언팔로우 실패 처리
+      console.log("언팔로우 실패");
+    }
+  } catch (error) {
+    // 요청 실패 처리
+    console.error("언팔로우 요청 실패", error);
+  }
+},
+
 		
 		
 		
@@ -1450,6 +1452,9 @@
         	followCheckIf(memberNo){
          	
         		return !this.followCheckList.includes(memberNo);
+         },
+         followerCheckIf(memberNo){
+        	 return !this.myFollowerList.includes(memberNo);
          },
           
       	 //팔로우 여부 체크
