@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ include file="../template/header.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
 <style>
    .media-height{
            width: 250px; 
@@ -111,34 +112,57 @@
   		margin: 0 0 4px;
 	}
 	
-/* 탭 링크에 마우스를 가져다 댔을 때 스타일 변경 */
-.nav-link:hover {
-  background-color: #eee;
+.nav-tabs {
+  background-color: transparent;
+  border: none;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.nav-tabs .nav-item {
+  position: relative;
+}
+
+.nav-tabs .nav-link {
   color: #333;
+  font-size: 17px;
+  padding: 14px 20px;
+  border: none;
+  background-color: transparent;
+  position: relative;
 }
 
-/* 활성화된 탭 링크 스타일 변경 */
-.nav-link.active {
-  background-color: #333;
-  color: #fff;
+.nav-tabs .nav-link.active {
+  color: #000;
+  border: none;
+  background-color: transparent;
 }
 
-/* 탭 패널 사이즈 및 스크롤바 스타일 조정 */
-.tab-content {
-  max-height: 300px;
-  overflow-y: scroll;
+.nav-tabs .nav-link:before {
+  content: "";
+  position: absolute;
+  top: -2px; /* 변경된 부분 */
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: #ccc;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
 }
 
-/* 각 탭 패널 사이에 구분선 추가 */
-.tab-pane {
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
+.nav-tabs .nav-link.active:before,
+.nav-tabs .nav-link:hover:before{
+
+  visibility: visible;
+  width: 100%;
+  transform: translateX(-50%);
 }
 
-/* 각 탭 패널의 컨텐츠에 여백 추가 */
-.tab-pane .content {
-  margin-bottom: 10px;
-}
+
+
+
+	
+
 	
 	
 	
@@ -279,7 +303,6 @@
             </div>
             
             
-            <hr>
      <!-- 게시물 시작 -->
      <!-- 비공개 계정 -->
 <div class="position-absolute mt-5 start-50 translate-middle-x media-width" style="display: flex; flex-direction: column; width: 770px; height: 700px;" v-if="(settingHide === 3 && !isOwner) || settingHide === 2 && followCheckIf(${memberDto.memberNo}) && !isOwner">
@@ -309,10 +332,16 @@
    <div class="mypage-tab" v-if="isOwner">
     <ul class="nav nav-tabs" style="width: 100%;">
     <li class="nav-item col-6">
-       <a class="nav-link" :class="{'active': actTab === 'boardTab'}" @click="changeTab2('boardTab')" style="font-size:17px; padding:14px 0;">게시물</a>
+       <a class="nav-link" :class="{'active': actTab === 'boardTab'}" @click="changeTab2('boardTab')" style="font-size:17px; padding:14px 0;">
+       <i class="fa-solid fa-chess-board"></i>
+       게시물
+       </a>
     </li>
     <li class="nav-item col-6">
-      <a class="nav-link" :class="{'active': actTab === 'bookmarkTab'}" @click="changeTab2('bookmarkTab')" style="font-size:17px; padding:14px 0;">저장됨</a>
+      <a class="nav-link" :class="{'active': actTab === 'bookmarkTab'}" @click="changeTab2('bookmarkTab')" style="font-size:17px; padding:14px 0;">
+      <i class="fa-solid fa-bookmark"></i>
+      저장됨
+      </a>
       </li>
   </ul>
   </div>
@@ -337,8 +366,20 @@
     	</div>
     </div>
     <!-- 북마크 게시물 목록 -->
-    <div style="margin-bottom:10px;display: flex; width: 110%;" v-else-if="actTab == 'bookmarkTab'"> 
-	    <div style="margin-bottom:10px;display: flex;flex-wrap:wrap; width: 100%;">
+    <div style="margin-bottom:10px; width: 110%;" v-else-if="actTab == 'bookmarkTab'"> 
+    	<div class="d">
+    		<span style="color:gray; font-size: 12px;">저장한 내용은 회원님만 볼 수 있습니다.</span>
+    	</div>	
+    	<div v-if="bookmarkMyPostList.length === 0" style="display:flex; flex-direction: column; align-items: center; margin-top:30px;">
+		  <img src="${pageContext.request.contextPath}/static/image/bookmark-circle.PNG" width="62" height="62" style="margin-bottom: 10px;">
+		  <h2>저장</h2>
+		 	<div style="max-width:400px;">
+		 		<span class="text-center">다시 보고 싶은 사진과 동영상을 저장하세요. 콘텐츠를 저장해도 다른 사람에게 알림이 전송되지 않으며, 저장된 콘텐츠는 회원님만 볼 수 있습니다.</span>
+		 	</div>
+		</div>
+
+
+	    <div style="margin-bottom:10px;display: flex;flex-wrap:wrap; width: 100%; margin-top:20px;" v-else>
 	    	<div v-for="(bookmark,index) in bookmarkMyPostList" :key="bookmark.boardNo">
 	    		 <div class="media-height" style="margin-right: 10px; position:relative;">
 	    		 	<div v-if="bookmark.boardAttachmentList && bookmark.boardAttachmentList[0]">
@@ -1344,6 +1385,12 @@
 			
 			    if (response.data) {
 			      // 언팔로우 성공 처리
+			    const index = this.followCheckList.findIndex(item => item === memberNo);
+			    	  console.log("index : " +index);
+			      if(index != -1){
+			    	  this.followCheckList.splice(index,1);
+			      }
+			      
 			      console.log("언팔로우 성공");
 			      this.totalFollowerCount();
 			      this.totalFollowCount();
@@ -1387,10 +1434,7 @@
 			      this.totalFollowerCount();
 			      this.followListPaging();
 			      await this.$nextTick(); // 다음 UI 업데이트를 기다립니다.
-				
-			      
-			      
-			      console.log("followCheckList : "+this.followCheckList);
+			
 			    } else {
 			      // 언팔로우 실패 처리
 			      console.log("언팔로우 실패");
@@ -1420,7 +1464,8 @@
          	this.followCheckList.push(parseInt(newData));
  
          }, 
-        
+         
+    
          
        
        
@@ -1503,8 +1548,6 @@
 		    }
 		
 		    this.followPage++;
-		    console.log("res: ", resp.data.length);
-		    console.log("팔로우체크 " + this.followCheckList); 
 		
 		    if (resp.data.length < 3) {
 		      this.followFinish = true;
@@ -1573,21 +1616,10 @@
            		
            	 for (const board of resp.data) {
              	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
-             	//console.log(this.isLiked);
              	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
-             	//this.followCheck(board.boardWithNickDto.memberNo);
-             	//console.log(this.boardLikeCount);
-             	//this.boardLikeCount.push(board.boardLike);
-             	//this.boardLikeCount = boardList.boardLike;
                }
            		
            	  const newData = resp.data;
-  		   /*  for (const item of newData) {
-  		      const existingItem = this.myBoardList.find(boardItem => boardItem.boardNo === item.boardNo);
-  		      if (!existingItem) {
-  		        this.myBoardList.push(item);
-  		      }
-  		    } */
   		    
   		    this.myBoardList.push(...resp.data);
            		this.page++;
@@ -1607,7 +1639,6 @@
            	    }
            	  });
 				this.hoverPostList = [];
-				//console.log("데이터 : "+resp.data);
            	  const newPosts = resp.data.slice(0, 3); // 최대 3개의 게시물만 추출
 
            	  this.hoverPostList.push(...newPosts);
@@ -1620,7 +1651,6 @@
              	    }
              	  });
   				this.hoverPostList2 = [];
-  				//console.log("데이터 : "+resp.data);
              	  const newPosts = resp.data.slice(0, 3); // 최대 3개의 게시물만 추출
 
              	  this.hoverPostList2.push(...newPosts);
@@ -1656,10 +1686,6 @@
            	   		console.log("settingHide : "+this.hoverSettingHide);
            	   		console.log("hoverFollowerCheck : " + this.followCheckIf(item.memberNo));
            	   		console.log("hoverFollowCheck : " + this.followCheckIf(item.followFollower));
-           	      //console.log("팔로우 수 : " +this.followCounts); // 수정된 값 출력
-           	      //console.log("팔로워 수 : "+this.followerCounts); // 수정된 값 출력
-           	      //console.log("게시물 수 : " +this.postCounts); // 수정된 값 출력
-           	   	  //console.log("게시물 목록: ", this.hoverPostList); // 게시물 목록 출력
            	    })
            	    .catch(error => {
            	      console.error(error);
@@ -2015,7 +2041,6 @@
             	 
             	 // 삭제할 데이터의 인덱스 찾기
             	 const indexToDelete = recommendFriendsList.findIndex(item => item.memberNo === idToDelete);
-            	 console.log("indexToDelete" + indexToDelete);
             	// 인덱스를 사용하여 데이터 삭제
             	  if (indexToDelete !== -1) {
             	    recommendFriendsList.splice(indexToDelete, 1);
@@ -2038,7 +2063,6 @@
            	    
            	    this.hashtagList.push(...resp.data);
            	    this.hashtagFollowCheck();
-           	   console.log("hash : "+this.hashtagList);
      	   
            	  } catch (error) {
            	    console.error(error);
@@ -2057,7 +2081,6 @@
            		        this.hashtagFollowCheckList.splice(index, 1);
            		      }
 
-           		      console.log("hashtagList: " + this.hashtagList);
            		      this.hashtagFollowCheck();
            		    } else {
            		      console.log("언팔로우 실패");
@@ -2072,7 +2095,6 @@
      			  if (resp.data) {
      				
      			    console.log("팔로우 성공");
-     			    console.log("hashtagList: " + this.hashtagList);
      			    
      			    this.hashtagFollowCheck();
 
@@ -2093,7 +2115,6 @@
 				  try {
 				    const resp = await axios.post("/rest/follow/hashTagCheck");
 				    this.hashtagFollowCheckList = resp.data;
-				    console.log("hashtagFollowCheckList : "+this.hashtagFollowCheckList);
 				  } catch (error) {
 				    console.error(error);
 				  }

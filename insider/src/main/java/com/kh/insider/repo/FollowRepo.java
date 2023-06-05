@@ -32,4 +32,6 @@ public interface FollowRepo {
 	
 	//메인 홈에서 팔로우 전체 체크
 	List<Long> check(long memberNo);
+	
+
 }
