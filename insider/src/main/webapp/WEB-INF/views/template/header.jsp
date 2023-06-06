@@ -236,7 +236,6 @@
 								          	<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
 								          	{{ notification.memberNick }} 님이
 								          	</a>
-								          	
 								          	<span v-if="notification.type == 1">게시글을 좋아요 하였습니다.</span>
 								          	<span v-if="notification.type == 2">게시글에 댓글을 달았습니다.</span>
 								          	<span v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</span>
