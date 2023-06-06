@@ -69,8 +69,8 @@ public class SocialController {
          }
          // addInfo로 넘길 정보
          session.setAttribute("loginUser",kakaoUser);
-         session.setAttribute("member",token.getAccess_token());
-         session.setAttribute("refresh_token",token.getRefresh_token());
+//         session.setAttribute("member",token.getAccess_token());
+//         session.setAttribute("refresh_token",token.getRefresh_token());
          
          
          return "redirect:/member/addInfo";

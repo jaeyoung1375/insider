@@ -21,6 +21,8 @@ public interface MemberRepo {
 	// 닉네임 중복확인
 	public int isNickDuplicated(String memberNick) throws Exception;
 	
+	public void deleteMember(long memberNo);
+	
 	// 친구 추천목록 조회
 	public List<MemberProfileDto> recommendFriends(long memberNo);
 	

@@ -159,4 +159,15 @@ public class MemberRestController {
 		List<TagFollowDto> hashtagList = memberRepo.hashtagList(memberNo);
 		return hashtagList;
 	}
+	
+	// 회원탈퇴
+	@PostMapping("/deleteMember")
+	public String deleteMember(HttpSession session) {
+		long memberNo = (long) session.getAttribute("memberNo");
+		memberRepo.deleteMember(memberNo);
+		session.invalidate();
+		
+		return "redirect:/member/login";
+		
+	}
 }

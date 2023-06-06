@@ -4,6 +4,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,8 +87,8 @@ public class MemberController {
    }
    
    @PostMapping("/login")
-   public String login(HttpSession session, @ModelAttribute MemberDto dto, RedirectAttributes attr) {
-      
+   public String login(HttpSession session, @ModelAttribute MemberDto dto, RedirectAttributes attr, HttpServletRequest request) {
+   session = request.getSession();
    MemberDto findMember = memberRepo.login(dto.getMemberEmail(), dto.getMemberPassword());
    
    if(findMember == null) {

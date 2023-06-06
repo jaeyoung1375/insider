@@ -379,7 +379,7 @@
     		<span style="color:gray; font-size: 12px;">저장한 내용은 회원님만 볼 수 있습니다.</span>
     	</div>	
     	<div v-if="bookmarkMyPostList.length === 0" style="display:flex; flex-direction: column; align-items: center; margin-top:30px;">
-		  <img src="${pageContext.request.contextPath}/static/image/bookmark-circle.PNG" width="62" height="62" style="margin-bottom: 10px;">
+		  <img src="${pageContext.request.contextPath}/static/image/bookma	rk-circle.PNG" width="62" height="62" style="margin-bottom: 10px;">
 		  <h2>저장</h2>
 		 	<div style="max-width:400px;">
 		 		<span class="text-center">다시 보고 싶은 사진과 동영상을 저장하세요. 콘텐츠를 저장해도 다른 사람에게 알림이 전송되지 않으며, 저장된 콘텐츠는 회원님만 볼 수 있습니다.</span>
@@ -735,7 +735,7 @@
                             ref="myOptionModal" @click.self="myOptionModalHide">
             <div class="modal-dialog" role="document">
                    <div class="modal-content">
-                          <div class="modal-header" style="display:flex; justify-content: center;">
+                        <div class="modal-header" style="display:flex; justify-content: center;">
                           <a href="/member/setting" class="nomal">설정 및 개인정보</a>
                        </div>
                         <div class="modal-header" style="display:flex; justify-content: center;">
@@ -745,8 +745,10 @@
                         <div class="modal-header" style="display:flex; justify-content: center;">
                           <a href="/member/logout" class="nomal">로그아웃</a>
                        </div>
-                   
-                 
+                        <div class="modal-header" style="display:flex; justify-content: center;">
+                          <a href="/" class="nomal" @click="deleteMember">회원탈퇴</a>
+                       </div>
+         
                         <button type="button" class="btn"
                                 data-bs-dismiss="modal" style="color:red;">취소</button>
                    
@@ -2215,7 +2217,16 @@
         		},
         		
         		/*---------북마크 종료 ----------------- */
+      		
+        		// 회원탈퇴
+        		async deleteMember(){
+        			const resp = await axios.post("/rest/member/deleteMember");
+  
+        				window.alert("잘가요");
+        			
+        		},	
       		},
+      		
       		
       		
       		

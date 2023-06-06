@@ -51,6 +51,10 @@
 		select * from member_with_profile where member_nick = #{memberNick}
 	</select>
 	
+	<!-- 회원탈퇴 -->
+	<delete id="deleteMember">
+		delete from member where member_no = #{memberNo}
+	</delete>
 
 	
 	<!-- 이메일 중복 확인 -->
