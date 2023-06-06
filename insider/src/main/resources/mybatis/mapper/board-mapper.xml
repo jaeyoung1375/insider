@@ -85,6 +85,8 @@
 			<result column="board_size" property="boardSize"/>
 			<result column="member_nick" property="memberNick"/>
 			<result column="attachment_no" property="attachmentNo"/>
+			<result column="setting_hide" property="settingHide"/>
+			<result column="setting_allow_reply" property="settingAllowReply"/>
 		</association>
 		<collection property="boardAttachmentList"
 				javaType="java.util.List" ofType="BoardAttachmentDto"
@@ -361,9 +363,23 @@
 	<select id="boardListWithoutFollow" resultMap="boardListVO">
 		<bind name="followExist" value="followDtoList!=null and followDtoList.size()>0"></bind>
 		<bind name="blockExist" value="blockDtoList!=null and blockDtoList.size()>0"></bind>
+		<bind name="settingDistanceExist" value="settingDistance!=null and !settingDistance.equals('')"></bind>
 		<include refid="topNheader"></include>
 	 		select * from board_with_nick 
 	 		<where>
+	 			<if test="settingDistanceExist">
+	 				<![CDATA[
+					and (
+						6371 * 2 * ASIN(
+							SQRT(
+								POWER(SIN(((#{memberLat} * ACOS(-1) / 180) - (board_lat * ACOS(-1) / 180)) / 2), 2) +
+								COS(#{memberLat} * ACOS(-1) / 180) * COS(board_lat * ACOS(-1) / 180) * POWER(SIN(((#{memberLon}
+								 * ACOS(-1) / 180) - (board_lon * ACOS(-1) / 180)) / 2), 2)
+							)
+						)
+					) <= #{settingDistance}
+					]]>
+	 			</if>
 	 			<if test="blockExist">
 	 				and member_no not in
 	 				<foreach collection="blockDtoList" open="(" close=")" item="blockDto" separator=",">
@@ -374,7 +390,37 @@
 	 		order by board_no desc
 	 	<include refid="topNfooter"></include>	
 	</select>
-
+	<!-- 계층형 조회 메인 구문 차단 구현 거리밖 검색 -->
+	<select id="boardListWithoutFollowOutDistance" resultMap="boardListVO">
+		<bind name="followExist" value="followDtoList!=null and followDtoList.size()>0"></bind>
+		<bind name="blockExist" value="blockDtoList!=null and blockDtoList.size()>0"></bind>
+		<bind name="settingDistanceExist" value="settingDistance!=null and !settingDistance.equals('')"></bind>
+		<include refid="topNheader"></include>
+	 		select * from board_with_nick 
+	 		<where>
+	 			<if test="settingDistanceExist">
+	 				<![CDATA[
+					and (
+						6371 * 2 * ASIN(
+							SQRT(
+								POWER(SIN(((#{memberLat} * ACOS(-1) / 180) - (board_lat * ACOS(-1) / 180)) / 2), 2) +
+								COS(#{memberLat} * ACOS(-1) / 180) * COS(board_lat * ACOS(-1) / 180) * POWER(SIN(((#{memberLon}
+								 * ACOS(-1) / 180) - (board_lon * ACOS(-1) / 180)) / 2), 2)
+							)
+						)
+					) > #{settingDistance}
+					]]>
+	 			</if>
+	 			<if test="blockExist">
+	 				and member_no not in
+	 				<foreach collection="blockDtoList" open="(" close=")" item="blockDto" separator=",">
+	 					#{blockDto.blockNo}
+	 				</foreach>
+	 			</if>
+	 		</where>
+	 		order by board_no desc
+	 	<include refid="topNfooter"></include>	
+	</select>
 	<!-- 계층형 단일조회 -->
 	<select id="selectOneBoard" resultMap="boardListVO">
 		select * from board_with_nick where board_no=#{boardNo}
@@ -437,7 +483,7 @@
 	<select id="bookmarkMyPost" resultMap="boardListVO">
 	  SELECT * FROM board
     	WHERE board_no IN (SELECT board_no FROM bookmark WHERE member_no = #{memberNo})
-</select>
+	</select>
 	
 	
 

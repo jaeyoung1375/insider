@@ -244,14 +244,37 @@
 				<div class="box m-2" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)" 
 						 @click="detailViewOn(index)" >
 					<video class="content" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
-							style="object-fit:cover" autoplay muted controls loop></video>
+							style="object-fit:cover" :autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto"></video>
 					<img class='content' v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video"
 							 :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
 					<img class='content' v-if="board.boardAttachmentList.length==0" src="${pageContext.request.contextPath}/static/image/noimage.png">
 					<div class="content-box" ></div>
 					<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
 					<div class="like-comment" >
-						<span><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
+						<span v-if="memberSetting.watchLike"><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
+						<span class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
+					</div>
+				</div>
+			</div>
+			<!-- 게시물 더보기 -->
+			<div class="row" v-if="finish && !additionalFinish">	
+				<div class="col">
+					{{memberSetting.watchDistance}}km 이내의 게시물을 모두 확인했습니다. <span class="modal-click-btn" @click="showAdditionalList"> 게시물 더보기</span>
+				</div>
+			</div>
+			<!-- 추가 리스트 -->
+			<div class="row d-flex justify-content-center mt-3">
+				<div class="box m-2" v-for="(board, index) in additionalBoardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)" 
+						 @click="detailViewOn(index)" >
+					<video class="content" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
+							style="object-fit:cover" :autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto"></video>
+					<img class='content' v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video"
+							 :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
+					<img class='content' v-if="board.boardAttachmentList.length==0" src="${pageContext.request.contextPath}/static/image/noimage.png">
+					<div class="content-box" ></div>
+					<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
+					<div class="like-comment" >
+						<span v-if="memberSetting.watchLike"><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
 						<span class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
 					</div>
 				</div>
@@ -276,7 +299,8 @@
 	                <div class="carousel-inner">
 	                  <div  v-for="(attach, index2) in boardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
 	                  	<video  style="width:700px; height:700px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+attach.imageURL" v-if="attach.video"
-							autoplay muted controls loop @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" ></video>
+							:autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto" 
+							@dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" ></video>
 	                   	<img v-else :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" style="width:700px; height:700px;"> 
 	                  </div>
 	                </div>
@@ -522,6 +546,10 @@
 				loading:false,
 				finish:false,
 				searchedList:[],
+				//더보기 데이터
+				additionalPage:1,
+				additionalLoading:false,
+				additionalFinish:false,
 				//클릭, 더블클릭 이벤트 해결
 				delay: 700,
 				clicks: 0,
@@ -539,7 +567,14 @@
 	            likeListData : [],
 	            likeListModal : false,
 	            
-	          	
+	            memberSetting:{
+	    	        //좋아요 수 보기 여부
+		            watchLike:false,
+		            //반경설정
+		            watchDistance:"",
+		            //동영상 자동재생
+		            videoAuto:false,
+	            },
 	            //게시물 댓글 좋아요 기능 전용 변수
 				replyLikeCount : [], // 댓글 좋아요 수 저장 변수
 				isReplyLiked : [], // 로그인 회원이 댓글 좋아요 체크 여부
@@ -588,10 +623,35 @@
 	              }
 				this.boardList.push(...resp.data);
 				this.page++;
-				if(resp.data.length<10){//데이터가 10개 미만이면 불러오는걸 막음
-					this.finish==true;
+				if(resp.data.length<15){//데이터가 10개 미만이면 불러오는걸 막음
+					this.finish=true;
 				}
 				this.loading=false;
+			},
+			async loadAdditionalList(){
+				if(this.additionalLoading||this.additionalFinish||!this.finish) return;
+				this.additionalLoading=true;
+				const resp = await axios.get(contextPath+"/rest/board/additionalList/"+this.additionalPage);
+				for (const board of resp.data) {
+	            	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+	            	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
+	              }
+				this.boardList.push(...resp.data);
+				this.additionalPage++;
+				if(resp.data.length<15){//데이터가 10개 미만이면 불러오는걸 막음
+					this.additionalFinish=true;
+				}
+				this.additionalLoading=false;
+			},
+			showAdditionalList(){
+				this.loadAdditionalList();
+			},
+			async loadMemberSetting(){
+				const resp = await axios.get(contextPath+"/rest/member/setting");
+	            this.memberSetting.watchLike=resp.data.watchLike;
+	            this.memberSetting.watchDistance=resp.data.settingDistance;
+	            this.memberSetting.videoAuto=resp.data.videoAuto;
+				
 			},
 			//더블클릭 시 좋아요
 			async doubleClick(boardNo, index){
@@ -884,6 +944,7 @@
 		created(){
 			//데이터 불러오는 영역
 			this.loadList();
+			this.loadMemberSetting();
 		},
 		watch:{
 			//감시영역
@@ -892,7 +953,12 @@
 			}, 500),
 			percent(){
 				if(this.percent >= 80){
-				this.loadList();
+					if(!this.finish){
+						this.loadList();
+					}
+					else if(!this.additionalFinish){
+						this.loadAdditionalList();
+					}
 				}
 			}			
 		},

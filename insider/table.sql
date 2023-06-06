@@ -113,8 +113,9 @@ PRIMARY key(tag_name, member_no)
 
 --보드에 멤버닉, 어태치먼트 넘버 추가
 CREATE OR REPLACE VIEW board_with_nick as
-SELECT b.*, m.attachment_no, m.member_nick FROM board b
-inner JOIN MEMBER_WITH_PROFILE m ON b.member_no=m.member_no;
+SELECT b.*, m.attachment_no, m.member_nick, s.setting_hide, s.setting_allow_reply FROM board b
+inner JOIN MEMBER_WITH_PROFILE m ON b.member_no=m.member_no
+LEFT outer JOIN setting s ON b.member_no=s.member_no;
 
 --신고 현황관리 view 생성
 CREATE OR REPLACE VIEW REPORT_MANAGEMENT AS
