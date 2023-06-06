@@ -157,16 +157,7 @@
   width: 100%;
   transform: translateX(-50%);
 }
-
-
-
-
-	
-
-	
-	
-	
-   
+ 
 </style>
 
       <div id="app" class="container-fluid">
@@ -350,10 +341,10 @@
 	<!-- 게시물 목록 -->
     <div style="margin-bottom:10px;display: flex; width: 110%;" v-if="actTab == 'boardTab'"> 
     <!-- 게시물이 없는 경우 || 본인 프로필일 때 -->
-   <div class="mt-5" style="display: flex;flex-direction: column; justify-content: center; align-items: center;" v-if="myBoardList.length == 0 && isOwner" @click="boardInsert">    
+   <div class="mt-5" style="display: flex;flex-direction: column; justify-content: center; align-items: center; margin-left:200px;" v-if="myBoardList.length == 0 && isOwner" @click="boardInsert">    
    <i class="fa-solid fa-camera fa-2xl" style="font-size:100px;"></i>
    <h2 class="mt-5">사진 공유</h2>
-   <p>사진을 공유하면 회원님의 프로필에 표시됩니다.</p>
+   <p style="min-width:400px; margin-left:40px;">사진을 공유하면 회원님의 프로필에 표시됩니다.</p>
    </div>
    
    
@@ -379,7 +370,7 @@
     		<span style="color:gray; font-size: 12px;">저장한 내용은 회원님만 볼 수 있습니다.</span>
     	</div>	
     	<div v-if="bookmarkMyPostList.length === 0" style="display:flex; flex-direction: column; align-items: center; margin-top:30px;">
-		  <img src="${pageContext.request.contextPath}/static/image/bookma	rk-circle.PNG" width="62" height="62" style="margin-bottom: 10px;">
+		  <img src="${pageContext.request.contextPath}/static/image/bookmark-circle.PNG" width="62" height="62" style="margin-bottom: 10px;">
 		  <h2>저장</h2>
 		 	<div style="max-width:400px;">
 		 		<span class="text-center">다시 보고 싶은 사진과 동영상을 저장하세요. 콘텐츠를 저장해도 다른 사람에게 알림이 전송되지 않으며, 저장된 콘텐츠는 회원님만 볼 수 있습니다.</span>
@@ -746,7 +737,7 @@
                           <a href="/member/logout" class="nomal">로그아웃</a>
                        </div>
                         <div class="modal-header" style="display:flex; justify-content: center;">
-                          <a href="/" class="nomal" @click="deleteMember">회원탈퇴</a>
+                          <a class="nomal" @click="deleteMemberModalShow">회원탈퇴</a>
                        </div>
          
                         <button type="button" class="btn"
@@ -1013,6 +1004,48 @@
   </div>
 </div> 
 
+	<!-- 회원탈퇴 모달 -->
+       <div class="modal" tabindex="-1" role="dialog" id="deleteMemberModal"
+                            data-bs-backdrop="static"
+                            ref="deleteMemberModal" @click.self="deleteMemberModalHide">
+             <div class="modal-dialog" role="document">
+    <div class="modal-content" style="max-width:400px; min-height:200px max-height:400px;">
+      <div class="modal-header text-center" style="display:flex; justify-content: center;">
+        <h5 class="modal-title" >회원탈퇴</h5>
+      </div>
+     	<div class="modal-body" style="background-color: #f2f2f2;">
+     		<div class="d-flex justify-content-center">
+     		<a class="navbar-brand"><img src="${pageContext.request.contextPath}/static/image/logo.png" width="50" height="50"></a>    	
+     		</div>
+     		<div class="d-flex justify-content-center" style="margin-top:8px;">
+     			<h4>회원탈퇴 전 확인하세요!</h4>    			
+     		</div>
+     		<div class="d-flex justify-content-center">
+     			<p style="font-size:12px; color:gray; font-weight: bold;">탈퇴하시면 회원님이 작성했던 모든 게시물이 삭제됩니다.</p>  			
+     		</div>
+     		<div class="d-flex justify-content-center">
+     			<div style="width:300px; height:70px; border:1px solid black; background-color: white;">
+     			   <p style="font-size:11px; margin-top:10px;">- 게시물, 팔로우, 팔로워, 댓글 등 모든 정보가 삭제됩니다. <br>
+     			   - 타인 글의 댓글은 삭제되지 않으니 미리 확인하세요.
+     			   </p>
+     			</div>
+     		</div>
+     		<div class="d-flex justify-content-center" style="margin-top:9px;">
+     			<input type="checkbox" id="agreeCheckbox">
+				<label for="agreeCheckbox" style="font-size:13px; color:gray; margin-left:6px;">안내사항을 확인하였습니다.</label>
+     		</div>
+     		<div class="d-flex justify-content-center" style="margin-top:12px;">
+     			<button style="width:150px; height:40px; border-radius:25px;">탈퇴하기</button>
+     		</div>
+     	</div>
+     	<div class="modal-footer text-center">
+			<button type="button" class="btn" data-bs-dismiss="modal">취소</button>
+ 		</div>
+     
+    </div>
+  </div>
+</div> 
+
 
 <!-- 팔로우 모달 목록 끝 -->
 <!-- 차단 관련 모달 -->
@@ -1095,6 +1128,7 @@
             followModal : null,  
             followerHoverModal : null,
             recommendFriendsAllListModal : null,
+           	deleteMemberModal : null,
             selectedItem: null,
             followCheckList:[],
             myFollowerList: [],
@@ -1303,6 +1337,15 @@
                 recommendFriendsAllListModalHide(){
                 	if(this.recommendFriendsAllListModal == null) return;
                 	this.recommendFriendsAllListModal.hide();
+                },
+                deleteMemberModalShow(){
+                	if(this.deleteMemberModal == null) return;
+                	this.myOptionModal.hide();
+                	this.deleteMemberModal.show();
+                },
+                deleteMemberModalHide(){
+                	if(this.deleteMemberModal == null) return;
+                	this.deleteMemberModal.hide();
                 },
               
               accountView(){
@@ -2202,7 +2245,6 @@
         		      this.bookmarkCheck.splice(index, 1);
         		    }
         		  }
-        		
         		  console.log("북마크: " + this.bookmarkCheck.map(item => item.boardNo));
         		},
         		
@@ -2226,12 +2268,7 @@
         			
         		},	
       		},
-      		
-      		
-      		
-      		
-      		
-      		
+   		
       created() {
     	  // 데이터 불러오는 영역
     	  this.loadMember();
@@ -2273,6 +2310,7 @@
             this.followerModal = new bootstrap.Modal(this.$refs.followerModal);
             this.followModal = new bootstrap.Modal(this.$refs.followModal);
             this.recommendFriendsAllListModal = new bootstrap.Modal(this.$refs.recommendFriendsAllListModal);
+            this.deleteMemberModal = new bootstrap.Modal(this.$refs.deleteMemberModal);
         
             window.addEventListener("scroll", _.throttle(()=>{
             
