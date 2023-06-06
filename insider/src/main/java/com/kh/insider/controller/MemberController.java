@@ -113,6 +113,24 @@ public class MemberController {
       return "redirect:/";
    }
    
+   @GetMapping("/addInfo")
+   public String addInfo(Model model, HttpSession session) {
+
+      MemberDto loginUser =(MemberDto) session.getAttribute("loginUser");
+
+      model.addAttribute("loginUser",loginUser);
+      
+      return "member/addInfo";
+   }
+   
+   @PostMapping("/addInfo")
+   public String addInfo(@ModelAttribute MemberDto dto) {
+   
+      memberRepo.socialJoin(dto);
+      
+      return "redirect:/";
+   }
+   
    @GetMapping("/{memberNick}")
    public String myPage(@PathVariable String memberNick, Model model, HttpSession session) {
       

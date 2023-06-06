@@ -322,13 +322,13 @@
    <h2 class="mt-5">게시물 없음</h2>
    </div>
    
-	<!-- 게시물이 없는 경우 || 본인 프로필일 때 -->
+	<!-- 게시물이 없는 경우 || 본인 프로필일 때
    <div class="mt-5" style="display: flex;flex-direction: column; justify-content: center; align-items: center;" v-if="myBoardList.length == 0 && isOwner" @click="boardInsert">    
    <i class="fa-solid fa-camera fa-2xl" style="font-size:100px;"></i>
    <h2 class="mt-5">사진 공유</h2>
    <p>사진을 공유하면 회원님의 프로필에 표시됩니다.</p>
   
-   </div>
+   </div> -->
    <div class="mypage-tab" v-if="isOwner">
     <ul class="nav nav-tabs" style="width: 100%;">
     <li class="nav-item col-6">
@@ -349,6 +349,14 @@
   
 	<!-- 게시물 목록 -->
     <div style="margin-bottom:10px;display: flex; width: 110%;" v-if="actTab == 'boardTab'"> 
+    <!-- 게시물이 없는 경우 || 본인 프로필일 때 -->
+   <div class="mt-5" style="display: flex;flex-direction: column; justify-content: center; align-items: center;" v-if="myBoardList.length == 0 && isOwner" @click="boardInsert">    
+   <i class="fa-solid fa-camera fa-2xl" style="font-size:100px;"></i>
+   <h2 class="mt-5">사진 공유</h2>
+   <p>사진을 공유하면 회원님의 프로필에 표시됩니다.</p>
+   </div>
+   
+   
     	 <div style="margin-bottom:10px;display: flex;flex-wrap:wrap; width: 100%;">
 	    	<div v-for="(board,index) in myBoardList" :key="index" style="margin-right: 10px;">
     		 <div class="media-height" style="margin-right: 10px; position:relative;">
@@ -1376,39 +1384,39 @@
 		},
 			// 팔로워 되있는 사람 -> 팔로우 삭제 (본인 프로필 일때)
 		  async myUnFollower(memberNo) {
-  try {
-    const response = await axios.post("/rest/follow/myUnFollow", null, {
-      params: {
-        memberNo: memberNo
-      }
-    });
-
-    if (response.data) {
-      // 언팔로우 성공 처리
-     
-      
-      // 팔로워 목록에서 해당 멤버를 실시간으로 제거하는 로직 추가
-      const followerIndex = this.myFollowerList.findIndex(item => item.memberNo === memberNo);
-      if (followerIndex !== -1) {
-        this.myFollowerList.splice(followerIndex, 1);
-      }
-      
-      console.log("언팔로우 성공");
-      console.log("this.myFollowerList: ", this.myFollowerList);
-    
-      this.totalFollowerCount();
-      this.totalFollowCount();
-      this.followerListPaging();
-      this.followListPaging();
-    } else {
-      // 언팔로우 실패 처리
-      console.log("언팔로우 실패");
-    }
-  } catch (error) {
-    // 요청 실패 처리
-    console.error("언팔로우 요청 실패", error);
-  }
-},
+			  try {
+			    const response = await axios.post("/rest/follow/myUnFollow", null, {
+			      params: {
+			        memberNo: memberNo
+			      }
+			    });
+			
+			    if (response.data) {
+			      // 언팔로우 성공 처리
+			     
+			      
+			      // 팔로워 목록에서 해당 멤버를 실시간으로 제거하는 로직 추가
+			      const followerIndex = this.myFollowerList.findIndex(item => item.memberNo === memberNo);
+			      if (followerIndex !== -1) {
+			        this.myFollowerList.splice(followerIndex, 1);
+			      }
+			      
+			      console.log("언팔로우 성공");
+			      console.log("this.myFollowerList: ", this.myFollowerList);
+			    
+			      this.totalFollowerCount();
+			      this.totalFollowCount();
+			      this.followerListPaging();
+			      this.followListPaging();
+			    } else {
+			      // 언팔로우 실패 처리
+			      console.log("언팔로우 실패");
+			    }
+			  } catch (error) {
+			    // 요청 실패 처리
+			    console.error("언팔로우 요청 실패", error);
+			  }
+			},
 
 		
 		
@@ -1453,9 +1461,6 @@
          	
         		return !this.followCheckList.includes(memberNo);
          },
-         followerCheckIf(memberNo){
-        	 return !this.myFollowerList.includes(memberNo);
-         },
           
       	 //팔로우 여부 체크
          async followCheck() {
@@ -1470,10 +1475,7 @@
  
          }, 
          
-    
-         
-       
-       
+ 
          // 팔로우 총 개수 
          async totalFollowCount() {
         	    const resp = await axios.get("totalFollowCount", {

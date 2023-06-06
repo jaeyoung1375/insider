@@ -20,6 +20,38 @@
 .hide{
 	display:none;
 }
+
+/* CSS */
+.input-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.input-group .form-control {
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  font-size: 18px;
+  padding: 0;
+}
+
+.input-group .form-control:focus {
+  box-shadow: none;
+  border-color: #ced4da;
+}
+
+.input-group .form-control:nth-child(n+2) {
+  margin-left: 10px;
+}
+
+.input-group .form-control:last-child {
+  margin-right: 0;
+}
+
 </style>
 
 <%@include file="../template/header.jsp" %>

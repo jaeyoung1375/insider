@@ -126,22 +126,6 @@ public class SocialController {
    }
    
       
-      @GetMapping("/addInfo")
-      public String addInfo(Model model, HttpSession session) {
-
-         MemberDto loginUser =(MemberDto) session.getAttribute("loginUser");
-
-         model.addAttribute("loginUser",loginUser);
-         
-         return "member/addInfo";
-      }
-      
-      @PostMapping("/addInfo")
-      public String addInfo(@ModelAttribute MemberDto dto) {
-      
-         memberRepo.socialJoin(dto);
-         
-         return "redirect:/";
-      }
+   
 
 }
