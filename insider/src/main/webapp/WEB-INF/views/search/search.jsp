@@ -246,6 +246,7 @@
 							style="object-fit:cover" autoplay muted controls loop></video>
 					<img class='content' @click="detailViewOn(index)" v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video"
 							 :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
+					<img class='content' v-if="board.boardAttachmentList.length==0" src="${pageContext.request.contextPath}/static/image/noimage.png">
 					<div class="content-box"  @click="detailViewOn(index)"></div>
 					<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
 					<div class="like-comment" @click="detailViewOn(index)">
@@ -273,7 +274,9 @@
 	               
 	                <div class="carousel-inner">
 	                  <div  v-for="(attach, index2) in boardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
-	                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" style="width:700px; height:700px;"> 
+	                  	<video  style="width:700px; height:700px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+attach.imageURL" v-if="attach.video"
+							autoplay muted controls loop @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" ></video>
+	                   	<img v-else :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" style="width:700px; height:700px;"> 
 	                  </div>
 	                </div>
 	               
