@@ -24,10 +24,10 @@ public class NoticeServiceImpl implements NoticeService{
 	@Override
 	public void check(Long memberNo) {
 		sqlSession.update("notice.checkBL", memberNo);
-		sqlSession.update("notice.checkAL", memberNo);
-		sqlSession.update("notice.checkFollow", memberNo);
 		sqlSession.update("notice.checkBR", memberNo);
-		sqlSession.update("notice.checkAR", memberNo);
+		sqlSession.update("notice.checkBR2", memberNo);
+		sqlSession.update("notice.checkRL", memberNo);
+		sqlSession.update("notice.checkFollow", memberNo);
 	}
 
 	@Override

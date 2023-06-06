@@ -29,11 +29,13 @@ public class NoticeRestController {
 	public List<NoticeVO> selectList(
 									HttpSession session){
 		Long memberNo = (Long) session.getAttribute("memberNo");
+		System.out.println("memberNo"+ memberNo);
 	    List<NoticeVO> noticeList = noticeService.selectNotice(memberNo);
 	    log.debug("notice목록: {}", noticeList);
+	    
 		return noticeService.selectNotice(memberNo);
 	}
-	
+
 	@PutMapping("/check")
 	public void checkAlarm(
 							HttpSession session) {

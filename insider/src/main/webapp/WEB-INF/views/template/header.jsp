@@ -130,7 +130,7 @@
  		  transform: translateX(-50%); 
  		  border-radius: 1.5em; 
  		  border: 1px solid #000; 
- 		  width: 400px; 
+ 		  width: 500px; 
  		  background-color: #fff; 
  		  z-index: 999; 
  		  padding: 10px; 
@@ -230,10 +230,30 @@
 							      <div class="modal-header"></div>
 							      <div class="modal-body">
 							        <ul class="notification-list">
-							          <li v-for="notification in notifications">
-							            <div v-for="(value, key) in notification">
-							              {{ key }}: {{ value }}
-							            </div>
+							          <li v-for="notification in notifications"   >
+							          	<div>
+								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/member/'+ notification.memberNick">
+								          	<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
+								          	{{ notification.memberNick }} 님이
+								          	</a>
+								          	
+								          	<span v-if="notification.type == 1">
+								          		게시글을 좋아요 하였습니다.
+								          	</span>
+								          	<span v-if="notification.type == 2">
+								          		게시글에 댓글을 달았습니다.
+								          	</span>
+								          	<span v-if="notification.type == 3">
+								          		회원님의 댓글을 좋아합니다.
+								          	</span>
+								          	<span v-if="notification.type == 4">
+								          		회원님의 댓글에 댓글을 달았습니다.
+								          	</span>
+								          	<span v-if="notification.type == 5">
+								          		팔로우하였습니다.
+								          	</span>
+								          	<b>· {{dateCount(notification.boardTimeAuto)}}</b>
+							          	</div>
 							          </li>
 							        </ul>
 							      </div>
@@ -278,6 +298,9 @@
 	</main>
 </body>
 	
+
+
+
 <script>
 	  Vue.createApp({
 	    data() {
@@ -286,6 +309,7 @@
 	        showModal: false,
 	        notifications: [],
 	        hasNewNotification: false,
+	        intervalId: null,
 	      };
 	    },
 	    computed: {
@@ -296,26 +320,18 @@
 	      showSideMenu() {
 	        this.sideMenu = !this.sideMenu;
 	      },
-	      
-	      toggleModal() {
-	        this.showModal = !this.showModal;
-	        if (this.hasNewNotification) {
-	          this.hasNewNotification = false; // 알림창을 열면 새로운 알림이 확인된 것으로 표시
-	        }
-	      },
-	      
 	      loadNotifications() {
 	    	  axios
 	    	    .get("${pageContext.request.contextPath}/rest/notice/")
 	    	    .then((response) => {
 	    	      const result = response.data;
+	    	      console.log("result",result);
 	    	      if (result.length > 0) {
 	    	        // 알림이 있을 경우 처리 로직
 	    	        this.notifications = result.map((notice) => {
 	    	          return notice;
 	    	        });
 	    	        this.hasNewNotification = true;
-	    	        
 	    	      } else {
 	    	        // 알림이 없을 경우 처리 로직
 	    	        this.notifications = [];
@@ -326,7 +342,44 @@
 	    	      console.log(error);
 	    	    });
 	    	},
-
+	         
+	      toggleModal() {
+	    	this.loadNotifications();
+	        this.showModal = !this.showModal;
+	        
+	        if(!this.showModal){
+	        	 this.check();
+	        }
+	        if (this.hasNewNotification) {
+	          this.hasNewNotification = false; // 알림창을 열면 새로운 알림이 확인된 것으로 표시
+	        }
+	        
+	      },
+	      check() {
+		        //알림확인
+		        const resp =  axios.put("${pageContext.request.contextPath}/rest/notice/check");
+	      },
+	    	 //게시글 날짜 계산 함수
+	        dateCount(date) {
+	        	const curTime = new Date();
+	        	const postTime = new Date(date);
+	        	const duration = Math.floor((curTime - postTime) / (1000 * 60));
+	        	
+	        	if(duration < 1){
+	        		return "방금 전";
+	        	}
+	        	else if(duration < 60){
+	        		return duration + "분 전";
+	        	}
+	        	else if(duration < 1440) {
+	        		const hours = Math.floor(duration / 60);
+	        		return hours + "시간 전"
+	        	} 
+	        	else {
+	        		const days = Math.floor(duration / 1440);
+	        		return days + "일 전";
+	        	}
+	        },
 	    },
 	
 	    created() {
@@ -338,7 +391,11 @@
 	
 	    mounted() {
 	      this.loadNotifications(); // 컴포넌트가 마운트될 때 알림 데이터를 로드
+	      this.intervalId = setInterval(this.loadNotifications, 5000); // 5초마다 알림 데이터를 갱신
 	    },
+	    beforeUnmount() {
+	      clearInterval(this.intervalId); //메모리 누수방지
+	    	}
 	  }).mount("#aside");
 </script>
 

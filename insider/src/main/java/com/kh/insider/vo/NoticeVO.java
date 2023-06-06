@@ -1,13 +1,14 @@
 package com.kh.insider.vo;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data @NoArgsConstructor @AllArgsConstructor @Builder
+@Data
 public class NoticeVO {
 	
 	//유저번호
@@ -15,39 +16,31 @@ public class NoticeVO {
 	//유저닉네임
 	private String memberNick;
 	//첨부파일
-	private int attachmentNo;
+	private Integer attachmentNo;
 	//게시물 번호
 	private int boardNo;
-	//게시물 시간
-	private Date boardTime;
-	//게시물 좋아요 시간
-	private Date boardLikeTime;
 	//댓글번호
 	private int replyNo;
-	//댓글 시간
-	private Date replyTime;
-	//댓글 좋아요
-	private int replyLike;
-	//댓글 좋아요 시간
-	private Date replyLikeTime;
-	//팔로워
-	private long followFollower;
-	//팔로우 시간
-	private Date followTime;
-    //게시물 좋아요 체크
-    private int boardLikeCheck;
-	//댓글 체크
-	private int replyCheck;
-    //댓글 좋아요 체크
-    private int replyLikeCheck;
-    //팔로우 체크
-    private int followCheck;
+	//알림 시간
+	private Date noticeTime;
+    //알림 체크
+    private String likeCheck;
+    //알림 구분
+    private String type;
 
-//	private int boardNo;
-//	private int memberNo;
-//	private String memberNick;
-//	private int attachmentNo;
-//	private int check;
-//	private Date alarmTime;
-//	private int type;
+
+	//게시글 시간 계산
+	public String getBoardTimeAuto() {
+	   java.util.Date time = new java.util.Date(noticeTime.getTime());
+	   SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+	   String timeStr = f.format(time).toString();
+	   
+	   return timeStr;
+	}
+	
+	public String getImageURL() {
+		if(attachmentNo == null) return "https://via.placeholder.com/150x150";
+		else return "/rest/attachment/download/"+attachmentNo;
+	}
 }

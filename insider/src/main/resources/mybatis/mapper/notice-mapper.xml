@@ -5,67 +5,130 @@
  <mapper namespace="notice">
 
 	<select id="selectList" resultType="NoticeVO" parameterType="Long">
-		SELECT 'board_like' AS type, b.boardLikeTime AS notice_time, m.memberNo, mp.attachmentNo
-		FROM board b
-		INNER JOIN memberProfile mp ON mp.attachmentNo = b.memberNo
-		INNER JOIN member m ON m.memberNo = mp.memberNo
-		WHERE b.memberNo = #{memberNo}
-		
-		UNION
-		
-		SELECT 'reply' AS type, r.replyTime AS notice_time, m.memberNo, mp.attachmentNo
-		FROM reply r
-		INNER JOIN memberProfile mp ON mp.attachmentNo = r.memberNo
-		INNER JOIN member m ON m.memberNo = mp.memberNo
-		WHERE r.memberNo = #{memberNo}
-		
-		UNION
-		
-		SELECT 'reply_like' AS type, rl.replyLikeTime AS notice_time, m.memberNo, mp.attachmentNo
-		FROM replyLike rl
-		INNER JOIN reply r ON r.replyNo = rl.replyNo
-		INNER JOIN memberProfile mp ON mp.attachmentNo = r.memberNo
-		INNER JOIN member m ON m.memberNo = mp.memberNo
-		WHERE r.memberNo = #{memberNo}
-		
-		UNION
-		
-		SELECT 'follow' AS type, f.followTime AS notice_time, m.memberNo, mp.attachmentNo
-		FROM follow f
-		INNER JOIN memberProfile mp ON mp.attachmentNo = f.followFollower
-		INNER JOIN member m ON m.memberNo = mp.memberNo
-		WHERE f.followFollower = #{memberNo}
+<!-- 	1 : 게시글 좋아요 , 2 : 게시글 댓글 , 3 : 댓글 좋아요, 4 : 댓글의 댓글 , 5 : 팔로우 -->
+		SELECT 
+			type
+			,notice_time
+			,board_no
+			,member_no
+			,member_nick
+			,attachment_no
+			,like_check
+		FROM(
+			 SELECT 
+	        '1' AS type
+	        ,bl.board_like_time AS notice_time
+	        ,b.board_no AS board_no
+	        ,bl.member_no AS member_no
+	        ,m.member_nick AS member_nick
+	        ,mp.attachment_no AS attachment_no
+	        ,bl.like_check AS like_check
+	        FROM board b
+	        INNER JOIN board_like bl ON b.board_no = bl.board_no
+	        INNER JOIN member m ON bl.member_no = m.member_no
+	        LEFT OUTER JOIN member_profile mp ON bl.member_no = mp.member_no
+	        where b.member_no =#{memberNo}
+	        UNION
+	        SELECT 
+	        '2' AS type
+	        ,r.reply_time AS notice_time
+	        ,b.board_no AS board_no
+	        ,b.member_no AS member_no
+	        ,m.member_nick AS member_nick
+	        ,mp.attachment_no AS attachment_no
+	        ,r.reply_check AS like_check
+	        FROM board b
+	        INNER JOIN reply r ON b.board_no = r.reply_origin
+	        INNER JOIN member m ON r.reply_member_no = m.member_no
+	        LEFT OUTER JOIN member_profile mp ON r.reply_member_no = mp.member_no
+	        where b.member_no =#{memberNo}
+	        UNION
+	        SELECT 
+	        '3' AS type
+	        ,rl.reply_like_time AS notice_time
+	        ,r.reply_origin AS board_no
+	        ,rl.member_no AS member_no
+	        ,m.member_nick AS member_nick
+	        ,mp.attachment_no AS attachment_no
+	        ,TO_CHAR(rl.reply_like_check) AS like_check
+	        FROM reply r
+	        INNER JOIN reply_like rl ON r.reply_no = rl.reply_no
+	        INNER JOIN member m ON rl.member_no = m.member_no
+	        LEFT OUTER JOIN member_profile mp ON rl.member_no = mp.member_no
+	        where r.reply_member_no =#{memberNo}
+	        UNION
+	        SELECT 
+	        '4' AS type
+	        ,r2.reply_time AS notice_time
+	        ,r.reply_origin AS board_no
+	        ,r2.reply_member_no AS member_no
+	        ,m.member_nick AS member_nick
+	        ,mp.attachment_no AS attachment_no
+	        ,TO_CHAR(r2.reply_check) AS like_check
+	        FROM reply r
+	        INNER JOIN reply r2 ON r.reply_no = r2.reply_parent
+	        INNER JOIN member m ON r2.reply_member_no = m.member_no
+	        LEFT OUTER JOIN member_profile mp ON r2.reply_member_no = mp.member_no
+	        where r.reply_member_no =#{memberNo}
+	        UNION
+	        SELECT 
+	        '5' AS type
+	        ,f.follow_time AS notice_time
+	        ,NULL AS board_no
+	        ,f.follow_follower AS member_no
+	        ,m.member_nick AS member_nick
+	        ,mp.attachment_no AS attachment_no
+	        ,FOLLOW_CHECK AS like_check
+	        FROM follow f
+	        INNER JOIN member m ON f.follow_follower = m.member_no
+	        LEFT OUTER JOIN member_profile mp ON f.follow_follower = mp.member_no
+	        where f.member_no =#{memberNo}
+	       ) a
+	       WHERE like_check = 0
+	       ORDER BY notice_time DESC
+	       
 	</select>
 
 	
-	<update id="checkBL" parameterType="int">
-		update board_like set board_like_check = 1 where board_no in (
+	<update id="checkBL" parameterType="Long">
+		update board_like set like_check = 1 where board_no in (
 		    select b.board_no from board  b
 		        inner join board_like bl on b.board_no = bl.board_no
-		    where b.member_no = #{memberNo}
-	    ) and board_like_check = 0
+		    where b.member_no = #{member_no}
+	    ) and like_check = 0
 	</update>
 
-	<update id="checkFollow" parameterType="int">
-		update follow set follow_check = 1 where follow_follower = #{memberNo} and follow_check = 0
-	</update>
 	
-	<update id="checkBR" parameterType="int">
+	<update id="checkBR" parameterType="Long">
 		update reply set reply_check = 1 where reply_no in (
 			select r.reply_no from board b 
-			    inner join board_reply br on b.board_no = br.board_no
-			    inner join reply r on r.reply_no = br.reply_no
-			where b.member_no = #{memberNo}
+			    inner join reply r on r.reply_origin = b.board_no
+			where b.member_no = #{member_no}
 		) and reply_check = 0
 	</update>
 	
-	<update id="checkBR2" parameterType="int">
+	<update id="checkBR2" parameterType="Long">
+		update reply set reply_check = 1
+		where reply_no in (
+           select r2.reply_no
+			from reply r
+            inner join reply r2 on r.reply_no = r2.reply_parent
+			where r.reply_member_no = #{member_no}
+		) and reply_check = 0
+	</update>
+
+	
+	<update id="checkRL" parameterType="Long">
 		update reply_like set reply_like_check = 1 where reply_no in (
 		    select r.reply_no from reply r
-<!-- 		    댓글좋아요 rl 별칭없음 -->
 		        inner join reply_like rl on r.reply_no = rl.reply_no		
-		    where b.member_no = #{memberNo}
+		    where r.reply_member_no = #{member_no}
 	    ) and reply_like_check = 0
+	</update>
+	
+	
+	<update id="checkFollow" parameterType="Long">
+		update follow set follow_check = 1 where member_no = #{member_no} and follow_check = 0
 	</update>
 	
 	<select id="isNotice" resultType="int" parameterType="int">
@@ -73,11 +136,11 @@
 			select board_no "no" from board_like where board_no in (
 			        select b.board_no from board  b
 			        inner join board_like bl on b.board_no = bl.board_no
-			    where b.member_no = #{memberNo}) and board_like_check = 0
+			    where b.member_no = #{member_no}) and board_like_check = 0
 			    
 			union
 
-			select member_no "no" from follow where follow_follower = #{memberNo} and follow_check = 0
+			select member_no "no" from follow where follow_follower = #{member_no} and follow_check = 0
 			        
 			union
 			
@@ -85,7 +148,7 @@
 			        select r.reply_no from board b 
 			            inner join board_reply br on b.board_no = br.board_no
 			            inner join reply r on r.reply_no = br.reply_no
-			        where b.member_no = #{memberNo}
+			        where b.member_no = #{member_no}
 	        ) and reply_check = 0
         ) where rownum = 1
 	</select>
