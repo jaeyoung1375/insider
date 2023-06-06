@@ -7,8 +7,8 @@
 <mapper namespace="dmUser">
 
 	<insert id="enter">
-		insert into dm_user(member_no, room_no, join_time, read_time)
-		values(#{memberNo}, #{roomNo}, sysdate, #{readTime})	
+		insert into dm_user(member_no, room_no, join_time, read_time, read_dm_time)
+		values(#{memberNo}, #{roomNo}, sysdate, #{readTime}, sysdate)	
 	</insert>
 	
 	<select id="find" resultType="DmUserDto">
@@ -23,7 +23,7 @@
 	<!-- 읽은 시간 수정 -->
 	<update id="updateReadTime">
 		update dm_user
-		set read_time=#{readTime}
+		set read_time=#{readTime}, read_dm_time=#{readDmTime}
 		where member_no=#{memberNo} and room_no=#{roomNo}
 	</update>
 	
@@ -56,14 +56,13 @@
 		FROM dm_message
 		WHERE room_no = #{roomNo}
 		    AND message_send_time > (
-		        SELECT MAX(join_time)
+		        SELECT MAX(read_dm_time)
 		        FROM dm_user
 		        WHERE member_no = #{memberNo}
 		            AND room_no = #{roomNo}
 		    )
 		    AND message_sender != #{memberNo}
     </select>
-    
     
     <!-- 읽지 않은 메세지 수 수정 -->
 	<update id="updateUnReadDm">

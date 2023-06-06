@@ -68,14 +68,6 @@ public class DmUserRepoImpl implements DmUserRepo {
 	    return sqlSession.selectList("dmUser.getUnreadMessageNum", params);
 	}
 	
-	
-	///////////////////////////////////////////////     //읽지 않은 메세지 수   --------   삭제 예정
-
-	@Override
-	public void insertUnReadDm(DmUserDto dmUserDto) {
-		sqlSession.insert("dmUser.insertUnReadDm", dmUserDto);
-	}
-
 	@Override
 	public void updateUnReadDm(DmUserDto dmUserDto) {
 		sqlSession.update("dmUser.updateUnReadDm", dmUserDto);
