@@ -241,15 +241,16 @@
 			
 		<!-- 리스트 -->
 			<div class="row d-flex justify-content-center mt-3">
-				<div class="box m-2" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)">
+				<div class="box m-2" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)" 
+						 @click="detailViewOn(index)" >
 					<video class="content" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
 							style="object-fit:cover" autoplay muted controls loop></video>
-					<img class='content' @click="detailViewOn(index)" v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video"
+					<img class='content' v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video"
 							 :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
 					<img class='content' v-if="board.boardAttachmentList.length==0" src="${pageContext.request.contextPath}/static/image/noimage.png">
-					<div class="content-box"  @click="detailViewOn(index)"></div>
+					<div class="content-box" ></div>
 					<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
-					<div class="like-comment" @click="detailViewOn(index)">
+					<div class="like-comment" >
 						<span><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
 						<span class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
 					</div>
@@ -521,7 +522,10 @@
 				loading:false,
 				finish:false,
 				searchedList:[],
-				
+				//클릭, 더블클릭 이벤트 해결
+				delay: 700,
+				clicks: 0,
+				timer: null,
 				//상세보기 및 댓글
 				detailView:false,
 				detailIndex:"",
@@ -597,6 +601,7 @@
 			},
 			//검색어 입력시
 			searchInputChanged(e){
+				//document.body.style.overflow = "hidden";
 				this.searchInput = e.target.value;
 				if(this.searchInput.length>0){
 					this.recommandListShow=true;
@@ -611,6 +616,7 @@
 				setTimeout(()=>{
 					this.recommandListShow=false;
 					this.searchedListShow=false;
+					//document.body.style.overflow = "unset";
 				},150);
 			},
 			async moveToTagDetail(tagName){
@@ -643,12 +649,22 @@
 			},
 			
 			/* --------------------------상세보기-------------------------- */
-			 //상세보기 모달창 열기
+			 //상세보기 모달창 열기(더블클릭 이벤트 방지)
 	        detailViewOn(index) {
-	        	this.detailView = true;
-	        	this.detailIndex = index;
-	        	this.replyLoad(index);
-	        	document.body.style.overflow = "hidden";
+				this.clicks++;
+				if (this.clicks === 1) {
+					this.timer = setTimeout( () => {
+			        	this.detailView = true;
+			        	this.detailIndex = index;
+			        	this.replyLoad(index);
+			        	document.body.style.overflow = "hidden";
+						this.clicks = 0
+					}, 200);
+				} 
+				else {
+					clearTimeout(this.timer);
+					this.clicks = 0;
+				} 
 	        },
 	        
 	        //상세보기 모달창 닫기
