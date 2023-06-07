@@ -577,16 +577,13 @@
 				                'Content-Type': 'multipart/form-data'
 				            }
 				        });
-				        console.log("attachmentNo: " + resp.data.attachmentNo);
-				        
 				        if(resp.data) {
 				            const data = {
 				                    type: 7, 
 				                    attachmentNo: resp.data.attachmentNo,
-				                    content: "사진 " + resp.data.attachmentNo
+				                    content: "이미지 메세지"
 				            }
 				            this.socket.send(JSON.stringify(data));
-				            this.clear();
 				            fileInput.value = null;
 				        }
 				    } catch (error) {
@@ -906,6 +903,9 @@
 				        const deleteUrl = "${pageContext.request.contextPath}/rest/deleteDmRoom";
 				        await axios.post(deleteUrl, {roomNo: roomNo});
 				        
+				     	//변경된 채팅방 이름 삭제
+				        await this.deleteRoomRename();
+				        
 				        //퇴장 메시지 전송
 				        const message = {
 				        type: 5,
@@ -1032,6 +1032,15 @@
 							unreadMessage: 0
 						};
 						await axios.put(updateUrl, data);
+				    } catch (error) {
+				        console.error("읽지 않은 메세지 수 수정 오류", error);
+				    }
+				},
+				//변경된 채팅방 이름 삭제
+				async deleteRoomRename() {
+				    const deleteUrl = `${pageContext.request.contextPath}/rest/deleteRoomRename`;
+				    try {
+				        await axios.delete(deleteUrl, {params:{roomNo:this.roomNo}});
 				    } catch (error) {
 				        console.error("읽지 않은 메세지 수 수정 오류", error);
 				    }

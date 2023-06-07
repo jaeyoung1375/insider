@@ -1,5 +1,8 @@
 package com.kh.insider.repo;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -30,6 +33,14 @@ public class DmRoomRenameRepoImpl implements DmRoomRenameRepo {
 	@Override
 	public boolean existsByRoomNo(int roomNo) {
 		return sqlSession.selectOne("dmRoomRename.existsByRoomNo", roomNo);
+	}
+
+	@Override
+	public void deleteRename(int roomNo, long memberNo) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("roomNo", roomNo);
+	    params.put("memberNo", memberNo);
+	    sqlSession.delete("dmRoomRename.deleteRename", params);
 	}
 
 }
