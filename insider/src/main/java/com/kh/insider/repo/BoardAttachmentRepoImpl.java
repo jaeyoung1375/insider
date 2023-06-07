@@ -21,6 +21,15 @@ public class BoardAttachmentRepoImpl implements BoardAttachmentRepo{
 		boardAttachmentDto.setBoardAttachmentNo(sequence);
 		sqlSession.insert("boardAttachment.insert", boardAttachmentDto);
 	}
+//	@Override
+//	public void insert(List<BoardAttachmentDto> boardAttachmentDtos) {
+//	    for (BoardAttachmentDto boardAttachmentDto : boardAttachmentDtos) {
+//	        int sequence = sqlSession.selectOne("boardAttachment.sequence");
+//	        boardAttachmentDto.setBoardAttachmentNo(sequence);
+//	        sqlSession.insert("boardAttachment.insert", boardAttachmentDto);
+//	    }
+//	}
+
 
 	@Override
 	public void delete(int boardNo) {

@@ -83,53 +83,7 @@ public class BoardController {
 	public String list() {
 		return "board/list";
 	}
-	
-    
-// // 파일 업로드 & 다른 테이블 연계
-// 	 @PostMapping("/upload")
-// 	 public String upload(
-// 	 		@ModelAttribute BoardDto boardDto,
-// 	 		@RequestParam (required=false)MultipartFile attach,
-// 	 		HttpSession session, Model model,
-// 	 		RedirectAttributes attr
-// 			 ) throws IllegalStateException, IOException {
-//// 		 	@RequestParam List<MultipartFile> attaches) throws IllegalStateException, IOException {
-// 		 
-// 		   	int boardNo =boardRepo.sequence();
-// 	        boardDto.setBoardNo(boardNo);
-//
-// 	        // 게시물 작성자
-// 	        Long memberNo = (Long)session.getAttribute("memberNo");
-// 	        boardDto.setMemberNo(memberNo);
-// 		 
-// 		 	//1.게시물 등록
-// 		 	boardRepo.insert(boardDto);
-// 			
-// 		 	if(!attach.isEmpty()) {
-// 	
-// 	 		//2.첨부파일 저장 및 등록(첨부파일이 있으면)
-// 	 		int attachmentNo = attachmentRepo.sequence();
-// 			
-// 	 		File target = new File(dir, String.valueOf(attachmentNo));
-// 	 		attach.transferTo(target);//저장
-// 			
-// 	 		attachmentRepo.insert(AttachmentDto.builder()
-// 	 					.attachmentNo(attachmentNo)
-// 	 					.attachmentName(attach.getOriginalFilename())
-// 	 					.attachmentType(attach.getContentType())
-// 						.attachmentSize(attach.getSize())
-// 	 				.build());
-// 			
-// 	// 		//3.게시물과 첨부파일 정보를 연결(첨부파일이 있으면)
-// 	 		boardAttachmentRepo.insert(BoardAttachmentDto.builder()
-// 						.boardNo(boardDto.getBoardNo())
-// 	 					.attachmentNo(attachmentNo)
-// 	 				.build());
-// 	 	}
-// 	 	return "redirect:/";
-// 	 }
- 	 
- 	 
+
 // 	// 파일업로드 글 쓸때 사용, 
 // 	@PostMapping("/upload")
 // 	public String upload(@RequestParam List<MultipartFile> attaches) throws IllegalStateException, IOException, InterruptedException {
@@ -325,7 +279,6 @@ public class BoardController {
 			for(int i = 0; i < tagList.size(); i++) {
 				String tagName = tagList.get(i);
 				TagDto tagDtoFind = tagRepo.selectOne(tagName);
-				log.debug("태그디티오:{}",tagDtoFind);
 				if(tagDtoFind == null) {
 					tagRepo.insert(tagName);
 				}

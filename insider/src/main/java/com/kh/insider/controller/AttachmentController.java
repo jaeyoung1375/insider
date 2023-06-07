@@ -49,9 +49,6 @@ public class AttachmentController {
 	// 파일 경로 받아오기 
 	@Autowired
 	private FileUploadProperties fileuploadProperties;
-	
-	@Autowired
-	private AttachmentRepo attachmentRepo;
 
 	private File dir;
 	@PostConstruct
