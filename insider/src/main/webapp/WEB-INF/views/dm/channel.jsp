@@ -841,7 +841,6 @@
 				            };
 				            await axios.put(updateRoomUrl, updateRoomData);
 				        }
-				        this.dmRoomList = []; //채팅방 목록 초기화
 				        await this.fetchDmRoomList(); //채팅방 목록 불러오기
 				        window.location.href = "${pageContext.request.contextPath}/dm/channel?room=" + roomNo;
 				        console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
@@ -918,7 +917,6 @@
 				        console.log("회원이 퇴장 하였습니다.");
 				        window.location.href = "${pageContext.request.contextPath}/dm/channel";
 				        
-				        this.dmRoomList = []; // 채팅방 목록 초기화
         				await this.fetchDmRoomList(); // 채팅방 목록 불러오기
 				    } catch (error) {
 				        console.error("회원 퇴장에서 오류가 발생하였습니다.", error);
@@ -955,7 +953,6 @@
 				            console.log("채팅방 이름이 성공적으로 추가되었습니다.");
 				        }
 				
-				        this.dmRoomList = [];
 				        await this.fetchDmRoomList();
 				    } catch (error) {
 				        console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
@@ -967,7 +964,6 @@
 				        this.changeRoomName()
 				            .then(() => {
 				                this.hideRoomNameModal();
-				                this.dmRoomList = [];
 				                this.fetchDmRoomList();
 				            })
 				            .catch(error => {

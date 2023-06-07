@@ -217,13 +217,13 @@
 						<ul class="navbar-nav">
 						<!-- 검색 -->
 							<li class="nav-item mt-2">
-								<a class="nav-link" href="${pageContext.request.contextPath}/search"><i class="fa-regular fa-solid fa-magnifying-glass" style="font-size: 45px;"></i></a>
+								<a class="nav-link" href="${pageContext.request.contextPath}/search"><i class="fa-regular fa-solid fa-magnifying-glass mt-1" style="font-size: 45px;"></i></a>
 							</li>
 							<!-- 알림 -->
 							<li class="nav-item mt-2">
 							  <a class="nav-link notice" @click="toggleModal">
 							    <i class="fa-regular fa-heart"></i>
-							    <i class="fa-solid fa-circle" v-show="hasNewNotification" style="display:none;position: absolute;font-size: 0.3em;color: #eb6864;left: 39%;top: 70%;"></i>
+							    <i class="fa-solid fa-circle" v-show="hasNewNotification" style="display:none;position: absolute;font-size: 0.3em;color: #eb6864;right:20%;bottom: 27%;"></i>
 							  </a>
 							  <div class="modal-window" v-if="showModal">
 							    <div class="modal-content">
