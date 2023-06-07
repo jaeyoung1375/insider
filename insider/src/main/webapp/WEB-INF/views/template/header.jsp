@@ -264,7 +264,7 @@
 							</li>
 						<!-- 프로필 -->
 							<li class="nav-item mt-2">
-								<a class="nav-link" href="${pageContext.request.contextPath}/member/mypage"><i class="fa-regular fa-circle-user mt-1" style="font-size: 45px;"></i></a>
+								<a class="nav-link" style="cursor:pointer" @click="moveToMyPage()"><i class="fa-regular fa-circle-user mt-1" style="font-size: 45px;"></i></a>
 							</li>
 						</ul>
 					</div>
@@ -373,6 +373,11 @@
 	        		const days = Math.floor(duration / 1440);
 	        		return days + "일 전";
 	        	}
+	        },
+	        //이동버튼 클릭 시
+	        async moveToMyPage(){
+	        	const resp = await axios.get(contextPath+"/rest/member/nickname");
+        		window.location.href=contextPath+'/member/'+resp.data;
 	        },
 	    },
 	

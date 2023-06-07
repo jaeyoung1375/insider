@@ -611,8 +611,22 @@
 				if(!this.searchInput.length>0){
 					return;
 				}
-				const resp = await axios.get(contextPath+"/rest/search/"+this.searchInput);
-				this.recommandList=[...resp.data];
+				//태그검색일 때
+				if(this.searchInput.startsWith("#")){
+					//# 제거
+					const newSearchInput = this.searchInput.replace("#","");
+					if(!newSearchInput.length>0){
+						return;
+					}
+					const resp = await axios.get(contextPath+"/rest/search/"+newSearchInput);
+					//태그가 아닌놈들은 제거
+					const filteredData = resp.data.filter(item => item.nick === null);
+					this.recommandList=[...filteredData];
+				}
+				else{
+					const resp = await axios.get(contextPath+"/rest/search/"+this.searchInput);
+					this.recommandList=[...resp.data];
+				}
 			},
 			async loadList(){
 				if(this.loading||this.finish) return;
