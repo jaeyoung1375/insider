@@ -241,10 +241,18 @@
 								          	<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
 								          	{{ notification.memberNick }} 님이
 								          	</a>
+								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
 								          	<span v-if="notification.type == 1">게시글을 좋아요 하였습니다.</span>
+								          	</a>
+								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
 								          	<span v-if="notification.type == 2">게시글에 댓글을 달았습니다.</span>
+								          	</a>
+								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
 								          	<span v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</span>
+								          	</a>
+								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
 								          	<span v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</span>
+								          	</a>
 								          	<span v-if="notification.type == 5">팔로우하였습니다.</span>
 								          	<b>· {{dateCount(notification.boardTimeAuto)}}</b>
 							          	</div>
@@ -258,10 +266,18 @@
 										      <img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
 										      {{ notification.memberNick }} 님이
 										    </a>
-										    <span v-if="notification.type == 1">게시글을 좋아요 하였습니다.</span>
-										    <span v-if="notification.type == 2">게시글에 댓글을 달았습니다.</span>
-										    <span v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</span>
-										    <span v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</span>
+									        <a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
+								          	<span v-if="notification.type == 1">게시글을 좋아요 하였습니다.</span>
+								          	</a>
+								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
+								          	<span v-if="notification.type == 2">게시글에 댓글을 달았습니다.</span>
+								          	</a>
+								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
+								          	<span v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</span>
+								          	</a>
+								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
+								          	<span v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</span>
+								          	</a>
 										    <span v-if="notification.type == 5">팔로우하였습니다.</span>
 										    <b>· {{dateCount(notification.boardTimeAuto)}}</b>
 										    <a @click="deleteNotification(notification)" class="btn btn-secondary">알림삭제</a>
