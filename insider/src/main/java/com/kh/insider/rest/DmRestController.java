@@ -1,5 +1,6 @@
 package com.kh.insider.rest;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +25,6 @@ import com.kh.insider.dto.DmUserDto;
 import com.kh.insider.repo.DmMemberInfoRepo;
 import com.kh.insider.repo.DmMemberListRepo;
 import com.kh.insider.repo.DmMessageNickRepo;
-import com.kh.insider.repo.DmMessageRepo;
 import com.kh.insider.repo.DmRoomRepo;
 import com.kh.insider.repo.DmRoomUserProfileRepo;
 import com.kh.insider.repo.DmUserRepo;
@@ -123,13 +123,13 @@ public class DmRestController {
 	
 	//회원 초대
 	@PostMapping("/inviteUser")
-	public void inviteUserToRoom(@RequestBody DmRoomVO dmRoomVO) {
+	public void inviteUserToRoom(@RequestBody DmRoomVO dmRoomVO) throws IOException {
 		dmServiceImpl.inviteUsersToRoom(dmRoomVO);
 	}
 	
 	//채팅방에서 회원 퇴장
 	@PostMapping("/exitDmRoom")
-	public void exitInRoom(@RequestBody DmUserVO user, HttpSession session) {
+	public void exitInRoom(@RequestBody DmUserVO user, HttpSession session) throws IOException {
 		long memberNo = (Long) session.getAttribute("memberNo");
 		int roomNo = user.getRoomNo();
 		user.setMemberNo(memberNo);
