@@ -184,10 +184,13 @@
 			<nav class="mt-3">
 				<div class="container-fluid" style="width:60%">
 					<div class="row">
-						<div class="col d-flex align-items-center">
-							<a href="${pageContext.request.contextPath}/" class="logo"><img src="${pageContext.request.contextPath}/static/image/logo.png" width="50" height="50">insider</a>
+						<div class="col">
+							<a href="${pageContext.request.contextPath}/" class="logo d-flex align-items-center">
+								<img class="me-2" src="${pageContext.request.contextPath}/static/image/logo.png" width="50" height="50">
+								insider
+							</a>
 						</div>
-						<div class="col d-flex align-items-center">
+						<div class="col d-flex align-items-center justify-content-end">
 							<div class="row">
 							<!-- 관리자 -->
 								<div class="col p-0 m-2">
@@ -198,11 +201,13 @@
 									<a class="" href="${pageContext.request.contextPath}/search"><i class="fa-regular fa-solid fa-magnifying-glass header-menu-option"></i></a>
 								</div>
 								<!-- 알림 -->
-								<div class="col p-0 m-2">
-								  <a class="notice" @click="toggleModal">
-								    <i class="fa-regular fa-heart header-menu-option"></i>
-								    <i class="fa-solid fa-circle" v-show="hasNewNotification" style="display:none;position: absolute;font-size: 0.3em;color: #eb6864;right:15%;bottom: 17%;"></i>
-								  </a>
+								<div class="col p-0 m-2" style="position:relative;">
+								  <div>
+									  <a class="notice" @click="toggleModal">
+									    <i class="fa-regular fa-heart header-menu-option"></i>
+									    <i class="fa-solid fa-circle" v-show="hasNewNotification" style="display:none;position: absolute;font-size: 0.3em;color: #eb6864;right:15%;bottom: 17%;"></i>
+									  </a>
+								  </div>
 								  <div class="modal-window" v-if="showModal">
 								    <div class="modal-content">
 								      <div class="modal-header"></div>
