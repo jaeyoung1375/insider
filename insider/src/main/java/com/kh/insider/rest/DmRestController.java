@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +25,6 @@ import com.kh.insider.dto.DmUserDto;
 import com.kh.insider.repo.DmMemberInfoRepo;
 import com.kh.insider.repo.DmMemberListRepo;
 import com.kh.insider.repo.DmMessageNickRepo;
-import com.kh.insider.repo.DmMessageRepo;
 import com.kh.insider.repo.DmRoomRepo;
 import com.kh.insider.repo.DmRoomUserProfileRepo;
 import com.kh.insider.repo.DmUserRepo;
@@ -200,5 +200,11 @@ public class DmRestController {
     	dmServiceImpl.updateUnReadDm(dmUserDto);
     }
     
+    //변경된 채팅방 이름 삭제
+    @DeleteMapping("/deleteRoomRename")
+    public void deleteRename(HttpSession session, @RequestParam int roomNo) {
+    	long memberNo = (Long) session.getAttribute("memberNo");
+    	dmServiceImpl.deleteRename(roomNo, memberNo);
+    }
     
 }

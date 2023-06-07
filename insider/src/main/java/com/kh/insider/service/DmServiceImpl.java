@@ -534,6 +534,11 @@ public class DmServiceImpl implements DmService {
 	    //DmRoomVO dmRoomVO = rooms.get(roomNo);
 	    //dmRoomVO.broadcast(unreadMessage, dmRoomVO.getUsers());
 	}
+   
+   //변경된 채팅방 이름 삭제
+   public void deleteRename(int roomNo, long memberNo) {
+       dmRoomRenameRepo.deleteRename(roomNo, memberNo);
+   }
 
 	   
 }
