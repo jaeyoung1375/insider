@@ -239,7 +239,9 @@
 						                	{{message.memberNick}}
 						                </div>
 						                <div class="content-body">
-							                <div class="message-wrapper">{{message.content}}</div>
+							                <div v-if="message.attachmentNo == 0" class="message-wrapper">{{message.content}}</div>
+							                <img class="photo" v-if="message.attachmentNo > 0" 
+												:src="'${pageContext.request.contextPath}/rest/attachment/download/'+message.attachmentNo">
 							                <div class="info-wrapper">
 							                	<div class="number-wrapper" v-show="unreadCount[index] !== 0">{{unreadCount[index]}}</div>
 							                	<div class="time-wrapper" v-if="calculateDisplay(index)">{{timeFormat(message.time)}}</div>
@@ -259,7 +261,11 @@
 						        <div class="row justify-content-between" style="margin-top:10px;margin-bottom:10px;padding-left:calc(var(--bs-gutter-x) * .5);padding-right:calc(var(--bs-gutter-x) * .5);height:38px;">
 							        <!-- 입력창 -->
 							        <input type="text" v-model="text" v-on:input="text=$event.target.value" placeholder="메세지 입력" style="border-radius: 3rem;width:75%;">
-							        <button @click="sendMessage" style="border-radius: 3rem; width:25%;">전송</button>
+							        <label for="fileDm" style="display: contents;">
+										<i class="fa-solid fa-image" style="font-size: xx-large;color: #eb6864;padding-top: 3px;"></i>
+									</label>
+							        	<input type="file" name="fileDm" id="fileDm" @input="sendPicture()" style="display:none;" accept=".png, .jpg, .gif" ref="fileInput">
+							        <button @click="sendMessage" style="border-radius: 3rem; width:15%;">전송</button>
 						        </div>
 					        </div>
 						</div>
@@ -538,13 +544,54 @@
            		displayMessageList(resp) {
 				    this.messageList = resp.map((msg) => {
 				        const msgContent = JSON.parse(msg.messageContent);
-				        return {
-				            messageNo: msgContent.messageNo,  // 메세지 삭제를 위해 추가
-				            memberNick: msgContent.memberNick,
-				            content: msgContent.content,
-				            time: this.timeFormat(msgContent.time),
-				        };
+				        let formattedMsg = {
+				                messageNo: msgContent.messageNo,  // 메세지 삭제를 위해 추가
+				                memberNick: msgContent.memberNick,
+				                time: this.timeFormat(msgContent.time),
+				                messageType: msgContent.messageType // 메세지 타입 추가
+				            };
+
+				            if(msgContent.messageType === 1) {
+				                formattedMsg.content = msgContent.content;
+				            } else if(msgContent.messageType === 7) {
+				                formattedMsg.attachmentNo = msgContent.attachmentNo;
+				            }
+				            return formattedMsg;
 				    });
+				},
+				//이미지 메세지 전송
+				async sendPicture() {
+				    const fileInput = this.$refs.fileInput;
+				    const file = fileInput.files[0];
+				    if(!file) {
+				        console.log("선택된 이미지 메세지 파일이 없습니다.");
+				        return;
+				    }
+				    const formData = new FormData();
+				    formData.append("attach", file);
+				
+				    const url = "${pageContext.request.contextPath}/rest/attachment/dm";
+				    try {
+				        const resp = await axios.post(url, formData, {
+				            headers: {
+				                'Content-Type': 'multipart/form-data'
+				            }
+				        });
+				        console.log("attachmentNo: " + resp.data.attachmentNo);
+				        
+				        if(resp.data) {
+				            const data = {
+				                    type: 7, 
+				                    attachmentNo: resp.data.attachmentNo,
+				                    content: "사진 " + resp.data.attachmentNo
+				            }
+				            this.socket.send(JSON.stringify(data));
+				            this.clear();
+				            fileInput.value = null;
+				        }
+				    } catch (error) {
+				        console.error("이미지 메세지 업로드 실패", error);
+				    }
 				},
 				//모달창
 				showCreateRoomModal(){

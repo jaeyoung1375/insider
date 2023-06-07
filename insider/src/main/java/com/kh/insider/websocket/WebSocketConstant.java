@@ -9,6 +9,7 @@ public interface WebSocketConstant {
 	int INVITATION = 4;
 	int LEAVE = 5;
 	int NEW_MESSAGE = 6;
+	int PICTURE = 7;
 	
 	Integer WAITING_ROOM_NO = -1;
 
