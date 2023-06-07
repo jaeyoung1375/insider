@@ -27,6 +27,7 @@ import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.SettingRepo;
 import com.kh.insider.repo.TagFollowRepo;
+import com.kh.insider.service.ReportService;
 import com.kh.insider.vo.BoardListVO;
 
 @RestController
@@ -44,6 +45,8 @@ public class MemberRestController {
 	private BoardRepo boardRepo;
 	@Autowired
 	private TagFollowRepo tagFollowRepo;
+	@Autowired
+	private ReportService reportService;
 	
 	
 	//멤버정보 불러오기
@@ -174,7 +177,15 @@ public class MemberRestController {
 		session.removeAttribute("socialUser");
 		session.removeAttribute("member");
 		
+		//리포트가 있으면 찾아서 상태 변경해줌
+		reportService.manageDeleted("member", memberNo);
 		return "redirect:/member/login";
 		
+	}
+	//닉네임불러오기
+	@GetMapping("/nickname")
+	public String getNickname(HttpSession session) {
+		long memberNo = (long) session.getAttribute("memberNo");
+		return memberRepo.findByNo(memberNo).getMemberNick();
 	}
 }

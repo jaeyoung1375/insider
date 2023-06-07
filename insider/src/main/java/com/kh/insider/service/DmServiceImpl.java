@@ -3,12 +3,15 @@ package com.kh.insider.service;
 import java.io.IOException;
 
 
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -148,26 +151,28 @@ public class DmServiceImpl implements DmService {
 		dmMessageDto.setRoomNo(roomNo);
 		dmMessageDto.setMessageSender(user.getMemberNo());
 		dmMessageDto.setMessageContent(jsonMessage.getPayload());
-		dmMessageDto.setMessageType(messageType);		
+		dmMessageDto.setMessageSendTime(new Date());
+		dmMessageDto.setMessageType(messageType);
 		dmMessageRepo.create(dmMessageDto);
 	}
 	
 	//채팅방에 이미지 메세지를 전송하는 기능
 	public void broadcastPicture(
 			DmUserVO user, int roomNo, TextMessage jsonMessage,
-			long messageNo, int attachmentNo) throws IOException {
+			long messageNo, int messageType, int attachmentNo) throws IOException {
 		if(containsRoom(roomNo) == false) return;
 		
 		DmRoomVO dmRoomVO = rooms.get(roomNo);
 		dmRoomVO.broadcast(jsonMessage);
 		
 		//메세지 DB 저장
-		//- 사용자 아이디, 방 이름, 메세지 내용
 		DmMessageDto dmMessageDto = new DmMessageDto();
 		dmMessageDto.setMessageNo(messageNo);
 		dmMessageDto.setRoomNo(roomNo);
 		dmMessageDto.setMessageSender(user.getMemberNo());
 		dmMessageDto.setMessageContent(jsonMessage.getPayload());
+		dmMessageDto.setMessageSendTime(new Date());
+		dmMessageDto.setMessageType(messageType);
 		dmMessageDto.setAttachmentNo(attachmentNo);
 		dmMessageRepo.pictureMsg(dmMessageDto);
 	}
@@ -214,7 +219,7 @@ public class DmServiceImpl implements DmService {
 	public void moveUser(DmUserVO user, int roomNo) {
 		int beforeRoomNo = findUser(user);
 		//대기실은 나가지 않음
-		if(roomNo!=-1) {
+		if(beforeRoomNo!=-1) {
 			exit(user, beforeRoomNo);
 		}
 		join(user, roomNo);
@@ -269,6 +274,7 @@ public class DmServiceImpl implements DmService {
 			msg.setMessageNo(messageNo);
 			msg.setMemberNo(user.getMemberNo());
 			msg.setMessageType(MessageType);
+			msg.setRoomNo(roomNo);
 			
 			//JSON 변환
 			String json = mapper.writeValueAsString(msg);
@@ -279,6 +285,9 @@ public class DmServiceImpl implements DmService {
 			
 			//채팅 참가자 시간 데이터 전송
 			this.broadcastRoom(roomNo);
+			
+			//방 참가자들에게 새 메세지 왔다고 알림 전송
+			this.broadcastRoom(roomNo, 6);
 			
 		}
 		//입장메세지인 경우
@@ -291,14 +300,14 @@ public class DmServiceImpl implements DmService {
 			this.broadcastRoom(roomNo);
 		}
 		
-		// 채팅방으로 이미지 메세지 전송
+		// 채팅방으로 이미지 메세지 수신
 		else if (receiveVO.getType() == WebSocketConstant.PICTURE) {
 		    int roomNo = this.findUser(user);
 
 		    // 대기실인 경우 메세지 전송이 불가
 		    if (roomNo == WebSocketConstant.WAITING_ROOM_NO) return;
 
-		    //int messageType = WebSocketConstant.PICTURE;
+		    int messageType = receiveVO.getType();
 		    int attachmentNo = receiveVO.getAttachmentNo();
 		    
 		    // 보낼 메세지 생성
@@ -310,7 +319,7 @@ public class DmServiceImpl implements DmService {
 		    long messageNo = dmMessageRepo.sequence();
 		    msg.setMessageNo(messageNo);
 		    msg.setMemberNo(user.getMemberNo());
-		    msg.setMessageType(receiveVO.getType());
+		    msg.setMessageType(messageType);
 		    msg.setAttachmentNo(attachmentNo);
 
 		    // JSON 변환
@@ -318,9 +327,8 @@ public class DmServiceImpl implements DmService {
 		    TextMessage jsonMessage = new TextMessage(json);
 
 		    // 채팅방으로 이미지 메세지 전송
-		    this.broadcastPicture(user, roomNo, jsonMessage, messageNo, attachmentNo);
+		    this.broadcastPicture(user, roomNo, jsonMessage, messageNo, messageType ,attachmentNo);
 		}
-
 		
 	    //메시지 삭제
 		else if(receiveVO.getType() == WebSocketConstant.DELETE) {
@@ -338,16 +346,16 @@ public class DmServiceImpl implements DmService {
 	        this.exit(user, roomNo);
 	    }
 		// 읽지 않은 메시지 수
-	    else if (receiveVO.getType() == WebSocketConstant.NEW_MESSAGE) {
-	    	int roomNo = this.findUser(user);
-	    	List<DmUserDto> unreadMessage = dmUserRepo.getUnreadMessageNum(user.getMemberNo(), roomNo);
-	    	
-	    	String unreadJson = mapper.writeValueAsString(unreadMessage);
-	    	TextMessage unreadTextMessage = new TextMessage(unreadJson);
-	    	// 대기실에 있는 사용자에게 이벤트 전송
-	    	DmRoomVO waitingRoom = rooms.get(WebSocketConstant.WAITING_ROOM_NO);
-	        waitingRoom.broadcast(unreadTextMessage, waitingRoom.getUsers());
-	    }
+//	    else if (receiveVO.getType() == WebSocketConstant.NEW_MESSAGE) {
+//	    	int roomNo = this.findUser(user);
+//	    	List<DmUserDto> unreadMessage = dmUserRepo.getUnreadMessageNum(user.getMemberNo(), roomNo);
+//	    	
+//	    	String unreadJson = mapper.writeValueAsString(unreadMessage);
+//	    	TextMessage unreadTextMessage = new TextMessage(unreadJson);
+//	    	// 대기실에 있는 사용자에게 이벤트 전송
+//	    	DmRoomVO waitingRoom = rooms.get(WebSocketConstant.WAITING_ROOM_NO);
+//	        waitingRoom.broadcast(unreadTextMessage, waitingRoom.getUsers());
+//	    }
 		
 		//회원 초대 메세지
 //	    else if (receiveVO.getType() == WebSocketConstant.INVITATION) {
@@ -415,10 +423,10 @@ public class DmServiceImpl implements DmService {
 	} 
 	
 	//회원 초대
-	public void inviteUsersToRoom(DmRoomVO dmRoomVO) {
+	public void inviteUsersToRoom(DmRoomVO dmRoomVO) throws IOException {
 		int roomNo = dmRoomVO.getRoomNo();
 		List<Long> memberList = dmRoomVO.getMemberList();
-		//이 시점에서 채팅방 목록 정보를 보내줘야됨
+		
 		log.debug("확인용 초대 멤버 {}", memberList.size());
 	    for (Long memberNo : memberList) {
 	        DmUserDto dmUserDto = new DmUserDto();
@@ -435,12 +443,14 @@ public class DmServiceImpl implements DmService {
 	        
 	        log.debug("회원 초대 DB등록 {}님이 {}방으로 참여하였습니다.", memberNo, roomNo);
 	    }
+	    //이 시점에서 채팅방 목록 정보를 보내줘야됨
+		//방 참가자들에게 새 메세지 왔다고 알림 전송
+		this.broadcastRoom(roomNo, 6);
 	} 
 	
 	//채팅방 퇴장 DB
-	public void leaveDmRoom(DmUserVO user, int roomNo) {
+	public void leaveDmRoom(DmUserVO user, int roomNo) throws IOException {
 		if(containsRoom(roomNo) == false) return;
-		//이 시점에서 채팅방 목록 정보를 보내줘야됨
 		//참여자 제거(DB)
 		DmUserDto dmUserDto = new DmUserDto();
 	    dmUserDto.setMemberNo(user.getMemberNo());
@@ -454,6 +464,8 @@ public class DmServiceImpl implements DmService {
 	    dmPrivacyRoomRepo.leaveRoom(dmPrivacyRoomDto);
 	    
 		log.debug("DB삭제 {}님이 {}방에서 퇴장하였습니다.", user.getMemberNo(), roomNo);
+		//이 시점에서 채팅방 목록 정보를 보내줘야됨
+		this.broadcastRoom(roomNo, 6);
 	}
 	
 	//알림 메세지 전송
@@ -516,25 +528,58 @@ public class DmServiceImpl implements DmService {
    }
    
 	// 읽지 않은 메시지 수 변경 감지 및 웹소켓 이벤트 발송
-   public void broadcastRoom (DmUserDto dmUserDto) throws IOException {
-	   
-	    long memberNo = dmUserDto.getMemberNo();
-	    int roomNo = dmUserDto.getRoomNo();
-	    List<DmUserDto> unreadMessages = dmUserRepo.getUnreadMessageNum(memberNo, roomNo); // 읽지 않은 메시지 수 조회
+   public void broadcastRoom (int roomNo, int messageType) throws IOException {
+		//방에 참가한 모든 인원 리스트를 반환받아 memberNo를 set으로 설정
+		List<DmUserDto> dmUsers = dmUserRepo.findMembersByRoom(roomNo);
+		Set<Long> dmUsersNo = new HashSet<>();
+		for(DmUserDto dmUser : dmUsers) {
+			dmUsersNo.add(dmUser.getMemberNo());
+		}
+		//대기실 객체 반환
+		DmRoomVO waitingRoom = rooms.get(WebSocketConstant.WAITING_ROOM_NO);
+		System.out.println("대기실 전체 인원 : " + waitingRoom.size());
+		//새롭게 반환받을 DmUserVO set 생성
+		Set<DmUserVO> dmUsersForMsg = new CopyOnWriteArraySet<>();
+
+		//대기실 객체에서 유저들의 memberNo 반환
+		Set<DmUserVO> dmUsersWaiting = waitingRoom.getUsers();
+		for(DmUserVO userVO: dmUsersWaiting) {
+			if(dmUsersNo.contains(userVO.getMemberNo())) {
+				dmUsersForMsg.add(userVO);
+			}
+		}
+		System.out.println("대기실에 있는 인원 : " + dmUsersWaiting.size());
+		//이벤트 메세지 객체 생성
+		Map<String, Integer> msg = Map.of("messageType", messageType);
+		String json = mapper.writeValueAsString(msg);
+		TextMessage jsonMessage = new TextMessage(json);
+		
+		//대기실에 있는 방 인원들에게 이벤트 전송
+		for(DmUserVO dmUserForMsg : dmUsersForMsg) {
+			dmUserForMsg.send(jsonMessage);
+		}
+		
+//	    long memberNo = dmUserDto.getMemberNo();
+//	    int roomNo = dmUserDto.getRoomNo();
+//	    List<DmUserDto> unreadMessages = dmUserRepo.getUnreadMessageNum(memberNo, roomNo); // 읽지 않은 메시지 수 조회
 
 	    // 웹소켓 클라이언트에게 이벤트 전송
-	    String unreadJson = mapper.writeValueAsString(unreadMessages);
-	    TextMessage unreadMessage = new TextMessage(unreadJson);
+//	    String unreadJson = mapper.writeValueAsString(unreadMessages);
+//	    TextMessage unreadMessage = new TextMessage(unreadJson);
 
 	    // 대기실에 있는 사용자에게 이벤트 전송
-	    if (roomNo == WebSocketConstant.WAITING_ROOM_NO) {
-	        DmRoomVO waitingRoom = rooms.get(WebSocketConstant.WAITING_ROOM_NO);
-	        waitingRoom.broadcast(unreadMessage, waitingRoom.getUsers());
-	    }
+//	    if (roomNo == WebSocketConstant.WAITING_ROOM_NO) {
+//	        waitingRoom.broadcast(unreadMessage, waitingRoom.getUsers());
+//	    }
 	    // 채팅방에 있는 사용자에게 이벤트 전송
 	    //DmRoomVO dmRoomVO = rooms.get(roomNo);
 	    //dmRoomVO.broadcast(unreadMessage, dmRoomVO.getUsers());
 	}
+   
+   //변경된 채팅방 이름 삭제
+   public void deleteRename(int roomNo, long memberNo) {
+       dmRoomRenameRepo.deleteRename(roomNo, memberNo);
+   }
 
 	   
 }

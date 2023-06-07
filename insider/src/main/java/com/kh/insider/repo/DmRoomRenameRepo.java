@@ -13,5 +13,7 @@ public interface DmRoomRenameRepo {
 	
 	//변경된 이름의 채팅방 번호 확인
 	boolean existsByRoomNo(int roomNo);
+	
+	void deleteRename(int roomNo, long memberNo);
 
 }
