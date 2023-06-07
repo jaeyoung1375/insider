@@ -98,24 +98,38 @@
 	max-height:100%;
 	overflow-y:auto
 }
-.modal-header{
+.modal-header-custom{
+	padding:1.3em;
 	position:sticky; 
+	border-bottom:1px solid lightgray;
 	top:0; 
 	z-index:1; 
-	background-color:white
+	background-color:white;
+	border-top-left-radius: 0.5rem;
+	border-top-right-radius: 0.5rem;
 }
-.modal-footer{
+.modal-footer-custom{
 	position:sticky; 
 	bottom:0; 
 	z-index:1; 
-	background-color:white
+	background-color:white;
+	border-bottom-left-radius: 0.5rem;
+	border-bottom-right-radius: 0.5rem;
+	padding:1em;
 }
 
-.modal-header-custom{
+.modal-body-custom{
+	padding:1em;
 	position:sticky; 
-	top:0; 
+	top:0;
+	max-height:700px;
 	z-index:1; 
-	background-color:white
+	background-color:white;
+	overflow-y: auto;
+	-ms-overflow-style: none;
+	position: relative;
+	display:flex;
+	justify-content:center;
 }
 .card-scroll{
 	overflow-y: auto;
@@ -136,9 +150,10 @@
 	position: absolute;
 	left: 50%;
 	top: 50%;
-	width: 40%;
+	width: 500px;
 	max-height: 80%;
 	transform: translate(-50%, -50%);
+	border-radius: 0.5rem;
 }
 </style>
 <div id="app">
@@ -350,8 +365,8 @@
 									<td style="vertical-align:middle">{{member.memberEmail}}</td>
 									<td style="vertical-align:middle; text-align:center">{{member.memberFollow}}</td>
 									<td style="vertical-align:middle; text-align:center">{{member.memberReport}}</td>
-									<td class="modal-click-btn-negative" style="vertical-align:middle" v-if="member.memberSuspensionStatus==0" @click="showSuspensionModal(index, 0)">정지</td>
-									<td class="modal-click-btn" style="vertical-align:middle" v-else @click="showSuspensionModal(index, 1)">일반</td>
+									<td class="modal-click-btn-negative" style="vertical-align:middle" v-if="member.memberSuspensionStatus==0" @click="clickSuspensionModal(index, 0)">정지</td>
+									<td class="modal-click-btn" style="vertical-align:middle" v-else @click="clickSuspensionModal(index, 1)">일반</td>
 								</tr>
 							</tbody>
 						</table>
@@ -472,7 +487,7 @@
 						<input type="text" class="form-control" v-model="boardSearchOption.boardContent">
 					</div>
 					<div class="col-2 d-flex align-items-center justify-content-center">
-						<span class="modal-click-btn" @click="showForbiddenModal">금지어 관리</span>
+						<span class="modal-click-btn" @click="clickForbiddenModal">금지어 관리</span>
 					</div>
 				</div>
 				<div class="row">
@@ -517,9 +532,11 @@
 			<!-- 검색창 끝 -->
 			<!-- 게시물 출력 -->
 				<div class="row d-flex justify-content-center">
-					<div class="box" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @click="showBoardViewModal(index)">
-						<img class='content' v-if="board.boardAttachmentList.length>0" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
-						<img class='content' v-else src="${pageContext.request.contextPath}/static/image/noimage.png">
+					<div class="box" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @click="clickBoardViewModal(index)">
+						<video class="content" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
+							style="object-fit:cover" autoplay loop muted controls></video>
+						<img class='content' v-if="!board.boardAttachmentList[0].video" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
+						<img class='content' v-if="board.boardAttachmentList.length==0" src="${pageContext.request.contextPath}/static/image/noimage.png">
 						<div class="content-box"></div>
 						<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
 					</div>
@@ -702,7 +719,7 @@
 				<hr>
 				<div class="row">
 					<div class="col">
-						<h3 @click="showReportContentModal" class="modal-click-btn">신고 내용 관리</h3>
+						<h3 @click="clickReportContentModal" class="modal-click-btn">신고 내용 관리</h3>
 					</div>
 				</div>
 				<hr>
@@ -822,8 +839,8 @@
 											</div>
 										</div>
 									</td>
-									<td class="modal-click-btn-negative" style="vertical-align:middle; text-align:center" v-if="report.memberSuspensionStatus==0" @click="showReportSuspensionModal(index, 0)">정지</td>
-									<td class="modal-click-btn" style="vertical-align:middle; text-align:center" v-else @click="showReportSuspensionModal(index, 1)">일반</td>
+									<td class="modal-click-btn-negative" style="vertical-align:middle; text-align:center" v-if="report.memberSuspensionStatus==0" @click="clickReportSuspensionModal(index, 0)">정지</td>
+									<td class="modal-click-btn" style="vertical-align:middle; text-align:center" v-else @click="clickReportSuspensionModal(index, 1)">일반</td>
 									<td style="vertical-align:middle; text-align:center" v-if="report.reportTable=='board'">게시물</td>
 									<td style="vertical-align:middle; text-align:center" v-if="report.reportTable=='member'">회원</td>
 									<td style="vertical-align:middle; text-align:center" v-if="report.reportTable=='reply'">댓글</td>
@@ -835,7 +852,7 @@
 									<td style="vertical-align:middle; text-align:center" v-if="report.reportResult==1">검토완료</td>
 									<td style="vertical-align:middle; text-align:center" v-if="report.reportResult==2">삭제</td>
 									<td style="vertical-align:middle;">
-										<span class="modal-click-btn" @click="showReportDetailModal(index)" v-if="report.reportResult!=2">내용보기</span>
+										<span class="modal-click-btn" @click="clickReportDetailModal(index)" v-if="report.reportResult!=2">내용보기</span>
 										<span v-if="report.reportResult==2">삭제된내용</span>
 										<i class="fa-solid fa-sort-up ms-2" style="color:blue" v-if="reportDifference[index].index>0"></i>
 										<i class="fa-solid fa-sort-down ms-2" style="color:red" v-if="reportDifference[index].index<0"></i>
@@ -1164,16 +1181,20 @@
 		</div>
 	</div>
 	<!-- ---------------------------------신고 내용 관리 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="reportContentModal" data-bs-backdrop="static" ref="reportContentModal">
-		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportContentModal">
+		<div class="row fullscreen-container">
 			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">신고 내용 관리</h5>
-					<button type="button" class="btn-close" @click="hideReportContentModal" aria-label="Close">
-					<span aria-hidden="true"></span>
-					</button>
+				<div class="row modal-header-custom">
+					<div class="col-10">
+						<h5 class="modal-title">신고 내용 관리</h5>
+					</div>
+					<div class="col-2 d-flex justify-content-end align-items-center">
+						<button type="button" class="btn-close" @click="hideReportContentModal" aria-label="Close">
+						<span aria-hidden="true"></span>
+						</button>
+					</div>
 				</div>
-				<div class="modal-body">
+				<div class="row modal-body-custom">
 				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
 					<div class="row mb-3">
 						<div class="col-10 m-0 p-0">
@@ -1183,7 +1204,7 @@
 							<button class="btn btn-primary w-100" @click="insertReportContent">등록</button>
 						</div>
 					</div>
-					<div class="row d-flex justify-content-center" v-for="(report, index) in reportContentList" :key="report.reportListNo">
+					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo">
 						<div class="row" v-if="!reportContentListEdit[index]">
 							<div class="col-10 p-2">
 								<h5 class="m-0">{{report.reportListContent}}</h5>
@@ -1204,7 +1225,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="modal-footer">
+				<div class="row modal-footer-custom">
 					<button type="button" class="btn btn-secondary" @click="hideReportContentModal">닫기</button>
 				</div>
 			</div>
@@ -1212,16 +1233,20 @@
 	</div>
 	<!-- ---------------------------------신고 내용 관리 모달 끝-------------------------- -->
 	<!-- ---------------------------------정지 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="suspensionModal" data-bs-backdrop="static" ref="suspensionModal">
-		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+	<div class="fullscreen container-fluid" tabindex="-1" v-if="suspensionModal">
+		<div class="row fullscreen-container">
 			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">회원 정지</h5>
-					<button type="button" class="btn-close" @click="hideSuspensionModal" aria-label="Close">
-					<span aria-hidden="true"></span>
-					</button>
+				<div class="row modal-header-custom">
+					<div class="col-10">
+						<h5 class="modal-title">회원 정지</h5>
+					</div>
+					<div class="col-2 d-flex justify-content-end align-items-center">
+						<button type="button" class="btn-close" @click="hideSuspensionModal" aria-label="Close">
+						<span aria-hidden="true"></span>
+						</button>
+					</div>
 				</div>
-				<div class="modal-body">
+				<div class="row modal-body-custom">
 					<div class="row mb-3" v-if="suspensionIndex[0]>=0">
 						<div class="row">
 							<div class="col-3 d-flex justify-content-center item-aligns-center">
@@ -1338,16 +1363,24 @@
 						</div>
 					</div>
 				</div>
-				<div class="modal-footer">
-					<div class="row">
-						<div class="col" v-if="suspensionIndex[1]==0">
-							<button type="button" class="btn btn-primary" @click="insertSuspension()" :class="{'disabled':suspensionContent[0]=='' || suspensionContent[1]==''}">수정</button>
-							<button type="button" class="btn btn-primary" @click="deleteSuspension()">해제</button>
-							<button type="button" class="btn btn-secondary" @click="hideSuspensionModal">취소</button>
+				<div class="row modal-footer-custom">
+					<div class="row" v-if="suspensionIndex[1]==0">
+						<div class="offset-3 col-3 p-0">
+							<button type="button" class="btn btn-primary w-100" @click="insertSuspension()" :class="{'disabled':suspensionContent[0]=='' || suspensionContent[1]==''}">수정</button>
 						</div>
-						<div class="col" v-else>
-							<button type="button" class="btn btn-primary" @click="insertSuspension()" :class="{'disabled':suspensionContent[0]=='' || suspensionContent[1]==''}">정지</button>
-							<button type="button" class="btn btn-secondary" @click="hideSuspensionModal">취소</button>
+						<div class="col-3 p-0">
+							<button type="button" class="btn btn-primary w-100" @click="deleteSuspension()">해제</button>
+						</div>
+						<div class="col-3 p-0">
+							<button type="button" class="btn btn-secondary w-100" @click="hideSuspensionModal">취소</button>
+						</div>
+					</div>
+					<div class="row" v-else>
+						<div class="offset-6 col-3 p-0">
+							<button type="button" class="btn btn-primary w-100" @click="insertSuspension()" :class="{'disabled':suspensionContent[0]=='' || suspensionContent[1]==''}">정지</button>
+						</div>
+						<div class="col-3 p-0">
+							<button type="button" class="btn btn-secondary w-100" @click="hideSuspensionModal">취소</button>
 						</div>
 					</div>
 				</div>
@@ -1356,16 +1389,20 @@
 	</div>
 	<!-- ---------------------------------정지 모달 끝-------------------------- -->
 	<!-- ---------------------------------신고창에서 보는 정지 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="reportSuspensionModal" data-bs-backdrop="static" ref="reportSuspensionModal">
-		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportSuspensionModal">
+		<div class="row fullscreen-container">
 			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">회원 정지</h5>
-					<button type="button" class="btn-close" @click="hideReportSuspensionModal" aria-label="Close">
-					<span aria-hidden="true"></span>
-					</button>
+				<div class="row modal-header-custom">
+					<div class="col-10">
+						<h5 class="modal-title">회원 정지</h5>
+					</div>
+					<div class="col-2 d-flex justify-content-end align-items-center">
+						<button type="button" class="btn-close" @click="hideReportSuspensionModal" aria-label="Close">
+						<span aria-hidden="true"></span>
+						</button>
+					</div>
 				</div>
-				<div class="modal-body">
+				<div class="row modal-body-custom">
 					<div class="row mb-3" v-if="reportSuspensionIndex[0]>=0">
 						<div class="row">
 							<div class="col-3 d-flex justify-content-center item-aligns-center">
@@ -1482,15 +1519,23 @@
 						</div>
 					</div>
 				</div>
-				<div class="modal-footer">
-					<div class="row">
-						<div class="col" v-if="reportSuspensionIndex[1]==0">
+				<div class="row modal-footer-custom">
+					<div class="row" v-if="reportSuspensionIndex[1]==0">
+						<div class="offset-3 col-3 p-0">
 							<button type="button" class="btn btn-primary" @click="insertReportSuspension()" :class="{'disabled':reportSuspensionContent[0]=='' || reportSuspensionContent[1]==''}">수정</button>
+						</div>
+						<div class="col-3 p-0">
 							<button type="button" class="btn btn-primary" @click="deleteReportSuspension()">해제</button>
+						</div>
+						<div class="col-3 p-0">
 							<button type="button" class="btn btn-secondary" @click="hideReportSuspensionModal">취소</button>
 						</div>
-						<div class="col" v-else>
+					</div>
+					<div class="row" v-else>
+						<div class="offset-6 col-3 p-0">
 							<button type="button" class="btn btn-primary" @click="insertReportSuspension()" :class="{'disabled':reportSuspensionContent[0]=='' || reportSuspensionContent[1]==''}">정지</button>
+						</div>
+						<div class="col-3 p-0">
 							<button type="button" class="btn btn-secondary" @click="hideReportSuspensionModal">취소</button>
 						</div>
 					</div>
@@ -1500,16 +1545,20 @@
 	</div>
 	<!-- ---------------------------------신고창에서 보는 정지 모달 끝-------------------------- -->
 	<!-- ---------------------------------신고 세부 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="reportDetailModal" data-bs-backdrop="static" ref="reportDetailModal">
-		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportDetailModal">
+		<div class="row fullscreen-container">
 			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">신고 내용 관리</h5>
-					<button type="button" class="btn-close" @click="hideReportDetailModal" aria-label="Close">
-					<span aria-hidden="true"></span>
-					</button>
+				<div class="row modal-header-custom">
+					<div class="col-10">
+						<h5 class="modal-title">신고 내용 관리</h5>
+					</div>
+					<div class="col-2 d-flex justify-content-end align-items-center">
+						<button type="button" class="btn-close" @click="hideReportDetailModal" aria-label="Close">
+						<span aria-hidden="true"></span>
+						</button>
+					</div>
 				</div>
-				<div class="modal-body">
+				<div class="row modal-body-custom">
 				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
 					<div class="row" >
 						<div class="col-3 d-flex justify-content-center item-aligns-center">
@@ -1539,8 +1588,8 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col">
-							<h5 class="ms-2">신고 상세</h5>
+						<div class="col p-0">
+							<h5 class="ps-0">신고 상세</h5>
 						</div>
 					</div>
 			<!----------- 게시물 신고내용일 경우 출력 --------->
@@ -1548,7 +1597,9 @@
 						<div class="col">
 							<div class="row">
 								<div class="col-12" v-for="(image, index) in reportDetailContent.boardAttachmentList" style="position:relative">
-									<img style="height:auto; display:block" class="w-100" :src="'${pageContext.request.contextPath}'+image.imageURL">
+									<video class="w-100" :src="'${pageContext.request.contextPath}'+image.imageURL" v-if="image.video"
+											muted controls></video>
+									<img v-else style="height:auto; display:block" class="w-100" :src="'${pageContext.request.contextPath}'+image.imageURL">
 								</div>
 							</div>
 							<div class="row mt-2">
@@ -1567,38 +1618,99 @@
 									<span v-for="(tag,index) in reportDetailContent.boardTagList" :key="index">\#{{tag.tagName}}&nbsp</span>
 								</div>
 							</div>
-							<div class="row mt-3">
-								<div class="col">
-									<button class="btn btn-secondary w-100" type="button" @click="boardManage">관리처리 및 신고수 초기화</button>
+						</div>
+					</div>
+			<!----------- 게시물 신고내용일 경우 출력 --------->
+			<!----------- 댓글 신고내용일 경우 출력 --------->
+					<div class="row p-2" v-if="reportDetailData.reportTable=='reply'">
+						<div class="col">
+							<div class="row mb-2">
+								<div class="col" style="font-weight:bold">
+									댓글 내용
 								</div>
 							</div>
 							<div class="row">
+								<div class="col ps-4">
+									{{reportDetailContent[reportDetailContentIndex].replyContent}}
+								</div>
+							</div>
+							<div class="row mb-2 mt-3">
+								<div class="col" style="font-weight:bold">
+									전체 댓글 내용
+								</div>
+							</div>
+							<div class="row mb-2" v-for="(reply, index) in reportDetailContent" :key="index">
+								<div class="col-1" v-if="reply.replyParent!=0">
+								</div>
 								<div class="col">
-									<button class="btn btn-danger w-100" type="button" @click="boardDelete(reportDetailContent.boardWithNickDto.boardNo, 0)">게시물 삭제</button>
+									<div class="row">
+										<div class="col ps-3">	
+											{{reply.memberNick}}
+											<i class="ms-2" style="color:#d9534f; font-weight:bold" v-if="reply.memberNick==reportDetailData.memberNick">(신고대상자)</i>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col ps-4">
+											: {{reply.replyContent}}
+											<i class="ms-2" style="color:#d9534f; font-weight:bold" v-if="index==reportDetailContentIndex">(신고내용)</i>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-			<!----------- 게시물 신고내용일 경우 출력 --------->
+			<!----------- 댓글 신고내용일 경우 출력 --------->
+			<!----------- 회원 신고내용일 경우 출력 --------->
+					<div class="row p-2" v-if="reportDetailData.reportTable=='member'">
+						<div class="col">
+							<div class="row">
+								<div class="col modal-click-btn">
+									<h5 @click="clickReportedBoardModal">
+										이 유저의 신고받은 게시물 보기 ({{reportDetailContent.boardList.length}}건)
+									</h5>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col modal-click-btn">
+									<h5 @click="clickReportedReplyModal">
+										이 유저의 신고받은 댓글 보기 ({{reportDetailContent.replyList.length}}건)
+									</h5>
+								</div>
+							</div>
+						</div>
+					</div>
+			<!----------- 회원 신고내용일 경우 출력 --------->
 				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" @click="hideReportDetailModal">닫기</button>
+				<div class="row modal-footer-custom">
+					<div class="offset-3 col-3 p-0">
+						<button class="btn btn-success w-100" type="button" @click="reportManage(1)">확인처리</button>
+					</div>
+					<div class="col-3 p-0">
+						<button class="btn btn-danger w-100" type="button" @click="reportManage(2)">삭제처리</button>
+					</div>
+					<div class="col-3 p-0">
+						<button type="button" class="btn btn-secondary w-100" @click="hideReportDetailModal">닫기</button>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 	<!-- ---------------------------------신고 세부 모달 끝-------------------------- -->
 	<!-- ---------------------------------게시물 미리보기 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="boardViewModal" data-bs-backdrop="static" ref="boardViewModal">
-		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+	<div class="fullscreen container-fluid" tabindex="-1" v-if="boardViewModal" style="z-index:3000">
+		<div class="row fullscreen-container">
 			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">게시물 미리보기</h5>
-					<button type="button" class="btn-close" @click="hideBoardViewModal" aria-label="Close">
-					<span aria-hidden="true"></span>
-					</button>
+				<div class="row modal-header-custom">
+					<div class="col-10">
+						<h5 class="modal-title">게시물 미리보기</h5>
+					</div>
+					<div class="col-2 d-flex justify-content-end align-items-center">
+						<button type="button" class="btn-close" @click="hideBoardViewModal" aria-label="Close">
+						<span aria-hidden="true"></span>
+						</button>
+					</div>
 				</div>
-				<div class="modal-body" v-if="boardViewNo>0">
+				<div class="row modal-body-custom">
 					<div class="row" >
 						<div class="col-3 d-flex justify-content-center item-aligns-center">
 							<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+boardViewContent.boardWithNickDto.imageURL">
@@ -1612,7 +1724,9 @@
 						<div class="col">
 							<div class="row">
 								<div class="col-12" v-for="(image, index) in boardViewContent.boardAttachmentList" style="position:relative">
-									<img style="height:auto; display:block" class="w-100" :src="'${pageContext.request.contextPath}'+image.imageURL">
+									<video class="w-100" :src="'${pageContext.request.contextPath}'+image.imageURL" v-if="image.video"
+											muted controls></video>
+									<img v-else style="height:auto; display:block" class="w-100" :src="'${pageContext.request.contextPath}'+image.imageURL">
 								</div>
 							</div>
 							<div class="row mt-2">
@@ -1639,7 +1753,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="modal-footer">
+				<div class="row modal-footer-custom">
 					<button type="button" class="btn btn-secondary" @click="hideBoardViewModal">닫기</button>
 				</div>
 			</div>
@@ -1655,6 +1769,8 @@
 				</div>
 				<div class="col-2 d-flex justify-content-center align-items-center">
 					<button type="button" class="btn-close" @click="hideForbiddenModal">
+					<span aria-hidden="true"></span>
+					</button>
 				</div>
 			</div>
 			<hr>
@@ -1710,6 +1826,209 @@
 		</div>
 	</div>
 	<!-- ---------------------------------금지어 관리 모달 끝-------------------------- -->
+	<!-- ---------------------------------신고받은 게시물 미리보기 모달-------------------------- -->
+	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportedBoardModal" style="z-index:2000">
+		<div class="row fullscreen-container">
+			<div class="modal-content">
+				<div class="row modal-header-custom">
+					<div class="col-10">
+						<h5 class="modal-title">신고받은 게시물 리스트</h5>
+					</div>
+					<div class="col-2 d-flex justify-content-end align-items-center">
+						<button type="button" class="btn-close" @click="hideReportedBoardModal" aria-label="Close">
+						<span aria-hidden="true"></span>
+						</button>
+					</div>
+				</div>
+				<div class="row modal-body-custom" v-if="reportDetailData.reportTable=='member'">
+					<div class="row d-flex justify-content-center">
+						<div class="box w-25" v-for="(board, index) in reportDetailContent.boardList" :key="board.boardWithNickDto.boardNo" @click="clickReportedBoardDetailModal(index)">
+							<video class="content" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
+									style="object-fit:cover" muted controls></video>
+							<img class='content' v-if="!board.boardAttachmentList[0].video" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
+							<img class='content' v-if="board.boardAttachmentList.length==0" src="${pageContext.request.contextPath}/static/image/noimage.png">
+							<div class="content-box"></div>
+							<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
+						</div>
+					</div>
+					<div class="row" v-if="reportDetailContent.boardList.length==0">
+						<div class="col d-flex justify-content-center align-items-center">
+							<h4>신고받은 게시물 없음</h4>
+						</div>
+					</div>
+				</div>
+				<div class="row modal-footer-custom">
+					<button type="button" class="btn btn-secondary" @click="hideReportedBoardModal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ---------------------------------신고받은 게시물 미리보기 모달 끝-------------------------- -->
+	<!-- ---------------------------------신고받은 댓글 미리보기 모달-------------------------- -->
+	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportedReplyModal" >
+		<div class="row fullscreen-container">
+			<div class="modal-content">
+				<div class="row modal-header-custom">
+					<div class="col-10">
+						<h5 class="modal-title">신고받은 댓글 리스트</h5>
+					</div>
+					<div class="col-2 d-flex justify-content-end align-items-center">
+						<button type="button" class="btn-close" @click="hideReportedReplyModal" aria-label="Close">
+						<span aria-hidden="true"></span>
+						</button>
+					</div>
+				</div>
+				<div class="row modal-body-custom" v-if="reportDetailData.reportTable=='member'">
+					<div class="row mb-2" v-for="(reply, index) in reportDetailContent.replyList" :key="index">
+						<div class="row">
+							<div class="col-6 p-2 ps-3">
+								{{reply.replyContent}}({{reply.replyReport}}건)
+							</div>
+							<div class="col-3 p-2" d-flex justify-content-end>
+								{{reply.boardTime}}
+							</div>
+							<div class="col-3 p-2 modal-click-btn d-flex justify-content-end" @click="clickReportedReplyDetailModal(reply.replyNo, index)">
+								댓글전체
+							</div>
+						</div>
+					</div>
+					<div class="row" v-if="reportDetailContent.replyList.length==0">
+						<div class="col d-flex justify-content-center align-items-center">
+							<h4>신고받은 댓글 없음</h4>
+						</div>
+					</div>
+				</div>
+				<div class="row modal-footer-custom">
+					<button type="button" class="btn btn-secondary" @click="hideReportedReplyModal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ---------------------------------신고받은 댓글 미리보기 모달 끝-------------------------- -->
+	<!-- ---------------------------------신고받은 댓글 정보보기 모달-------------------------- -->
+	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportedReplyDetailModal">
+		<div class="row fullscreen-container">
+			<div class="modal-content">
+				<div class="row modal-header-custom">
+					<div class="col-10">
+						<h5 class="modal-title">댓글 정보보기</h5>
+					</div>
+					<div class="col-2 d-flex justify-content-end align-items-center">
+						<button type="button" class="btn-close" @click="hideReportedReplyDetailModal" aria-label="Close">
+						<span aria-hidden="true"></span>
+						</button>
+					</div>
+				</div>
+				<div class="row modal-body-custom" v-if="reportedReplyDetailList.length>0">
+					<div class="row p-2">
+						<div class="col">
+							<div class="row mb-2">
+								<div class="col" style="font-weight:bold">
+									댓글 내용
+								</div>
+							</div>
+							<div class="row">
+								<div class="col ps-4">
+									{{reportedReplyDetailList[reportedReplyDetailIndex].replyContent}}
+								</div>
+							</div>
+							<div class="row mb-2 mt-3">
+								<div class="col" style="font-weight:bold">
+									전체 댓글 내용
+								</div>
+							</div>
+							<div class="row mb-2" v-for="(reply, index) in reportedReplyDetailList" :key="index">
+								<div class="col-1" v-if="reply.replyParent!=0">
+								</div>
+								<div class="col">
+									<div class="row">
+										<div class="col ps-3">	
+											{{reply.memberNick}}
+											<i class="ms-2" style="color:#d9534f; font-weight:bold" v-if="reply.memberNick==reportDetailData.memberNick">(신고대상자)</i>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col ps-4">
+											: {{reply.replyContent}}
+											<i class="ms-2" style="color:#d9534f; font-weight:bold" v-if="index==reportedReplyDetailIndex">(신고내용)</i>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row modal-footer-custom">
+					<button type="button" class="btn btn-secondary" @click="hideReportedReplyDetailModal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ---------------------------------신고받은 댓글 정보보기 모달 끝-------------------------- -->
+	<!-- ---------------------------------신고받은 게시물 미리보기 상세보기 모달-------------------------- -->
+	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportedBoardDetailModal" style="z-index:3000">
+		<div class="row fullscreen-container">
+			<div class="modal-content">
+				<div class="row modal-header-custom">
+					<div class="col-10">
+						<h5 class="modal-title">게시물 미리보기</h5>
+					</div>
+					<div class="col-2 d-flex justify-content-end align-items-center">
+						<button type="button" class="btn-close" @click="hideReportedBoardDetailModal" aria-label="Close">
+						<span aria-hidden="true"></span>
+						</button>
+					</div>
+				</div>
+				<div class="row modal-body-custom">
+					<div class="row" >
+						<div class="col-3 d-flex justify-content-center item-aligns-center">
+							<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+boardViewContent.boardWithNickDto.imageURL">
+						</div>
+						<div class="col-9">
+							<div class="ms-2" style="font-weight:bold; font-size:1.2em">{{boardViewContent.boardWithNickDto.memberNick}}</div>
+							<div class="ms-2">{{boardViewContent.boardWithNickDto.memberName}}</div>
+						</div>
+					</div>
+					<div class="row p-2">
+						<div class="col">
+							<div class="row">
+								<div class="col-12" v-for="(image, index) in boardViewContent.boardAttachmentList" style="position:relative">
+									<video class="w-100" :src="'${pageContext.request.contextPath}'+image.imageURL" v-if="image.video"
+											muted controls></video>
+									<img v-else style="height:auto; display:block" class="w-100" :src="'${pageContext.request.contextPath}'+image.imageURL">
+								</div>
+							</div>
+							<div class="row mt-2">
+								<div class="col-2 text-center">
+									내용
+								</div>
+								<div class="col">
+									{{boardViewContent.boardWithNickDto.boardContent}}
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-2 text-center">
+									태그
+								</div>
+								<div class="col">
+									<span v-for="(tag,index) in boardViewContent.boardTagList" :key="index">\#{{tag.tagName}}&nbsp</span>
+								</div>
+							</div>
+							<div class="row mt-3">
+								<div class="col">
+									<button class="btn btn-danger w-100" type="button" @click="boardDelete(boardViewContent.boardWithNickDto.boardNo)">게시물 삭제</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row modal-footer-custom">
+					<button type="button" class="btn btn-secondary" @click="hideReportedBoardDetailModal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ---------------------------------신고받은 게시물 미리보기 모달 끝-------------------------- -->
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <!-- SockJS라이브러리 의존성 추가  -->
@@ -1731,6 +2050,7 @@
 				end:10,
 				begin:1,
 				adminMenu:1,
+				modal:"",
 				memberList:[],
 				memberSearchOption:{
 					memberName:"", memberEmail:"", memberNick:"", searchLoginDays:"", memberAddress:"",	memberLevel:"",
@@ -1761,7 +2081,8 @@
 					begin:"", end:"", totalPage:"",	startBlock:"", finishBlock:"", first:false, last:false, prev:false,
 					next:false, nextPage:"", prevPage:"",
 				},
-				boardViewModal:null,
+				boardViewModal:false,
+				boardViewModalIndex:"",
 				boardViewNo:"",
 				boardViewContent:{},
 				forbiddenModal:false,
@@ -1770,7 +2091,7 @@
 				forbiddenListCopy:[],
 				dictionary:['가','나','다','라','마','바','사','아','자','차','카','타','파','하'],
 				/*---------------------------신고 데이터 --------------------------- */
-				reportContentModal:null,
+				reportContentModal:false,
 				newReportContent:"",
 				reportContentList:[],
 				reportContentListSub:[],
@@ -1787,11 +2108,28 @@
 					next:false, nextPage:"", prevPage:"",
 				},
 				reportDifference:[],
-				reportDetailModal:null,
-				/* 리포트 내용보기 인덱스 */
+				reportDetailModal:false,
+				/* 리포트 현황 클릭할 경우 리스트에서 반환받는 단일 객체 */
 				reportDetailData:{},
+				/* detailData로부터 상세보기를 보기 위해 필요한 정보를 반환받는 객체 */
 				reportDetailContent:{},
+				/* 리포트 현황 반환 배열 */
 				reportDetailCountList:[],
+				/* 리포트 내용보기 중 댓글 신고보기 시 자기거 기록하는 인덱스 */
+				reportDetailContentIndex:"",
+				/* 리포트 내용보기 항목 인덱스 */
+				reportDetailIndex:"",
+				reportedBoardModal:false,
+				reportedReplyModal:false,
+				reportedReplyDetailModal:false,
+				reportedBoardDetailModal:false,
+				reportedReplyDetailList:[],
+				//회원에서 댓글신고에서 게시글 댓글내용 들어갔을 대 자기꺼 기록하는 인덱스
+				reportedReplyDetailIndex:"",
+				//showModal 시 반환받는 데이터
+				reportedReplyDetailModalReportNo:"",
+				reportedReplyDetailModalIndex:"",
+				reportedBoardDetailModalIndex:"",
 				/*---------------------------회원 통계 데이터 --------------------------- */
 				memberLoginSearch:{
 					stat:"member_login",
@@ -1866,10 +2204,16 @@
 				searchTagChartRight:true,
 				searchNickChartRight:true,
 				/*---------------------------정지 데이터 --------------------------- */
-				suspensionModal:null,
+				suspensionModal:false,
 				suspensionIndex:[],
 				suspensionContent:["",""],
-				reportSuspensionModal:null,
+				suspensionModalIndex:"",
+				suspensionModalStatus:"",
+				suspensionModalIndex:"",
+				suspensionModalStatus:"",
+				reportSuspensionModalIndex:"",
+				reportSuspensionModalStatus:"",
+				reportSuspensionModal:false,
 				reportSuspensionIndex:[],
 				reportSuspensionContent:["",""],
 			};
@@ -1890,7 +2234,9 @@
 			initializePageFromQuery() {
 				const queryParams = new URLSearchParams(window.location.search);
 				const adminMenu = queryParams.get('adminMenu');
-				this.adminMenu = adminMenu
+				const modal = queryParams.get('modal');
+				this.adminMenu = adminMenu;
+				this.modal=modal;
 			},
 			//쿼리 업데이트를 위한 page 데이터 변경 및 쿼리 변경 메서드
 			changeAdminMenu(adminMenu){
@@ -1900,6 +2246,49 @@
 				const newURL = `?`+queryParams.toString();
 				//쿼리 히스토리 저장
 				window.history.pushState({ query: queryParams.toString() }, '', newURL);
+			},
+			changeModal(modal){
+				this.modal=modal;
+				const queryParams = new URLSearchParams(window.location.search);
+				queryParams.set('adminMenu', this.adminMenu);
+				queryParams.set('modal', this.modal);
+				const newURL = `?`+queryParams.toString();
+				//쿼리 히스토리 저장
+				window.history.pushState({ query: queryParams.toString() }, '', newURL);
+			},
+			hideAllModal(){
+				if(this.boardViewModal){
+					this.hideBoardViewModal();
+				}
+				if(this.forbiddenModal){
+					this.hideForbiddenModal();
+				}
+				if(this.reportContentModal){
+					this.hideReportContentModal();
+				}
+				if(this.reportedBoardModal){
+					this.hideReportedBoardModal();
+				}
+				if(this.reportedReplyModal){
+					this.hideReportedReplyModal();
+				}
+				if(this.reportedReplyDetailModal){
+					this.reportedReplyDetailModal=false;
+					document.body.style.overflow = "unset";
+				}
+				if(this.reportedBoardDetailModal){
+					this.reportedBoardDetailModal=false;
+					document.body.style.overflow = "unset";
+				}
+				if(this.suspensionModal){
+					this.hideSuspensionModal();
+				}
+				if(this.reportSuspensionModal){
+					this.hideReportSuspensionModal();
+				}
+				if(this.reportDetailModal){
+					this.hideReportDetailModal();
+				}
 			},
 			/*------------------------------ 메뉴바 끝 ------------------------------*/
 			/*------------------------------ 회원관리 시작 ------------------------------*/
@@ -2045,17 +2434,27 @@
 				const resp = await axios.put(contextPath+"/rest/tag/", data)
 				this.tagList[index].tagAvailable=resp.data;
 			},
- 			showBoardViewModal(index){
-				this.boardViewNo=this.boardList[index].boardWithNickDto.boardNo;
-				this.boardViewContent=this.boardList[index];
-				if(this.boardViewModal==null) return;
-				this.boardViewModal.show();
+			clickBoardViewModal(index){
+				this.boardViewModalIndex=index;
+				this.changeModal('boardViewModal');
+				this.showBoardViewModal();
+			},
+ 			showBoardViewModal(){
+				this.boardViewNo=this.boardList[this.boardViewModalIndex].boardWithNickDto.boardNo;
+				this.boardViewContent=this.boardList[this.boardViewModalIndex];
+				this.boardViewModal=true;
+				document.body.style.overflow = "hidden";
 			},
 			hideBoardViewModal(){
-				if(this.boardViewModal==null) return;
-				this.boardViewModal.hide();
+		        document.body.style.overflow = "unset";
+				this.boardViewModal=false;
+				this.changeModal("");
 			},
 			/* 금지어 메서드 */
+			clickForbiddenModal(){
+				this.changeModal('forbiddenModal');
+				this.showForbiddenModal();
+			},
  			showForbiddenModal(){
 				this.forbiddenModal=true;
 				this.loadForbiddenList();
@@ -2064,6 +2463,7 @@
 			hideForbiddenModal(){
 				this.forbiddenModal=false;
 	        	document.body.style.overflow = "unset";
+	        	this.changeModal("");
 			},
 			async loadForbiddenList(){
 				const resp = await axios.get("/rest/admin/forbidden");
@@ -2094,14 +2494,18 @@
 			},
 			/*------------------------------ 게시물관리 끝 ------------------------------*/
 			/*------------------------------ 신고관리 시작 ------------------------------*/
+			clickReportContentModal(){
+				this.changeModal('reportContentModal');
+			},
  			showReportContentModal(){
-				if(this.reportContentModal==null) return;
-				this.reportContentModal.show();
+				this.reportContentModal=true;
 				this.loadReportContent();
+				document.body.style.overflow = "hidden";
 			},
 			hideReportContentModal(){
-				if(this.reportContentModal==null) return;
-				this.reportContentModal.hide();
+				this.reportContentModal=false;
+				document.body.style.overflow = "unset";
+				this.changeModal("");
 			},
 			async insertReportContent(){
 				const resp = await axios.post(contextPath+"/rest/reportContent/", {reportListContent:this.newReportContent});
@@ -2120,7 +2524,8 @@
 			async updateReportContent(index, no){
 				const data = {
 					reportListNo:no,
-					reportListContent:this.reportContentListSub[index].reportListContent,
+					reportListContentAfter:this.reportContentListSub[index].reportListContent,
+					reportListContentBefore:this.reportContentList[index].reportListContent,
 				};
 				const resp = await axios.put(contextPath+"/rest/reportContent/", data);
 				this.hideReportContentEdit(index);
@@ -2590,16 +2995,23 @@
 			},
 		/*------------------------------ 검색통계 끝 ------------------------------*/
 		/*------------------------------ 정지모달 시작 ------------------------------*/
- 			showSuspensionModal(index, status){
-				if(this.suspensionModal==null) return;
-				this.suspensionModal.show();
-				this.suspensionIndex=[index, status];
+			clickSuspensionModal(index, status){
+				this.suspensionModalIndex=index;
+				this.suspensionModalStatus=status;
+				this.changeModal('suspensionModal');
+				this.showSuspensionModal();
+			},
+ 			showSuspensionModal(){
+				this.suspensionModal=true;
+				this.suspensionIndex=[this.suspensionModalIndex, this.suspensionModalStatus];
+				document.body.style.overflow = "hidden";
 			},
 			hideSuspensionModal(){
-				if(this.suspensionModal==null) return;
-				this.suspensionModal.hide();
+				this.suspensionModal=false;
 				this.suspensionIndex=[];
 				this.suspensionContent=["",""];
+				document.body.style.overflow = "unset";
+				this.changeModal("");
 			},
 			async insertSuspension(days, contents){
 				let data={
@@ -2619,16 +3031,23 @@
 				this.memberList[this.suspensionIndex[0]]=resp.data;
 				this.hideSuspensionModal();
 			},
- 			showReportSuspensionModal(index, status){
-				if(this.reportSuspensionModal==null) return;
-				this.reportSuspensionModal.show();
-				this.reportSuspensionIndex=[index, status];
+			clickReportSuspensionModal(index, status){
+				this.reportSuspensionModalIndex=index;
+				this.reportSuspensionModalStatus=status;
+				this.changeModal('reportSuspensionModal');
+				this.showReportSuspensionModal();
+			},
+ 			showReportSuspensionModal(){
+				this.reportSuspensionModal=true;
+				this.reportSuspensionIndex=[this.reportSuspensionModalIndex, this.reportSuspensionModalStatus];
+				document.body.style.overflow = "hidden";
 			},
 			hideReportSuspensionModal(){
-				if(this.reportSuspensionModal==null) return;
-				this.reportSuspensionModal.hide();
+				this.reportSuspensionModal=false;
 				this.reportSuspensionIndex=[];
 				this.reportSuspensionContent=["",""];
+				document.body.style.overflow = "unset";
+				this.changeModal("");
 			},
 			async insertReportSuspension(days, contents){
 				console.log("실행")
@@ -2651,42 +3070,127 @@
 			},
 		/*------------------------------ 정지모달 끝 ------------------------------*/
 		/*------------------------------ 신고 세부 모달 시작 ------------------------------*/
- 			showReportDetailModal(index){
-				this.reportDetailData=this.reportList[index];
+			clickReportDetailModal(index){
+				this.reportDetailIndex=index;
+				this.changeModal('reportDetailModal');
+				this.showReportDetailModal();
+			},
+ 			showReportDetailModal(){
+				this.reportDetailData=this.reportList[this.reportDetailIndex];
 				this.loadDetailCount();
-				if(this.reportDetailModal==null) return;
-				this.reportDetailModal.show();
+				this.reportDetailModal=true;
+				document.body.style.overflow = "hidden";
 			},
 			hideReportDetailModal(){
-				if(this.reportDetailModal==null) return;
-				this.reportDetailModal.hide();
+				this.reportDetailModal=false;
+				document.body.style.overflow = "unset";
+				this.changeModal("");
 			},
 			async loadDetailCount(){
-				const resp = await axios.get(contextPath+"/rest/report/detail?reportTable="+this.reportDetailData.reportTable+"&reportTableNo="+this.reportDetailData.reportTableNo);
+				const resp = await axios.get(contextPath+"/rest/report/detail?reportTable="+this.reportDetailData.reportTable+
+						"&reportTableNo="+this.reportDetailData.reportTableNo+"&memberNo="+this.reportDetailData.reportMemberNo);
 				this.reportDetailCountList = [...resp.data.reportDetailCountVO];
-				this.reportDetailContent=resp.data.boardListVO;
-			},
-			//신고관리 페이지에서 게시물 즉시 삭제
-			async boardDelete(boardNo, board){
-				const data={reportTableNo:boardNo, reportTable:'board', reportResult:2};
-				const resp = await axios.delete(contextPath+"/rest/admin/board", {params:data});
-				this.reportDetailData.reportResult=2;
-				if(board==0){
-					this.loadReportList();
-					this.hideReportDetailModal();
+				//게시글 신고일 경우
+				if(this.reportDetailData.reportTable=='board'){
+					this.reportDetailContent=resp.data.boardListVO;
 				}
+				//댓글 신고일 경우
+				else if(this.reportDetailData.reportTable=='reply'){
+					this.reportDetailContent=[...resp.data.replyList];
+					this.reportDetailContentIndex=this.reportDetailContent.findIndex(content=>content.replyNo==this.reportDetailData.reportTableNo);
+				}
+				//멤버 신고일 경우
 				else{
-					this.hideBoardViewModal();
-					this.loadBoardList();
+					this.reportDetailContent=resp.data.memberVO;
 				}
 			},
-			async boardManage(){
-				const data={reportTableNo:this.reportDetailData.reportTableNo, reportTable:'board', reportResult:1};
-				const resp = await axios.put(contextPath+"/rest/admin/board", data);
-				this.reportDetailData.reportResult=1;
+			//게시물 관리에서 삭제 기능
+			async boardDelete(boardNo){
+				const data={reportTableNo:boardNo, reportTable:'board', reportResult:2};
+				const resp = await axios.delete(contextPath+"/rest/admin/board", data);
+				this.reportDetailData.reportResult=2;
+				this.hideBoardViewModal();
+				this.loadBoardList();
+			},
+			//신고관리에서 관리처리, 신고수 초기화 및 게시물 삭제
+			async reportManage(reportResult){
+				const data={reportTableNo:this.reportDetailData.reportTableNo, reportTable:this.reportDetailData.reportTable, reportResult:reportResult};
+				const resp = await axios.put(contextPath+"/rest/admin/reportManage", data);
 				this.loadReportList();
 				this.hideReportDetailModal();
-			}
+			},
+			clickReportedBoardModal(){
+				//this.changeModal('reportedBoardModal');
+				this.showReportedBoardModal();
+			},
+ 			showReportedBoardModal(){
+				this.reportedBoardModal=true;
+				//this.hideReportDetailModal();
+				this.reportDetailModal=false;
+				document.body.style.overflow = "hidden";
+			},
+			hideReportedBoardModal(){
+				this.reportedBoardModal=false;
+				//this.clickReportDetailModal(this.reportDetailIndex);
+				this.reportDetailModal=true;
+				document.body.style.overflow = "hidden";
+				//this.changeModal("");
+			},
+			clickReportedReplyModal(){
+				//this.changeModal('reportedReplyModal');
+				this.showReportedReplyModal();
+			},
+ 			showReportedReplyModal(){
+				this.reportedReplyModal=true;
+				//this.hideReportDetailModal();
+				this.reportDetailModal=false;
+				document.body.style.overflow = "hidden";
+			},
+			hideReportedReplyModal(){
+				this.reportedReplyModal=false;
+				//this.showReportDetailModal(this.reportDetailIndex);
+				this.reportDetailModal=true;
+				document.body.style.overflow = "hidden";
+				//this.changeModal("");
+			},
+			clickReportedReplyDetailModal(reportNo, index){
+				this.reportedReplyDetailModalReportNo=reportNo;
+				this.reportedReplyDetailModalIndex=index;
+				//this.changeModal('reportedReplyDetailModal');
+				this.showReportedReplyDetailModal();
+			},
+ 			async showReportedReplyDetailModal(){
+				const resp = await axios.get(contextPath+"/rest/report/detail/"+this.reportedReplyDetailModalReportNo);
+				this.reportedReplyDetailList=[...resp.data];
+				this.reportedReplyDetailIndex=this.reportedReplyDetailList.findIndex(content=>content.replyNo==this.reportDetailContent.replyList[this.reportedReplyDetailModalIndex].replyNo);
+				this.reportedReplyDetailModal=true;
+				this.reportedReplyModal=false;
+				document.body.style.overflow = "hidden";
+			},
+			hideReportedReplyDetailModal(){
+				this.reportedReplyDetailModal=false;
+				this.reportedReplyModal=true;
+				document.body.style.overflow = "hidden";
+				//this.changeModal("");
+			},
+			clickReportedBoardDetailModal(index){
+				this.reportedBoardDetailModalIndex=index;
+				//this.changeModal('reportedBoardDetailModal');
+				this.showReportedBoardDetailModal();
+			},
+ 			showReportedBoardDetailModal(){
+				this.boardViewNo=this.reportDetailContent.boardList[this.reportedBoardDetailModalIndex].boardWithNickDto.boardNo;
+				this.boardViewContent=this.reportDetailContent.boardList[this.reportedBoardDetailModalIndex];
+				this.reportedBoardDetailModal=true;
+				this.reportedBoardModal=false;
+				document.body.style.overflow = "hidden";
+			},
+			hideReportedBoardDetailModal(){
+				this.reportedBoardDetailModal=false;
+				this.reportedBoardModal=true;
+				document.body.style.overflow = "hidden";
+				//this.changeModal("");
+			},
 		/*------------------------------ 신고 세부 모달 끝 ------------------------------*/
 		},
 		created(){
@@ -2741,6 +3245,7 @@
 				}
 			},
 			adminMenu(){
+				this.changeModal("");
 				if(this.adminMenu==1){
 					//회원관리
 					this.loadMemberList();
@@ -2773,6 +3278,41 @@
 					this.getSearchTagStats();
 					this.getSearchNickStats();
 				}
+			},
+			modal(){
+				if(this.modal=='boardViewModal'){
+					this.showBoardViewModal();
+				}
+				if(this.modal=='forbiddenModal'){
+					this.showForbiddenModal();
+				}
+				if(this.modal=='reportContentModal'){
+					this.showReportContentModal();
+				}
+				if(this.modal=='reportedBoardModal'){
+					this.showReportedBoardModal();
+				}
+				if(this.modal=='reportedReplyModal'){
+					this.showReportedReplyModal();
+				}
+				if(this.modal=='reportedReplyDetailModal'){
+					this.showReportedReplyDetailModal();
+				}
+				if(this.modal=='reportedBoardDetailModal'){
+					this.showReportedBoardDetailModal();
+				}
+				if(this.modal=='suspensionModal'){
+					this.showSuspensionModal();
+				}
+				if(this.modal=='reportSuspensionModal'){
+					this.showReportSuspensionModal();
+				}
+				if(this.modal=='reportDetailModal'){
+					this.showReportDetailModal();
+				}
+				if(this.modal==''){
+					this.hideAllModal();
+				}
 			}
 		},
 		mounted(){
@@ -2781,11 +3321,6 @@
 			//뒤로가기, 앞으로가기 누르면 이전 쿼리 반환
 			window.addEventListener('popstate', this.initializePageFromQuery);
 			//모달 선언
-			this.reportContentModal = new bootstrap.Modal(this.$refs.reportContentModal);
-			this.suspensionModal = new bootstrap.Modal(this.$refs.suspensionModal);
-			this.reportSuspensionModal = new bootstrap.Modal(this.$refs.reportSuspensionModal);
-			this.reportDetailModal = new bootstrap.Modal(this.$refs.reportDetailModal);
-			this.boardViewModal = new bootstrap.Modal(this.$refs.boardViewModal);
 		},
 	}).mount("#app");
 </script>

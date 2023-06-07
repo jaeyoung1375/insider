@@ -9,10 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.insider.dto.AttachmentDto;
 import com.kh.insider.dto.BoardAttachmentDto;
 import com.kh.insider.dto.BoardDto;
-import com.kh.insider.dto.BoardTagDto;
-import com.kh.insider.dto.TagDto;
 import com.kh.insider.repo.AttachmentRepo;
 import com.kh.insider.repo.BoardAttachmentRepo;
 import com.kh.insider.repo.BoardRepo;
@@ -35,7 +34,6 @@ public class BoardAttachServiceImpl implements BoardAttachService{
 	private TagRepo tagRepo;
 	@Autowired
 	private BoardTagRepo boardTagRepo;
-
 	
 	@Transactional
 	@Override
@@ -45,9 +43,12 @@ public class BoardAttachServiceImpl implements BoardAttachService{
 		if (boardAttachment != null) {
 		for(MultipartFile file : boardAttachment) {
 			int attachmentNo = attachmentRepo.save(file);
+			//동영상 파일 여부 입력을 위한 코드 추가
+			AttachmentDto attachmentDto = attachmentRepo.selectOne(attachmentNo);
 			boardAttachmentRepo.insert(BoardAttachmentDto.builder()
 					.boardNo(boardDto.getBoardNo())
 					.attachmentNo(attachmentNo)
+					.attachmentType(attachmentDto.getAttachmentType())
 					.build());
 			}
 		log.debug("사진 갯수:{}", boardAttachment.size());

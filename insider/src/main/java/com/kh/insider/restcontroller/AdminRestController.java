@@ -18,8 +18,10 @@ import com.kh.insider.dto.ReportResultDto;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.BoardTagRepo;
 import com.kh.insider.repo.ForbiddenRepo;
+import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.repo.MemberStatsRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
+import com.kh.insider.repo.ReplyRepo;
 import com.kh.insider.repo.ReportRepo;
 import com.kh.insider.repo.ReportResultRepo;
 import com.kh.insider.repo.SearchRepo;
@@ -63,6 +65,10 @@ public class AdminRestController {
 	private BoardTagRepo boardTagRepo;
 	@Autowired
 	private ForbiddenRepo forbiddenRepo;
+	@Autowired
+	private MemberRepo memberRepo;
+	@Autowired
+	private ReplyRepo replyRepo;
 	
 	//관리자페이지 리스트 출력
 	@GetMapping("/board/list")
@@ -154,17 +160,48 @@ public class AdminRestController {
 	@DeleteMapping("/board")
 	public void deleteBoard(@ModelAttribute ReportResultDto reportResultDto) {
 		//태그를 지움
-		boardTagRepo.delete(reportResultDto.getReportTableNo());
-		boardRepo.delete(reportResultDto.getReportTableNo());
+		boardTagRepo.delete((int)reportResultDto.getReportTableNo());
+		boardRepo.delete((int)reportResultDto.getReportTableNo());
 		
-		
+		reportRepo.updateReportCheck(reportResultDto);
 		reportResultRepo.updateResult(reportResultDto);
 	}
-	@PutMapping("/board")
+	@PutMapping("/reportManage")
 	public void changeManageBoard(@RequestBody ReportResultDto reportResultDto) {
-		reportResultRepo.updateResult(reportResultDto);
-		//report에 reportCheck 변경
+		String tableName = reportResultDto.getReportTable();
+		//report 테이블의 신고들의 체크 상태 변경
 		reportRepo.updateReportCheck(reportResultDto);
+		if(reportResultDto.getReportResult()==1) {
+			//report에 reportCheck 변경
+			switch(tableName) {
+			case "board" : 
+				//report 카운트 재산정(체크된 리포트는 카운트 안함)
+				boardRepo.addReport((int)reportResultDto.getReportTableNo());
+				break;
+			case "member":
+				memberRepo.addReport(reportResultDto.getReportTableNo());
+				break;
+			case "reply" :
+				replyRepo.addReport((int)reportResultDto.getReportTableNo());
+				break;
+			}
+		}
+		else {
+			switch(tableName) {
+			case "board" : 
+				boardTagRepo.delete((int)reportResultDto.getReportTableNo());
+				boardRepo.delete((int)reportResultDto.getReportTableNo());
+				break;
+			case "member":
+				memberRepo.addReport(reportResultDto.getReportTableNo());
+				break;
+			case "reply" :
+				replyRepo.delete((int)reportResultDto.getReportTableNo());
+				break;
+			}
+		}
+		//결과 테이블 상태 변경
+		reportResultRepo.updateResult(reportResultDto);
 	}
 	//금지어 출력
 	@GetMapping("/forbidden")

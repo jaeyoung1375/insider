@@ -64,6 +64,11 @@ public class MemberRestController {
 	public SettingDto setting(@PathVariable long memberNo) {
 		return settingRepo.selectOne(memberNo);
 	}
+	@GetMapping("/setting")
+	public SettingDto getSetting(HttpSession session) {
+		long memberNo = (long) session.getAttribute("memberNo");
+		return settingRepo.selectOne(memberNo);
+	}
 	
 	//환경설정 수정
 	@PutMapping("/setting/")
@@ -126,6 +131,12 @@ public class MemberRestController {
 		List<BoardDto> getTotalPost = boardRepo.getTotalMyPost(memberNo);
 		System.out.println(getTotalPost);
 		return getTotalPost;
+	}
+	
+	@GetMapping("/bookmarkMyPost")
+	public List<BoardListVO> bookmarkMyPost(HttpSession session){
+		long memberNo = (long) session.getAttribute("memberNo");
+		return boardRepo.bookmarkMyPost(memberNo);
 	}
 	
 	//닉네임 중복 확인

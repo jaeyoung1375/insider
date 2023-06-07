@@ -159,40 +159,66 @@
 
 
 <script type="text/javascript">
+
+// <script type="text/javascript">
+// $(function(){
+//     $('[name=summernote]').summernote({
+//         placeholder: '내용 작성',
+//         tabsize: 4,//탭키를 누르면 띄어쓰기 몇 번 할지
+//         height: 250,//최초 표시될 높이(px)
+//         toolbar: [//메뉴 설정
+//             ['style', ['style']],
+//             ['font', ['bold', 'underline', 'clear']],
+//             ['color', ['color']],
+//             ['para', ['ul', 'ol', 'paragraph']],
+//             ['table', ['table']],
+//             ['insert', ['link', 'picture']]
+//         ]
+//     });
+// });
+
+
+
 $(function(){
 
 	$(document).ready(function() {
-
+		  // Show the modal on page load
 		  $('#modalForm').css('display', 'block');
 
+		  // Disable modal closing when clicking outside the modal content
 		  $('.modal-dialog').on('click', function(event) {
 		    event.stopPropagation();
 		  });
 
+		  // Close the modal when the cancel button is clicked
 		  $('.cancel').on('click', function() {
 		    $('#modalForm').css('display', 'none');
 		  });
 
+		  // Close the modal when the close button is clicked
 		  $('.close').on('click', function() {
 		    $('#modalForm').css('display', 'none');
 		  });
 		});
 
 
+
+	
+	
 $(document).ready(function() {
     $('#summernote').summernote({
         toolbar: false,
         callbacks: {
             onInit: function() {
-
+                // Retrieve the initial content
                 var content = $('#summernote').val();
-
+                // Convert line breaks to <br> tags
                 content = content.replace(/\n/g, '<br>');
- 
+                // Set the modified content back to Summernote
                 $('#summernote').summernote('code', content);
             },
             onKeyup: function() {
-
+                // Update the character count
                 var content = $('#summernote').summernote('code');
                 var characterCount = content.replace(/<[^>]+>/g, '').length;
                 $('.count').text(characterCount);
@@ -313,7 +339,7 @@ $(document).ready(function() {
 		      	
 		      	<!-- 1-1. 사진 첨부전, 업로드 버튼 영역 -->
 			      <div :class="{'hidefile':files.length > 0}">
-				      <div class="card-body text-center" style="margin-top: 11%;">
+				      <div class="card-body text-center" style="margin-top: 20%;">
 				        <h1 class="card-title" ><i class="fa-regular fa-images"></i></h1>
 				        <p class="card-text fs-5">사진을 선택하세요.</p>
 				        <label for="upload" class="input-upload">업로드</label>
@@ -379,7 +405,7 @@ $(document).ready(function() {
 		      			
 		      			<div id="carouselExampleIndicators" class="carousel slide" data-bs-interval="false">
 								  <div class="carousel-indicators">
-								    <button v-for="(file, index) in files" :key="index" type="button" data-bs-target="#carouselExampleIndicators" :data-bs-slide-to="index" :class="{'active':index===0}" :aria-current="index===0" :aria-label="'Slide'+(index+1)"></button>
+								    <button v-for="(file, index) in files" :key="index" type="button" data-bs-target="#carouselExampleIndicators" :data-bs-slide-to="index" :class="{'active':index==0}" :aria-current="index==0" :aria-label="'Slide'+(index+1)"></button>
 								  </div>
 								  
 								  <div class="carousel-inner" >
@@ -423,27 +449,38 @@ $(document).ready(function() {
 						</div>
 
 					    	
-					    	<div class="row mt-4">
-					    		<input type="text" name="tagName" class="form-control" placeholder="#해시태그" id="tagName" autocomplete="off">
+					    	<div class="row mt-3">
+					    		<input type="text" name="tagName" class="form-control" placeholder="#해시태그" id="tagName" autocomplete="off" value="${tag}">
 					    	</div>
 					    	
-					    	<div class="row mt-4">
-					    		<input type="text" name="memberNick" class="form-control" placeholder="@친구태그" id="memberTag" autocomplete="off">
+					    	<div class="row mt-3">
+					    		<input type="text" name="memberNick" class="form-control" placeholder="@사람태그" id="memberTag" autocomplete="off">
 					    	</div>
 					    	
 					    	
-					    	<div class="row mt-4 form-check form-switch" style="display: flex;">
+					    	<div class="row mt-3 form-check form-switch" style="display: flex;">
 					    		
 										<div class="col-md-9 left" style="margin-left: 0px;">
 											<label class="fs-5" for="replyCheck">댓글 기능 해제</label>
 										</div>
 										<div class="col-md-3">
-											<input type="checkbox" name="boardIsReply" value="1" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
+											<input type="checkbox" name="boardReplyValid" value="1" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
 										</div>
 									
 					    	</div>
 					    	
-					    	<div class="row">
+					    	<div class="row mt-2 form-check form-switch" style="display: flex;">
+					    		
+										<div class="col-md-9 left" style="margin-left: 0px;">
+											<label class="fs-5" for="replyCheck">좋아요 수 숨김</label>
+										</div>
+										<div class="col-md-3">
+											<input type="checkbox" name="boardLikeValid" value="1" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
+										</div>
+									
+					    	</div>
+					    	
+					    	<div class="row mt-1">
 									<p class="left" style="font-size: small;">게시물 상단의 메뉴에서 이 설정을 변경할 수 있습니다.</p>
 					    	</div>
 					    	
@@ -499,33 +536,43 @@ $(document).ready(function() {
     },
 
     //methods : 애플리케이션 내에서 언제든 호출 가능한 코드 집합이 필요한 경우 작성한다.
-    methods: {
-  imageUpload() {
-    for (let i = 0; i < Math.min(this.$refs.files.files.length, 5); i++) {
-      this.files = [
-        ...this.files,
-        {
-          file: this.$refs.files.files[i],
-          preview: URL.createObjectURL(this.$refs.files.files[i]),
-          number: this.files.length
-        }
-      ];
-    }
-  },
-
-  imageAddUpload() {
-    const maxFiles = 5 - this.files.length;
-    for (let i = 0; i < Math.min(this.$refs.files2.files.length, maxFiles); i++) {
-      this.files = [
-        ...this.files,
-        {
-          file: this.$refs.files2.files[i],
-          preview: URL.createObjectURL(this.$refs.files2.files[i]),
-          number: this.files.length
-        }
-      ];
-    }
-  }, 
+     methods: {
+    	 imageUpload(){
+     		
+     		let num = -1;
+     		for(let i = 0; i < this.$refs.files.files.length; i++){
+     			this.files = [
+     				...this.files,
+     				{
+     					file: this.$refs.files.files[i],
+     					preview: URL.createObjectURL(this.$refs.files.files[i]),
+     					number: i
+     				}
+     			];
+     			num = i;
+     		}
+     		this.uploadImageIndex = num + 1;
+     	},
+     	
+     	imageAddUpload(){
+     		
+     		let num = -1;
+     		for(let i = 0; i < this.$refs.files2.files.length; i++){
+     			this.files = [
+     				...this.files,
+     				{
+     					file: this.$refs.files2.files[i],
+     					preview: URL.createObjectURL(this.$refs.files2.files[i]),
+     					number: i + this.uploadImageIndex
+     				}
+     			];
+     			num = i;
+     		}
+     		this.uploadImageIndex = this.uploadImageIndex + num + 1;
+        
+      },
+      
+      
     	fileDeleteButton(e){
     		const name = e.target.getAttribute('name');
     		this.files = this.files.filter(data => data.number != Number(name));

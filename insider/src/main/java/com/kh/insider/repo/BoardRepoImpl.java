@@ -70,7 +70,10 @@ public class BoardRepoImpl implements BoardRepo {
 	public List<BoardListVO> selectListWithoutFollow(BoardSearchVO vo) {
 		return sqlSession.selectList("board.boardListWithoutFollow", vo);
 	}
-
+	@Override
+	public List<BoardListVO> selectListWithoutFollowOutDistance(BoardSearchVO vo) {
+		return sqlSession.selectList("board.boardListWithoutFollowOutDistance", vo);
+	}
 
 	@Override
 	public void updateLikeCount(int boardNo, int count) {
@@ -172,5 +175,16 @@ public class BoardRepoImpl implements BoardRepo {
 	public void updateReply(int boardNo) {
 		sqlSession.update("board.updateReply", boardNo);
 	}
+
+	@Override
+	public List<BoardListVO> selectListReported(long memberNo) {
+		return sqlSession.selectList("board.selectListReported", memberNo);
+	}
+	@Override
+	public List<BoardListVO> bookmarkMyPost(long memberNo) {
+		
+		return sqlSession.selectList("board.bookmarkMyPost",memberNo);
+	}
+
 
 }

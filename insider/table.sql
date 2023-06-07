@@ -113,8 +113,9 @@ PRIMARY key(tag_name, member_no)
 
 --보드에 멤버닉, 어태치먼트 넘버 추가
 CREATE OR REPLACE VIEW board_with_nick as
-SELECT b.*, m.attachment_no, m.member_nick FROM board b
-inner JOIN MEMBER_WITH_PROFILE m ON b.member_no=m.member_no;
+SELECT b.*, m.attachment_no, m.member_nick, s.setting_hide, s.setting_allow_reply FROM board b
+inner JOIN MEMBER_WITH_PROFILE m ON b.member_no=m.member_no
+LEFT outer JOIN setting s ON b.member_no=s.member_no;
 
 --신고 현황관리 view 생성
 CREATE OR REPLACE VIEW REPORT_MANAGEMENT AS
@@ -127,7 +128,7 @@ ms.member_suspension_days, ms.member_suspension_lift_date, ms.member_suspension_
 SELECT r.report_member_no, r.report_table_no, r.report_table,
   COUNT(*) AS count,
   MIN(report_time) AS report_time,
-  SUM(CASE WHEN report_check = 0 THEN 1 ELSE 0 END) AS managed_count
+  SUM(CASE WHEN report_check = 0 or report_check=2 THEN 1 ELSE 0 END) AS managed_count
 FROM report r
 GROUP BY r.report_member_no, r.report_table_no, r.report_table
 ) rs
@@ -227,4 +228,10 @@ member_no  number references member(member_no) on delete cascade,
 reply_no number references reply(reply_no) on delete cascade,
 reply_like_time date default sysdate not null,
 reply_like_check NUMBER default 0 not null
+);
+
+-- 북마크 테이블 생성
+create table bookmark(
+board_no references board(board_no) on delete cascade,
+member_no references member(member_no) on delete cascade
 );
