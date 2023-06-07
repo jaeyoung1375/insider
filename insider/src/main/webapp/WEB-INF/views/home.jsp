@@ -55,30 +55,30 @@
     }
     
     .like {
-	color:red;
-	cursor: pointer;
+		color:red;
+		cursor: pointer;
 	}
 	
 	.fa-heart {
-	cursor: pointer;
+		cursor: pointer;
 	}
 	
 	.isFollow {
-	display: none;
+		display: none;
 	}
 	
 	
 	 .fullscreen{
+
             position:fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             z-index: 5555;
-            
             background-color: rgba(0, 0, 0, 0.2);
 /*             display: none; */
-      }
+    }
 
      .fullscreen > .fullscreen-container{
          position: absolute;
@@ -117,18 +117,57 @@
 	.childShow{
 		display: none;
 	}
+	
+
 /* 차단 관련 css */
 .report-content:hover{
 	background-color:rgba(34, 34, 34, 0.05);
 }
 </style>
-<div id="app">
+
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        // Check if dark mode is enabled
+        if (localStorage.getItem("darkmode") == 'on') {
+            // Apply dark mode styles specific to home.jsp
+            document.body.dataset.darkmode = 'on';
+            document.body.style.backgroundColor = '#222';
+            document.body.style.color = '#fff';
+
+            var containers = document.getElementsByClassName('container');
+            for (var i = 0; i < containers.length; i++) {
+                containers[i].style.backgroundColor = '#333';
+                containers[i].style.border = '1px solid #555';
+            }
+
+            var headings = document.getElementsByClassName('heading');
+            for (var i = 0; i < headings.length; i++) {
+                headings[i].style.color = '#fff';
+            }
+            
+            var containers = document.getElementsByTagName('a'); // Change to the appropriate tag for your headings
+            for (var i = 0; i < containers.length; i++) {
+            	containers[i].style.color = 'white';
+            }
+
+
+            var buttons = document.getElementsByClassName('btn');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].style.backgroundColor = '#555';
+                buttons[i].style.color = '#fff';
+                buttons[i].style.border = 'none';
+            }
+        }
+    });
+</script>
+
+<div id="app"class="darkmode">
 	<div class="container" style="margin-top: 20px; max-width: 1000px">
         <div class="row" v-for="(board, index) in boardList" :key="board.boardNo">
             <!--●●●●●●●●●●●●●●피드공간●●●●●●●●●●●●●●●●●●●●●●-->
             <div class="col" style="max-width: 620px; margin: 0 auto 10px auto;">
                 <!--피드001-->
-                <div class="head_feed bg-white" style="border: 0.5px solid #b4b4b4; border-radius: 10px;">
+                <div class="head_feed" style="border: 0.5px solid #b4b4b4; border-radius: 10px;">
                     <div class="d-flex flex-column">
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼ID▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div style="padding: 8px 8px 4px 8px;">
@@ -282,7 +321,7 @@
 					
 					
 					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
-						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="color:black;text-decoration:none; position:relative;">
+						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="text-decoration:none; position:relative;">
 							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="42" height="42" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
 							<img v-else src="https://via.placeholder.com/42x42?text=profile" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
 							

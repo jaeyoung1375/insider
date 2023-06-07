@@ -4,6 +4,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,7 @@ public class MemberController {
    private MemberRepo memberRepo;
    @Autowired
    private MemberService memberService;
+   
    @Autowired
    private SettingRepo settingRepo;
    
@@ -86,8 +88,8 @@ public class MemberController {
    }
    
    @PostMapping("/login")
-   public String login(HttpSession session, @ModelAttribute MemberDto dto, RedirectAttributes attr) {
-      
+   public String login(HttpSession session, @ModelAttribute MemberDto dto, RedirectAttributes attr, HttpServletRequest request) {
+   session = request.getSession();
    MemberDto findMember = memberRepo.login(dto.getMemberEmail(), dto.getMemberPassword());
    
    if(findMember == null) {
@@ -113,6 +115,24 @@ public class MemberController {
       return "redirect:/";
    }
    
+   @GetMapping("/addInfo")
+   public String addInfo(Model model, HttpSession session) {
+
+      MemberDto loginUser =(MemberDto) session.getAttribute("loginUser");
+
+      model.addAttribute("loginUser",loginUser);
+      
+      return "member/addInfo";
+   }
+   
+   @PostMapping("/addInfo")
+   public String addInfo(@ModelAttribute MemberDto dto) {
+   
+      memberRepo.socialJoin(dto);
+      
+      return "redirect:/";
+   }
+   
    @GetMapping("/{memberNick}")
    public String myPage(@PathVariable String memberNick, Model model, HttpSession session) {
       
@@ -120,6 +140,7 @@ public class MemberController {
 	   MemberWithProfileDto findMember = memberRepo.findByNickName(memberNick);
       // 로그인한 사용자
       MemberDto loginUser = (MemberDto)session.getAttribute("socialUser");
+      log.debug("로그인한 사용자:{}", loginUser);
       // 본인 프로필 인지 여부
       boolean isOwner = loginUser.getMemberNick().equals(memberNick);
       // 전체 게시물 개수

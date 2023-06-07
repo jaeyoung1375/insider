@@ -69,8 +69,8 @@ public class SocialController {
          }
          // addInfo로 넘길 정보
          session.setAttribute("loginUser",kakaoUser);
-         session.setAttribute("member",token.getAccess_token());
-         session.setAttribute("refresh_token",token.getRefresh_token());
+//         session.setAttribute("member",token.getAccess_token());
+//         session.setAttribute("refresh_token",token.getRefresh_token());
          
          
          return "redirect:/member/addInfo";
@@ -126,22 +126,6 @@ public class SocialController {
    }
    
       
-      @GetMapping("/addInfo")
-      public String addInfo(Model model, HttpSession session) {
-
-         MemberDto loginUser =(MemberDto) session.getAttribute("loginUser");
-
-         model.addAttribute("loginUser",loginUser);
-         
-         return "member/addInfo";
-      }
-      
-      @PostMapping("/addInfo")
-      public String addInfo(@ModelAttribute MemberDto dto) {
-      
-         memberRepo.socialJoin(dto);
-         
-         return "redirect:/";
-      }
+   
 
 }

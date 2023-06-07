@@ -82,15 +82,17 @@
 <div id="app">
   <div class="password-reset-container">
     <div class="password-reset-form">
-      <h2 class="form-title">신규 비밀번호 입력</h2>
-      <div class="form-group">
-        <label for="newPassword">신규 비밀번호</label>
-        <input type="password" id="newPassword" v-model="newPassword" required>
-      </div>
-      <div class="form-group">
-        <label for="confirmPassword">비밀번호 확인</label>
-        <input type="password" id="confirmPassword" v-model="confirmPassword" required>
-      </div>
+       <div class="row form-floating mb-3">
+	                <input class="form-control" type="password" name="memberPassword" placeholder="비밀번호" v-model="password" @blur="validatePassword" :class="{'is-valid' : password != '' && !showPasswordWarning, 'is-invalid' : showPasswordWarning }">
+	                 <label for="floatingInput">신규 비밀번호<span style="color:red;">*</span></label>
+	                <p v-if="showPasswordWarning" class="password-warning-message">8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요.</p>
+	
+	            </div>
+	             <div class="row form-floating mb-3">
+	                <input class="form-control" type="password" placeholder="비밀번호 확인" v-model="passwordCk" @blur="validatePasswordCk" :class="{'is-valid' : !showPasswordCkWarning && password == passwordCk && passwordCk != '', 'is-invalid' : showPasswordCkWarning}">
+	                 <label for="floatingInput">비밀번호 확인 <span style="color:red;">*</span></label>
+	                <p v-if="showPasswordCkWarning" class="passwordCk-warning-message">비밀번호가 일치하지 않습니다.</p>
+	            </div>
       <button class="btn-submit" @click="passwordChange">확인</button>
     </div>
   </div>
@@ -105,8 +107,10 @@
                 data(){
                     return {
             			email : '',
-            			newPassword : '',
-            			confirmPassword : '',
+            			password : '',
+  	                    passwordCk : '',
+  	                  showPasswordWarning : false,
+	                    showPasswordCkWarning : false,
                     };
                 },
             
@@ -116,7 +120,7 @@
                 methods:{
                 	async passwordChange(){
                 		
-                	if (this.newPassword !== this.confirmPassword) {
+                	if (this.password !== this.passwordCk) {
                         alert('비밀번호가 일치하지 않습니다.');
                         return;
                      }
@@ -125,7 +129,7 @@
                 	 try {
                 	        const response = await axios.post('/member/passwordChange', {
                 	          memberEmail: this.email,
-                	          memberPassword: this.newPassword,
+                	          memberPassword: this.password,
                 	        });
                 		
                 		window.location.href="/";
@@ -136,6 +140,24 @@
                 		console.log("error : "+error);
                 	}				
    					
+                },
+                
+                validatePassword(){
+                    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$#!%^*?&])[A-Za-z\d@$#^!%*?&]{8,16}$/;
+
+                    if(passwordRegex.test(this.password)){
+                        this.showPasswordWarning = false;
+                    }else{
+                        this.showPasswordWarning = true;
+                    }
+                },
+                validatePasswordCk(){
+
+                    if(this.password == this.passwordCk){
+                        this.showPasswordCkWarning = false;
+                    }else{
+                        this.showPasswordCkWarning = true;
+                    }
                 },
                 
                 },
