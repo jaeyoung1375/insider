@@ -964,13 +964,14 @@
 		},
 		mounted(){
 			window.addEventListener("scroll", _.throttle(()=>{
-				//문서 전체 높이 - 브라우저 높이
-				const height = document.body.clientHeight - window.innerHeight;
-				//현재 스크롤의 위치
+	            
+	            const height = document.documentElement.scrollHeight - window.innerHeight;
 				const current = window.scrollY;
-				const percent = (current/height)*100;
-				this.percent = Math.round(percent);
-			}, 250));
+				const percent = (current / height) * 100;
+				
+
+	           		this.percent = Math.round(percent);
+	            },250));
 			
 			this.likeListModal = new bootstrap.Modal(this.$refs.likeListModal);
 			this.additionalMenuModal = new bootstrap.Modal(this.$refs.additionalMenuModal);

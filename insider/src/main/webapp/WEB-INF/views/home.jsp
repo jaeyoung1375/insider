@@ -54,6 +54,12 @@
         object-fit: cover;
     }
     
+    .carousel-inner video {
+        width: 470px;
+        height: 480px;
+        object-fit: cover;
+    }
+    
     .like {
 		color:red;
 		cursor: pointer;
@@ -162,7 +168,15 @@
 </script>
 
 <div id="app"class="darkmode">
-	<div class="container" style="margin-top: 20px; max-width: 1000px">
+	
+	<div v-if="followCount == 0 && tagFollowCount == 0" class="container" style="margin-top: 20px; max-width: 1000px">
+		<div class="text-center">
+			<h2>아직 팔로우가 없습니다.</h2>
+			<h3>새 친구를 만들어보세요!</h3>
+		</div>
+	</div>
+	
+	<div v-else class="container" style="margin-top: 20px; max-width: 1000px">
         <div class="row" v-for="(board, index) in boardList" :key="board.boardNo">
             <!--●●●●●●●●●●●●●●피드공간●●●●●●●●●●●●●●●●●●●●●●-->
             <div class="col" style="max-width: 620px; margin: 0 auto 10px auto;">
@@ -194,8 +208,12 @@
                                
                                 <div class="carousel-inner">
                                   <div  v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
-                                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,index)"> 
+                                   	<video class="content" :src="'${pageContext.request.contextPath}'+ attach.imageURL" v-if="board.boardAttachmentList[0].video" 
+										style="object-fit:cover" :autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto" @dblclick="likePost(board.boardWithNickDto.boardNo,index)"></video>
+									<img class='content' v-else
+								 		:src="'${pageContext.request.contextPath}'+attach.imageURL" @dblclick="likePost(board.boardWithNickDto.boardNo,index)">
                                   </div>
+                                  
                                 </div>
                                
                                 <button class="carousel-control-prev" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="prev">
@@ -267,11 +285,11 @@
      
      
      
-     
+</div>     
     
  
     
-    </div>
+ 
     
 <!-- ---------------------------------게시물 상세보기 모달-------------------------- -->
 
@@ -289,7 +307,11 @@
                
                 <div class="carousel-inner">
                   <div  v-for="(attach, index2) in boardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
-                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" style="width:700px; height:700px;"> 
+                   	<video  style="width:700px; height:700px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+attach.imageURL" v-if="attach.video"
+							:autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto" 
+							@dblclick="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" ></video>
+	                <img v-else :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)"
+	                 style="width:700px; height:700px;" @dblclick="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)"> 
                   </div>
                 </div>
                
@@ -322,26 +344,25 @@
 					
 					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
 						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="text-decoration:none; position:relative;">
-							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="42" height="42" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
-							<img v-else src="https://via.placeholder.com/42x42?text=profile" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
+							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="45" height="45" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
+							<img v-else src="https://via.placeholder.com/45x45?text=profile" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
 							
-							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; font-weight: bold;">{{replyList[index].memberNick}}</p>
+							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; margin-left: 3.5px; font-weight: bold;">{{replyList[index].memberNick}}</p>
 												
 						</a>
-						<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em;">{{replyList[index].replyContent}}</p>
+						<p style="padding-left:3.5em; margin-bottom:1px; font-size:0.9em; margin-left: 3.5px;">{{replyList[index].replyContent}}</p>
 <!-- 						<p style="padding-left:4.0em;margin-bottom:1px;font-size:0.8em; color:gray;"> -->
-						<div class="row">
+						<div class="row" style="height: 25px">
 							<div class="col-10">
-								<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
+								<p style="padding-left:4.25em;margin-bottom:2px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
 									<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
 									<i :class="{'fa-heart': true, 'like':isReplyLiked[index],'ms-2':true, 'fa-solid': isReplyLiked[index], 'fa-regular': !isReplyLiked[index]}" @click="likeReply(reply.replyNo,index)" style="font-size: 0.9em;"></i>
-									&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-									<i v-if="replyList[index].replyMemberNo == loginMemberNo" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="color:red; cursor: pointer;"></i>
+									
 								</p>
 							</div>
 						<!-- 댓글 신고창 -->
 							<div class="col-2 p-0 d-flex justify-content-center">
-								<p class="d-flex align-items-center"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse;" @click="showAdditionalMenuModal(reply.replyNo, reply.replyMemberNo, 'reply')"></i></p>
+								<p class="d-flex align-items-center"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse;" @click="showAdditionalMenuModal(reply.replyNo, reply.replyMemberNo, 'reply',index,detailIndex)"></i></p>
 							</div>
 						</div>
 						
@@ -368,20 +389,25 @@
 						<i class="fa-regular fa-message mb-1" style="font-size: 25px;"></i>
 						
 					</p> -->
-				<span class="card-text" style="margin: 0 0 4px 0;">
-				  <div class="d-flex">
-				    <i :class="{'fa-heart': true, 'like':isLiked[detailIndex], 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}"
-				       @click="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
-				    &nbsp;
-				    <i class="fa-regular fa-message mb-1" style="font-size: 25px;"></i>
-				    <span class="ms-auto" style="margin-right:10px;">
-				      <i class="fa-regular fa-bookmark" @click="bookmarkInsert(boardList[detailIndex].boardWithNickDto.boardNo)"
-				         v-show="bookmarkChecked(boardList[detailIndex].boardWithNickDto.boardNo)" style="font-size: 25px;"></i>
-				      <i class="fa-solid fa-bookmark" @click="bookmarkInsert(boardList[detailIndex].boardWithNickDto.boardNo)"
-				         v-show="!bookmarkChecked(boardList[detailIndex].boardWithNickDto.boardNo)" style="font-size: 25px;"></i>
-				    </span>
+				  <div class="d-flex row">
+					  <div class="col-10">
+						<span class="card-text" style="margin: 0 4px 4px 0; padding-left: 0.5em">
+						    <i :class="{'fa-heart': true, 'like':isLiked[detailIndex], 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}"
+						       @click="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
+						</span>
+						<span class="card-text" style="margin: 0 0 4px 0; padding-left: 0.5em;">
+					    	<i class="fa-regular fa-message mb-1" style="font-size: 25px;"></i>
+						</span>
+					  </div>
+					  <div class="col-1 p-0 flex-grow-1">
+					    <span class="ms-4">
+					      <i class="fa-regular fa-bookmark" @click="bookmarkInsert(boardList[detailIndex].boardWithNickDto.boardNo)"
+					         v-show="bookmarkChecked(boardList[detailIndex].boardWithNickDto.boardNo)" style="font-size: 25px;"></i>
+					      <i class="fa-solid fa-bookmark" @click="bookmarkInsert(boardList[detailIndex].boardWithNickDto.boardNo)"
+					         v-show="!bookmarkChecked(boardList[detailIndex].boardWithNickDto.boardNo)" style="font-size: 25px;"></i>
+					    </span>
+					  </div>
 				  </div>
-				</span>
 					
 					
 					<p class="card-text" style="margin: 0 0 4px 0; cursor: pointer;" @click="showLikeListModal(boardList[detailIndex].boardWithNickDto.boardNo)"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount[detailIndex]}}개</b></p>
@@ -420,14 +446,14 @@
 					</div>
 					
 					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo">
-					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo" @click="updatePost(reportBoardData[0])">
+					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo && reportBoardData[2] == 'board'" @click="updatePost(reportBoardData[0])">
 						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
 							<h5 style="margin:0;">수정</h5>
 						</div>
 					</div>
 					
 					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo" >
-					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo" @click="deletePost(reportBoardData[0])">
+					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo" @click="deleteTool">
 						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
 							<h5 style="margin:0;">삭제</h5>
 						</div>
@@ -548,10 +574,9 @@
 	</div>
 	</div>
 
-</div>
-  소셜유저 : ${sessionScope.socialUser}		
-  회원번호 : ${sessionScope.memberNo}		
-  멤버토큰 : ${sessionScope.member}		
+
+
+		
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script>
 Vue.createApp({
@@ -599,6 +624,12 @@ Vue.createApp({
 			//게시물 내용 더보기
 			showMore:false,
 			
+			memberSetting:{
+	            //반경설정
+	            watchDistance:"",
+	            //동영상 자동재생
+	            videoAuto:false,
+            },
 			
 			//상세보기 및 댓글
 			detailView:false,
@@ -611,6 +642,10 @@ Vue.createApp({
 
 			//북마크
 			bookmarkCheck : [],
+			
+			//팔로우 수 체크
+			tagFollowCount : 0,
+			followCount : 0,
         };
     },
     //데이터 실시간 계산 영역
@@ -684,6 +719,22 @@ Vue.createApp({
 
             this.loading = false;
         },
+        
+        //로그인 회원 팔로우 수 카운트
+        async loadFollowCount(){
+        	const resp = await axios.get(contextPath+"/rest/board/count/follow");
+        	this.followCount = resp.data;
+        	const resp2 = await axios.get(contextPath+"/rest/board/count/tag");
+        	this.tagFollowCount = resp2.data;
+        	
+        },
+        
+        //회원 환경 설정 로드
+        async loadMemberSetting(){
+			const resp = await axios.get(contextPath+"/rest/member/setting");
+            this.memberSetting.watchDistance=resp.data.settingDistance;
+            this.memberSetting.videoAuto=resp.data.videoAuto;
+		},
         
         //게시물 수정
         updatePost(boardNo){
@@ -934,11 +985,14 @@ Vue.createApp({
         		 alert("댓글 사용이 불가능합니다.");
         	 }
          },
+         
+     	
+         
         
         //상세보기 모달창 열기
         detailViewOn(index) {
         	this.detailView = true;
-        	this.detailIndex = index;f
+        	this.detailIndex = index;
         	this.replyLoad(index);
         	document.body.style.overflow = "hidden";
         },
@@ -986,11 +1040,23 @@ Vue.createApp({
         
         /*----------------------신고----------------------*/
         //신고 모달 show, hide
-		showAdditionalMenuModal(boardNo, reportMemberNo, reportTable){
+		showAdditionalMenuModal(boardNo, reportMemberNo, reportTable, index, detailIndex){
 			if(this.additionalMenuModal==null) return;
 			this.additionalMenuModal.show();
-			this.reportBoardData=[boardNo, reportMemberNo, reportTable];
+			this.reportBoardData=[boardNo, reportMemberNo, reportTable, index, detailIndex];
 		},
+		
+		deleteTool(){
+			if(this.reportBoardData[2] == 'board'){
+				this.deletePost(this.reportBoardData[0]);
+			}
+			else {
+				this.replyDelete(this.reportBoardData[3],this.reportBoardData[4]);
+			}
+		},
+		
+		
+		
 		hideAdditionalMenuModal(){
 			if(this.additionalMenuModal==null) return;
 			this.additionalMenuModal.hide();
@@ -1098,15 +1164,13 @@ Vue.createApp({
        }
     },
     mounted(){
-         window.addEventListener("scroll", _.throttle(()=>{
-            const height = document.body.clientHeight - window.innerHeight;
-            const current = window.scrollY
-            const percent = (current / height) * 100
-            //console.log("percent = " + Math.round(percent));
-
-            //data의 percent를 계산된 값으로 갱신
-            this.percent = Math.round(percent);
-         },250));
+	window.addEventListener("scroll", _.throttle(()=>{
+            const height = document.documentElement.scrollHeight - window.innerHeight;
+			const current = window.scrollY;
+			const percent = (current / height) * 100;
+			
+           		this.percent = Math.round(percent);
+            },250));
         
          //추가메뉴, 신고 모달 선언
 		this.additionalMenuModal = new bootstrap.Modal(this.$refs.additionalMenuModal);
@@ -1136,6 +1200,8 @@ Vue.createApp({
     	this.followCheck();
     	this.loadNewList();
     	this.bookmarkList();
+    	this.loadMemberSetting();
+    	this.loadFollowCount();
     },
 }).mount("#app");
 </script>
