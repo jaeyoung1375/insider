@@ -1,6 +1,7 @@
 package com.kh.insider.repo;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
@@ -8,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.MemberDto;
+import com.kh.insider.dto.MemberProfileDto;
+import com.kh.insider.dto.MemberWithProfileDto;
+import com.kh.insider.dto.TagFollowDto;
 
 @Repository
 public class MemberRepoImpl implements MemberRepo{
@@ -35,7 +39,7 @@ public class MemberRepoImpl implements MemberRepo{
 	}
 	
 	@Override
-	public MemberDto findByNickName(String memberNick) {
+	public MemberWithProfileDto findByNickName(String memberNick) {
 		return sqlSession.selectOne("member.findByNickName",memberNick);
 	}
 	
@@ -83,9 +87,31 @@ public class MemberRepoImpl implements MemberRepo{
 	public String nick(long memberNo) {
 		return sqlSession.selectOne("member.nick",memberNo);
 	}
+	
+
+	// 친구 추천목록 조회
 	@Override
-	public void updateTempPassword(MemberDto dto) {
-		sqlSession.update("member.updateTempPassword",dto);
+	public List<MemberProfileDto> recommendFriends(long memberNo) {
+		return sqlSession.selectList("member.recommendFriends",memberNo);
 	}
+
+	@Override
+	public List<TagFollowDto> hashtagList(long memberNo) {
+
+		return sqlSession.selectList("member.hashtagList",memberNo);
+		
+	}
+
+	@Override
+	public void updateFollow(long memberNo) {
+		sqlSession.update("member.updateFollow", memberNo);
+	}
+
+	@Override
+	public void addReport(long memberNo) {
+		sqlSession.update("member.addReport", memberNo);
+	}
+
+	
 	
 }

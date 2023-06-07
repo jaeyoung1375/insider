@@ -70,7 +70,10 @@ public class BoardRepoImpl implements BoardRepo {
 	public List<BoardListVO> selectListWithoutFollow(BoardSearchVO vo) {
 		return sqlSession.selectList("board.boardListWithoutFollow", vo);
 	}
-
+	@Override
+	public List<BoardListVO> selectListWithoutFollowOutDistance(BoardSearchVO vo) {
+		return sqlSession.selectList("board.boardListWithoutFollowOutDistance", vo);
+	}
 
 	@Override
 	public void updateLikeCount(int boardNo, int count) {
@@ -126,14 +129,14 @@ public class BoardRepoImpl implements BoardRepo {
 
 
 	@Override
-	public List<BoardDto> myPageSelectListPaging(int page, int memberNo) {
-		int end = page * 6;
+	public List<BoardListVO> myPageSelectListPaging(int page, long memberNo) {
+		int end = page * 10;
 		int begin = end -9;
 		Map param = Map.of("begin",begin, "end",end, "memberNo",memberNo);
-		return sqlSession.selectList("board.getTotalMyPost",param);
+		return sqlSession.selectList("board.myPageSelectPaging",param);
+
 	}
 	
-	@Override
 	public int selectAdminCount(AdminBoardSearchVO vo) {
 		return sqlSession.selectOne("board.selectAdminCount", vo);
 	}
@@ -166,5 +169,22 @@ public class BoardRepoImpl implements BoardRepo {
 	public int selectListWithTagCount(BoardSearchVO vo) {
 		return sqlSession.selectOne("board.selectListTagBoardCount", vo);
 	}
+
+
+	@Override
+	public void updateReply(int boardNo) {
+		sqlSession.update("board.updateReply", boardNo);
+	}
+
+	@Override
+	public List<BoardListVO> selectListReported(long memberNo) {
+		return sqlSession.selectList("board.selectListReported", memberNo);
+	}
+	@Override
+	public List<BoardListVO> bookmarkMyPost(long memberNo) {
+		
+		return sqlSession.selectList("board.bookmarkMyPost",memberNo);
+	}
+
 
 }

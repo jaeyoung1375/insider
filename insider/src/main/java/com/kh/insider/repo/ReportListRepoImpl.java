@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.ReportListDto;
+import com.kh.insider.vo.UpdateReportContentVO;
 
 @Repository
 public class ReportListRepoImpl implements ReportListRepo{
@@ -20,8 +21,8 @@ public class ReportListRepoImpl implements ReportListRepo{
 	}
 
 	@Override
-	public void update(ReportListDto reportListDto) {
-		sqlSession.update("reportList.update", reportListDto);
+	public void update(UpdateReportContentVO updateReportContentVO) {
+		sqlSession.update("reportList.update", updateReportContentVO);
 	}
 
 	@Override

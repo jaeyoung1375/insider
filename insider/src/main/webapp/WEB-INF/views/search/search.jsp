@@ -241,13 +241,40 @@
 			
 		<!-- 리스트 -->
 			<div class="row d-flex justify-content-center mt-3">
-				<div class="box m-2" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)">
-					<img class='content' @click="detailViewOn(index)" v-if="board.boardAttachmentList.length>0" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
-					<img class='content' v-else src="${pageContext.request.contextPath}/static/image/noimage.png">
-					<div class="content-box"  @click="detailViewOn(index)"></div>
+				<div class="box m-2" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)" 
+						 @click="detailViewOn(index)" >
+					<video class="content" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
+							style="object-fit:cover" :autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto"></video>
+					<img class='content' v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video"
+							 :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
+					<img class='content' v-if="board.boardAttachmentList.length==0" src="${pageContext.request.contextPath}/static/image/noimage.png">
+					<div class="content-box" ></div>
 					<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
-					<div class="like-comment" @click="detailViewOn(index)">
-						<span><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
+					<div class="like-comment" >
+						<span v-if="memberSetting.watchLike"><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
+						<span class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
+					</div>
+				</div>
+			</div>
+			<!-- 게시물 더보기 -->
+			<div class="row" v-if="finish && !additionalFinish">	
+				<div class="col">
+					{{memberSetting.watchDistance}}km 이내의 게시물을 모두 확인했습니다. <span class="modal-click-btn" @click="showAdditionalList"> 게시물 더보기</span>
+				</div>
+			</div>
+			<!-- 추가 리스트 -->
+			<div class="row d-flex justify-content-center mt-3">
+				<div class="box m-2" v-for="(board, index) in additionalBoardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)" 
+						 @click="detailViewOn(index)" >
+					<video class="content" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
+							style="object-fit:cover" :autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto"></video>
+					<img class='content' v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video"
+							 :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
+					<img class='content' v-if="board.boardAttachmentList.length==0" src="${pageContext.request.contextPath}/static/image/noimage.png">
+					<div class="content-box" ></div>
+					<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
+					<div class="like-comment" >
+						<span v-if="memberSetting.watchLike"><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
 						<span class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
 					</div>
 				</div>
@@ -271,7 +298,10 @@
 	               
 	                <div class="carousel-inner">
 	                  <div  v-for="(attach, index2) in boardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
-	                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" style="width:700px; height:700px;"> 
+	                  	<video  style="width:700px; height:700px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+attach.imageURL" v-if="attach.video"
+							:autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto" 
+							@dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" ></video>
+	                   	<img v-else :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" style="width:700px; height:700px;"> 
 	                  </div>
 	                </div>
 	               
@@ -290,8 +320,15 @@
 	        <div class="col-4" style="padding-left: 0;">
 	        	<div class="card bg-light" style="border-radius:0; max-height: 700px">
 	           		<div class="card-header">
-		           		<img class="profile" :src="profileUrl(detailIndex)">
-	           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardList[detailIndex].boardWithNickDto.memberNick"><b>{{boardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
+	           			<div class="row">
+	           				<div class='col-10'>
+				           		<img class="profile" :src="profileUrl(detailIndex)">
+			           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardList[detailIndex].boardWithNickDto.memberNick"><b>{{boardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
+	           				</div>
+	           				<div class="col d-flex justify-content-center align-items-center">
+	           					<i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:1.2em" @click="showAdditionalMenuModal(boardList[detailIndex].boardWithNickDto.boardNo, boardList[detailIndex].boardWithNickDto.memberNo, 'board')"></i>
+	           				</div>
+	           			</div>
 	           		</div>
 					
 					<div class="card-body card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
@@ -312,15 +349,20 @@
 							</a>
 							<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em;">{{replyList[index].replyContent}}</p>
 	<!-- 						<p style="padding-left:4.0em;margin-bottom:1px;font-size:0.8em; color:gray;"> -->
-							<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
-								<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
-								<i :class="{'fa-heart': true, 'like':isReplyLiked[index],'ms-2':true, 'fa-solid': isReplyLiked[index], 'fa-regular': !isReplyLiked[index]}" @click="likeReply(reply.replyNo,index)" style="font-size: 0.9em;"></i>
-								&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-								<i v-if="replyList[index].replyMemberNo == loginMemberNo" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="color:red; cursor: pointer;"></i>
-								
-								
-							</p>
-							
+							<div class="row">
+								<div class="col-10">
+									<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
+										<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
+										<i :class="{'fa-heart': true, 'like':isReplyLiked[index],'ms-2':true, 'fa-solid': isReplyLiked[index], 'fa-regular': !isReplyLiked[index]}" @click="likeReply(reply.replyNo,index)" style="font-size: 0.9em;"></i>
+										&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+										<i v-if="replyList[index].replyMemberNo == loginMemberNo" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="color:red; cursor: pointer;"></i>
+									</p>
+								</div>
+							<!-- 댓글 신고창 -->
+								<div class="col-2 p-0 d-flex justify-content-center">
+									<p class="d-flex align-items-center"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse;" @click="showAdditionalMenuModal(reply.replyNo, reply.replyMemberNo, 'reply')"></i></p>
+								</div>
+							</div>
 	<!-- 						<p v-if="replyList[index].replyParent == 0"> -->
 	<!-- 							<span @click="showReReply(reply.replyNo, index)" style="cursor:pointer; padding-left:4em; font-size:0.8em; color:gray;">{{replyStatus(index)}}</span> -->
 	<!-- 						</p> -->
@@ -384,7 +426,109 @@
 			</div>
 		</div>
 	</div>
-	
+<!-- ---------------------------------추가 메뉴 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="additionalMenuModal" data-bs-backdrop="static" ref="additionalMenuModal" style="z-index:9999">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content">
+				<div class="modal-body p-0">
+					<div class="row p-3" @click="showReportMenuModal">
+						<div class="col d-flex justify-content-center align-items-center" style="color:#dc3545; cursor:pointer">
+							<h5 style="font-weight:bold; margin:0;">신고</h5>
+						</div>
+					</div>
+					
+					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo">
+					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo" @click="updatePost(reportBoardData[0])">
+						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
+							<h5 style="margin:0;">수정</h5>
+						</div>
+					</div>
+					
+					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo" >
+					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo" @click="deletePost(reportBoardData[0])">
+						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
+							<h5 style="margin:0;">삭제</h5>
+						</div>
+					</div>
+					
+					<!-- 메뉴 구분선 -->
+					<hr class="m-0">
+					<div class="row p-3" @click="hideAdditionalMenuModal">
+						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
+							<h5 style="margin:0;">취소</h5>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<!-- ---------------------------------신고 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal" style="z-index:9999">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content" >
+				<div class="modal-header">
+					<h5 class="modal-title" style="font-weight:bold; text-align:center">신고</h5>
+					<button type="button" class="btn-close" @click="hideReportMenuModal" aria-label="Close">
+					<span aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="modal-body">
+				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
+					<div class="row">
+						<div class="col d-flex p-3">
+							<h5 style="margin:0;">이 게시물을 신고하는 이유</h5>
+						</div>
+					</div>
+					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo" style="border-top:var(--bs-modal-border-width) solid var(--bs-modal-border-color)">
+						<div class="col d-flex p-3 report-content" @click="reportContent(report.reportListContent)" style="cursor:pointer">
+							<h5 style="margin:0; margin-left:1em">{{report.reportListContent}}</h5>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" @click="hideReportMenuModal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+<!-- ---------------------------------신고 후 차단 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="blockModal" data-bs-backdrop="static" ref="blockModal" style="z-index:9999">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="row mt-2 mb-2">
+						<div class="col d-flex justify-content-center align-items-center">
+							<i class="fa-regular fa-circle-check" style="color:#198754; font-size:10em"></i>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col d-flex justify-content-center align-items-center">
+							<h5 class="modal-title" style="font-weight:bold; text-align:center">알려주셔서 고맙습니다</h5>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col d-flex justify-content-center align-items-center">
+							<span>회원님의 소중한 의견은 Insider 커뮤니티를</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col d-flex justify-content-center align-items-center">
+							<span> 안전하게 유지하는 데 도움이 됩니다.</span>
+						</div>
+					</div>
+					<div class="row mt-2">
+						<div class="col d-flex p-3 justify-content-center" @click="blockUser" style="color:#dc3545; cursor:pointer" v-if="reportBoardData[3]!=null && reportBoardData[3].length>0">
+							<h5 style="margin:0;">{{reportBoardData[3]}}님 차단</h5>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" @click="hideBlockModal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+		
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
@@ -402,7 +546,14 @@
 				loading:false,
 				finish:false,
 				searchedList:[],
-				
+				//더보기 데이터
+				additionalPage:1,
+				additionalLoading:false,
+				additionalFinish:false,
+				//클릭, 더블클릭 이벤트 해결
+				delay: 700,
+				clicks: 0,
+				timer: null,
 				//상세보기 및 댓글
 				detailView:false,
 				detailIndex:"",
@@ -416,10 +567,27 @@
 	            likeListData : [],
 	            likeListModal : false,
 	            
-	          	
+	            memberSetting:{
+	    	        //좋아요 수 보기 여부
+		            watchLike:false,
+		            //반경설정
+		            watchDistance:"",
+		            //동영상 자동재생
+		            videoAuto:false,
+	            },
 	            //게시물 댓글 좋아요 기능 전용 변수
 				replyLikeCount : [], // 댓글 좋아요 수 저장 변수
-				isReplyLiked : [], // 로그인 회원이 댓글 좋아요 체크 여부 
+				isReplyLiked : [], // 로그인 회원이 댓글 좋아요 체크 여부
+				
+				/*----------------------신고----------------------*/
+				//추가 메뉴 모달 및 신고 모달
+				additionalMenuModal:null,
+				reportMenuModal:null,
+				blockModal:null,
+				//신고 메뉴 리스트
+				reportContentList:[],
+				reportBoardData:[],
+				/*----------------------신고----------------------*/
 			};
 		},
 		computed: {
@@ -455,10 +623,35 @@
 	              }
 				this.boardList.push(...resp.data);
 				this.page++;
-				if(resp.data.length<10){//데이터가 10개 미만이면 불러오는걸 막음
-					this.finish==true;
+				if(resp.data.length<15){//데이터가 10개 미만이면 불러오는걸 막음
+					this.finish=true;
 				}
 				this.loading=false;
+			},
+			async loadAdditionalList(){
+				if(this.additionalLoading||this.additionalFinish||!this.finish) return;
+				this.additionalLoading=true;
+				const resp = await axios.get(contextPath+"/rest/board/additionalList/"+this.additionalPage);
+				for (const board of resp.data) {
+	            	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+	            	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
+	              }
+				this.boardList.push(...resp.data);
+				this.additionalPage++;
+				if(resp.data.length<15){//데이터가 10개 미만이면 불러오는걸 막음
+					this.additionalFinish=true;
+				}
+				this.additionalLoading=false;
+			},
+			showAdditionalList(){
+				this.loadAdditionalList();
+			},
+			async loadMemberSetting(){
+				const resp = await axios.get(contextPath+"/rest/member/setting");
+	            this.memberSetting.watchLike=resp.data.watchLike;
+	            this.memberSetting.watchDistance=resp.data.settingDistance;
+	            this.memberSetting.videoAuto=resp.data.videoAuto;
+				
 			},
 			//더블클릭 시 좋아요
 			async doubleClick(boardNo, index){
@@ -468,6 +661,7 @@
 			},
 			//검색어 입력시
 			searchInputChanged(e){
+				//document.body.style.overflow = "hidden";
 				this.searchInput = e.target.value;
 				if(this.searchInput.length>0){
 					this.recommandListShow=true;
@@ -482,6 +676,7 @@
 				setTimeout(()=>{
 					this.recommandListShow=false;
 					this.searchedListShow=false;
+					//document.body.style.overflow = "unset";
 				},150);
 			},
 			async moveToTagDetail(tagName){
@@ -513,13 +708,23 @@
 				},150);
 			},
 			
-			
-			 //상세보기 모달창 열기
+			/* --------------------------상세보기-------------------------- */
+			 //상세보기 모달창 열기(더블클릭 이벤트 방지)
 	        detailViewOn(index) {
-	        	this.detailView = true;
-	        	this.detailIndex = index;
-	        	this.replyLoad(index);
-	        	document.body.style.overflow = "hidden";
+				this.clicks++;
+				if (this.clicks === 1) {
+					this.timer = setTimeout( () => {
+			        	this.detailView = true;
+			        	this.detailIndex = index;
+			        	this.replyLoad(index);
+			        	document.body.style.overflow = "hidden";
+						this.clicks = 0
+					}, 200);
+				} 
+				else {
+					clearTimeout(this.timer);
+					this.clicks = 0;
+				} 
 	        },
 	        
 	        //상세보기 모달창 닫기
@@ -675,11 +880,71 @@
 				this.likeList=[];
 				this.likeListModal.hide();
 			},
+			/* --------------------------상세보기-------------------------- */
+	        /*----------------------신고----------------------*/
+	        //신고 모달 show, hide
+			showAdditionalMenuModal(boardNo, reportMemberNo, reportTable){
+				if(this.additionalMenuModal==null) return;
+				this.additionalMenuModal.show();
+				this.reportBoardData=[boardNo, reportMemberNo, reportTable];
+			},
+			hideAdditionalMenuModal(){
+				if(this.additionalMenuModal==null) return;
+				this.additionalMenuModal.hide();
+			},
+			showReportMenuModal(){
+				if(this.reportMenuModal==null) return;
+				this.reportMenuModal.show();
+				this.additionalMenuModal.hide();
+				this.loadReportContent();
+			},
+			hideReportMenuModal(){
+				if(this.reportMenuModal==null) return;
+				this.reportMenuModal.hide();
+			},
+			showBlockModal(){
+				if(this.blockModal==null) return;
+				this.blockModal.show();
+				this.reportMenuModal.hide();
+			},
+			hideBlockModal(){
+				if(this.blockModal==null) return;
+				this.blockModal.hide();
+			},
+			//신고 목록 불러오기
+			async loadReportContent(){
+				const resp = await axios.get(contextPath+"/rest/reportContent/");
+				this.reportContentList = [...resp.data];
+			},
+			//신고
+			async reportContent(reportContent){
+				const data={
+					reportContent:reportContent,
+					reportTableNo:this.reportBoardData[0],
+					reportTable:this.reportBoardData[2],
+					reportMemberNo:this.reportBoardData[1],
+				}
+				const resp = await axios.post(contextPath+"/rest/report/", data)
+				this.hideReportMenuModal();
+				if(resp.data.length!=0){
+					this.reportBoardData[3] = resp.data.memberNick;
+				}
+				this.showBlockModal();
+			},
+			//차단
+			async blockUser(){
+				const resp = await axios.put(contextPath+"/rest/block/"+this.reportBoardData[1]);
+				if(resp.data){
+					this.hideBlockModal();
+				}
+			},
+			/*----------------------신고----------------------*/
 			
 		},
 		created(){
 			//데이터 불러오는 영역
 			this.loadList();
+			this.loadMemberSetting();
 		},
 		watch:{
 			//감시영역
@@ -688,7 +953,12 @@
 			}, 500),
 			percent(){
 				if(this.percent >= 80){
-				this.loadList();
+					if(!this.finish){
+						this.loadList();
+					}
+					else if(!this.additionalFinish){
+						this.loadAdditionalList();
+					}
 				}
 			}			
 		},
@@ -703,6 +973,9 @@
 			}, 250));
 			
 			this.likeListModal = new bootstrap.Modal(this.$refs.likeListModal);
+			this.additionalMenuModal = new bootstrap.Modal(this.$refs.additionalMenuModal);
+			this.reportMenuModal = new bootstrap.Modal(this.$refs.reportMenuModal);
+			this.blockModal = new bootstrap.Modal(this.$refs.blockModal);
 		}
 	}).mount("#app");
 </script>

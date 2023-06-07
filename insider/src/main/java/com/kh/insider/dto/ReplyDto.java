@@ -30,4 +30,18 @@ public class ReplyDto {
 		   return timeStr;
 		}
 		
+		public String getBoardTime() {
+			java.util.Date currentTime = new java.util.Date();
+			long timeDif = currentTime.getTime()-replyTime.getTime();
+			SimpleDateFormat f = new SimpleDateFormat("yyyy-M-d");
+			if(timeDif/1000/60/60/24>=1) {
+				return f.format(replyTime); 
+			}
+			else if(timeDif/1000/60/60>=1) {
+				return timeDif/1000/60/60+"시간 전";
+			}
+			else {
+				return timeDif/1000/60+"분 전";
+			}
+		}
 }

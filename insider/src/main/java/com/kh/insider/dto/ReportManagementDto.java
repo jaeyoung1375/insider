@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class ReportManagementDto {
 	private long reportMemberNo;
-	private int reportTableNo;
+	private long reportTableNo;
 	private String reportTable;
 	private Integer reportResult;
 	private int count;

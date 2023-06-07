@@ -36,8 +36,8 @@
    		<!-- 등록 -->
 	   <insert id="insert" parameterType="BoardAttachmentDto">
 			insert into board_attachment
-			(board_attachment_no, board_no, attachment_no)
-			values ( #{boardAttachmentNo}, #{boardNo}, #{attachmentNo})
+			(board_attachment_no, board_no, attachment_no, attachment_type)
+			values ( #{boardAttachmentNo}, #{boardNo}, #{attachmentNo}, #{attachmentType})
 		</insert>
 
 		<!-- 목록 -->
@@ -49,5 +49,8 @@
 		<delete id="delete" parameterType="int">
 			delete board_attachment where board_no=#{boardNo}
 		</delete>
+		
+		
+		
    
    </mapper>

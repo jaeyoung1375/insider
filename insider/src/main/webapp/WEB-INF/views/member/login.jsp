@@ -64,7 +64,7 @@ GoogleLoginProperties googleProperties = context.getBean(GoogleLoginProperties.c
             </a>
             </div>
              <div class="row text-center">
-                   <a class="mt-5" href="/member/passwordChange">비밀번호를 잊으셨나요?</a>
+                   <a class="mt-5" href="/member/passwordSearch">비밀번호를 잊으셨나요?</a>
                 </div>         
          <!--  
             <div class="row mb-3">

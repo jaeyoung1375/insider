@@ -1,6 +1,7 @@
 package com.kh.insider.restcontroller;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -167,5 +169,41 @@ public class AttachmentRestController {
 			imageList.add(attDto.getAttachmentNo());
 		}
 		model.addAttribute("image",imageList);
+	}
+	
+	//비디오 
+	@GetMapping("/video/{attachmentNo}")
+	public ResponseEntity<InputStreamResource> video(@PathVariable int attachmentNo) throws IOException {
+	    // DB 조회
+	    AttachmentDto attachmentDto = attachmentRepo.selectOne(attachmentNo);
+	    if (attachmentDto == null) {
+	        return ResponseEntity.notFound().build();
+	    }
+
+	    // 동영상 파일 찾기
+	    File target = new File(dir, String.valueOf(attachmentNo));
+	    if (!target.exists()) {
+	        return ResponseEntity.notFound().build();
+	    }
+
+	    // InputStreamResource 생성(동영상에서 씀)
+	    InputStreamResource resource = new InputStreamResource(new FileInputStream(target));
+
+	    // ResponseEntity 생성
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_TYPE, 
+						MediaType.APPLICATION_OCTET_STREAM_VALUE)
+				.contentType(MediaType.APPLICATION_OCTET_STREAM)
+				.contentLength(attachmentDto.getAttachmentSize())
+				.header(HttpHeaders.CONTENT_ENCODING, 
+											StandardCharsets.UTF_8.name())
+				.header(HttpHeaders.CONTENT_DISPOSITION,
+					ContentDisposition.attachment()
+								.filename(
+										attachmentDto.getAttachmentName(), 
+										StandardCharsets.UTF_8
+								).build().toString()
+				)
+				.body(resource);
 	}
 }

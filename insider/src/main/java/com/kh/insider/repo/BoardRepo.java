@@ -15,7 +15,7 @@ import com.kh.insider.vo.BoardTimeStatsSearchVO;
 public interface BoardRepo {
 	List<BoardDto> selectListPaging(int page);
 	
-	List<BoardDto> myPageSelectListPaging(int page, int memberNo);
+	List<BoardListVO> myPageSelectListPaging(int page, long memberNo);
 
 	int sequence();
 	
@@ -42,9 +42,10 @@ public interface BoardRepo {
 	List<BoardListVO> selectListWithFollowNew(BoardSearchVO vo);
 	//팔로우 차단 구현 리스트 출력(3일 이후)
 	List<BoardListVO> selectListWithFollowOld(BoardSearchVO vo);	 
-	//차단 구현 리스트 출력
+	//차단 구현 리스트 출력(찾기 게시판에서 씀)
 	List<BoardListVO> selectListWithoutFollow(BoardSearchVO vo);
-	
+	//차단 구현 리스트 출력(
+	List<BoardListVO> selectListWithoutFollowOutDistance(BoardSearchVO vo);
 	// 전체 게시물 개수
 	int getTotalPostCount(Long MemberNo);
 	// 마이페이지 전체 게시물 조회
@@ -66,4 +67,12 @@ public interface BoardRepo {
 	List<BoardListVO> selectListWithTag(BoardSearchVO vo);
 	//태그 조회 개수 반환
 	int selectListWithTagCount(BoardSearchVO vo);
+	
+	//리플 개수 업데이트
+	void updateReply(int boardNo);
+	//신고수가 1이상인 게시물 반환
+	List<BoardListVO> selectListReported(long memberNo);
+	
+	// 북마크 게시물 조회
+	List<BoardListVO> bookmarkMyPost(long memberNo);
 }

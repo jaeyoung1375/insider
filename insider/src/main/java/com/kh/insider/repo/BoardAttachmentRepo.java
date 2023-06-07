@@ -15,5 +15,7 @@ public interface BoardAttachmentRepo {
 	List<BoardAttachmentDto> selectList(int boardNo);
 	//삭제
 	void delete(int boardNo);
+	
+	
 
 }

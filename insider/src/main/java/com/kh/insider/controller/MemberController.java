@@ -26,6 +26,7 @@ import com.kh.insider.dto.FollowDto;
 import com.kh.insider.dto.FollowWithProfileDto;
 import com.kh.insider.dto.FollowerWithProfileDto;
 import com.kh.insider.dto.MemberDto;
+import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.FollowRepo;
 import com.kh.insider.repo.MemberRepo;
@@ -116,7 +117,7 @@ public class MemberController {
    public String myPage(@PathVariable String memberNick, Model model, HttpSession session) {
       
       // 프로필 정보 불러오기
-      MemberDto findMember = memberRepo.findByNickName(memberNick);
+	   MemberWithProfileDto findMember = memberRepo.findByNickName(memberNick);
       // 로그인한 사용자
       MemberDto loginUser = (MemberDto)session.getAttribute("socialUser");
       // 본인 프로필 인지 여부
@@ -149,26 +150,29 @@ public class MemberController {
       return "/member/mypage";
    }
    
+   // 팔로우 총 개수
    @GetMapping("/totalFollowCount")
    @ResponseBody
    public int totalFollowCount(@RequestParam("memberNick") String memberNick) {
-       MemberDto findMember = memberRepo.findByNickName(memberNick);
+	   MemberWithProfileDto findMember = memberRepo.findByNickName(memberNick);
        int totalFollowCount = followRepo.getFollowNumber(findMember.getMemberNo());
        return totalFollowCount;
    }
    
+   // 팔로워 총 개수
    @GetMapping("/totalFollowerCount")
    @ResponseBody
    public int totalFollowerCount(@RequestParam("memberNick") String memberNick) {
-       MemberDto findMember = memberRepo.findByNickName(memberNick);
+	   MemberWithProfileDto findMember = memberRepo.findByNickName(memberNick);
        int totalFollowerCount = followRepo.getFollowerNumber(findMember.getMemberNo());
        return totalFollowerCount;
    }
    
+   // 게시물 총 개수
    @GetMapping("/totalPostCount")
    @ResponseBody
    public int totalPostCount(@RequestParam("memberNick") String memberNick) {
-	   MemberDto findMember = memberRepo.findByNickName(memberNick);
+	   MemberWithProfileDto findMember = memberRepo.findByNickName(memberNick);
 	   int totalPostCount = boardRepo.getTotalPostCount(findMember.getMemberNo());
 	   return totalPostCount;
    }
@@ -210,21 +214,26 @@ public class MemberController {
       }
    }
    
-   @GetMapping("/passwordChange")
-   public String passwordChange() {
-      return "member/passwordChange";
+   @GetMapping("/passwordSearch")
+   public String passwordSearch() {
+      return "member/passwordSearch";
+   }
+   
+   @GetMapping("/resetPassword")
+   public String resetPassword() {
+	   return "/member/resetPassword";
    }
    
    @PostMapping("/passwordChange")
    @ResponseBody
-   public String passwordChange(@RequestBody MemberDto dto) {
-      // 임시 비밀번호
-      String generatTempPassword = memberService.generatTempPassword();
-      dto.setMemberPassword(generatTempPassword);
-      memberRepo.updateTempPassword(dto);
-      
-      return generatTempPassword;
+   public void passwordChange(@RequestBody MemberDto member) {
+	   member.setMemberEmail(member.getMemberEmail());
+	   member.setMemberPassword(member.getMemberPassword());
+
+	   memberRepo.changePassword(member);
    }
+   
+  
    
    
    @GetMapping("/facebook/auth")
