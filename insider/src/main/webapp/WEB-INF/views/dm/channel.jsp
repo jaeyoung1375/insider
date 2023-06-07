@@ -196,8 +196,9 @@
 					<div class="card col-3" style="width:290px;border-radius:0;border-top:none;padding:0;">
 						<div class="card-body card-scroll" style="padding:0;padding-top:10px; max-height: 633px;">
 							<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo" class="roomList" :class="{'hover': isHovered[index] }"
-         						@mouseover="isHovered[index] = true" @mouseleave="isHovered[index] = false" style="padding-bottom: 5px;padding-top: 4px;padding-left: 13px;cursor:pointer;"@click="loadMessage(room.roomNo)">
+         						@mouseover="isHovered[index] = true" @mouseleave="isHovered[index] = false" style="padding-bottom: 5px;padding-top: 4px;padding-left: 13px;cursor:pointer;">
 							    <div style="position:relative; height: 2.4em; display: flex; align-items: center;">
+								    <a :href="'channel?room=' + room.roomNo" style="color: black; text-decoration: none;">
 							    	<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"style="border-radius: 50%; position:absolute; 
 								    	width:34px; height:34px; margin-top:0em;cursor:pointer;">
 				          			<img v-else src="https://via.placeholder.com/34x34?text=P" style="border-radius: 50%; position:absolute; margin-top:0em;">
@@ -515,7 +516,8 @@
             },
             methods:{
             	// 메세지 불러오는 함수
-            	async loadMessage(roomNo) {
+            	async loadMessage() {
+            	    const roomNo = new URLSearchParams(location.search).get("room");
             	    if(roomNo==null){
             	    	this.isRoomJoin=false; 
             	    	return;
@@ -575,16 +577,13 @@
 				                'Content-Type': 'multipart/form-data'
 				            }
 				        });
-				        console.log("attachmentNo: " + resp.data.attachmentNo);
-				        
 				        if(resp.data) {
 				            const data = {
 				                    type: 7, 
 				                    attachmentNo: resp.data.attachmentNo,
-				                    content: "사진 " + resp.data.attachmentNo
+				                    content: "이미지 메세지"
 				            }
 				            this.socket.send(JSON.stringify(data));
-				            this.clear();
 				            fileInput.value = null;
 				        }
 				    } catch (error) {
