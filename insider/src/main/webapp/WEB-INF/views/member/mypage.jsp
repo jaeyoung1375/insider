@@ -79,7 +79,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            z-index: 99999;
+            z-index: 5555;
             
             background-color: rgba(0, 0, 0, 0.2);
 /*             display: none; */
@@ -438,8 +438,8 @@
 				<div class="card-body card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
 					<p class="card-text" style="margin-left: 0.5em;">{{myBoardList[detailIndex].boardWithNickDto.boardContent}}<br>
-					<br v-if="myBoardList[detailIndex].boardTagList.length > 0"><br v-if="myBoardList[detailIndex].boardTagList.length > 0">
-                            	<a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in myBoardList[detailIndex].boardTagList" :key="index3" style="margin-right: 0.5em; color: blue; cursor: pointer;">\#{{tag.tagName}}</a>
+					<br v-if="myBoardList[detailIndex].boardTagList.length > 0">
+                    <a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in myBoardList[detailIndex].boardTagList" :key="index3" style="margin-right: 0.5em; color: blue; cursor: pointer;">\#{{tag.tagName}}</a>
 					</p>
 					
 					
@@ -494,7 +494,7 @@
 	                         </span>
                       </div>
 					</div>
-					<p class="card-text" style="margin: 0 0 4px 0"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount[detailIndex]}}개</b></p>
+					<p class="card-text" style="margin: 0 0 4px 0; cursor: pointer;"  @click="showLikeListModal(myBoardList[detailIndex].boardWithNickDto.boardNo)"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount[detailIndex]}}개</b></p>
 					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(myBoardList[detailIndex].boardWithNickDto.boardTimeAuto)}}</p>
 					
 				</div>
@@ -548,8 +548,8 @@
 				
 				<div class="card-body card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
-					<p class="card-text" style="margin-left: 0.5em;">{{bookmarkMyPostList[detailIndex2].boardWithNickDto.boardContent}}
-					<br v-if="bookmarkMyPostList[detailIndex2].boardTagList.length > 0"><br v-if="bookmarkMyPostList[detailIndex2].boardTagList.length > 0">
+					<p class="card-text" style="margin-left: 0.5em;">{{bookmarkMyPostList[detailIndex2].boardWithNickDto.boardContent}}<br>
+					<br v-if="bookmarkMyPostList[detailIndex2].boardTagList.length > 0">
                            <a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in bookmarkMyPostList[detailIndex2].boardTagList" :key="index3" style="margin-right: 0.5em; color: blue; cursor: pointer;">\#{{tag.tagName}}</a>
 					</p>
 					
@@ -605,7 +605,7 @@
 	                         </span>
                       </div>
 					</div>
-					<p class="card-text" style="margin: 0 0 4px 0"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount2[detailIndex2]}}개</b></p>
+					<p class="card-text" style="margin: 0 0 4px 0; cursor: pointer;" @click="showLikeListModal(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount2[detailIndex2]}}개</b></p>
 					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardTimeAuto)}}</p>
 					
 				</div>
@@ -1101,6 +1101,44 @@
 	</div>
 	
 <!-- 차단 관련 모달 끝 -->
+
+<!-- 좋아요 목록 모달  -->
+<div class="modal" tabindex="-1" role="dialog" id="likeListModal" data-bs-backdrop="static" ref="likeListModal" style="z-index:9999;">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content">
+				<div class="modal-header">
+        			<h5 class="modal-title col-7" style="font-weight:bold;">좋아요</h5>
+        			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="hideLikeListModal"></button>
+      			</div>
+				<div v-if="likeList.length != 0" class="modal-body p-0">				
+					<div class="row p-2 mt-2"  v-for="(like,index) in likeList" :key="index">
+						<div  class="col d-flex">
+							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick">
+								<img v-if="like.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ like.attachmentNo" width="50" height="50" style="border-radius: 70%;">
+								<img v-else src="https://via.placeholder.com/50x50?text=profile" style="border-radius: 70%; ">
+							</a>
+							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick" style="color:black;text-decoration:none; position:relative;">
+								<h6 style="margin: 14px 0 0 10px;">{{like.memberNick}}</h6>
+							</a>
+						</div>
+					</div>
+				</div>
+				
+				<div class="modal-body p-0" v-else>
+					<div class="row p-2 mt-2" >
+						<div class="col text-center">
+							<h2 class="mt-1">아직 좋아요가 없습니다</h2><br>
+							<h3>첫 번째 좋아요를 눌러주세요</h3>
+						</div>
+	 			 	</div>		
+				</div>
+					
+				
+				
+		</div>
+	</div>
+	</div>
+
         <!-- Modal 창 영역 끝 -->
         
       
@@ -1204,6 +1242,9 @@
 			boardLikeCount2:[], // 좋아요 수를 저장할 변수
             isLiked : [], // 로그인 회원이 좋아요 체크 여부
             isLiked2 : [], // 로그인 회원이 좋아요 체크 여부
+            likeList : [],
+            likeListData : [],
+            likeListModal : false,
             
 			//게시물 댓글 좋아요 기능 전용 변수
 			replyLikeCount : [], // 댓글 좋아요 수 저장 변수
@@ -2040,6 +2081,27 @@
                  this.boardLikeCount2[index] = resp.data.count;
              },
              
+             //좋아요 리스트
+             async likeListLoad(boardNo) {
+             	const resp = await axios.get("${pageContext.request.contextPath}/rest/board/like/list/" + boardNo);
+             	this.likeList = [...resp.data];
+             },
+             
+             //좋아요 모달창 열기
+             showLikeListModal(boardNo){
+     			if(this.likeListModal==null) return;
+     			this.likeListLoad(boardNo);
+     			this.likeListModal.show();
+     			this.likeListData=[boardNo];
+     		},
+     		
+     		//좋아요 모달창 닫기
+     		hideLikeListModal(){
+     			if(this.likeListModal==null) return;
+     			this.likeList=[];
+     			this.likeListModal.hide();
+     		},
+             
              
              //댓글 좋아요
              async likeReply(replyNo, index) {
@@ -2341,6 +2403,7 @@
             this.followModal = new bootstrap.Modal(this.$refs.followModal);
             this.recommendFriendsAllListModal = new bootstrap.Modal(this.$refs.recommendFriendsAllListModal);
             this.deleteMemberModal = new bootstrap.Modal(this.$refs.deleteMemberModal);
+            this.likeListModal = new bootstrap.Modal(this.$refs.likeListModal);
         
             window.addEventListener("scroll", _.throttle(()=>{
             
