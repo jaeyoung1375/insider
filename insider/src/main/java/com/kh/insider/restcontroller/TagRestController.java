@@ -85,11 +85,13 @@ public class TagRestController {
 		//언팔 상태면 팔로우
 		if(newTagDto==null) {
 			tagFollowRepo.insert(tagFollowDto);
+			tagRepo.updateFollow(tagFollowDto.getTagName());
 			return 1;
 		}
 		//팔로우 상태면 언팔
 		else {
 			tagFollowRepo.delete(tagFollowDto);
+			tagRepo.updateFollow(tagFollowDto.getTagName());
 			return 0;
 		}
 		

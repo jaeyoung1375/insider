@@ -85,9 +85,19 @@ public class BoardRestController {
 	public List<BoardListVO> boardList(@PathVariable int page, HttpSession session){
 		long memberNo=(Long)session.getAttribute("memberNo");
 		
-		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
+		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVOWithDistance(memberNo, page);
 		boardSearchVO.setBoardCount(15);
-		return boardRepo.selectListWithoutFollow(boardSearchVO);
+		
+		return forbiddenService.changeForbiddenWords(boardRepo.selectListWithoutFollow(boardSearchVO));
+	}
+	@GetMapping("/additionalList/{page}")
+	public List<BoardListVO> additionalBoardList(@PathVariable int page, HttpSession session){
+		long memberNo=(Long)session.getAttribute("memberNo");
+		
+		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVOWithDistance(memberNo, page);
+		boardSearchVO.setBoardCount(15);
+		
+		return forbiddenService.changeForbiddenWords(boardRepo.selectListWithoutFollowOutDistance(boardSearchVO));
 	}
 	//좋아요
 	@PostMapping("/like")

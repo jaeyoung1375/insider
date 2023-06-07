@@ -5,6 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js" integrity="sha512-E8QSvWZ0eCLGk4km3hxSsNmGWbLtSCSUcewDQPQWZF6pEU8GlT8a5fF32wOl1i8ftdMhssTrF/OhyGWwonTcXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
 
 .timer {
@@ -37,18 +38,14 @@
   					{{ Math.floor(count / 60) }}: {{ String(count % 60).padStart(2, '0') }}
 				  </span>
 	                 <label for="floatingInput">인증번호 <span style="color:red;">*</span></label> 
-	                <p v-if="showNameWarning" class="name-warning-message">2~10자 한글, 영문 대소문자, 숫자, 특수문자를 사용하세요.</p>
 	            </div>
 	            
 	             <div class="row mb-3">
-	            	<button type="button" class="btn btn-primary" @click="sendEmail(email)" :disabled="isDisabled"	>전송</button>	 
+	            	<button type="button" class="btn btn-primary" @click="sendEmail(email)" :disabled="isDisabled">전송</button>	 
 	            </div>
-	            <div class="row mb-3">
-	            	<button type="button" class="btn btn-primary" @click="createBtn" >비밀번호 생성</button>	 
-	            </div>
+	    
 	            
 			<div>
-			<p>임시 비밀번호 : {{tempPassword}}</p>
 			</div>
 			
 		</div>
@@ -61,6 +58,7 @@
 		
 		
 		 <script src="https://unpkg.com/vue@3.2.36"></script>
+		 
         <script>
     	
           const app = Vue.createApp({
@@ -72,9 +70,9 @@
             			num : '',
             			showEmailCodeWarning : false,
             			showEmailWarning : false,
-            			tempPassword : '',
             			isDisabled : false,
             			count : 0,
+            			encryptedEmail: '',
                     };
                 },
             
@@ -94,6 +92,8 @@
 	     						memberEmail : this.email
 	     					}
 	     				});
+	     				 // CryptoJS 라이브러리를 사용하여 이메일 암호화
+	     	              this.encryptedEmail = CryptoJS.AES.encrypt(this.email, 'encryptionKey').toString();
 	     				// 인증번호
 	     				this.num = response.data;
 	     				// num을 다른메서드에서 쓰기 위함
@@ -113,26 +113,26 @@
 	  	   	   
    	                	if(this.num == this.emailCode){
    	                		this.showEmailCodeWarning = true;
+   	                		window.location.href= this.getResetPasswordUrl();
    	                	}else{
    	                		this.showEmailCodeWarning = false;
    	                	}
    		                	
    	                },
-   	                
-   	                async createBtn(){
-   	                	if(this.showEmailCodeWarning ){
-   	                	
-   	                	 const dto = {
-   	                	      memberEmail: this.email
-   	                	    };
-   	                   	                	
-   	                		const resp = await axios.post("/member/passwordChange",dto);
-   	                		this.tempPassword = resp.data;
-   	                		this.isDisabled = true;
-   	                		
-   	                		
-   	                	}
+   	                getResetPasswordUrl(){
+   	              // 임시 토큰 생성
+   	                 const tokenArray = new Uint8Array(16);
+   	                 window.crypto.getRandomValues(tokenArray);
+   	                 const token = Array.from(tokenArray, byte => byte.toString(16).padStart(2, '0')).join('');
+   	                 
+   	           	 
+   	              const resetPasswordUrl = '/member/resetPassword?token=' + encodeURIComponent(token) + '&email=' + encodeURIComponent(this.encryptedEmail);
+   	              // 토큰과 이메일을 매개변수로 사용하여 비밀번호 재설정 URL 생성
+
+   	              return resetPasswordUrl;
    	                },
+   	                
+   	           
    	          
    	             validateEmail(){
    	                    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -150,8 +150,7 @@
                 		this.emailVerifyCode();
                 	}
                 },
-                
-            
+       
             });
             app.mount("#app");
         </script>

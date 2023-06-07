@@ -469,27 +469,38 @@ $(document).ready(function() {
 						</div>
 
 					    	
-					    	<div class="row mt-4">
+					    	<div class="row mt-3">
 					    		<input type="text" name="tagName" class="form-control" placeholder="#해시태그" id="tagName" autocomplete="off" value="${tag}">
 					    	</div>
 					    	
-					    	<div class="row mt-4">
+					    	<div class="row mt-3">
 					    		<input type="text" name="memberNick" class="form-control" placeholder="@사람태그" id="memberTag" autocomplete="off">
 					    	</div>
 					    	
 					    	
-					    	<div class="row mt-4 form-check form-switch" style="display: flex;">
+					    	<div class="row mt-3 form-check form-switch" style="display: flex;">
 					    		
 										<div class="col-md-9 left" style="margin-left: 0px;">
 											<label class="fs-5" for="replyCheck">댓글 기능 해제</label>
 										</div>
 										<div class="col-md-3">
-											<input type="checkbox" name="boardIsReply" value="1" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
+											<input type="checkbox" name="boardReplyValid" value="1" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
 										</div>
 									
 					    	</div>
 					    	
-					    	<div class="row">
+					    	<div class="row mt-2 form-check form-switch" style="display: flex;">
+					    		
+										<div class="col-md-9 left" style="margin-left: 0px;">
+											<label class="fs-5" for="replyCheck">좋아요 수 숨김</label>
+										</div>
+										<div class="col-md-3">
+											<input type="checkbox" name="boardLikeValid" value="1" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
+										</div>
+									
+					    	</div>
+					    	
+					    	<div class="row mt-1">
 									<p class="left" style="font-size: small;">게시물 상단의 메뉴에서 이 설정을 변경할 수 있습니다.</p>
 					    	</div>
 					    	
@@ -537,6 +548,8 @@ $(document).ready(function() {
 
     	  path : [],
     	  boardNo : ${board.boardNo},
+    	  boardReplyValid : ${board.boardReplyValid},
+    	  boardLikeValid : ${board.boardLikeValid},
     	  /* //사람태그
     	  keyword: "",
     	  nickList: [],

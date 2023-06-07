@@ -141,7 +141,7 @@
                                  <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> 
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
 
-                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo, board.boardWithNickDto.memberNo)"></i></div>
+                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo, board.boardWithNickDto.memberNo, 'board')"></i></div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲ID▲▲▲▲▲▲▲▲▲▲▲▲▲-->
@@ -175,13 +175,17 @@
                                 <div class="p-2"><i :class="{'fa-heart': true, 'like':isLiked[index], 'fa-solid': isLiked[index], 'fa-regular': !isLiked[index]}" @click="likePost(board.boardWithNickDto.boardNo,index)" style="font-size: 32px;"></i></div>
                                 <div class="p-2"><img src="${pageContext.request.contextPath}/static/image/dm.png"></div>
                                 <div class="p-2"><img src="${pageContext.request.contextPath}/static/image/message_ico.png"></div>
-                                <div class="p-2 flex-grow-1"><h5><img src="${pageContext.request.contextPath}/static/image/save_post.png"></h5></div>
+                                <div class="p-2 flex-grow-1">
+                                <h5><i class="fa-regular fa-bookmark"  @click="bookmarkInsert(board.boardWithNickDto.boardNo)" v-show="bookmarkChecked(board.boardWithNickDto.boardNo)" style="font-size:25px;"></i>
+                                <i class="fa-solid fa-bookmark" @click="bookmarkInsert(board.boardWithNickDto.boardNo)" v-show="!bookmarkChecked(board.boardWithNickDto.boardNo)" style="font-size:25px;"></i></h5>
+                                </div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲좋아요▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼멘트▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-1">
-                            <h4 class="mt-1"><b @click="showLikeListModal(board.boardWithNickDto.boardNo)" style="cursor: pointer;">좋아요 {{boardLikeCount[index]}}개</b></h4>
+                            <h4 v-if="board.boardWithNickDto.boardLikeValid == 0" class="mt-1"><b @click="showLikeListModal(board.boardWithNickDto.boardNo)" style="cursor: pointer;">좋아요 {{boardLikeCount[index]}}개</b></h4>
+                            <h4 v-else class="mt-1"><b @click="showLikeListModal(board.boardWithNickDto.boardNo)" style="cursor: pointer;">좋아요 여러개</b></h4>
                             <h4><a class="btn btn-none" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a></h4>
                             <p style="height: 20px;overflow: hidden; width: 400px;white-space: nowrap;text-overflow: ellipsis;margin-bottom:5px;">
                             	<span class="textHide">
@@ -200,12 +204,12 @@
              			</div>           
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲댓글 모달창 열기▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼댓글입력창▼▼▼▼▼▼▼▼▼▼▼▼▼-->
-                        <div class="p-1">
-                            <div class="d-flex">
+                        <div class="p-1" v-if="board.boardWithNickDto.boardReplyValid == 0">
+                            <div class="d-flex" >
 <!--                                 <div class="p-2"><img src="/static/image/emoticon.png"></div> -->
-                                <div class="p-1"><input class="form-control" type="text" placeholder="댓글 달기..." v-model="replyContent" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(index),detailViewOn(index)"
+                                <div class="p-1"><input class="form-control" type="text" placeholder="댓글 달기..." v-model="replyContent" :disabled="board.boardWithNickDto.boardReplyValid == 1" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(index),detailViewOn(index)"
                                                         style="border: 2px solid white; width: 24em;"></div>
-                                <div class="p-2 flex-grow-1"><h5 style="color: dodgerblue" @click="replyInsert(index),detailViewOn(index)">게시</h5></div>
+                                <div class="p-2 flex-grow-1"><h5 style="color: dodgerblue; cursor: pointer;" @click="replyInsert(index),detailViewOn(index)">게시</h5></div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲댓글입력창▲▲▲▲▲▲▲▲▲▲▲▲▲-->
@@ -287,14 +291,20 @@
 						</a>
 						<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em;">{{replyList[index].replyContent}}</p>
 <!-- 						<p style="padding-left:4.0em;margin-bottom:1px;font-size:0.8em; color:gray;"> -->
-						<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
-							<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
-							<i :class="{'fa-heart': true, 'like':isReplyLiked[index],'ms-2':true, 'fa-solid': isReplyLiked[index], 'fa-regular': !isReplyLiked[index]}" @click="likeReply(reply.replyNo,index)" style="font-size: 0.9em;"></i>
-							&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-							<i v-if="replyList[index].replyMemberNo == loginMemberNo" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="color:red; cursor: pointer;"></i>
-							
-							
-						</p>
+						<div class="row">
+							<div class="col-10">
+								<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
+									<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
+									<i :class="{'fa-heart': true, 'like':isReplyLiked[index],'ms-2':true, 'fa-solid': isReplyLiked[index], 'fa-regular': !isReplyLiked[index]}" @click="likeReply(reply.replyNo,index)" style="font-size: 0.9em;"></i>
+									&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+									<i v-if="replyList[index].replyMemberNo == loginMemberNo" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="color:red; cursor: pointer;"></i>
+								</p>
+							</div>
+						<!-- 댓글 신고창 -->
+							<div class="col-2 p-0 d-flex justify-content-center">
+								<p class="d-flex align-items-center"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse;" @click="showAdditionalMenuModal(reply.replyNo, reply.replyMemberNo, 'reply')"></i></p>
+							</div>
+						</div>
 						
 <!-- 						<p v-if="replyList[index].replyParent == 0"> -->
 <!-- 							<span @click="showReReply(reply.replyNo, index)" style="cursor:pointer; padding-left:4em; font-size:0.8em; color:gray;">{{replyStatus(index)}}</span> -->
@@ -311,18 +321,37 @@
 				
 				<div class="card-body"  style="height:110px; padding-top: 0px; padding-left: 0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
-					<p class="card-text" style="margin: 0 0 4px 0">
+					<!-- 북마크 오른쪽 정렬 수정 06/04 재영 -->
+					<!-- <p class="card-text" style="margin: 0 0 4px 0;">
+						
 						<i :class="{'fa-heart': true, 'like':isLiked[detailIndex],'ms-2':true, 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}" @click="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
 						&nbsp;
-						<i class="fa-regular fa-message mb-1" style="font-size: 25px; "></i>
-					</p>
+						<i class="fa-regular fa-message mb-1" style="font-size: 25px;"></i>
+						
+					</p> -->
+				<span class="card-text" style="margin: 0 0 4px 0;">
+				  <div class="d-flex">
+				    <i :class="{'fa-heart': true, 'like':isLiked[detailIndex], 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}"
+				       @click="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
+				    &nbsp;
+				    <i class="fa-regular fa-message mb-1" style="font-size: 25px;"></i>
+				    <span class="ms-auto" style="margin-right:10px;">
+				      <i class="fa-regular fa-bookmark" @click="bookmarkInsert(boardList[detailIndex].boardWithNickDto.boardNo)"
+				         v-show="bookmarkChecked(boardList[detailIndex].boardWithNickDto.boardNo)" style="font-size: 25px;"></i>
+				      <i class="fa-solid fa-bookmark" @click="bookmarkInsert(boardList[detailIndex].boardWithNickDto.boardNo)"
+				         v-show="!bookmarkChecked(boardList[detailIndex].boardWithNickDto.boardNo)" style="font-size: 25px;"></i>
+				    </span>
+				  </div>
+				</span>
+					
+					
 					<p class="card-text" style="margin: 0 0 4px 0; cursor: pointer;" @click="showLikeListModal(boardList[detailIndex].boardWithNickDto.boardNo)"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount[detailIndex]}}개</b></p>
 					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(boardList[detailIndex].boardWithNickDto.boardTimeAuto)}}</p>
 					
 				</div>
 				
 				<div class="input-group">
-					<input ref="replyInput" type="text" class="form-control" :placeholder="placeholder" v-model="replyContent" style="border: none;" aria-label="Recipient's username" aria-describedby="button-addon2" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(detailIndex)">
+					<input ref="replyInput" type="text" class="form-control" @click="disabledReply(detailIndex)" :placeholder="placeholder"  v-model="replyContent" style="border: none;" aria-label="Recipient's username" aria-describedby="button-addon2" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(detailIndex)">
 					<button class="btn" type="button" id="button-addon2" style="border-top-right-radius: 0!important;" @click="replyInsert(detailIndex)">작성</button>
 				</div>
 								        	
@@ -341,7 +370,7 @@
     
     
 <!-- ---------------------------------추가 메뉴 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="additionalMenuModal" data-bs-backdrop="static" ref="additionalMenuModal">
+	<div class="modal" tabindex="-1" role="dialog" id="additionalMenuModal" data-bs-backdrop="static" ref="additionalMenuModal" style="z-index:9999">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-body p-0">
@@ -377,9 +406,9 @@
 		</div>
 	</div>
 <!-- ---------------------------------신고 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal">
+	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal" style="z-index:9999">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
-			<div class="modal-content">
+			<div class="modal-content" >
 				<div class="modal-header">
 					<h5 class="modal-title" style="font-weight:bold; text-align:center">신고</h5>
 					<button type="button" class="btn-close" @click="hideReportMenuModal" aria-label="Close">
@@ -406,7 +435,7 @@
 		</div>
 	</div>
 <!-- ---------------------------------신고 후 차단 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="blockModal" data-bs-backdrop="static" ref="blockModal">
+	<div class="modal" tabindex="-1" role="dialog" id="blockModal" data-bs-backdrop="static" ref="blockModal" style="z-index:9999">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-body">
@@ -431,8 +460,8 @@
 						</div>
 					</div>
 					<div class="row mt-2">
-						<div class="col d-flex p-3 justify-content-center" @click="blockUser" style="color:#dc3545; cursor:pointer" v-if="reportBoardData[2]!=null && reportBoardData[2].length>0">
-							<h5 style="margin:0;">{{reportBoardData[2]}}님 차단</h5>
+						<div class="col d-flex p-3 justify-content-center" @click="blockUser" style="color:#dc3545; cursor:pointer" v-if="reportBoardData[3]!=null && reportBoardData[3].length>0">
+							<h5 style="margin:0;">{{reportBoardData[3]}}님 차단</h5>
 						</div>
 					</div>
 				</div>
@@ -540,6 +569,9 @@ Vue.createApp({
 			replyContent:"",
 			placeholder:"댓글 입력..",
 // 			boardModal:null,
+
+			//북마크
+			bookmarkCheck : [],
         };
     },
     //데이터 실시간 계산 영역
@@ -856,11 +888,18 @@ Vue.createApp({
 		      	   }
       	  
          },
+         
+         //댓글 사용 불가 알림
+         disabledReply(index) {
+        	 if(this.boardList[index].boardWithNickDto.boardReplyValid != 0){
+        		 alert("댓글 사용이 불가능합니다.");
+        	 }
+         },
         
         //상세보기 모달창 열기
         detailViewOn(index) {
         	this.detailView = true;
-        	this.detailIndex = index;
+        	this.detailIndex = index;f
         	this.replyLoad(index);
         	document.body.style.overflow = "hidden";
         },
@@ -908,10 +947,10 @@ Vue.createApp({
         
         /*----------------------신고----------------------*/
         //신고 모달 show, hide
-		showAdditionalMenuModal(boardNo, reportMemberNo){
+		showAdditionalMenuModal(boardNo, reportMemberNo, reportTable){
 			if(this.additionalMenuModal==null) return;
 			this.additionalMenuModal.show();
-			this.reportBoardData=[boardNo, reportMemberNo];
+			this.reportBoardData=[boardNo, reportMemberNo, reportTable];
 		},
 		hideAdditionalMenuModal(){
 			if(this.additionalMenuModal==null) return;
@@ -946,13 +985,13 @@ Vue.createApp({
 			const data={
 				reportContent:reportContent,
 				reportTableNo:this.reportBoardData[0],
-				reportTable:"board",
+				reportTable:this.reportBoardData[2],
 				reportMemberNo:this.reportBoardData[1],
 			}
 			const resp = await axios.post(contextPath+"/rest/report/", data)
 			this.hideReportMenuModal();
 			if(resp.data.length!=0){
-				this.reportBoardData[2] = resp.data.memberNick;
+				this.reportBoardData[3] = resp.data.memberNick;
 			}
 			this.showBlockModal();
 		},
@@ -976,6 +1015,35 @@ Vue.createApp({
 			window.location.href=contextPath+"/member/"+memberNick;
 		},
 		/*----------------------태그, 닉네임 클릭 시 검색기록 넣고 이동----------------------*/
+		
+		//북마크
+		async bookmarkInsert(boardNo) {
+		  const resp = await axios.post("/rest/bookmark/" + boardNo);
+		
+		  if (resp.data === true) {
+		    this.bookmarkCheck.push({ boardNo });
+		  } else {
+		    const index = this.bookmarkCheck.findIndex(item => item.boardNo === boardNo);
+		    if (index !== -1) {
+		      this.bookmarkCheck.splice(index, 1);
+		    }
+		  }
+		
+		  console.log("북마크: " + this.bookmarkCheck.map(item => item.boardNo));
+		},
+		
+		bookmarkChecked(boardNo){
+			  return !this.bookmarkCheck.some(item => item.boardNo === boardNo);
+			},
+		
+		async bookmarkList(){
+			const resp = await axios.get("/rest/bookmark/selectOne");
+			this.bookmarkCheck.push(...resp.data);
+			console.log("북마크 리스트 : "+this.bookmarkCheck.map(item => item.boardNo));
+		},
+		
+		/*---------북마크 종료 ----------------- */
+		
     },
     watch: {
        //percent가 변하면 percent의 값을 읽어와서 80% 이상인지 판정
@@ -1028,6 +1096,7 @@ Vue.createApp({
     created(){
     	this.followCheck();
     	this.loadNewList();
+    	this.bookmarkList();
     },
 }).mount("#app");
 </script>
