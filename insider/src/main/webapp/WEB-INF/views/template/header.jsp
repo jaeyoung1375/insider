@@ -89,7 +89,7 @@
       }
       .darkmode i{
           font-size: 1.5em;
-          color: #aaa;
+          
       }
       .darkmode input[type=radio]{
           display: none;
