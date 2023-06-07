@@ -550,6 +550,7 @@
 				additionalPage:1,
 				additionalLoading:false,
 				additionalFinish:false,
+				additionalButton:false,
 				//클릭, 더블클릭 이벤트 해결
 				delay: 700,
 				clicks: 0,
@@ -644,6 +645,7 @@
 				this.additionalLoading=false;
 			},
 			showAdditionalList(){
+				this.additionalButton=true;
 				this.loadAdditionalList();
 			},
 			async loadMemberSetting(){
@@ -956,7 +958,7 @@
 					if(!this.finish){
 						this.loadList();
 					}
-					else if(!this.additionalFinish){
+					else if(!this.additionalFinish && this.additionalButton){
 						this.loadAdditionalList();
 					}
 				}

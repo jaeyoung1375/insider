@@ -697,22 +697,14 @@
             		}
             		//메세지 일 때
             		else{
-	            		this.messageList.push(message);
-	            		
-	                    // 읽지 않은 메세지 수 테스트1
-	                    //if (message.unreadMessage) {
-	                    //    const waitingRoomNo = -1; // 대기실의 방 번호
-	                    //    if (this.roomNo === waitingRoomNo) {
-	                    //        this.unreadMessage = message.unreadMessage.length;
-	                    //    }
-	                    
 	                    // 읽지 않은 메세지 수 테스트2
-						if (message.type === 6) { // 새로운 메시지 수
-							if (this.roomNo === -1) { // 대기실의 방 번호
-								this.unreadMessage = message.unreadMessage.length;
-								this.updateUnreadDm(-1); // 대기실의 읽지 않은 메세지 수 업데이트
-							}
+						if (message.messageType === 6) { // 새로운 메시지 수
+							this.fetchDmRoomList();
 						}
+						else{
+		            		this.messageList.push(message);
+						}
+	            		
             		}
 	            },
             	sendMessage() {
@@ -786,7 +778,7 @@
 				    try {
 				        const resp = await axios.get("${pageContext.request.contextPath}/rest/dmRoomList");
 				        const countUrl = "${pageContext.request.contextPath}/rest/countUsersInDmRoom";
-				        this.dmRoomList.push(...resp.data);
+				        this.dmRoomList=[...resp.data];
 				
 				        //채팅방 나에게만 이름 변경
 				        this.dmRoomList.forEach(async (item) => {
@@ -1008,6 +1000,7 @@
 				async unreadDmCount() {
 					const countUrl = "${pageContext.request.contextPath}/rest/unreadMessageCount";
 					const updateUrl = "${pageContext.request.contextPath}/rest/changeUnreadDm";
+					this.unreadMessage=[];
 				    try {
 				    	//조회
 						const roomNoArray = this.dmRoomList.map(room => room.roomNo);

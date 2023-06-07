@@ -107,7 +107,7 @@ CREATE SEQUENCE board_tag_seq;
 
 CREATE TABLE tag_follow(
 tag_name REFERENCES tag(tag_name),
-member_no REFERENCES member(MEMBER_no),
+member_no REFERENCES member(MEMBER_no) on delete cascade,
 PRIMARY key(tag_name, member_no)
 );
 
