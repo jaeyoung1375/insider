@@ -299,6 +299,7 @@
 	        notifications: [],
 	        hasNewNotification: false,
 	        intervalId: null,
+	        memberNick : "${socialUser.memberNick}",
 	      };
 	    },
 	    computed: {
