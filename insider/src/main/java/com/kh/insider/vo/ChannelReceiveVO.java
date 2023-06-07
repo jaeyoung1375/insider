@@ -14,5 +14,8 @@ public class ChannelReceiveVO {
 	
 	private long messageNo; 
 	private long memberNo;
+	
+	private int messageType;
+	private int attachmentNo;
 
 }

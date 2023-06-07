@@ -16,5 +16,9 @@ public class MemberMessageVO {
 	
 	private long messageNo;
 	private long memberNo;
+	
+	private int messageType;
+	private int attachmentNo;
+	private int roomNo;
 
 }

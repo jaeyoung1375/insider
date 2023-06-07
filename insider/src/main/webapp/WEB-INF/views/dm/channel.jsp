@@ -180,7 +180,7 @@
 					
 					<!-- 채팅방 이름 -->
 					<div class="card col-8" style="border-radius:0;border-left:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
-						<div v-if="roomNo != null" >
+						<div v-if="roomNo != null">
 							채팅방 이름
 							<span style="position:absolute; top:21px; right:0; margin-right:19px;">
 								<i class="fa-solid fa-file-pen fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showRoomNameModal()"></i>
@@ -202,20 +202,20 @@
 							    	<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"style="border-radius: 50%; position:absolute; 
 								    	width:34px; height:34px; margin-top:0em;cursor:pointer;">
 				          			<img v-else src="https://via.placeholder.com/34x34?text=P" style="border-radius: 50%; position:absolute; margin-top:0em;">
-								    <span style="font-size:0.87em;padding-left:3.2em; word-wrap:normal;">
+								    <span style="font-size:0.86em;padding-left:3.2em; word-wrap:normal;">
 									     {{ room.roomName.length > 11 ? room.roomName.slice(0, 11) + '...' : room.roomName }}
 			   						</span>
-			   						<span style="color:#eb4d4b; font-size:0.85em;padding-left:1.5em; padding-top:0.1em">
-			   						 	5
+			   						<span v-if="unreadMessage[index] > 0" style="color:#eb4d4b; font-size:0.85em;padding-left:1.5em; padding-top:0.1em">
+			   						 	{{unreadMessage[index]}}
 			   						</span>
 									</a>
-			   						<span style="color:#eb4d4b; position:absolute;right:15px; top:13px;font-size: 10px;">
+			   						<span v-if="unreadMessage[index] > 0" style="color:#eb4d4b; position:absolute;right:15px; top:13px;font-size: 10px;">
 			   							<i class="fa-solid fa-circle"></i>
 			   						</span>
 							    </div>
-			   					<div style="word-wrap:normal;margin-top:3px; display: flex; align-items: center;">
-			   						<span v-if="room.messageContent" style="font-size:0.8em;word-wrap:normal;display: inline-block;width: 73%;text-overflow: 
-			   							ellipsis;white-space: nowrap;overflow: hidden;vertical-align:bottom; text-overflow: ellipsis; padding-left:3.5em; color:#303952;">
+			   					<div style="word-wrap:normal;display: flex; align-items: center;">
+			   						<span v-if="room.messageContent" style="font-size:0.75em;word-wrap:normal;display: inline-block;width: 73%;text-overflow: 
+			   							ellipsis;white-space: nowrap;overflow: hidden;vertical-align:bottom; text-overflow: ellipsis; padding-left:3.5em; color:#aaa69d;">
 			   							{{JSON.parse(room.messageContent).content}}
 			   						</span>
 				   					<span v-if="room.messageSendTime" style="font-size:0.7em;word-wrap:normal;color:gray; top:3px; display: inline-block; padding-left:1.1em;">
@@ -239,7 +239,9 @@
 						                	{{message.memberNick}}
 						                </div>
 						                <div class="content-body">
-							                <div class="message-wrapper">{{message.content}}</div>
+							                <div v-if="message.attachmentNo == 0" class="message-wrapper">{{message.content}}</div>
+							                <img class="photo" v-if="message.attachmentNo > 0" 
+												:src="'${pageContext.request.contextPath}/rest/attachment/download/'+message.attachmentNo">
 							                <div class="info-wrapper">
 							                	<div class="number-wrapper" v-show="unreadCount[index] !== 0">{{unreadCount[index]}}</div>
 							                	<div class="time-wrapper" v-if="calculateDisplay(index)">{{timeFormat(message.time)}}</div>
@@ -259,7 +261,11 @@
 						        <div class="row justify-content-between" style="margin-top:10px;margin-bottom:10px;padding-left:calc(var(--bs-gutter-x) * .5);padding-right:calc(var(--bs-gutter-x) * .5);height:38px;">
 							        <!-- 입력창 -->
 							        <input type="text" v-model="text" v-on:input="text=$event.target.value" placeholder="메세지 입력" style="border-radius: 3rem;width:75%;">
-							        <button @click="sendMessage" style="border-radius: 3rem; width:25%;">전송</button>
+							        <label for="fileDm" style="display: contents;">
+										<i class="fa-solid fa-image" style="font-size: xx-large;color: #eb6864;padding-top: 3px;"></i>
+									</label>
+							        	<input type="file" name="fileDm" id="fileDm" @input="sendPicture()" style="display:none;" accept=".png, .jpg, .gif" ref="fileInput">
+							        <button @click="sendMessage" style="border-radius: 3rem; width:15%;">전송</button>
 						        </div>
 					        </div>
 						</div>
@@ -433,7 +439,7 @@
 		      </div>
 		      <div class="modal-body" style="width:300px;">
 		        <div v-for="(member,index) in membersInRoomList" :key="index" style="margin-top:20px;position:relative;">
-		          <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:40px; height:40px;">
+		          <img v-if="member.attachmentNo > 0"  :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:40px; height:40px;">
 			      <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
 		          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
 		          <br>
@@ -488,8 +494,10 @@
                     
                     //채팅방 참가자 시간 정보 리스트
                     userTimeList:[],
-                    //읽지 않은 수
+                    //한 개의 메세지에 다른 회원이 읽지 않은 수
                     unreadCount:[],
+                    //특정 회원의 채팅방에서 읽지 않은 메세지 수(비동기)
+                    unreadMessage: [],
                     
                     //초대
                     selectedMembers:[],
@@ -503,7 +511,7 @@
    					scrollContainer: null, //스크롤
    					
    					membersInRoomList:[], //채팅방 회원 목록
-                    
+   					
                 };
             },
             methods:{
@@ -511,7 +519,7 @@
             	async loadMessage() {
             	    const roomNo = new URLSearchParams(location.search).get("room");
             	    if(roomNo==null){
-            	    	this.isRoomJoin=false;
+            	    	this.isRoomJoin=false; 
             	    	return;
             	    }
             	    this.isRoomJoin=true;
@@ -525,6 +533,8 @@
                             const scrollContainer = this.$refs.scrollContainer;
                             scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'smooth' });
                         });
+        				// 읽지 않은 메세지 수 수정
+        			    await this.updateUnreadDm(roomNo);
             	    } 
             	    catch (err) {
             	        console.error("메세지를 불러올 수 없습니다.");
@@ -534,13 +544,54 @@
            		displayMessageList(resp) {
 				    this.messageList = resp.map((msg) => {
 				        const msgContent = JSON.parse(msg.messageContent);
-				        return {
-				            messageNo: msgContent.messageNo,  // 메세지 삭제를 위해 추가
-				            memberNick: msgContent.memberNick,
-				            content: msgContent.content,
-				            time: this.timeFormat(msgContent.time),
-				        };
+				        let formattedMsg = {
+				                messageNo: msgContent.messageNo,  // 메세지 삭제를 위해 추가
+				                memberNick: msgContent.memberNick,
+				                time: this.timeFormat(msgContent.time),
+				                messageType: msgContent.messageType // 메세지 타입 추가
+				            };
+
+				            if(msgContent.messageType === 1) {
+				                formattedMsg.content = msgContent.content;
+				            } else if(msgContent.messageType === 7) {
+				                formattedMsg.attachmentNo = msgContent.attachmentNo;
+				            }
+				            return formattedMsg;
 				    });
+				},
+				//이미지 메세지 전송
+				async sendPicture() {
+				    const fileInput = this.$refs.fileInput;
+				    const file = fileInput.files[0];
+				    if(!file) {
+				        console.log("선택된 이미지 메세지 파일이 없습니다.");
+				        return;
+				    }
+				    const formData = new FormData();
+				    formData.append("attach", file);
+				
+				    const url = "${pageContext.request.contextPath}/rest/attachment/dm";
+				    try {
+				        const resp = await axios.post(url, formData, {
+				            headers: {
+				                'Content-Type': 'multipart/form-data'
+				            }
+				        });
+				        console.log("attachmentNo: " + resp.data.attachmentNo);
+				        
+				        if(resp.data) {
+				            const data = {
+				                    type: 7, 
+				                    attachmentNo: resp.data.attachmentNo,
+				                    content: "사진 " + resp.data.attachmentNo
+				            }
+				            this.socket.send(JSON.stringify(data));
+				            this.clear();
+				            fileInput.value = null;
+				        }
+				    } catch (error) {
+				        console.error("이미지 메세지 업로드 실패", error);
+				    }
 				},
 				//모달창
 				showCreateRoomModal(){
@@ -647,8 +698,23 @@
             		//메세지 일 때
             		else{
 	            		this.messageList.push(message);
+	            		
+	                    // 읽지 않은 메세지 수 테스트1
+	                    //if (message.unreadMessage) {
+	                    //    const waitingRoomNo = -1; // 대기실의 방 번호
+	                    //    if (this.roomNo === waitingRoomNo) {
+	                    //        this.unreadMessage = message.unreadMessage.length;
+	                    //    }
+	                    
+	                    // 읽지 않은 메세지 수 테스트2
+						if (message.type === 6) { // 새로운 메시지 수
+							if (this.roomNo === -1) { // 대기실의 방 번호
+								this.unreadMessage = message.unreadMessage.length;
+								this.updateUnreadDm(-1); // 대기실의 읽지 않은 메세지 수 업데이트
+							}
+						}
             		}
-            	},
+	            },
             	sendMessage() {
             		if(this.text.length == 0) return;
             		this.socket.send(this.jsonText);
@@ -739,6 +805,7 @@
 				                }
 				            }
 				        });
+				        this.unreadDmCount();
 				    } catch (error) {
 				        console.error(error);
 				    }
@@ -782,7 +849,6 @@
 				            };
 				            await axios.put(updateRoomUrl, updateRoomData);
 				        }
-				        
 				        this.dmRoomList = []; //채팅방 목록 초기화
 				        await this.fetchDmRoomList(); //채팅방 목록 불러오기
 				        window.location.href = "${pageContext.request.contextPath}/dm/channel?room=" + roomNo;
@@ -879,29 +945,28 @@
 				//채팅방 이름 변경
 				async changeRoomName() {
 				    try {
-
 				    	const checkUrl = "${pageContext.request.contextPath}/rest/existsRoomNo";
-              const renameUrl = "${pageContext.request.contextPath}/rest/changeRoomRename";
-              const insertUrl = "${pageContext.request.contextPath}/rest/roomRenameInsert";
-
-              const resp = await axios.get(checkUrl, { params: { roomNo: this.roomNo } });
-              const data = {
-                    roomNo: this.roomNo,
-                    memberNo: this.memberNo,
-                    roomRename: roomNameInput.value
+				        const renameUrl = "${pageContext.request.contextPath}/rest/changeRoomRename";
+				        const insertUrl = "${pageContext.request.contextPath}/rest/roomRenameInsert";
+				        
+				        const resp = await axios.get(checkUrl, { params: { roomNo: this.roomNo } });
+				        const data = {
+					            roomNo: this.roomNo,
+					            memberNo: this.memberNo,
+					            roomRename: roomNameInput.value
 					    };
-              if (resp.data === true) {
-                  await axios.put(renameUrl, data);
-                  console.log("채팅방 이름이 성공적으로 변경되었습니다.");
-              } else {
-                  await axios.post(insertUrl, data);
-                  console.log("채팅방 이름이 성공적으로 추가되었습니다.");
-              }
-
-              this.dmRoomList = [];
-              await this.fetchDmRoomList();
+				        if (resp.data === true) {
+				            await axios.put(renameUrl, data);
+				            console.log("채팅방 이름이 성공적으로 변경되었습니다.");
+				        } else {
+				            await axios.post(insertUrl, data);
+				            console.log("채팅방 이름이 성공적으로 추가되었습니다.");
+				        }
+				
+				        this.dmRoomList = [];
+				        await this.fetchDmRoomList();
 				    } catch (error) {
-                console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
+				        console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
 				    }
 				},
 				//채팅방 이름 변경 확인 버튼
@@ -938,6 +1003,49 @@
 		        		const days = Math.floor(duration / 1440);
 		        		return days + "일 전";
 		        	}
+				},
+				//읽지 않은 메세지 수 조회 및 수정
+				async unreadDmCount() {
+					const countUrl = "${pageContext.request.contextPath}/rest/unreadMessageCount";
+					const updateUrl = "${pageContext.request.contextPath}/rest/changeUnreadDm";
+				    try {
+				    	//조회
+						const roomNoArray = this.dmRoomList.map(room => room.roomNo);
+						for (const roomNo of roomNoArray) {
+							const data = {
+								roomNo: roomNo,
+								memberNo: this.memberNo
+							};
+							const resp = await axios.get(countUrl, { params: data });
+							//console.log(resp);
+							//console.log(resp.data);
+							//수정
+							const unreadMessage = resp.data[0];
+							this.unreadMessage.push(unreadMessage); //vue에 반환
+							const updateData = {
+									roomNo: roomNo,
+									memberNo: this.memberNo,
+									unreadMessage: unreadMessage
+							};
+							await axios.put(updateUrl, updateData);
+						}
+				    } catch (error) {
+				        console.error("읽지 않은 메세지 수를 가져오지 못했습니다.", error);
+				    }
+				},
+				//읽지 않은 메세지 수 수정
+				async updateUnreadDm(roomNo) {
+					const updateUrl = "${pageContext.request.contextPath}/rest/changeUnreadDm";
+				    try {
+						const data = {
+							roomNo: roomNo,
+							memberNo: this.memberNo,
+							unreadMessage: 0
+						};
+						await axios.put(updateUrl, data);
+				    } catch (error) {
+				        console.error("읽지 않은 메세지 수 수정 오류", error);
+				    }
 				},
             },
             watch:{
