@@ -1,6 +1,6 @@
 package com.kh.insider.dto;
 
-import java.sql.Date;
+import java.util.Date;
 
 import lombok.Data;
 
@@ -12,7 +12,10 @@ public class DmMessageDto {
 	private long messageSender;
 	private String messageContent;
 	private Date messageSendTime;
+	private int messageType;
 	
+	private int attachmentNo;
 	private String memberNick;
+	
 
 }
