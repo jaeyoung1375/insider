@@ -112,6 +112,11 @@ public class MemberRepoImpl implements MemberRepo{
 		sqlSession.update("member.addReport", memberNo);
 	}
 
+	@Override
+	public void deleteMember(long memberNo) {
+		sqlSession.delete("member.deleteMember",memberNo);
+	}
+
 	
 	
 }

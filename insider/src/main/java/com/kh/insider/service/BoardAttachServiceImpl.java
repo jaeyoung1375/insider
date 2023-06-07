@@ -1,6 +1,7 @@
 package com.kh.insider.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,29 @@ public class BoardAttachServiceImpl implements BoardAttachService{
 		log.debug("사진 갯수:{}", boardAttachment.size());
 		}
 	}
+	
+//	@Transactional
+//	@Override
+//	public void insert(BoardDto boardDto, List<MultipartFile> boardAttachment) throws IllegalStateException, IOException {
+//	    boardRepo.insert(boardDto);
+//
+//	    if (boardAttachment != null) {
+//	        List<Integer> attachmentNumbers = attachmentRepo.save(boardAttachment);
+//
+//	        List<BoardAttachmentDto> boardAttachmentDtos = new ArrayList<>();
+//	        for (Integer attachmentNo : attachmentNumbers) {
+//	            boardAttachmentDtos.add(BoardAttachmentDto.builder()
+//	                    .boardNo(boardDto.getBoardNo())
+//	                    .attachmentNo(attachmentNo)
+//	                    .build());
+//	        }
+//
+//	        boardAttachmentRepo.insert(boardAttachmentDtos);
+//	        
+//	        log.debug("사진 갯수:{}", boardAttachment.size());
+//	    }
+//	}
+
 
 	@Transactional
 	@Override

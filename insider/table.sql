@@ -107,7 +107,7 @@ CREATE SEQUENCE board_tag_seq;
 
 CREATE TABLE tag_follow(
 tag_name REFERENCES tag(tag_name),
-member_no REFERENCES member(MEMBER_no),
+member_no REFERENCES member(MEMBER_no) on delete cascade,
 PRIMARY key(tag_name, member_no)
 );
 
@@ -235,3 +235,29 @@ create table bookmark(
 board_no references board(board_no) on delete cascade,
 member_no references member(member_no) on delete cascade
 );
+
+-- 멤버 테이블
+create table member(
+member_no number primary key,
+member_name varchar2(30) not null,
+member_nick varchar2(30) not null,
+member_email varchar2(60) unique not null,
+member_password varchar2(60) not null,
+member_login date,
+member_lat number default 0 not null,
+member_lon number default 0 not null,
+member_post char(5) not null,
+member_basic_addr varchar2(300) not null,
+member_detail_addr varchar2(300) not null,
+member_level number default 0 not null,
+member_msg varchar2(900),
+member_tel varchar2(60) not null,
+member_gender char(1) not null,
+member_report number default 0 not null,
+member_birth date not null
+);
+
+ALTER TABLE member ADD CONSTRAINT email_constraint CHECK (REGEXP_LIKE(member_email, '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'));
+ALTER TABLE member ADD CONSTRAINT name_constraint CHECK (REGEXP_LIKE(member_name, '^[가-힣a-zA-Z0-9!@#]{2,10}$'));
+ALTER TABLE member ADD CONSTRAINT password_constraint CHECK (not REGEXP_LIKE(member_password, '^[a-zA-Z0-9!@#$%^&*()\-_=+[{\]}\\|<.>/?]{8,16}$'));
+ALTER TABLE member ADD CONSTRAINT tel_constraint CHECK (not REGEXP_LIKE(member_tel, '/^01[0-9]{1}-?[0-9]{3,4}-?[0-9]{4}$/'));
