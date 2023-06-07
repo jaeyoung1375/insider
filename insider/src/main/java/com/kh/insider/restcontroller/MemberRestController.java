@@ -170,7 +170,9 @@ public class MemberRestController {
 	public String deleteMember(HttpSession session) {
 		long memberNo = (long) session.getAttribute("memberNo");
 		memberRepo.deleteMember(memberNo);
-		session.invalidate();
+		session.removeAttribute("memberNo");
+		session.removeAttribute("socialUser");
+		session.removeAttribute("member");
 		
 		return "redirect:/member/login";
 		

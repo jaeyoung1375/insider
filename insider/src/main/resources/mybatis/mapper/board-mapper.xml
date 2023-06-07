@@ -207,7 +207,7 @@
 	<select id="myPageSelectPaging" resultMap="boardListVO">
 		<include refid="topNheader"></include>
 	 		select * from board_with_nick where member_no = #{memberNo}
-	 		order by board_no asc
+	 		order by board_no desc
 	 	<include refid="topNfooter"></include>	
 	</select>
 	

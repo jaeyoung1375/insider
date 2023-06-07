@@ -100,7 +100,6 @@ public class MemberController {
    memberRepo.updateLoginTime(findMember.getMemberNo());
    session.setAttribute("memberNo",findMember.getMemberNo());
    session.setAttribute("socialUser", findMember);
-   session.setAttribute("memberNick", findMember.getMemberNick());
       
    return "redirect:/";
    }
@@ -110,7 +109,6 @@ public class MemberController {
       session.removeAttribute("memberNo");
       session.removeAttribute("socialUser");
       session.removeAttribute("member");
-      session.removeAttribute("memberNick");
       
       return "redirect:/";
    }

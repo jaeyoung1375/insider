@@ -1107,7 +1107,8 @@ Vue.createApp({
             //data의 percent를 계산된 값으로 갱신
             this.percent = Math.round(percent);
          },250));
-        
+         
+  
          //추가메뉴, 신고 모달 선언
 		this.additionalMenuModal = new bootstrap.Modal(this.$refs.additionalMenuModal);
 		this.reportMenuModal = new bootstrap.Modal(this.$refs.reportMenuModal);
