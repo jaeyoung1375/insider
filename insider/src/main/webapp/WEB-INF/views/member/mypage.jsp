@@ -1317,6 +1317,7 @@
               followerModalHide(){
                   if(this.followerModal == null) return;
                    this.followerModal.hide();  
+                   //
                },
                followModalShow(){
              	  if(this.followModal == null || this.totalFollowCnt == 0 ) return;
