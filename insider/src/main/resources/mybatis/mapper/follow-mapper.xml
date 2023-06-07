@@ -47,6 +47,7 @@
 		select follow_follower from follow where member_no=#{memberNo}
 	</select>
 	
+	
 	<select id="getFollowerList" resultType="followerWithProfileDto">
 		select * from follower_with_profile where follow_follower=#{memberNo}
 	</select>

@@ -71,13 +71,56 @@
 }
 .timer {
 	position:absolute;
- 	top: 50%;
-  text-align:right;
-  bottom : 0;
-  transform: translateY(-50%);
-  color: #555;
-		
+	right : 0;
+	bottom : 0;
+	margin-bottom:30px;
+	margin-right:10px;
+	
+	
 }
+.gender-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gender-button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.gender-button.active {
+  background-color: #3f51b5;
+  color: #fff;
+}
+
+.gender-button:not(.active) {
+  background-color: #fff;
+  color: #3f51b5;
+  border: 1px solid #3f51b5;
+  margin: 0 10px;
+}
+
+@media (max-width: 480px) {
+  .gender-buttons {
+    flex-wrap: wrap;
+  }
+
+  .gender-button {
+    flex: none;
+    width: 50%;
+    margin: 10px 0;
+  }
+
+  .gender-button:not(.active) {
+    margin: 0;
+  }
+}
+
+
 </style>
 	</head>
 	<body>
@@ -159,26 +202,34 @@
 	            </div>
 	            
 	            
-	           <div class="mb-3 row">
+	          <!--  <div class="mb-3 row">
 	                        <select class="form-select" v-model="gender" name="memberGender">
 	                        	<option value="">성별</option>
 	                            <option value="0">남성</option>
 	                            <option value="1">여성</option>
 	                         </select>
-	           </div>
+	           </div> -->
+<div class="gender-buttons">
+  <button type="button" class="gender-button active" data-gender="male" @click="selectGender(0)">남성</button>
+  <button type="button" class="gender-button" data-gender="female" @click="selectGender(1)">여성</button>
+</div>
+<input type="hidden" name="memberGender" :value="gender">
 
-	          	<div class="mb-3 input-container">
-   					<div class="input-wrapper">
-	                <input type="text" name="memberPost" class="form-control mb-3" placeholder="우편번호" readonly v-model="post">
-	                <button type="button"  @click="findAddress"><i class="fa-solid fa-magnifying-glass fa-xl"></i></button>
-   					</div>
-	       </div>
-	             <div class="mb-3">
-	                <input type="text" name="memberBasicAddr" class="form-control" placeholder="기본주소" readonly v-model="basicAddr">
-	             </div>
-	             <div class="mb-3">
-	                <input type="text" name="memberDetailAddr" class="form-control" placeholder="상세주소" v-model="detailAddr">	    
-	             </div>
+
+	         <div class="mb-3 input-container">
+  <div class="input-wrapper">
+    <div class="input-group">
+      <input type="text" name="memberPost" class="form-control mb-3" placeholder="우편번호" readonly v-model="post">
+      <button type="button" class="btn btn-primary" @click="findAddress"><i class="fa-solid fa-magnifying-glass fa-lg"></i></button>
+    </div>
+  </div>
+</div>
+<div class="mb-3">
+  <input type="text" name="memberBasicAddr" class="form-control" placeholder="기본주소" readonly v-model="basicAddr">
+</div>
+<div class="mb-3">
+  <input type="text" name="memberDetailAddr" class="form-control" placeholder="상세주소" v-model="detailAddr">	    
+</div>
 	             <div class="row mb-3">
 	            		 <button type="button" class="btn btn-primary" @click="StepTwoSubmit">다음</button>	 
 	            </div>
@@ -195,13 +246,15 @@
 	                <div class="text-center mb-3">         	
 						<p>{{email}} 으로 전송된 인증번호를 입력하세요.</p>
 	               </div>
-	               <div class="row form-floating mb-3">
-	                <input type="text" class="form-control" placeholder="인증번호" v-model.number="emailCode" @blur="emailVerifyCode" >
+	               <div class="form-floating mb-3">
+	                <input type="text" class="form-control" placeholder="인증번호" v-model.number="emailCode" @blur="emailVerifyCode" ref="inputCode" >
 	                 <span class="timer" :class="{'hide': !isDisabled }">
   					{{ Math.floor(count / 60) }}: {{ String(count % 60).padStart(2, '0') }}
   					</span>
 	                 <p v-if="showEmailCodeWarning" class="tel-warning-message">인증번호가 일치하지 않습니다</p>
 	             </div>
+	             
+	             
 	                <div class="row mb-3">
 	            		 <button type="submit" class="btn btn-primary" @click="handleSubmit">가입하기</button>	 
 	            	</div>
@@ -233,7 +286,7 @@
 	                    password : '',
 	                    passwordCk : '',
 	                    tel : '',
-	                    gender : '',
+	                    gender : null,
 	                    post : '',
 	                    basicAddr : '',
 	                    detailAddr : '',
@@ -393,7 +446,12 @@
 	                	   this.stepOneHidden = true;
 	                	   this.stepTwoHidden = true;
 	                	   this.stepThreeHidden = true;
-	                	   this.sendEmail(this.email);       	   
+	                	   this.sendEmail(this.email);
+	                	   this.$nextTick(() => {
+	                	        // 다음 Vue 루프에서 실행되도록 설정
+	                	        this.$refs.inputCode.focus(); // 입력란에 포커스 설정
+	                	      });
+	                	 
 	                },
 	                goBackStepOne(){
 	                	this.stepOneHidden = false;
@@ -415,6 +473,9 @@
 	                       this.stepOneHidden = true;	
 	                      this.$refs.joinForm.submit();
 	         
+	                },
+	                selectGender(gender){
+	                	this.gender = gender;
 	                },
 	                async isEmailDuplicatedCheck(memberEmail){
 	                	try{
