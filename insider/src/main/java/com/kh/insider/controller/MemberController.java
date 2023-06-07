@@ -2,7 +2,6 @@ package com.kh.insider.controller;
 
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.insider.dto.BoardDto;
-import com.kh.insider.dto.FollowDto;
 import com.kh.insider.dto.FollowWithProfileDto;
 import com.kh.insider.dto.FollowerWithProfileDto;
 import com.kh.insider.dto.MemberDto;
@@ -31,15 +29,11 @@ import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.FollowRepo;
 import com.kh.insider.repo.MemberRepo;
+import com.kh.insider.repo.SettingRepo;
 import com.kh.insider.service.MemberService;
 import com.kh.insider.service.SocialLoginService;
 import com.kh.insider.vo.FacebookProfileVO;
 import com.kh.insider.vo.FacebookResponseVO;
-import com.kh.insider.vo.GoogleProfileVO;
-import com.kh.insider.vo.GoogleResponseVO;
-import com.kh.insider.vo.KakaoProfileVO;
-import com.kh.insider.vo.KakaoResponseVO;
-import com.kh.insider.repo.SettingRepo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -100,7 +94,6 @@ public class MemberController {
    memberRepo.updateLoginTime(findMember.getMemberNo());
    session.setAttribute("memberNo",findMember.getMemberNo());
    session.setAttribute("socialUser", findMember);
-   session.setAttribute("memberNick", findMember.getMemberNick());
       
    return "redirect:/";
    }
@@ -110,7 +103,6 @@ public class MemberController {
       session.removeAttribute("memberNo");
       session.removeAttribute("socialUser");
       session.removeAttribute("member");
-      session.removeAttribute("memberNick");
       
       return "redirect:/";
    }

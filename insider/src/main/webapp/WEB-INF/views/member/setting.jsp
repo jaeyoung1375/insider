@@ -45,12 +45,12 @@
 	background-color:white
 }
 </style>
-<div class="container-fluid mt-4" id="app">
+<div class="container-fluid mt-4" id="app" style="width:60%; min-width:1000px">
 	<div class="row">
 	<!-- 좌측 사이드 메뉴바 -->
-		<div class="col-md-3">
+		<div class="col-lg-3">
 			<div class="row menu-bar">
-				<div class="col">
+				<div class="col-lg">
 					<div class="row setting-menu" @click="changePage(0)" :class="{'selected':page==0}">
 						<div class="col">
 							<h5 class="m-0 setting-menu-option">개인정보 변경</h5>
@@ -85,7 +85,7 @@
 			</div>
 		</div>
 	<!------------------------------------------- 개인정보 변경 ------------------------------------------->
-		<div class="col-md-9 select-option-box" v-show="page==0">
+		<div class="col-lg-9 select-option-box" v-show="page==0">
 			<div class="row">
 				<div class="col">
 					<h2>개인정보 변경</h2>
@@ -96,12 +96,15 @@
 				<div class="col">
 					<div class="row">
 						<div class="col">
-							<h5>연락처 정보</h5>
+							<h5>로그인 계정</h5>
 						</div>
 					</div>
 					<div class="row mb-3">
-						<div class="col">
-							<input class="form-control" v-model="member.memberEmail">
+						<div class="col-10">
+							<h5 class="ms-3">{{member.memberEmail}}</h5>
+						</div>
+						<div class="col-2 modal-click-btn">
+							변경
 						</div>
 					</div>
 					<div class="row">
@@ -112,6 +115,16 @@
 					<div class="row mb-3">
 						<div class="col">
 							<input class="form-control" v-model="member.memberBirth">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<h5>전화번호</h5>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col">
+							<input class="form-control" v-model="member.memberTel">
 						</div>
 					</div>
 					<div class="row">
@@ -147,7 +160,7 @@
 			</div>
 		</div>
 	<!------------------------------------------- 프로필 편집 ------------------------------------------->
-		<div class="col-md-9 select-option-box" v-show="page==1">
+		<div class="col-lg-9 select-option-box" v-show="page==1">
 			<div class="row">
 				<div class="col">
 					<h2>프로필 편집</h2>
@@ -213,7 +226,7 @@
 			</div>
 		</div>
 	<!------------------------------------------- 푸시 알림 ------------------------------------------->
-		<div class="col-md-9 select-option-box" v-show="page==2">
+		<div class="col-lg-9 select-option-box" v-show="page==2">
 			<div class="row">
 				<div class="col">
 					<h2>푸시 알림</h2>
@@ -278,7 +291,7 @@
 			</div>
 		</div>
 	<!------------------------------------------- 내가볼수있는내용 ------------------------------------------->
-		<div class="col-md-9 select-option-box" v-show="page==3">
+		<div class="col-lg-9 select-option-box" v-show="page==3">
 			<div class="row">
 				<div class="col">
 					<h2>내가 볼 수 있는 내용</h2>
@@ -345,7 +358,7 @@
 			</div>
 		</div>
 	<!------------------------------------------- 내 콘텐츠를 볼수 있는 사람 ------------------------------------------->
-		<div class="col-md-9 select-option-box" v-show="page==4">
+		<div class="col-lg-9 select-option-box" v-show="page==4">
 			<div class="row">
 				<div class="col">
 					<h2>내 콘텐츠를 볼 수 있는 사람</h2>
@@ -418,7 +431,7 @@
 			</div>
 		</div>
 	<!------------------------------------------- 다른 사람이 나와 소통할 수 있는 방법 ------------------------------------------->
-		<div class="col-md-9 select-option-box" v-show="page==5">
+		<div class="col-lg-9 select-option-box" v-show="page==5">
 			<div class="row">
 				<div class="col">
 					<h2>다른 사람이 나와 소통할 수 있는 방법</h2>
@@ -956,8 +969,9 @@
 				this.changeMemberNick="";
 			},
 			async checkMemberNick(){
+				const nickRegex = /^[가-힣a-zA-Z0-9!@#$%^&*()\-_=+[{\]}\\|;:'",<.>/?]{2,10}$/;
 				const resp = await axios.get(contextPath+"/rest/member/checkNick/"+this.changeMemberNick);
-				this.newMemberNickAvailable=resp.data;
+				this.newMemberNickAvailable=resp.data && nickRegex.test(this.changeMemberNick);
 			},
 			async sendNewMemberNick(){
 				if(this.changeMemberNick==this.member.memberNick){

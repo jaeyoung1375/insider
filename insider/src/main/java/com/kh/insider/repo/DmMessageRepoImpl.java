@@ -26,6 +26,18 @@ public class DmMessageRepoImpl implements DmMessageRepo {
 	}
 
 	@Override
+	public void pictureMsg(DmMessageDto dmMessageDto) {
+		sqlSession.insert("dmMessage.pictureMsg", dmMessageDto);
+	}
+	
+	////////////////////////////////////////////////////////////
+
+	@Override
+	public void deleteAllMessage(long messageNo) {
+		sqlSession.delete("dmMessage.deleteMessage", messageNo);
+	}
+	
+	@Override
 	public DmMessageDto detail(long messageNo) {
 		return sqlSession.selectOne("dmMessage.detail", messageNo);
 	}
@@ -35,9 +47,8 @@ public class DmMessageRepoImpl implements DmMessageRepo {
 		return sqlSession.selectList("dmMessage.roomMessageList", roomNo);
 	}
 
-	@Override
-	public void delete(DmMessageDto dmMessageDto) {
-		sqlSession.delete("dmMessage.delete", dmMessageDto);
-	}
+
+
+
 	
 }

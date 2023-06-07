@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.insider.dto.BoardLikeDto;
 import com.kh.insider.repo.BoardLikeRepo;
 import com.kh.insider.repo.BoardRepo;
+import com.kh.insider.repo.FollowRepo;
+import com.kh.insider.repo.TagFollowRepo;
 import com.kh.insider.service.BoardSearchService;
 import com.kh.insider.service.ForbiddenService;
 import com.kh.insider.vo.BoardLikeVO;
@@ -39,6 +41,13 @@ public class BoardRestController {
 	private BoardSearchService boardSearchService;
 	@Autowired
 	private ForbiddenService forbiddenService;
+	
+	@Autowired 
+	private FollowRepo followRepo;
+	
+	@Autowired
+	private TagFollowRepo tagFollowRepo;
+	
 	
 	//무한스크롤
 		@GetMapping("/page/{page}")
@@ -140,5 +149,19 @@ public class BoardRestController {
 	@GetMapping("/like/list/{boardNo}")
 	public List<BoardLikeDto> likeList(@PathVariable int boardNo){
 		return boardLikeRepo.list(boardNo);
+	}
+	
+	//팔로우 수 체크
+	@GetMapping("/count/follow")
+	public int followCount(HttpSession session) {
+		long memberNo = (Long)session.getAttribute("memberNo");
+		return followRepo.getFollowNumber(memberNo);
+	}
+	
+	//태그 팔로우 수 체크
+	@GetMapping("/count/tag")
+	public int tagFollowCheck(HttpSession session) {
+		long memberNo = (Long)session.getAttribute("memberNo");
+		return tagFollowRepo.countFromMember(memberNo);
 	}
 }

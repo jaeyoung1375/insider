@@ -12,10 +12,24 @@
 	
 	<insert id="create" parameterType="DmMessageDto" useGeneratedKeys="true" keyProperty="messageNo" keyColumn="message_no">
 		insert into dm_message(message_no, room_no, message_sender, message_content, 
-			message_send_time)
-		values(#{messageNo}, #{roomNo}, #{messageSender}, #{messageContent}, sysdate)
+			message_send_time, message_type, attachment_no)
+		values(#{messageNo}, #{roomNo}, #{messageSender}, #{messageContent}, sysdate, #{messageType}, #{attachmentNo})
 	</insert>
 	
+	 <!-- 이미지 메세지 -->
+     <insert id="pictureMsg" parameterType="DmMessageDto">
+        INSERT INTO dm_message (message_no, room_no, message_sender, message_content, message_send_time, message_type, attachment_no)
+        VALUES (#{messageNo}, #{roomNo}, #{messageSender}, #{messageContent}, #{messageSendTime}, #{messageType}, #{attachmentNo})
+    </insert>
+    
+    
+	
+    <delete id="deleteAllMessage" parameterType="long">
+        delete from dm_message
+        where message_no = #{messageNo}
+    </delete>
+
+	<!-- 삭제 예정 ///////////////////////////////// -->
 	<select id="detail" resultType="DmMessageDto">
 		select * from dm_message where message_no = #{messageNo}	
 	</select>
@@ -27,9 +41,7 @@
         order by message_send_time asc
     </select>
     
-    <delete id="delete" parameterType="int">
-        delete from dm_message
-        where message_no = #{messageNo}
-    </delete>
+
+    
 	
 </mapper>

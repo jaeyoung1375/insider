@@ -162,7 +162,7 @@
 		padding-left: 35px;
 	} 
 </style>
-<div class="container-fluid mt-4" id="app">
+<div class="container-fluid mt-4" id="app" style="width:60%">
 	<div class="row">
 		<div class="col p-0">
 		<!-- 검색창 -->
@@ -550,6 +550,7 @@
 				additionalPage:1,
 				additionalLoading:false,
 				additionalFinish:false,
+				additionalButton:false,
 				//클릭, 더블클릭 이벤트 해결
 				delay: 700,
 				clicks: 0,
@@ -610,8 +611,22 @@
 				if(!this.searchInput.length>0){
 					return;
 				}
-				const resp = await axios.get(contextPath+"/rest/search/"+this.searchInput);
-				this.recommandList=[...resp.data];
+				//태그검색일 때
+				if(this.searchInput.startsWith("#")){
+					//# 제거
+					const newSearchInput = this.searchInput.replace("#","");
+					if(!newSearchInput.length>0){
+						return;
+					}
+					const resp = await axios.get(contextPath+"/rest/search/"+newSearchInput);
+					//태그가 아닌놈들은 제거
+					const filteredData = resp.data.filter(item => item.nick === null);
+					this.recommandList=[...filteredData];
+				}
+				else{
+					const resp = await axios.get(contextPath+"/rest/search/"+this.searchInput);
+					this.recommandList=[...resp.data];
+				}
 			},
 			async loadList(){
 				if(this.loading||this.finish) return;
@@ -644,6 +659,7 @@
 				this.additionalLoading=false;
 			},
 			showAdditionalList(){
+				this.additionalButton=true;
 				this.loadAdditionalList();
 			},
 			async loadMemberSetting(){
@@ -956,7 +972,7 @@
 					if(!this.finish){
 						this.loadList();
 					}
-					else if(!this.additionalFinish){
+					else if(!this.additionalFinish && this.additionalButton){
 						this.loadAdditionalList();
 					}
 				}
@@ -964,13 +980,14 @@
 		},
 		mounted(){
 			window.addEventListener("scroll", _.throttle(()=>{
-				//문서 전체 높이 - 브라우저 높이
-				const height = document.body.clientHeight - window.innerHeight;
-				//현재 스크롤의 위치
+	            
+	            const height = document.documentElement.scrollHeight - window.innerHeight;
 				const current = window.scrollY;
-				const percent = (current/height)*100;
-				this.percent = Math.round(percent);
-			}, 250));
+				const percent = (current / height) * 100;
+				
+
+	           		this.percent = Math.round(percent);
+	            },250));
 			
 			this.likeListModal = new bootstrap.Modal(this.$refs.likeListModal);
 			this.additionalMenuModal = new bootstrap.Modal(this.$refs.additionalMenuModal);

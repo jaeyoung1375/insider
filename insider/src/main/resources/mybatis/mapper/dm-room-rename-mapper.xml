@@ -27,5 +27,11 @@
     FROM dm_room_rename
     WHERE room_no = #{roomNo}
   </select>
+  
+  <delete id="deleteRename">
+    DELETE FROM dm_room_rename
+    WHERE room_no = #{roomNo} AND member_no = #{memberNo}
+  </delete>
+  
 	
 </mapper>
