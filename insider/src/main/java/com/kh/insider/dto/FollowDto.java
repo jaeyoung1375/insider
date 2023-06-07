@@ -10,4 +10,6 @@ public class FollowDto {
 	private long followFollower;
 	private Date followTime;
 	private int followAllow;
+	
+	private int followCheck;
 }
