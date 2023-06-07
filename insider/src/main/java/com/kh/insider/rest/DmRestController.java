@@ -1,5 +1,6 @@
 package com.kh.insider.rest;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -19,19 +20,17 @@ import com.kh.insider.dto.DmMemberListDto;
 import com.kh.insider.dto.DmMessageNickDto;
 import com.kh.insider.dto.DmRoomDto;
 import com.kh.insider.dto.DmRoomRenameDto;
-import com.kh.insider.dto.DmRoomUserProfileDto;
 import com.kh.insider.dto.DmUserDto;
 import com.kh.insider.repo.DmMemberInfoRepo;
 import com.kh.insider.repo.DmMemberListRepo;
 import com.kh.insider.repo.DmMessageNickRepo;
+import com.kh.insider.repo.DmMessageRepo;
 import com.kh.insider.repo.DmRoomRepo;
 import com.kh.insider.repo.DmRoomUserProfileRepo;
 import com.kh.insider.repo.DmUserRepo;
 import com.kh.insider.service.DmServiceImpl;
 import com.kh.insider.vo.DmRoomVO;
 import com.kh.insider.vo.DmUserVO;
-
-import lombok.val;
 
 @RestController
 @RequestMapping("/rest")
@@ -58,7 +57,7 @@ public class DmRestController {
 	@Autowired
 	private DmMemberInfoRepo dmMemberInfoRepo;
 	
-	
+
 	//메세지 리스트
 	@GetMapping("/message/{roomNo}")
 	public List<DmMessageNickDto> roomMessage (
@@ -70,6 +69,7 @@ public class DmRestController {
 		//채팅방 읽은 정보 수정
 		DmUserDto dmUserDto = new DmUserDto();
 		dmUserDto.setReadTime(System.currentTimeMillis());
+		dmUserDto.setReadDmTime(new Date());
 		dmUserDto.setMemberNo(memberNo);
 		dmUserDto.setRoomNo(roomNo);
 		dmUserRepo.updateReadTime(dmUserDto);
@@ -161,7 +161,6 @@ public class DmRestController {
 		return dmServiceImpl.findRoomByRoomNo(roomNo);
 	}
 	
-
 	//채팅방 이름 나에게만 변경
     @PostMapping("/roomRenameInsert")
     public void renameInsert(@RequestBody DmRoomVO dmRoomVO) {
@@ -187,5 +186,19 @@ public class DmRestController {
     	long memberNo = (Long) session.getAttribute("memberNo");
         return dmMemberInfoRepo.findUsersByRoomNo(memberNo, roomNo);
     }
+    
+    //특정 회원이 특정 채팅방에서 읽지 않은 메세지 수
+    @GetMapping("/unreadMessageCount")
+    public List<DmUserDto> unreadDmCount(HttpSession session, @RequestParam int roomNo) {
+    	long memberNo = (Long) session.getAttribute("memberNo");
+    	return dmServiceImpl.unreadMessageNum(memberNo, roomNo);
+    }
+    
+    //읽지 않은 메세지 수 수정
+    @PutMapping("/changeUnreadDm")
+    public void changeUnreadDm (@RequestBody DmUserDto dmUserDto) {
+    	dmServiceImpl.updateUnReadDm(dmUserDto);
+    }
+    
     
 }

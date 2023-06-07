@@ -1164,6 +1164,7 @@ Vue.createApp({
        }
     },
     mounted(){
+
 	window.addEventListener("scroll", _.throttle(()=>{
             const height = document.documentElement.scrollHeight - window.innerHeight;
 			const current = window.scrollY;
@@ -1172,6 +1173,7 @@ Vue.createApp({
            		this.percent = Math.round(percent);
             },250));
         
+
          //추가메뉴, 신고 모달 선언
 		this.additionalMenuModal = new bootstrap.Modal(this.$refs.additionalMenuModal);
 		this.reportMenuModal = new bootstrap.Modal(this.$refs.reportMenuModal);

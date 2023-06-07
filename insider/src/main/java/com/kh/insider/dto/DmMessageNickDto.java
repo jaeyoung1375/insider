@@ -13,5 +13,8 @@ public class DmMessageNickDto {
     private int messageSender;
     private String messageContent;
     private Date messageSendTime;
+    private int messageType;
 
+    private int attachmentNo;
+    
 }

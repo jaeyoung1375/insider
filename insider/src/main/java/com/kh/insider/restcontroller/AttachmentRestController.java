@@ -206,4 +206,32 @@ public class AttachmentRestController {
 				)
 				.body(resource);
 	}
+	
+	//dm 이미지 메세지
+	@PostMapping("/dm")
+	public AttachmentDto dm(@RequestParam MultipartFile attach) throws IllegalStateException, IOException {
+		if(!attach.isEmpty()) { //업로드된 파일이 있을 경우
+			int attachmentNo = attachmentRepo.sequence();
+			
+			//업로드 파일을 저장할 File 객체를 생성
+			File target = new File(dir, String.valueOf(attachmentNo));
+			//업로드된 파일을 target 경로에 저장
+			attach.transferTo(target);
+			
+			//DB 저장
+			attachmentRepo.insert(AttachmentDto.builder()
+							.attachmentNo(attachmentNo)
+							.attachmentName(attach.getOriginalFilename())
+							.attachmentType(attach.getContentType())
+							.attachmentSize(attach.getSize())
+						.build());
+			
+			//이미지 메세지 전송 시 사용
+			return attachmentRepo.selectOne(attachmentNo);
+		}
+		//업로드된 파일이 없을 경우
+		return null;
+	}
+	
+	
 }
