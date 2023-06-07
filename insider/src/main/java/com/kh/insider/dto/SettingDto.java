@@ -31,4 +31,7 @@ public class SettingDto {
 	public boolean isVideoAuto() {
 		return this.settingVideoAuto==1;
 	}
+	public boolean isWatchLike() {
+		return this.settingWatchLike==1;
+	}
 }

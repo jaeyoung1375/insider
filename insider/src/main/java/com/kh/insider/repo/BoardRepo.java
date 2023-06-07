@@ -42,9 +42,10 @@ public interface BoardRepo {
 	List<BoardListVO> selectListWithFollowNew(BoardSearchVO vo);
 	//팔로우 차단 구현 리스트 출력(3일 이후)
 	List<BoardListVO> selectListWithFollowOld(BoardSearchVO vo);	 
-	//차단 구현 리스트 출력
+	//차단 구현 리스트 출력(찾기 게시판에서 씀)
 	List<BoardListVO> selectListWithoutFollow(BoardSearchVO vo);
-	
+	//차단 구현 리스트 출력(
+	List<BoardListVO> selectListWithoutFollowOutDistance(BoardSearchVO vo);
 	// 전체 게시물 개수
 	int getTotalPostCount(Long MemberNo);
 	// 마이페이지 전체 게시물 조회

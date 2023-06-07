@@ -289,10 +289,10 @@
 				<div class="col">
 					<div class="row">
 						<div class="col-9">
-							<h5>좋아요 수 및 조회수 숨기기</h5>
+							<h5>좋아요 수 숨기기</h5>
 						</div>
 						<div class="col-3 d-flex justify-content-center item-aligns-center form-check form-switch">
-							<input class="form-check-input" type="checkbox" @click="watchLike" :checked="setting.settingWatchLike==1">
+							<input class="form-check-input" type="checkbox" @click="watchLike" :checked="setting.settingWatchLike==0">
 						</div>
 					</div>
 					<div class="row">
