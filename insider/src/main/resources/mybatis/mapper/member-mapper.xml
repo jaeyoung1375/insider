@@ -84,10 +84,10 @@ WHERE (
         WHERE member_no = #{memberNo}
     )
 )
-AND MEMBER_NO NOT IN (
+or MEMBER_NO IN (
     SELECT follow_follower
     FROM follow
-    WHERE member_no = #{memberNo}
+    WHERE member_no = (SELECT follow_follower FROM follow WHERE member_no = #{memberNo})
 )
 
   ]]>

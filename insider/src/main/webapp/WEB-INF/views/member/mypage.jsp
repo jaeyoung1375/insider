@@ -1031,11 +1031,11 @@
      			</div>
      		</div>
      		<div class="d-flex justify-content-center" style="margin-top:9px;">
-     			<input type="checkbox" id="agreeCheckbox">
+     			<input type="checkbox" id="agreeCheckbox" v-model="agreeChecked">
 				<label for="agreeCheckbox" style="font-size:13px; color:gray; margin-left:6px;">안내사항을 확인하였습니다.</label>
      		</div>
      		<div class="d-flex justify-content-center" style="margin-top:12px;">
-     			<button style="width:150px; height:40px; border-radius:25px;">탈퇴하기</button>
+     			<button style="width:150px; height:40px; border-radius:25px;" @click="deleteMember" :disabled="!agreeChecked">탈퇴하기</button>
      		</div>
      	</div>
      	<div class="modal-footer text-center">
@@ -1210,6 +1210,7 @@
 			// 북마크 
 			bookmarkMyPostList : [],
 			bookmarkCheck : [],
+			agreeChecked : false,
          };
       },
       computed: {
@@ -2262,15 +2263,10 @@
         		
         		/*---------북마크 종료 ----------------- */
       		
-        		// 회원탈퇴
-        		//
-        		//
-        		//
+        		// 회원탈퇴       	
         		async deleteMember(){
-        			const resp = await axios.post("/rest/member/deleteMember");
-  
-        				window.alert("잘가요");
-        			
+        			const resp = await axios.post("/rest/member/deleteMember");	
+        				location.href="/member/login";	
         		},	
       		},
    		
