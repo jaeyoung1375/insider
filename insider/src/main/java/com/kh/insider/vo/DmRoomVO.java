@@ -26,6 +26,8 @@ public class DmRoomVO {
 	private int roomType;
 	
 	private String roomRename;
+	private int unreadMessage; // 읽지 않은 메세지 수
+	
 	
     //채팅방의 사용자를 저장할 저장소
     private Set<DmUserVO> users = new CopyOnWriteArraySet<>();
@@ -56,5 +58,13 @@ public class DmRoomVO {
         	user.send(jsonMessage);
         }
     }
+    
+    //퍼블릭(대기실)에서만 사용될 메서드, 매개변수로 DB저장 전체인원 - 채팅룸에 참가하고 있는 인원 = (대기실 인원)Set<DmUserVO>를 받아야됨
+    public void broadcast(TextMessage jsonMessage, Set<DmUserVO> unjoinedUsers) throws IOException{
+        for (DmUserVO user : unjoinedUsers) {
+        	user.send(jsonMessage);
+        }
+    }
+
     
 }
