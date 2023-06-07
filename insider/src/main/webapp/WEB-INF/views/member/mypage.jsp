@@ -2263,6 +2263,7 @@
         		/*---------북마크 종료 ----------------- */
       		
         		// 회원탈퇴
+        		//
         		async deleteMember(){
         			const resp = await axios.post("/rest/member/deleteMember");
   
