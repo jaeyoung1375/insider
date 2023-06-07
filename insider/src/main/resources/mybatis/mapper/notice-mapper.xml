@@ -154,7 +154,7 @@
 	</update>
 	
 	<update id="checkFollow" parameterType="Long">
-		update follow set follow_check = 1 where member_no = #{memberNo} and follow_check = 0
+		update follow set follow_check = 1 where follow_follower = #{memberNo} and follow_check = 0
 	</update>
 	
 	

@@ -251,20 +251,22 @@
 							          </li>
 							          <hr>
 							          <span>읽은 알림</span>
+							          <a @click="deleteAllNotifications" class="btn btn-secondary" style="float: right; margin-top: 2px;">전체삭제</a>
 							          <li v-for="notification in storedNotifications" :key="notification.id">
-							          	<div :class="{ 'read': notification.status === 'read' }">
-								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/member/'+ notification.memberNick">
-								          	<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
-								          	{{ notification.memberNick }} 님이
-								          	</a>
-								          	<span v-if="notification.type == 1">게시글을 좋아요 하였습니다.</span>
-								          	<span v-if="notification.type == 2">게시글에 댓글을 달았습니다.</span>
-								          	<span v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</span>
-								          	<span v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</span>
-								          	<span v-if="notification.type == 5">팔로우하였습니다.</span>
-								          	<b>· {{dateCount(notification.boardTimeAuto)}}</b>
-							          	</div>
-							          </li>
+										  <div :class="{ 'read': notification.status === 'read' }">
+										    <a class="nav-link" :href="'${pageContext.request.contextPath}/member/'+ notification.memberNick">
+										      <img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
+										      {{ notification.memberNick }} 님이
+										    </a>
+										    <span v-if="notification.type == 1">게시글을 좋아요 하였습니다.</span>
+										    <span v-if="notification.type == 2">게시글에 댓글을 달았습니다.</span>
+										    <span v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</span>
+										    <span v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</span>
+										    <span v-if="notification.type == 5">팔로우하였습니다.</span>
+										    <b>· {{dateCount(notification.boardTimeAuto)}}</b>
+										    <a @click="deleteNotification(notification)" class="btn btn-secondary">알림삭제</a>
+										  </div>
+										</li>
 							          
 							        </ul>
 							      </div>
@@ -335,31 +337,29 @@
 	    	    .get("${pageContext.request.contextPath}/rest/notice/")
 	    	    .then((response) => {
 	    	      const result = response.data;
-	    	      console.log("result",result);
+	    	      console.log("result", result);
 	    	      if (result.length > 0) {
 	    	        // 알림이 있을 경우 처리 로직
-					this.notifications = result;
-            		this.hasNewNotification = true;
-	    	      
-	                if (!this.showModal) {
-	                    this.storedNotifications = this.notifications.filter(
-	                      (notification) => notification.status === "read"
-	                    );
-	                    const tempList = this.storedNotifications;
-	                    this.notifications.push(...tempList);
-	                    this.storedNotifications.push(...this.notifications);
-	                    this.notifications = [];
-	                  }
+	    	        this.notifications = result;
+	    	        this.hasNewNotification = true;
+
+	    	        if (!this.showModal) {
+	    	          this.storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
+	    	          this.notifications = [];
+	    	          localStorage.setItem("storedNotifications", JSON.stringify(this.storedNotifications));
+	    	        }
 	    	      } else {
 	    	        // 알림이 없을 경우 처리 로직
 	    	        this.notifications = [];
 	    	        this.hasNewNotification = false;
+	    	        this.storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
 	    	      }
 	    	    })
 	    	    .catch((error) => {
 	    	      console.log(error);
 	    	    });
 	    	},
+
 	         
 	      toggleModal() {
     		if (!this.showModal) {
@@ -378,12 +378,29 @@
 			       .then((response) => {
 		    	      this.notifications.forEach((notification) => {
 		    	        notification.status = "read";
+		    	        this.storedNotifications.unshift(notification);
 		    	      });
+		    	      this.notifications = [];
+		    	      localStorage.setItem("storedNotifications", JSON.stringify(this.storedNotifications));
 		    	    })
 		    	    .catch((error) => {
 		    	      console.log(error);
 		    	    });
 	      },
+	      
+	      deleteNotification(notification) {
+	    	    const index = this.storedNotifications.findIndex((n) => n.id === notification.id);
+	    	    if (index !== -1) {
+	    	      this.storedNotifications.splice(index, 1);
+	    	      localStorage.setItem("storedNotifications", JSON.stringify(this.storedNotifications));
+	    	    }
+	    	  },
+	    	  
+    	  deleteAllNotifications() {
+    		  this.storedNotifications = [];
+    		  localStorage.removeItem("storedNotifications");
+   		  },
+	    	  
 	    	 //게시글 날짜 계산 함수
 	        dateCount(date) {
 	        	const curTime = new Date();
@@ -420,7 +437,7 @@
 	    },
 
 	    mounted() {
-	      this.check(); // 컴포넌트가 마운트될 때 알림 데이터를 로드
+	      this.loadNotifications(); // 컴포넌트가 마운트될 때 알림 데이터를 로드
 	      this.intervalId = setInterval(this.loadNotifications, 5000); // 5초마다 알림 데이터를 갱신
 	    },
 	    beforeUnmount() {
