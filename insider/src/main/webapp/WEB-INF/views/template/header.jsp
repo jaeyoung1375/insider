@@ -247,8 +247,8 @@
 							          </li>
 							          <hr>
 							          <span>읽은 알림</span>
-							          <li v-for="notification in sortedNotifications"   >
-							          	<div>
+							          <li v-for="notification in storedNotifications" :key="notification.id">
+							          	<div :class="{ 'read': notification.status === 'read' }">
 								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/member/'+ notification.memberNick">
 								          	<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
 								          	{{ notification.memberNick }} 님이
@@ -304,9 +304,6 @@
 		</header>
 	</main>
 </body>
-	
-
-
 
 <script>
 	  Vue.createApp({
@@ -317,7 +314,7 @@
 	        notifications: [],
 	        hasNewNotification: false,
 	        intervalId: null,
-	        sortedNotifications: [],
+	        storedNotifications: [],
 	      };
 	    },
 	    computed: {
@@ -336,11 +333,18 @@
 	    	      console.log("result",result);
 	    	      if (result.length > 0) {
 	    	        // 알림이 있을 경우 처리 로직
-	    	        this.notifications = result.map((notice) => {
-	    	        	
-	    	        	return notice;
-	    	        });
-	    	        this.hasNewNotification = true;
+					this.notifications = result;
+            		this.hasNewNotification = true;
+	    	      
+	                if (!this.showModal) {
+	                    this.storedNotifications = this.notifications.filter(
+	                      (notification) => notification.status === "read"
+	                    );
+	                    const tempList = this.storedNotifications;
+	                    this.notifications.push(...tempList);
+	                    this.storedNotifications.push(...this.notifications);
+	                    this.notifications = [];
+	                  }
 	    	      } else {
 	    	        // 알림이 없을 경우 처리 로직
 	    	        this.notifications = [];
@@ -353,20 +357,27 @@
 	    	},
 	         
 	      toggleModal() {
-	    	this.loadNotifications();
-	        this.showModal = !this.showModal;
-	        
-	        if(!this.showModal){
-	        	 this.check();
-	        }
-	        if (this.hasNewNotification) {
-	          this.hasNewNotification = false; // 알림창을 열면 새로운 알림이 확인된 것으로 표시
-	        }
-	        
-	      },
+    		if (!this.showModal) {
+    	        this.loadNotifications();
+    	      }
+    	      this.showModal = !this.showModal;
+
+    	      if (!this.showModal) {
+    	        this.check();
+    	      }
+    	    },
 	      check() {
-		        //알림확인
-		        const resp =  axios.put("${pageContext.request.contextPath}/rest/notice/check");
+		  //알림확인
+		       axios
+			       .put("${pageContext.request.contextPath}/rest/notice/check/")
+			       .then((response) => {
+		    	      this.notifications.forEach((notification) => {
+		    	        notification.status = "read";
+		    	      });
+		    	    })
+		    	    .catch((error) => {
+		    	      console.log(error);
+		    	    });
 	      },
 	    	 //게시글 날짜 계산 함수
 	        dateCount(date) {
@@ -399,7 +410,7 @@
 	    },
 
 	    mounted() {
-	      this.loadNotifications(); // 컴포넌트가 마운트될 때 알림 데이터를 로드
+	      this.check(); // 컴포넌트가 마운트될 때 알림 데이터를 로드
 	      this.intervalId = setInterval(this.loadNotifications, 5000); // 5초마다 알림 데이터를 갱신
 	    },
 	    beforeUnmount() {
