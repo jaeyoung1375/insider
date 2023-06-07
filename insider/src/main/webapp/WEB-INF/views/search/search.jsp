@@ -341,26 +341,25 @@
 						
 						<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
 							<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="color:black;text-decoration:none; position:relative;">
-								<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="42" height="42" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
-								<img v-else src="https://via.placeholder.com/42x42?text=profile" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
+								<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="45" height="45" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
+								<img v-else src="https://via.placeholder.com/45x45?text=profile" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
 								
-								<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; font-weight: bold;">{{replyList[index].memberNick}}</p>
+							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; margin-left: 3.5px; font-weight: bold;">{{replyList[index].memberNick}}</p>
 													
 							</a>
-							<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em;">{{replyList[index].replyContent}}</p>
+							<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em; margin-left: 3.5px;">{{replyList[index].replyContent}}</p>
 	<!-- 						<p style="padding-left:4.0em;margin-bottom:1px;font-size:0.8em; color:gray;"> -->
-							<div class="row">
+							<div class="row" style="height: 25px">
 								<div class="col-10">
 									<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
 										<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
 										<i :class="{'fa-heart': true, 'like':isReplyLiked[index],'ms-2':true, 'fa-solid': isReplyLiked[index], 'fa-regular': !isReplyLiked[index]}" @click="likeReply(reply.replyNo,index)" style="font-size: 0.9em;"></i>
-										&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-										<i v-if="replyList[index].replyMemberNo == loginMemberNo" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="color:red; cursor: pointer;"></i>
+										
 									</p>
 								</div>
 							<!-- 댓글 신고창 -->
 								<div class="col-2 p-0 d-flex justify-content-center">
-									<p class="d-flex align-items-center"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse;" @click="showAdditionalMenuModal(reply.replyNo, reply.replyMemberNo, 'reply')"></i></p>
+									<p class="d-flex align-items-center"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse;" @click="showAdditionalMenuModal(reply.replyNo, reply.replyMemberNo, 'reply',index,detailIndex)"></i></p>
 								</div>
 							</div>
 	<!-- 						<p v-if="replyList[index].replyParent == 0"> -->
@@ -438,7 +437,7 @@
 					</div>
 					
 					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo">
-					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo" @click="updatePost(reportBoardData[0])">
+					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo && reportBoardData[2] == 'board'" @click="updatePost(reportBoardData[0])">
 						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
 							<h5 style="margin:0;">수정</h5>
 						</div>
@@ -450,6 +449,7 @@
 							<h5 style="margin:0;">삭제</h5>
 						</div>
 					</div>
+					
 					
 					<!-- 메뉴 구분선 -->
 					<hr class="m-0">
@@ -556,6 +556,7 @@
 				clicks: 0,
 				timer: null,
 				//상세보기 및 댓글
+				loginMemberNo:"${sessionScope.memberNo}",
 				detailView:false,
 				detailIndex:"",
 				replyList:[],
@@ -896,14 +897,42 @@
 				this.likeList=[];
 				this.likeListModal.hide();
 			},
+			
+			//게시물 수정
+	        updatePost(boardNo){
+	        	window.location.href = "${pageContext.request.contextPath}/board/edit?boardNo="+ boardNo;
+	        },
+	        
+	        //게시물 삭제
+	        deletePost(boardNo){
+	        	//window.location.href = "${pageContext.request.contextPath}/search";
+	        	const confirmed = confirm("게시물을 삭제하시겠습니까?");
+	        	if(confirmed){
+	        		window.location.href = "${pageContext.request.contextPath}/board/delete?boardNo=" + boardNo;
+	        	}
+	        	else{
+	        		return;
+	        	}
+	        },
+			
 			/* --------------------------상세보기-------------------------- */
 	        /*----------------------신고----------------------*/
-	        //신고 모달 show, hide
-			showAdditionalMenuModal(boardNo, reportMemberNo, reportTable){
+			 //신고 모달 show, hide
+			showAdditionalMenuModal(boardNo, reportMemberNo, reportTable, index, detailIndex){
 				if(this.additionalMenuModal==null) return;
 				this.additionalMenuModal.show();
-				this.reportBoardData=[boardNo, reportMemberNo, reportTable];
+				this.reportBoardData=[boardNo, reportMemberNo, reportTable, index, detailIndex];
 			},
+			
+			deleteTool(){
+				if(this.reportBoardData[2] == 'board'){
+					this.deletePost(this.reportBoardData[0]);
+				}
+				else {
+					this.replyDelete(this.reportBoardData[3],this.reportBoardData[4]);
+				}
+			},
+			
 			hideAdditionalMenuModal(){
 				if(this.additionalMenuModal==null) return;
 				this.additionalMenuModal.hide();
