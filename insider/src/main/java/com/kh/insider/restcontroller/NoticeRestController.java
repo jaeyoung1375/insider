@@ -43,11 +43,11 @@ public class NoticeRestController {
 		noticeService.check(memberNo);
 	}
 	
-	@GetMapping("/is_insider")
-	public Integer isInsider(
-						HttpSession session) {
-		Long memberNo = (Long)session.getAttribute("memberNo");
-		return noticeService.isInsider(memberNo);
-	}
+//	@GetMapping("/is_insider")
+//	public Integer isInsider(
+//						HttpSession session) {
+//		Long memberNo = (Long)session.getAttribute("memberNo");
+//		return noticeService.isInsider(memberNo);
+//	}
 	
 }

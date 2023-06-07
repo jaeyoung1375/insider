@@ -8,5 +8,5 @@ public interface NoticeService {
 
 	List<NoticeVO> selectNotice(Long memberNo);
 	void check(Long memeberNo);
-	int isInsider(Long memberNo);
+//	int isInsider(Long memberNo);
 }

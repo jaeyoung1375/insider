@@ -30,13 +30,12 @@ public class NoticeServiceImpl implements NoticeService{
 		sqlSession.update("notice.checkFollow", memberNo);
 	}
 
-	@Override
-	public int isInsider(Long memberNo) {
-		if(sqlSession.selectOne("notice.isNotice", memberNo)==null) {
-			return 0;
-		}
-		return sqlSession.selectOne("notice.isNotice",memberNo);
-	}
-
+//	@Override
+//	public int isInsider(Long memberNo) {
+//		if(sqlSession.selectOne("notice.isNotice", memberNo)==null) {
+//			return 0;
+//		}
+//		return sqlSession.selectOne("notice.isNotice",memberNo);
+//	}
 
 }

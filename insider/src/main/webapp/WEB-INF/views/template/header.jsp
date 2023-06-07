@@ -230,6 +230,7 @@
 							      <div class="modal-header"></div>
 							      <div class="modal-body">
 							        <ul class="notification-list">
+							        	<span>새로운 알림</span>
 							          <li v-for="notification in notifications"   >
 							          	<div>
 								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/member/'+ notification.memberNick">
@@ -244,6 +245,23 @@
 								          	<b>· {{dateCount(notification.boardTimeAuto)}}</b>
 							          	</div>
 							          </li>
+							          <hr>
+							          <span>읽은 알림</span>
+							          <li v-for="notification in sortedNotifications"   >
+							          	<div>
+								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/member/'+ notification.memberNick">
+								          	<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
+								          	{{ notification.memberNick }} 님이
+								          	</a>
+								          	<span v-if="notification.type == 1">게시글을 좋아요 하였습니다.</span>
+								          	<span v-if="notification.type == 2">게시글에 댓글을 달았습니다.</span>
+								          	<span v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</span>
+								          	<span v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</span>
+								          	<span v-if="notification.type == 5">팔로우하였습니다.</span>
+								          	<b>· {{dateCount(notification.boardTimeAuto)}}</b>
+							          	</div>
+							          </li>
+							          
 							        </ul>
 							      </div>
 							      <div class="modal-footer"></div>
@@ -299,6 +317,7 @@
 	        notifications: [],
 	        hasNewNotification: false,
 	        intervalId: null,
+	        sortedNotifications: [],
 	      };
 	    },
 	    computed: {
@@ -318,6 +337,7 @@
 	    	      if (result.length > 0) {
 	    	        // 알림이 있을 경우 처리 로직
 	    	        this.notifications = result.map((notice) => {
+	    	        	
 	    	        	return notice;
 	    	        });
 	    	        this.hasNewNotification = true;
@@ -387,5 +407,4 @@
 	   	}
 	  }).mount("#aside");
 </script>
-
 
