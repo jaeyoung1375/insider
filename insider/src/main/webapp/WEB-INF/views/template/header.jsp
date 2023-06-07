@@ -215,6 +215,10 @@
 			    	
 					<div class="collapse navbar-collapse justify-content-end" id="navbarColor03">
 						<ul class="navbar-nav">
+						<!-- 관리자 -->
+							<li class="nav-item mt-2">
+								<a class="nav-link" href="${pageContext.request.contextPath}/admin/?adminMenu=1"><i class="fa-regular fa-id-card mt-1" style="font-size: 45px;"></i></a>
+							</li>
 						<!-- 검색 -->
 							<li class="nav-item mt-2">
 								<a class="nav-link" href="${pageContext.request.contextPath}/search"><i class="fa-regular fa-solid fa-magnifying-glass mt-1" style="font-size: 45px;"></i></a>
@@ -223,7 +227,7 @@
 							<li class="nav-item mt-2">
 							  <a class="nav-link notice" @click="toggleModal">
 							    <i class="fa-regular fa-heart"></i>
-							    <i class="fa-solid fa-circle" v-show="hasNewNotification" style="display:none;position: absolute;font-size: 0.3em;color: #eb6864;right:20%;bottom: 27%;"></i>
+							    <i class="fa-solid fa-circle" v-show="hasNewNotification" style="display:none;position: absolute;font-size: 0.3em;color: #eb6864;right:15%;bottom: 17%;"></i>
 							  </a>
 							  <div class="modal-window" v-if="showModal">
 							    <div class="modal-content">
@@ -259,8 +263,8 @@
 								<a class="nav-link" href="${pageContext.request.contextPath}/board/insert"><i class="fa-regular fa-square-plus"></i></a>
 							</li>
 						<!-- 프로필 -->
-							<li class="nav-item">
-								<a class="nav-link" href="${pageContext.request.contextPath}/member/${socialUser.memberNick}"><img src="${pageContext.request.contextPath}/static/image/user.jpg" width="70" height="70"></a>
+							<li class="nav-item mt-2">
+								<a class="nav-link" href="${pageContext.request.contextPath}/member/mypage"><i class="fa-regular fa-circle-user mt-1" style="font-size: 45px;"></i></a>
 							</li>
 						</ul>
 					</div>

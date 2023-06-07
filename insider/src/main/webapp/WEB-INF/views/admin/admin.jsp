@@ -157,9 +157,9 @@
 }
 </style>
 <div id="app">
-	<div class="container-fluid mt-4" style="position:relative">
+	<div class="container-fluid mt-4" style="position:relative; width:60%">
 		<!------------------------------ 좌측 사이드 메뉴바 ---------------------------->
-		<div style="width:20%">
+		<div style="width:20%; min-width:160px">
 			<div class="admin-menu-bar" style="width:inherit">
 				<div class="admin-menu" @click="changeAdminMenu(1)" :class="{'selected':adminMenu==1}">
 					<h5 class="m-0">회원 관리</h5>
