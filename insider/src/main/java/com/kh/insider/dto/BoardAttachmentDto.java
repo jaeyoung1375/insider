@@ -11,10 +11,21 @@ public class BoardAttachmentDto {
 	private int boardAttachmentNo;
 	private int boardNo;
 	private int attachmentNo;
+	private String attachmentType;
 	
 	public String getImageURL() {
 		if(attachmentNo == 0) return "https://via.placeholder.com/150x150";
-		else return "/rest/attachment/download/"+attachmentNo;
+		else if(this.isVideo()) {
+			return "/rest/attachment/video/"+attachmentNo;
+		}
+		else{
+			return "/rest/attachment/download/"+attachmentNo;
+		}
 	}
-
+	public boolean isVideo() {
+		if(attachmentType!=null && attachmentType.startsWith("video")) {
+			return true;
+		}
+		else return false;
+	}
 }

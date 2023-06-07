@@ -25,6 +25,9 @@ public class BoardWithNickDto {
 	private String memberNick;
 	private Integer attachmentNo;
 	
+	private Integer settingHide;
+	private Integer settingAllowReply;
+	
 	//게시글 시간 계산
 	public String getBoardTimeAuto() {
 	   java.util.Date time = new java.util.Date(boardTime.getTime());
