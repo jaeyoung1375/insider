@@ -13,13 +13,25 @@
 	<insert id="insert" parameterType="BoardDto">
 		insert into board(
 			board_no, member_no, board_content, board_lat, board_lon, 
-			board_time, board_reply_valid, board_like_valid, 
-			board_hide, board_kid, board_size
+			board_time
+			<if test="boardReplyValid!=null and !boardReplyValid.equals('')">
+				, board_reply_valid
+			</if>
+			<if test="boardLikeValid!=null and !boardLikeValid.equals('')">
+				, board_like_valid 
+			</if>
+			,board_hide, board_kid, board_size
 		) 
 		values(
 			#{boardNo}, #{memberNo}, #{boardContent}, #{boardLat}, #{boardLon},
-			SYSDATE , #{boardReplyValid}, #{boardLikeValid}, 
-			#{boardHide}, #{boardKid}, #{boardSize}
+			SYSDATE 
+			<if test="boardReplyValid!=null and !boardReplyValid.equals('')">
+				, #{boardReplyValid}
+			</if>
+			<if test="boardLikeValid!=null and !boardLikeValid.equals('')">
+				, #{boardLikeValid}
+			</if>
+			,#{boardHide}, #{boardKid}, #{boardSize}
 		)
 	</insert>
 	

@@ -464,7 +464,7 @@ $(document).ready(function() {
 											<label class="fs-5" for="replyCheck">댓글 기능 해제</label>
 										</div>
 										<div class="col-md-3">
-											<input type="checkbox" name="boardReplyValid" value="1" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
+											<input type="checkbox" name="boardReplyValid" v-model="isReplyValidChecked" :value="isReplyValidChecked?0:1" class="form-check-input fs-5" style="margin-left: 0;">
 										</div>
 									
 					    	</div>
@@ -475,7 +475,7 @@ $(document).ready(function() {
 											<label class="fs-5" for="replyCheck">좋아요 수 숨김</label>
 										</div>
 										<div class="col-md-3">
-											<input type="checkbox" name="boardLikeValid" value="1" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
+											<input type="checkbox" name="boardLikeValid"  v-model="isLikeValidChecked" :value="isLikeValidChecked?0:1" class="form-check-input fs-5" style="margin-left: 0;">
 										</div>
 									
 					    	</div>
@@ -525,8 +525,8 @@ $(document).ready(function() {
     	  files : [],
     	  filesPreview: [],
     	  uploadImageIndex: 0,
-
-    	  
+    	  isReplyValidChecked:false,
+    	  isLikeValidChecked:false,
     	  /* //사람태그
     	  keyword: "",
     	  nickList: [],
