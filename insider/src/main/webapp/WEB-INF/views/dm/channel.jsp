@@ -185,7 +185,8 @@
 					<div class="card col-3" style="width:290px;border-radius:0;padding-bottom:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
 						<div style="padding-left: 0.4em;">
 							<a href="${pageContext.request.contextPath}/member/login" style="color: black; text-decoration: none;">
-							<img src="${pageContext.request.contextPath}/rest/attachment/download/${attachmentNo}" width="45" height="45" class="profile rounded-circle" style="position:absolute; top:0.75em" >
+							<img v-if="${attach!=0}" src="${pageContext.request.contextPath}/rest/attachment/download/${attach}" width="45" height="45" class="profile rounded-circle" style="position:absolute; top:0.75em" >
+							<img v-else src="https://via.placeholder.com/45x45?text=P" style="border-radius: 50%; position:absolute; margin-top:0em;">
 								<span style="padding-left:3.5em; word-wrap:normal;">
 										${sessionScope.memberNick}
 								</span>
@@ -202,13 +203,20 @@
 					
 					<!-- 채팅방 이름 -->
 					<div class="card col-8" style="border-radius:0;border-left:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
-						<div v-if="this.roomNo != null">
-							채팅방 이름
-							<span style="position:absolute; top:21px; right:0; margin-right:19px;">
-								<i class="fa-solid fa-file-pen fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showRoomNameModal()"></i>
-								<i class="fa-solid fa-door-open fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showExitModal()"></i>
-								<i class="fa-solid fa-circle-info fa-xl" style="cursor:pointer; color: #b2bec3" @click="showMembersInRoomModal()"></i>
-							</span>
+						<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo">
+							<div v-if="this.roomNo != null">
+								<div v-if="this.roomNo === room.roomNo">
+									<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"
+										width="45" height="45" class="profile rounded-circle" style="position:absolute; top:0.75em; left:1.3em;" >
+					          		<img v-else src="https://via.placeholder.com/34x34?text=P" style="border-radius: 50%; position:absolute; margin-top:0em;">
+									<span style="font-size:0.86em;padding-left:4.7em; word-wrap:normal;">{{room.roomName}}</span>
+								</div>
+								<span style="position:absolute; top:21px; right:0; margin-right:19px;">
+									<i class="fa-solid fa-file-pen fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showRoomNameModal()"></i>
+									<i class="fa-solid fa-door-open fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showExitModal()"></i>
+									<i class="fa-solid fa-circle-info fa-xl" style="cursor:pointer; color: #b2bec3" @click="showMembersInRoomModal()"></i>
+								</span>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -216,8 +224,8 @@
 				<div class="row" style="width:1000px;margin-left:7px; margin-right:100px; margin-top:0; height:70vh">
 					<!-- 채팅방 목록 -->
 					<div class="card col-3" style="width:290px;border-radius:0;border-top:none;padding:0;">
-						<div class="card-body cardList-scroll" style="padding:0;padding-top:10px; max-height: 633px;">
-							<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo" class="roomList" :class="{'hover': isHovered[index] }"
+						<div class="card-body cardList-scroll" style="padding:0;padding-top:10px; max-height: 720px;">
+							<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo":class="{'hover': isHovered[index] }"
          						@mouseover="isHovered[index] = true" @mouseleave="isHovered[index] = false" @click="enterRoom(room.roomNo)" style="padding-bottom: 5px;padding-top: 4px;padding-left: 13px;cursor:pointer;">
 							    <div style="position:relative; height: 2.4em; display: flex; align-items: center;">
 							    	<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"class="profile rounded-circle" style="position:absolute; 
@@ -566,6 +574,7 @@
                         });
         				// 읽지 않은 메세지 수 수정
         			    await this.updateUnreadDm(roomNo);
+        				this.setUnreadCountOnMessage();
             	    } 
             	    catch (err) {
             	        console.error("메세지를 불러올 수 없습니다.");
@@ -724,6 +733,7 @@
             		//리스트 형태(시간정보 배열) 일때
             		if(message.length>0){
             			this.userTimeList=[...message];
+            			this.setUnreadCountOnMessage();
             		}
             		//메세지 일 때
             		else{
@@ -1090,6 +1100,21 @@
 				        console.error("읽지 않은 메세지 수 수정 오류", error);
 				    }
 				},
+				//메세지 읽음 표시 카운트 메서드
+				setUnreadCountOnMessage(){
+            		let joiner = this.userTimeList.length;
+            		for(let j=0; j<this.messageList.length; j++){
+	            		let count=0;
+	            		for(let i=0; i<this.userTimeList.length; i++){
+	            			let timeTemp=this.messageList[j].time
+	            			if(this.userTimeList[i]>=timeTemp){
+	            				count++;
+	            			}
+	            		}
+	            		this.unreadCount[j]= joiner-count;
+            		}
+					
+				},
             },
             watch:{
             	//검색
@@ -1101,22 +1126,11 @@
         			this.chooseDmSearch();
         		}, 200),
         		//메세지 읽음 표시
-        		userTimeList:{
+        		/* userTimeList:{
         			deep:true,
         			handler:function(){
-	            		let joiner = this.userTimeList.length;
-	            		for(let j=0; j<this.messageList.length; j++){
-		            		let count=0;
-		            		for(let i=0; i<this.userTimeList.length; i++){
-		            			let timeTemp=this.messageList[j].time
-		            			if(this.userTimeList[i]>=timeTemp){
-		            				count++;
-		            			}
-		            		}
-		            		this.unreadCount[j]= joiner-count;
-	            		}
         			}
-        		},
+        		}, */
             },
             computed:{ 
             	jsonText() {

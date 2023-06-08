@@ -256,7 +256,6 @@ public class BoardController {
 							@ModelAttribute BoardTagDto boardTagDto
     		) throws IllegalStateException, IOException {
     	Long memberNo = (Long)session.getAttribute("memberNo");
-    	
 		boardDto.setMemberNo(memberNo);
 		log.debug("boardAttachment:{}", boardAttachment);
 		boardAttachService.insert(boardDto,boardAttachment);

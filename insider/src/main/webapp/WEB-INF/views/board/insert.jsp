@@ -153,88 +153,72 @@
 	  border: 1px solid #888;
 	  width: 100%;
 	  max-width: 100%;
+	} 	
+	
+	.file-preview-container {
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	  height: 100%;
 	}
-	 	
+
+	.file-preview-wrapper {
+	  width: 200px;
+	  height: 100%;
+	  overflow: hidden;
+	  margin: 0 10px;
+	}
+	
+	.preview-image,
+	.preview-video {
+	  width: 100%;
+	  height: 100%;
+	  object-fit: cover;
+	}
+	
 </style>
 
 
 <script type="text/javascript">
 
-// <script type="text/javascript">
-// $(function(){
-//     $('[name=summernote]').summernote({
-//         placeholder: '내용 작성',
-//         tabsize: 4,//탭키를 누르면 띄어쓰기 몇 번 할지
-//         height: 250,//최초 표시될 높이(px)
-//         toolbar: [//메뉴 설정
-//             ['style', ['style']],
-//             ['font', ['bold', 'underline', 'clear']],
-//             ['color', ['color']],
-//             ['para', ['ul', 'ol', 'paragraph']],
-//             ['table', ['table']],
-//             ['insert', ['link', 'picture']]
-//         ]
-//     });
-// });
-
-
-
 $(function(){
 
 	$(document).ready(function() {
-		  // Show the modal on page load
+
 		  $('#modalForm').css('display', 'block');
 
-		  // Disable modal closing when clicking outside the modal content
 		  $('.modal-dialog').on('click', function(event) {
 		    event.stopPropagation();
 		  });
 
-		  // Close the modal when the cancel button is clicked
-		  $('.cancel').on('click', function() {
-		    $('#modalForm').css('display', 'none');
-		  });
-
-		  // Close the modal when the close button is clicked
 		  $('.close').on('click', function() {
 		    $('#modalForm').css('display', 'none');
 		  });
 		});
 
 
-
+	$(document).ready(function() {
+	    $('#summernote').summernote({
+	        toolbar: false,
+	        callbacks: {
+	            onInit: function() {
+	 
+	                var content = $('#summernote').val();
 	
+	                content = content.replace(/\n/g, '<br>');
 	
-$(document).ready(function() {
-    $('#summernote').summernote({
-        toolbar: false,
-        callbacks: {
-            onInit: function() {
-                // Retrieve the initial content
-                var content = $('#summernote').val();
-                // Convert line breaks to <br> tags
-                content = content.replace(/\n/g, '<br>');
-                // Set the modified content back to Summernote
-                $('#summernote').summernote('code', content);
-            },
-            onKeyup: function() {
-                // Update the character count
-                var content = $('#summernote').summernote('code');
-                var characterCount = content.replace(/<[^>]+>/g, '').length;
-                $('.count').text(characterCount);
-            }
-        }
-    });
-});
-
-	$(".cancel").click(function(){
-		 event.stopPropagation(); 
-		const text = confirm("게시물을 삭제하시겠어요?\n지금 나가면 수정 내용이 저장되지 않습니다.");
-		
-		if(text){
-			location.replace("/")
-		}
+	                $('#summernote').summernote('code', content);
+	            },
+	            onKeyup: function() {
+	
+	                var content = $('#summernote').summernote('code');
+	                var characterCount = content.replace(/<[^>]+>/g, '').length;
+	                $('.count').text(characterCount);
+	            }
+	        }
+	    });
 	});
+
 		
 	
 	$(".form-submit").submit(function(e){
@@ -270,32 +254,33 @@ $(document).ready(function() {
 		
 	});
 	
-		//멀티 페이지
-		let index = 0;
-		move(index);
+	//멀티 페이지
+	let index = 0;
+	move(index);
+	
+	$(".btn-next").click(function(){
 		
-		$(".btn-next").click(function(){
-			
-			if($("#upload").val() == "" && $("#upload2").val() == ""){
-					alert("사진을 선택하세요.");
-					$(".btn-next").attr("disabled", false);
-			}
-			else{
-				index++;
-				move(index);
-			}	
-			
-		});
-		
-		$(".btn-prev").click(function(){
-			index--;
-			move(index);
-		});
-		
-		function move(index){
-			$(".page").hide();
-			$(".page").eq(index).show();
+		if($("#upload").val() == "" && $("#upload2").val() == ""){
+				alert("사진을 선택하세요.");
+				$(".btn-next").attr("disabled", false);
 		}
+		else{
+			index++;
+			move(index);
+		}	
+		
+	});
+	
+	$(".btn-prev").click(function(){
+		index--;
+		move(index);
+	});
+	
+	function move(index){
+		$(".page").hide();
+		$(".page").eq(index).show();
+	}
+	
 });
 
 
@@ -309,7 +294,9 @@ $(document).ready(function() {
 <div id="app" class="vue-container">
 
 <form action="insert" method="post" enctype="multipart/form-data" class="form-submit">
-
+<!-- gps 데이터 첨부 영역 -->
+<input type="hidden" name="boardLon" v-model="gpsLon">
+<input type="hidden" name="boardLat" v-model="gpsLat">
 	<div class="container-fluid" style="width: 1200px">
 	
 		<div class="row mt-3"></div>
@@ -319,27 +306,27 @@ $(document).ready(function() {
 		<div class="row w-70 mt-5" style="float: none; margin: 0 auto;">
 		  <div class="col">
 		
-		    <div class="card border-primary mb-3" style="height: 600px;">
-		      <div class="card-header">
-		        <div class="row">
-		          <div class="col-md-2">
-		            <button type="button" class="btn btn-secondary cancel" style="float:left;">취소</button>
-		          </div>
-		          <div class="col-md-8">
-		            <h4 class="text-primary text-center" style="margin-top: 1%;">새 게시물 만들기</h4>
-		          </div>
-		          <div class="col-md-2">
-		            <button type="button" class="btn btn-secondary btn-next" style="float:right;">다음</button>
-		          </div>
+		  <div class="card border-primary mb-3" style="height: 600px;">
+		    <div class="card-header">
+		      <div class="row">
+		        <div class="col-md-2">
+		          <button type="button" class="btn btn-secondary cancel" style="float:left;" @click="cancelPost">취소</button>
+		        </div>
+		        <div class="col-md-8">
+		          <h4 class="text-primary text-center" style="margin-top: 1%;">새 게시물 만들기</h4>
+		        </div>
+		        <div class="col-md-2">
+		          <button type="button" class="btn btn-secondary btn-next" style="float:right;">다음</button>
 		        </div>
 		      </div>
+		    </div>
 		      
 		      
 		      <div>
 		      	
 		      	<!-- 1-1. 사진 첨부전, 업로드 버튼 영역 -->
 			      <div :class="{'hidefile':files.length > 0}">
-				      <div class="card-body text-center" style="margin-top: 20%;">
+				      <div class="card-body text-center" style="margin-top: 12%; height: 400px;">
 				        <h1 class="card-title" ><i class="fa-regular fa-images"></i></h1>
 				        <p class="card-text fs-5">사진을 선택하세요.</p>
 				        <label for="upload" class="input-upload">업로드</label>
@@ -349,28 +336,32 @@ $(document).ready(function() {
 			      </div>
 			      
 			      <!-- 1-2. 사진 첨부했을 때, 미리보기 영역 -->
-			      <div :class="{'hidefile':files.length==0}">
-				      <div class="file-preview-container">
-				        <div v-for="(file, index) in files" :key="index" class="file-preview-wrapper">
-				        	<div class="file-close-button" @click="fileDeleteButton" :name="file.number">
-				        		X
-				        	</div>
-				        	<img :src="file.preview"/>
-				        </div>
-				        <div class="file-preview-wrapper-upload">
-				        	<div class="image-box" v-show="files.length <5">
-						        <label for="upload2" class="input-uploadPlus">
-						        	<i class="fa-solid fa-plus fa-3x"></i>
-						        </label>
-						        <input type="file" name="boardAttachment" accept="image/*, video/*" id="upload2" ref="files2" @change="imageAddUpload" style="display:none;" multiple/>				        	
-				        	</div>
-				        </div>
-				      </div>
-			      </div>
-		      
+					<div :class="{'hidefile': files.length==0}">
+					  <div class="file-preview-container">
+					    <div v-for="(file, index) in files" :key="index" class="file-preview-wrapper">
+					      <div class="file-close-button" @click="fileDeleteButton" :name="file.number">
+					        X
+					      </div>
+					      <template v-if="file.file.type.startsWith('image/')">
+					        <img :src="file.preview" class="preview-image" />
+					      </template>
+					      <template v-else-if="file.file.type.startsWith('video/')">
+					        <video :src="file.preview" class="preview-video" controls></video>
+					      </template>
+					    </div>
+					    <div class="file-preview-wrapper-upload">
+					      <div class="image-box" v-show="files.length < 5">
+					        <label for="upload2" class="input-uploadPlus">
+					          <i class="fa-solid fa-plus fa-3x"></i>
+					        </label>
+					        <input type="file" name="boardAttachment" accept="image/*, video/*" id="upload2" ref="files2" @change="imageAddUpload" style="display:none;" multiple/>
+					      </div>
+					    </div>
+					  </div>
+					</div>
+
 		      </div>
 		      
-
 		    </div>
 		
 		  </div>
@@ -403,26 +394,34 @@ $(document).ready(function() {
 		      	<div class="row">
 		      		<div class="col-md-7">
 		      			
-		      			<div id="carouselExampleIndicators" class="carousel slide" data-bs-interval="false">
-								  <div class="carousel-indicators">
-								    <button v-for="(file, index) in files" :key="index" type="button" data-bs-target="#carouselExampleIndicators" :data-bs-slide-to="index" :class="{'active':index==0}" :aria-current="index==0" :aria-label="'Slide'+(index+1)"></button>
-								  </div>
-								  
-								  <div class="carousel-inner" >
-									  	<div  v-for="(file, index) in files" :key="index" class="carousel-item" v-bind:class="{'active':index==0}">
-									  		<img :src="file.preview" class="d-block w-100" style="height: 480px;" />
-									  	</div>
-								  </div>
-								  
-								  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-								    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-								    <span class="visually-hidden">Previous</span>
-								  </button>
-								  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-								    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-								    <span class="visually-hidden">Next</span>
-								  </button>
-								</div>
+					<div id="carouselExampleIndicators" class="carousel slide" data-bs-interval="false">
+					  <div class="carousel-indicators">
+					    <button v-for="(file, index) in files" :key="index" type="button" data-bs-target="#carouselExampleIndicators" :data-bs-slide-to="index" :class="{'active':index==0}" :aria-current="index==0" :aria-label="'Slide'+(index+1)"></button>
+					  </div>
+					  
+					  <div class="carousel-inner">
+					    <div v-for="(file, index) in files" :key="index" class="carousel-item" :class="{'active':index==0}">
+					      <template v-if="file.file.type.startsWith('image/')">
+					        <img :src="file.preview" class="d-block w-100" style="max-height: 480px; object-fit: contain;" />
+					      </template>
+					      <template v-else-if="file.file.type.startsWith('video/')">
+					        <video class="d-block w-100" style="max-height: 480px;" controls>
+					          <source :src="file.preview" type="video/mp4">
+					        </video>
+					      </template>
+					    </div>
+					  </div>
+					  
+					  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+					    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+					    <span class="visually-hidden">Previous</span>
+					  </button>
+					  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+					    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+					    <span class="visually-hidden">Next</span>
+					  </button>
+					</div>
+
 		      			
 		      		</div>
 		      		
@@ -454,7 +453,7 @@ $(document).ready(function() {
 					    	</div>
 					    	
 					    	<div class="row mt-3">
-					    		<input type="text" name="memberNick" class="form-control" placeholder="@사람태그" id="memberTag" autocomplete="off">
+					    		{{currentAddr}}
 					    	</div>
 					    	
 					    	
@@ -464,7 +463,7 @@ $(document).ready(function() {
 											<label class="fs-5" for="replyCheck">댓글 기능 해제</label>
 										</div>
 										<div class="col-md-3">
-											<input type="checkbox" name="boardReplyValid" value="1" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
+											<input type="checkbox" name="boardReplyValid" v-model="isReplyValidChecked" :value="isReplyValidChecked?1:0" class="form-check-input fs-5" style="margin-left: 0;">
 										</div>
 									
 					    	</div>
@@ -475,7 +474,7 @@ $(document).ready(function() {
 											<label class="fs-5" for="replyCheck">좋아요 수 숨김</label>
 										</div>
 										<div class="col-md-3">
-											<input type="checkbox" name="boardLikeValid" value="1" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
+											<input type="checkbox" name="boardLikeValid"  v-model="isLikeValidChecked" :value="isLikeValidChecked?1:0" class="form-check-input fs-5" style="margin-left: 0;">
 										</div>
 									
 					    	</div>
@@ -515,6 +514,8 @@ $(document).ready(function() {
 
 
 <script src="https://unpkg.com/vue@3.2.36"></script>
+<!-- 카카오맵 CDN -->
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e45b9604d6c5aa25785459639db6e025&libraries=services"></script>
 <script>
   //div[id=app]을 제어할 수 있는 Vue instance를 생성
   const app = Vue.createApp({
@@ -525,34 +526,67 @@ $(document).ready(function() {
     	  files : [],
     	  filesPreview: [],
     	  uploadImageIndex: 0,
+    	  isReplyValidChecked:false,
+    	  isLikeValidChecked:false,
+    	  gpsLat:memberGpsLat,
+    	  gpsLon:memberGpsLon,
+    	  //주소 알아오는 코드
+    	  geocoder:null,
+    	  currentAddr:"",
 
-    	  
-    	  /* //사람태그
-    	  keyword: "",
-    	  nickList: [],
-    	  click: false, */
-        
       }
     },
 
     //methods : 애플리케이션 내에서 언제든 호출 가능한 코드 집합이 필요한 경우 작성한다.
      methods: {
-    	 imageUpload(){
-     		
-     		let num = -1;
-     		for(let i = 0; i < this.$refs.files.files.length; i++){
-     			this.files = [
-     				...this.files,
-     				{
-     					file: this.$refs.files.files[i],
-     					preview: URL.createObjectURL(this.$refs.files.files[i]),
-     					number: i
-     				}
-     			];
-     			num = i;
-     		}
-     		this.uploadImageIndex = num + 1;
-     	},
+    	 
+    	 cancelPost(event) {
+    	      event.stopPropagation();
+    	      const text = confirm("게시물을 삭제하시겠어요?\n지금 나가면 수정 내용이 저장되지 않습니다.");
+
+    	      if (text) {
+    	    	 window.history.back();
+    	      }
+    	    },
+    	 
+    	 videoUpload() {
+    		  for (let i = 0; i < this.$refs.files.files.length; i++) {
+    		    const file = this.$refs.files.files[i];
+    		    const preview = URL.createObjectURL(file);
+    		    const number = this.files.length + i;
+
+    		    this.files = [
+    		      ...this.files,
+    		      {
+    		        file,
+    		        preview,
+    		        number
+    		      }
+    		    ];
+    		  }
+    		  this.uploadImageIndex = this.files.length;
+    		},
+
+    	 
+    	 imageUpload() {
+    		  for (let i = 0; i < this.$refs.files.files.length; i++) {
+    		    const file = this.$refs.files.files[i];
+    		    const preview = URL.createObjectURL(file);
+    		    const number = this.files.length + i;
+
+    		    this.files = [
+    		      ...this.files,
+    		      {
+    		        file,
+    		        preview,
+    		        number
+    		      }
+    		    ];
+    		  }
+    		  this.uploadImageIndex = this.files.length;
+    		},
+
+
      	
      	imageAddUpload(){
      		
@@ -569,21 +603,33 @@ $(document).ready(function() {
      			num = i;
      		}
      		this.uploadImageIndex = this.uploadImageIndex + num + 1;
-        
       },
-      
       
     	fileDeleteButton(e){
     		const name = e.target.getAttribute('name');
     		this.files = this.files.filter(data => data.number != Number(name));
     	},
-    	
-	    
+    	//주소 알아오는 메소드
+    	searchAddrFromCoords(callback) {
+		    // 좌표로 행정동 주소 정보를 요청합니다
+		    this.geocoder = new kakao.maps.services.Geocoder();
+		    this.geocoder.coord2RegionCode(memberGpsLon, memberGpsLat, callback);
+		},
+		displayCenterInfo(result, status) {
+		    if (status === kakao.maps.services.Status.OK) {
+		        for(var i = 0; i < result.length; i++) {
+		            // 행정동의 region_type 값은 'H' 이므로
+		            if (result[i].region_type === 'H') {
+		                this.currentAddr = result[i].address_name;
+		                break;
+		            }
+		        }
+		    }    
+		},
     },
-    
-    
-    
-
+    created(){
+		this.searchAddrFromCoords(this.displayCenterInfo);
+    },
   });
   app.mount("#app");
 </script>

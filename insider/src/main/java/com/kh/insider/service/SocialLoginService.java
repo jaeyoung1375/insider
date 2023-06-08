@@ -28,4 +28,7 @@ public interface SocialLoginService {
 	
 	// 페이스북 로그인
 	public FacebookProfileVO facebookLogin(String code, FacebookResponseVO response) throws URISyntaxException;
+	
+	// cosKey 암호화
+	public String EncryptCoskey(String coskey);
 }

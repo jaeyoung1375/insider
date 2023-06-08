@@ -10,6 +10,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -36,6 +38,9 @@ public class SocialLoginServiceImpl implements SocialLoginService {
    
    @Autowired
    private FacebookLoginProperties facebookProperties;
+   
+	@Autowired
+	private PasswordEncoder encoder;
 
    @Override
    public KakaoResponseVO kakaoTokenCreate(String code) throws URISyntaxException {
@@ -199,11 +204,17 @@ public class SocialLoginServiceImpl implements SocialLoginService {
          e.printStackTrace();
       }
       
-      
-      
       return profile;
       
    }
+
+	@Override
+	public String EncryptCoskey(String coskey) {
+		encoder = new BCryptPasswordEncoder();
+		String encrypt = encoder.encode(coskey);
+		coskey = encrypt;
+		return coskey;
+	}
    
    
 
