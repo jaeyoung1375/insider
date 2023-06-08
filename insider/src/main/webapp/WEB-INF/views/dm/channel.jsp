@@ -185,7 +185,8 @@
 					<div class="card col-3" style="width:290px;border-radius:0;padding-bottom:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
 						<div style="padding-left: 0.4em;">
 							<a href="${pageContext.request.contextPath}/member/login" style="color: black; text-decoration: none;">
-							<img src="${pageContext.request.contextPath}/rest/attachment/download/${attachmentNo}" width="45" height="45" class="profile rounded-circle" style="position:absolute; top:0.75em" >
+							<img v-if="${attach!=0}" src="${pageContext.request.contextPath}/rest/attachment/download/${attach}" width="45" height="45" class="profile rounded-circle" style="position:absolute; top:0.75em" >
+							<img v-else src="https://via.placeholder.com/45x45?text=P" style="border-radius: 50%; position:absolute; margin-top:0em;">
 								<span style="padding-left:3.5em; word-wrap:normal;">
 										${sessionScope.memberNick}
 								</span>
