@@ -256,7 +256,10 @@
 							</li>
 						<!-- dm -->
 							<li class="nav-item mt-2">
-								<a class="nav-link" href="${pageContext.request.contextPath}/dm/channel"><i class="fa-regular fa-message mt-1" style="font-size: 45px;"></i></a>
+								<a class="nav-link" href="${pageContext.request.contextPath}/dm/channel">
+									<i class="fa-regular fa-message mt-1" style="font-size: 45px;"></i>
+									<i class="fa-solid fa-circle"v-if="hasUnreadMessages"style="position: absolute;font-size: 0.3em;color: #eb6864;right:15%;bottom: 17%;"></i>
+								</a>
 							</li>
 						<!-- 게시물작성 -->
 							<li class="nav-item mt-2">
@@ -304,6 +307,9 @@
 	        hasNewNotification: false,
 	        intervalId: null,
 	        memberNick : "${socialUser.memberNick}",
+	        
+	      	//dm 읽지 않은 메세지 수
+            hasUnreadMessages: false,
 	      };
 	    },
 	    computed: {
@@ -331,11 +337,29 @@
 	    	        this.notifications = [];
 	    	        this.hasNewNotification = false;
 	    	      }
+	    	   	  //dm 읽지 않은 메세지 수 조회
+	    	      this.unreadMessageCount();
 	    	    })
 	    	    .catch((error) => {
 	    	      console.log(error);
 	    	    });
 	    	},
+	    	//dm 읽지 않은 메세지 수 조회
+			async unreadMessageCount() {
+			  const countUrl = "${pageContext.request.contextPath}/rest/notice/isChat";
+			  try {
+			    const resp = await axios.get(countUrl);
+			    const unreadCount = resp.data;
+			    if (unreadCount > 0) {
+			        this.hasUnreadMessages = true;
+			    } 
+			    else {
+			        this.hasUnreadMessages = false;
+			    }
+			  } catch (error) {
+			    console.error("읽지 않은 메세지 수 조회 오류", error);
+			  }
+			},
 	         
 	      toggleModal() {
 	    	this.loadNotifications();
@@ -391,6 +415,7 @@
 	    mounted() {
 	      this.loadNotifications(); // 컴포넌트가 마운트될 때 알림 데이터를 로드
 	      this.intervalId = setInterval(this.loadNotifications, 5000); // 5초마다 알림 데이터를 갱신
+	      this.unreadMessageCount(); //dm 알림
 	    },
 	    beforeUnmount() {
 	      clearInterval(this.intervalId); //메모리 누수방지

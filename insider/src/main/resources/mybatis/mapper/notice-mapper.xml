@@ -153,4 +153,18 @@
         ) where rownum = 1
 	</select>
 	
+	<!-- dm 읽지 않은 메세지 수 알림 -->
+	<select id="isDmAlram" resultType="int">
+	    SELECT COUNT(*) AS unread_message
+	    FROM dm_message
+	    WHERE message_send_time > (
+	        SELECT MAX(read_dm_time)
+	        FROM dm_user
+	        WHERE member_no = #{memberNo}
+	    )
+	    AND message_sender != #{memberNo}
+	</select>
+	
+	
+	
  </mapper> 

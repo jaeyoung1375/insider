@@ -38,5 +38,11 @@ public class NoticeServiceImpl implements NoticeService{
 		return sqlSession.selectOne("notice.isNotice",memberNo);
 	}
 
+	//dm 알림
+	@Override
+	public int isDm(Long memberNo) {
+		return sqlSession.selectOne("notice.isDmAlram",memberNo);
+	}
+
 
 }
