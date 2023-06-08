@@ -48,7 +48,7 @@
 <div class="container-fluid mt-4" id="app" style="width:60%; min-width:1000px">
 	<div class="row">
 	<!-- 좌측 사이드 메뉴바 -->
-		<div class="col-lg-3">
+		<div class="col-3">
 			<div class="row menu-bar">
 				<div class="col-lg">
 					<div class="row setting-menu" @click="changePage(0)" :class="{'selected':page==0}">

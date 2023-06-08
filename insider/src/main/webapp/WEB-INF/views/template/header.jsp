@@ -29,25 +29,9 @@
 
 </head>
 <style>
-	main{
-		width:1000px;
-		margin: 0 auto;
-	}
-
 	.logo{
 		font-size: 50px;
-		color: black;
 	}
-
-	.nav-item > a {
-		font-size: 51px;
-		
-	}
-
-	.navbar-light .navbar-nav .nav-link {
-		color: black;
-	}
-	
      html, body{
           width: 100%;
           height: 100%;
@@ -55,6 +39,7 @@
           padding: 0;
       }
       .wrap{
+      
           width: 100%;
           height: 100%;
           display: flex;
@@ -114,15 +99,6 @@
           left: 44px;
       }
       
- 	  .nav-item { 
- 		  position: relative; 
- 	  } 
-		
- 	  .nav-link { 
- 		  display: flex; 
- 		  align-items: center; 
-	  } 
-		
  	 .modal-window { 
  		  position: absolute; 
  		  top: calc(100% + 10px); 
@@ -166,6 +142,7 @@
 	
  	.notification-list li { 
  	  margin-bottom: 10px; 
+
  	}
  	
  	.profile {
@@ -235,6 +212,12 @@
 		display: none;
 	} 
 
+ 
+	.header-menu-option{
+		font-size: 45px;
+		color:inherit;
+		cursor:pointer
+	}
 </style>
 
  <script type="text/javascript">
@@ -266,103 +249,110 @@
 <body>
 	<main>
 		<header id="aside">	
-			<nav class="navbar navbar-expand-lg navbar-light mt-3">
-				<div class="container-fluid">
-					<a class="navbar-brand" href="${pageContext.request.contextPath}/"><img src="${pageContext.request.contextPath}/static/image/logo.png" width="50" height="50"></a>
-					<a href="${pageContext.request.contextPath}/" class="logo">insider</a>
-    				<div class="wrap">
-			        	<div class="darkmode">
-			            	<div class="inner">
-			                	<input type="radio" name="toggle" id="toggle-radio-light" checked><label for="toggle-radio-light" class="tolight"><i class="fas fa-sun tolight"></i></label>
-			                	<input type="radio" name="toggle" id="toggle-radio-dark"><label for="toggle-radio-dark" class="todark"><i class="fas fa-moon todark"></i></label>
-			                	<div class="darkmode-bg"></div>
-			            	</div>
-			        	</div>
-			    	</div>
-			    	
-					<div class="collapse navbar-collapse justify-content-end" id="navbarColor03">
-						<ul class="navbar-nav">
-						<!-- 관리자 -->
-							<li class="nav-item mt-2">
-								<a class="nav-link" href="${pageContext.request.contextPath}/admin/?adminMenu=1"><i class="fa-regular fa-id-card mt-1" style="font-size: 45px;"></i></a>
-							</li>
-						<!-- 검색 -->
-							<li class="nav-item mt-2">
-								<a class="nav-link" href="${pageContext.request.contextPath}/search"><i class="fa-regular fa-solid fa-magnifying-glass mt-1" style="font-size: 45px;"></i></a>
-							</li>
-							<!-- 알림 -->
-							<li class="nav-item mt-2">
-							  <a class="nav-link notice" @click="toggleModal">
-							    <i class="fa-regular fa-heart"></i>
-							    <i class="fa-solid fa-circle" v-show="hasNewNotification" style="display:none;position: absolute;font-size: 0.3em;color: #eb6864;right:15%;bottom: 17%;"></i>
-							  </a>
-							  <div class="modal-window" v-if="showModal">
-							    <div class="modal-content">
-							      <div class="modal-header"></div>
-							      <div class="modal-body">
-							        <ul class="notification-list">
-							        	<span>새로운 알림</span>
-							          <li v-for="notification in notifications"   >
-							          	<div>
-								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/member/'+ notification.memberNick">
-								          	<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
-								          	{{ notification.memberNick }} 님이
-								          	</a>
-								          	<a class="nav-link"  @click=loadBoard(notification.boardNo)>
-								          	<span v-if="notification.type == 1">게시글을 좋아요 하였습니다.</span>
-								          	<span v-if="notification.type == 2">게시글에 댓글을 달았습니다.</span>
-								          	<span v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</span>
-								          	<span v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</span>
-								          	</a>
-								          	<span v-if="notification.type == 5">팔로우하였습니다.</span>
-								          	<b>· {{dateCount(notification.boardTimeAuto)}}</b>
-							          	</div>
-							          </li>
-							          <hr>
-							          <span>읽은 알림</span>
-							          <a @click="deleteAllNotifications" class="btn btn-secondary" style="float: right; margin-top: 2px;">전체삭제</a>
-							          <li v-for="notification in storedNotifications" :key="notification.id">
-										  <div :class="{ 'read': notification.status === 'read' }">
-										    <a class="nav-link" :href="'${pageContext.request.contextPath}/member/'+ notification.memberNick">
-										      <img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
-										      {{ notification.memberNick }} 님이
-										    </a>
-									        <a class="nav-link" @click=loadBoard(notification.boardNo)>
-								          	<span v-if="notification.type == 1">게시글을 좋아요 하였습니다.</span>
-								          	<span v-if="notification.type == 2">게시글에 댓글을 달았습니다.</span>
-								          	<span v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</span>
-								          	<span v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</span>
-								          	</a>
-								          	<span v-if="notification.type == 5">팔로우하였습니다.</span>
-										    <b>· {{dateCount(notification.boardTimeAuto)}}</b>
-<!-- 										    <a @click="deleteNotification(notification)" class="btn btn-secondary">알림삭제</a> -->
-										  </div>
-										</li>
-							          
-							        </ul>
-							      </div>
-							      <div class="modal-footer"></div>
-							    </div>
-							  </div>
-							</li>
-						<!-- dm -->
-							<li class="nav-item mt-2">
-								<a class="nav-link" href="${pageContext.request.contextPath}/dm/channel"><i class="fa-regular fa-message mt-1" style="font-size: 45px;"></i></a>
-							</li>
-						<!-- 게시물작성 -->
-							<li class="nav-item mt-2">
-								<a class="nav-link" href="${pageContext.request.contextPath}/board/insert"><i class="fa-regular fa-square-plus"></i></a>
-							</li>
-						<!-- 프로필 -->
-							<li class="nav-item mt-2">
-								<a class="nav-link" style="cursor:pointer" @click="moveToMyPage()"><i class="fa-regular fa-circle-user mt-1" style="font-size: 45px;"></i></a>
-							</li>
-						</ul>
+			<nav class="mt-3">
+				<div class="container-fluid" style="width:60%; max-width:900px; min-width:700px">
+					<div class="row ps-5 pe-5" style="max-width:1200px">
+						<div class="col-3">
+							<a href="${pageContext.request.contextPath}/" class="logo d-flex align-items-center" style="color:inherit;">
+								<img class="me-2" src="${pageContext.request.contextPath}/static/image/logo.png" width="50" height="50">
+								insider
+							</a>
+						</div>
+						<div class="col d-flex align-items-center justify-content-end">
+							<div class="row">
+							<!-- 관리자 -->
+								<div class="col p-0 m-2">
+									<a class="" href="${pageContext.request.contextPath}/admin/?adminMenu=1" style="color:inherit"><i class="fa-regular fa-id-card header-menu-option" style="font-size:43px;margin-top:2px"></i></a>
+								</div>
+							<!-- 검색 -->
+								<div class="col p-0 m-2">
+									<a class="" href="${pageContext.request.contextPath}/search" style="color:inherit"><i class="fa-regular fa-solid fa-magnifying-glass header-menu-option" style="font-size:40px;margin-top:2px"></i></a>
+								</div>
+								<!-- 알림 -->
+								<div class="col p-0 m-2" style="position:relative;">
+								  <div>
+									  <a class="notice" @click="toggleModal" style="color:inherit">
+									    <i class="fa-regular fa-heart header-menu-option"></i>
+									    <i class="fa-solid fa-circle" v-show="hasNewNotification" style="display:none;position: absolute;font-size: 0.3em;color: #eb6864;right:15%;bottom: 17%;"></i>
+									  </a>
+								  </div>
+								  <div class="modal-window" v-if="showModal">
+								    <div class="modal-content">
+								      <div class="modal-header"></div>
+								      <div class="modal-body">
+								        <ul class="notification-list">
+								        	<span>새로운 알림</span>
+								        	<hr>
+								          <li v-for="(notification,index) in notifications"   >
+								          	<div>
+									          	<a class="nav-link" :href="'${pageContext.request.contextPath}/member/'+ notification.memberNick">
+									          	<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
+									          	{{ notification.memberNick }} 님이
+									          	</a>
+									          	<a class="nav-link" @click="loadBoard(notification.boardNo),detailViewOn(index)">
+									          	<p v-if="notification.type == 1">게시글을 좋아요 하였습니다.</p>
+									          	<p v-if="notification.type == 2">게시글에 댓글을 달았습니다.</p>
+									          	<p v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</p>
+									          	<p v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</p>
+									          	</a>
+									          	<span v-if="notification.type == 5">팔로우하였습니다.</span>
+									          	<b>· {{dateCount(notification.boardTimeAuto)}}</b>
+								          	</div>
+								          </li>
+								          <hr>
+								          <span>읽은 알림</span>
+								          <a @click="deleteAllNotifications" class="btn btn-secondary" style="position: fixed; top:6%; left:75%;transform: transform(-50%,-50%);">전체삭제</a>
+								          <hr>
+								          <li v-for="(notification,index) in storedNotifications" :key="notification.id">
+											  <div :class="{ 'read': notification.status === 'read' }">
+											    <a class="nav-link" :href="'${pageContext.request.contextPath}/member/'+ notification.memberNick">
+											      <img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
+											      {{ notification.memberNick }} 님이
+											    </a>
+										        <a class="nav-link"  @click="loadBoard(notification.boardNo),detailViewOn(index)">
+									          	<span v-if="notification.type == 1">게시글을 좋아요 하였습니다.</span>
+									          	<span v-if="notification.type == 2">게시글에 댓글을 달았습니다.</span>
+									          	<span v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</span>
+									          	<span v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</span>
+									          	</a>
+									          	<span v-if="notification.type == 5">팔로우하였습니다.</span>
+											    <b>· {{dateCount(notification.boardTimeAuto)}}</b>
+	<!-- 										    <a @click="deleteNotification(notification)" class="btn btn-secondary">알림삭제</a> -->
+											  </div>
+											</li>
+								          
+								        </ul>
+								      </div>
+								      <div class="modal-footer"></div>
+								    </div>
+								  </div>
+								</div>
+							<!-- dm -->
+								<div class="col p-0 m-2">
+									<a class="" href="${pageContext.request.contextPath}/dm/channel" style="color:inherit"><i class="fa-regular fa-message header-menu-option" style="font-size:40px; margin-top:3px"></i></a>
+								</div>
+							<!-- 게시물작성 -->
+								<div class="col p-0 m-2">
+									<a class="" href="${pageContext.request.contextPath}/board/insert" style="color:inherit"><i class="fa-regular fa-square-plus header-menu-option"></i></a>
+								</div>
+							<!-- 프로필 -->
+								<div class="col p-0 m-2">
+									<a class="" style="cursor:pointer; color:inherit" @click="moveToMyPage()" ><i class="fa-regular fa-circle-user header-menu-option" style="font-size:43px;margin-top:2px"></i></a>
+								</div>
+							</div>
+						</div>
 					</div>
-
+					
 				</div>
 			</nav>
-			<aside style="position:fixed; left:0; top:50%" >
+			<aside style="position:absolute; right:5em; top:5em" >
+	        	<div class="darkmode">
+	            	<div class="inner">
+	                	<input type="radio" name="toggle" id="toggle-radio-light" checked><label for="toggle-radio-light" class="tolight"><i class="fas fa-sun tolight"></i></label>
+	                	<input type="radio" name="toggle" id="toggle-radio-dark"><label for="toggle-radio-dark" class="todark"><i class="fas fa-moon todark"></i></label>
+	                	<div class="darkmode-bg"></div>
+	            	</div>
+	        	</div>
 				<div class="dropdown" :class="{'show':sideMenu}">
 					<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @click="showSideMenu()">
 						<i class="fa-solid fa-bars"></i>
@@ -380,7 +370,7 @@
 			</aside>
 			
 			
-			<!-- ---------------------------------게시물 상세보기 모달-------------------------- -->
+<!-- ---------------------------------게시물 상세보기 모달-------------------------- -->
 
 <div v-if="detailView" class="container-fluid fullscreen" @click="closeDetail">
 	
@@ -391,16 +381,16 @@
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
                 <div class="carousel-indicators">
-                  <button v-for="(attach, index2) in boardList[detailIndex].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
+                  <button v-for="(attach, index2) in boardData[0].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
                 </div>
                
                 <div class="carousel-inner">
-                  <div  v-for="(attach, index2) in boardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
+                  <div  v-for="(attach, index2) in boardData[0].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
                    	<video  style="width:700px; height:700px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+attach.imageURL" v-if="attach.video"
 							:autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto" 
-							@dblclick="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" ></video>
+							@dblclick="likePost(boardData[0].boardWithNickDto.boardNo,detailIndex)" ></video>
 	                <img v-else :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)"
-	                 style="width:700px; height:700px;" @dblclick="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)"> 
+	                 style="width:700px; height:700px;" @dblclick="likePost(boardData[0].boardWithNickDto.boardNo,detailIndex)"> 
                   </div>
                 </div>
                
@@ -420,14 +410,14 @@
         	<div class="card bg-light" style="border-radius:0; max-height: 700px">
            		<div class="card-header">
 	           		<img class="profile" :src="profileUrl(detailIndex)">
-           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardList[detailIndex].boardWithNickDto.memberNick"><b>{{boardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
+           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardData[0].boardWithNickDto.memberNick"><b>{{boardData[0].boardWithNickDto.memberNick}}</b></a>
            		</div>
 				
 				<div class="card-body card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
-					<p class="card-text" style="margin-left: 0.5em;">{{boardList[detailIndex].boardWithNickDto.boardContent}}
-					<br v-if="boardList[detailIndex].boardTagList.length > 0"><br v-if="boardList[detailIndex].boardTagList.length > 0">
-                            	<a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in boardList[detailIndex].boardTagList" :key="index3" style="margin-right: 0.5em; color: blue; cursor: pointer;">\#{{tag.tagName}}</a>
+					<p class="card-text" style="margin-left: 0.5em;">{{boardData[0].boardWithNickDto.boardContent}}
+					<br v-if="boardData[0].boardTagList.length > 0"><br v-if="boardData[0].boardTagList.length > 0">
+                            	<a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in boardData[0].boardTagList" :key="index3" style="margin-right: 0.5em; color: blue; cursor: pointer;">\#{{tag.tagName}}</a>
 					</p>
 					
 					
@@ -481,8 +471,8 @@
 				  <div class="d-flex row">
 					  <div class="col-10">
 						<span class="card-text" style="margin: 0 4px 4px 0; padding-left: 0.5em">
-						    <i :class="{'fa-heart': true, 'like':isLiked[detailIndex], 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}"
-						       @click="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
+						    <i :class="{'fa-heart': true, 'like':isLikedOne, 'fa-solid': isLikedOne, 'fa-regular': !isLikedOne}"
+						       @click="likePost(boardData[0].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
 						</span>
 						<span class="card-text" style="margin: 0 0 4px 0; padding-left: 0.5em;">
 					    	<i class="fa-regular fa-message mb-1" style="font-size: 25px;"></i>
@@ -490,17 +480,17 @@
 					  </div>
 					  <div class="col-1 p-0 flex-grow-1">
 					    <span class="ms-4">
-					      <i class="fa-regular fa-bookmark" @click="bookmarkInsert(boardList[detailIndex].boardWithNickDto.boardNo)"
-					         v-show="bookmarkChecked(boardList[detailIndex].boardWithNickDto.boardNo)" style="font-size: 25px;"></i>
-					      <i class="fa-solid fa-bookmark" @click="bookmarkInsert(boardList[detailIndex].boardWithNickDto.boardNo)"
-					         v-show="!bookmarkChecked(boardList[detailIndex].boardWithNickDto.boardNo)" style="font-size: 25px;"></i>
+					      <i class="fa-regular fa-bookmark" @click="bookmarkInsert(boardData[0].boardWithNickDto.boardNo)"
+					         v-show="bookmarkChecked(boardData[0].boardWithNickDto.boardNo)" style="font-size: 25px;"></i>
+					      <i class="fa-solid fa-bookmark" @click="bookmarkInsert(boardData[0].boardWithNickDto.boardNo)"
+					         v-show="!bookmarkChecked(boardData[0].boardWithNickDto.boardNo)" style="font-size: 25px;"></i>
 					    </span>
 					  </div>
 				  </div>
 					
 					
-					<p class="card-text" style="margin: 0 0 4px 0; cursor: pointer;" @click="showLikeListModal(boardList[detailIndex].boardWithNickDto.boardNo)"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount[detailIndex]}}개</b></p>
-					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(boardList[detailIndex].boardWithNickDto.boardTimeAuto)}}</p>
+					<p class="card-text" style="margin: 0 0 4px 0; cursor: pointer;" @click="showLikeListModal(boardData[0].boardWithNickDto.boardNo)"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCountOne}}개</b></p>
+					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(boardData[0].boardWithNickDto.boardTimeAuto)}}</p>
 					
 				</div>
 				
@@ -513,12 +503,50 @@
         </div>
 	</div>
 </div>
+
+<!-- ---------------------------------좋아요 목록 모달-------------------------- -->
+<div class="modal" tabindex="-1" role="dialog" id="likeListModal" data-bs-backdrop="static" ref="likeListModal" style="z-index:9999;">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content">
+				<div class="modal-header">
+        			<h5 class="modal-title col-7" style="font-weight:bold;">좋아요</h5>
+        			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="hideLikeListModal"></button>
+      			</div>
+				<div v-if="likeList.length != 0" class="modal-body p-0">				
+					<div class="row p-2 mt-2"  v-for="(like,index) in likeList" :key="index">
+						<div  class="col d-flex">
+							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick">
+								<img v-if="like.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ like.attachmentNo" width="50" height="50" style="border-radius: 70%;">
+								<img v-else src="https://via.placeholder.com/50x50?text=profile" style="border-radius: 70%; ">
+							</a>
+							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick" style="color:black;text-decoration:none; position:relative;">
+								<h6 style="margin: 14px 0 0 10px;">{{like.memberNick}}</h6>
+							</a>
+						</div>
+					</div>
+				</div>
+				
+				<div class="modal-body p-0" v-else>
+					<div class="row p-2 mt-2" >
+						<div class="col text-center">
+							<h2 class="mt-1">아직 좋아요가 없습니다</h2><br>
+							<h3>첫 번째 좋아요를 눌러주세요</h3>
+						</div>
+	 			 	</div>		
+				</div>
+					
+				
+				
+		</div>
+	</div>
+	</div>
 			
 			
 		</header>
-	</main>
-</body>
+<section>	
 
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script>
 	  Vue.createApp({
 	    data() {
@@ -540,8 +568,8 @@
 			replyContent:"",
 			placeholder:"댓글 입력..",
 	      	//게시물 좋아요 기능 전용 변수
-			boardLikeCount:[], // 좋아요 수를 저장할 변수
-            isLiked : [], // 로그인 회원이 좋아요 체크 여부
+			boardLikeCountOne:0, // 좋아요 수를 저장할 변수
+            isLikedOne : false, // 로그인 회원이 좋아요 체크 여부
             likeList : [],
             likeListData : [],
             likeListModal : false,
@@ -563,6 +591,17 @@
 	    },
 	    computed: {
 	      // 계산영역
+	    	profileUrl(index){
+	    		 return index => {
+	    		      const board = this.boardData[0];
+	    		      if (board && board.boardWithNickDto && board.boardWithNickDto.attachmentNo > 0) {
+	    		        return contextPath + "/rest/attachment/download/" + board.boardWithNickDto.attachmentNo;
+	    		      }
+	    		      else {
+	    		        return "https://via.placeholder.com/100x100?text=profile";
+	    		      }
+	    		    };
+	    		  },
 	    },
 	    methods: {
 	    	
@@ -577,9 +616,11 @@
 	    	            boardNo: boardNo
 	    	        }
 	    	    });
-	    	  this.isLiked.push(await this.likeChecked(resp.data.boardWithNickDto.boardNo));
-	    	  this.boardLikeCount.push(await this.likeChecked(resp.data.boardWithNickDto.boardLike));
-	    	  this.boardData = [resp.data];
+	    	  this.isLikedOne = await this.likeChecked(resp.data.boardWithNickDto.boardNo);
+	    	  this.boardLikeCountOne = resp.data.boardWithNickDto.boardLike;
+	    	  this.boardData = [resp.data];	  
+	    	  
+	    	  this.replyLoad(boardNo);
 	      },
 	      
 	    	//회원 환경 설정 로드
@@ -602,16 +643,16 @@
 	        },
 	        
 	        //좋아요
-	        async likePost(boardNo, index) {
+	        async likePost(boardNo) {
 	            const resp = await axios.post("${pageContext.request.contextPath}/rest/board/like", {boardNo:boardNo});
 	            if(resp.data.result){
-	            	this.isLiked[index] = true;
+	            	this.isLikedOne = true;
 	            }
 	            else {
-	            	this.isLiked[index] = false;
+	            	this.isLikedOne = false;
 	            }
 	            
-	            this.boardLikeCount[index] = resp.data.count;
+	            this.boardLikeCountOne = resp.data.count;
 	        },
 	        
 	        //좋아요 리스트
@@ -637,11 +678,11 @@
 	        },
 			
 	      //댓글 조회
-	        async replyLoad(index) {
+	        async replyLoad(boardNo) {
 	        	this.replyList = [];
 	        	this.isReplyLiked = [];
 	        	this.replyLikeCount = [];
-	        	const resp = await axios.get("${pageContext.request.contextPath}/rest/reply/"+ this.boardList[index].boardWithNickDto.boardNo);
+	        	const resp = await axios.get("${pageContext.request.contextPath}/rest/reply/"+ boardNo);
 	            
 	        	for (const reply of resp.data) {
 	            	this.isReplyLiked.push(await this.likeReplyChecked(reply.replyNo));
@@ -652,8 +693,8 @@
 	        },
 	        
 	        //댓글 등록
-	        async replyInsert(index) {
-	        	  const boardNo = this.boardList[index].boardWithNickDto.boardNo;
+	        async replyInsert() {
+	        	  const boardNo = this.boardData[0].boardWithNickDto.boardNo;
 	        	  
 	        	  const requestData = {
 	        	    replyOrigin: boardNo,
@@ -664,17 +705,17 @@
 	        	  
 	        	  try {
 	        	    const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
-	        	    this.replyLoad(index);	    
+	        	    this.replyLoad(boardNo);	    
 	        	  } 
 	        	  catch (error) {
-	        	    console.error(error);
+	        	    console.error();
 	        	  }
 	        },
 	        
 	        //댓글 삭제
-	        async replyDelete(index,index2) {
+	        async replyDelete(index) {
 	        	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList[index].replyNo);
-	        	this.replyLoad(index2);
+	        	this.replyLoad(this.boardData[0].boardWithNickDto.boardNo);
 	        },
 	        
 	        //대댓글
@@ -690,11 +731,19 @@
 	        	}
 	        },
 	        
+	        //댓글 사용 불가 알림
+	         disabledReply(index) {
+	        	 if(this.boardData[0].boardWithNickDto.boardReplyValid != 0){
+	        		 alert("댓글 사용이 불가능합니다.");
+	        	 }
+	         },
+	        
 	        //상세보기 모달창 열기
 	        detailViewOn(index) {
 	        	this.detailView = true;
-	        	//this.detailIndex = index;
-	        	this.replyLoad(index);
+	        	this.detailIndex = index;
+	        	//this.loadBoard(boardNo);
+	        	//this.replyLoad();
 	        	this.bookmarkList();
 	        	this.loadMemberSetting();
 	        	document.body.style.overflow = "hidden";
@@ -889,7 +938,8 @@
 
 	    mounted() {
 	      this.loadNotifications(); // 컴포넌트가 마운트될 때 알림 데이터를 로드
-	      this.intervalId = setInterval(this.loadNotifications, 5000); // 5초마다 알림 데이터를 갱신
+	      this.intervalId = setInterval(this.loadNotifications, 10000); // 5초마다 알림 데이터를 갱신
+	      this.likeListModal = new bootstrap.Modal(this.$refs.likeListModal);
 	    },
 	    beforeUnmount() {
 	      clearInterval(this.intervalId); //메모리 누수방지
