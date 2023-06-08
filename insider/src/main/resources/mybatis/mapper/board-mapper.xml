@@ -49,8 +49,24 @@
 	
 	<update id="edit" parameterType="BoardDto">
 		update board set 
-		board_content=#{boardContent}, board_reply_valid=#{boardReplyValid}, board_like_valid=#{boardLikeValid},
-		board_hide=#{boardHide}, board_kid=#{boardKid}, board_size=#{boardSize} where board_no=#{boardNo}
+		board_content=#{boardContent}
+		 <choose>
+	 		<when test="boardReplyValid!=null and !boardReplyValid.equals('')">
+				,board_reply_valid=#{boardReplyValid}
+	 		</when>
+	 		<otherwise>
+	 			,board_reply_valid=0
+	 		</otherwise>
+	 	</choose>
+	 	<choose>
+	 		<when test="boardLikeValid!=null and !boardLikeValid.equals('')">
+				,board_like_valid=#{boardLikeValid}
+	 		</when>
+	 		<otherwise>
+	 			,board_like_valid=0
+	 		</otherwise>
+	 	</choose>
+		,board_hide=#{boardHide}, board_kid=#{boardKid}, board_size=#{boardSize} where board_no=#{boardNo}
 	</update>
 	<delete id="delete">
 		delete board where board_no=#{boardNo}

@@ -602,7 +602,6 @@ $(document).ready(function() {
     },
     created(){
 		this.searchAddrFromCoords(this.displayCenterInfo);
-//    	this.settingMap();
     },
   });
   app.mount("#app");
