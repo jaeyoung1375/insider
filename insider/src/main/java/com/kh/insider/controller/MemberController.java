@@ -69,8 +69,9 @@ public class MemberController {
    @PostMapping("/join")
    public String join(@ModelAttribute MemberDto dto) {
       memberRepo.join(dto);
-      //기본 회원설정값 생성(추후 수정 필요)
-//      settingRepo.basicInsert(dto.getMemberNo());
+      //기본 회원설정값 생성(닉네임 받아서 생성함)
+      MemberWithProfileDto newMemberDto = memberRepo.findByNickName(dto.getMemberNick());
+      settingRepo.basicInsert(newMemberDto.getMemberNo());
       return "redirect:/";
    }
    
@@ -92,6 +93,7 @@ public class MemberController {
    session.setAttribute("socialUser", findMember);
    memberRepo.updateLoginTime(findMember.getMemberNo());
       
+   session.setAttribute("memberLevel",findMember.getMemberLevel());
    return "redirect:/";
    }
    
@@ -99,7 +101,8 @@ public class MemberController {
    public String logout(HttpSession session) {
       session.removeAttribute("memberNo");
       session.removeAttribute("socialUser");
-      session.removeAttribute("member");
+      session.removeAttribute("memberLevel");
+      session.removeAttribute("memberNick");
       
       return "redirect:/";
    }
@@ -129,11 +132,11 @@ public class MemberController {
       // 프로필 정보 불러오기
 	   MemberWithProfileDto findMember = memberWithProfileRepo.selectOne(dto.getMemberNo());
       // 로그인한 사용자
-      MemberDto loginUser = (MemberDto)session.getAttribute("socialUser");
-      log.debug("로그인한 사용자:{}", loginUser);
       // 본인 프로필 인지 여부
-      boolean isOwner = loginUser.getMemberNo().equals(dto.getMemberNo());
       int postCounts = boardRepo.getTotalPostCount(dto.getMemberNo());
+	  long memberNo=(long) session.getAttribute("memberNo");
+      boolean isOwner = memberNo==dto.getMemberNo();
+      
       
       model.addAttribute("memberDto",findMember);
       model.addAttribute("isOwner",isOwner);

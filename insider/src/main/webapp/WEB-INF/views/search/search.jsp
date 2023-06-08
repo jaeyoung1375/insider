@@ -221,7 +221,7 @@
 										팔로우 : {{recommand.follow}}
 									</div>
 								</div>
-								<div class="row search-recommand-menu p-3" v-else @click="moveToMemberDetail(recommand.memberNo)">
+								<div class="row search-recommand-menu p-3" v-else @click="moveToMemberDetail(recommand.memberNo, recommand.memberNick)">
 									<div class="col-2">
 										<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+recommand.imageURL">
 									</div>
@@ -257,27 +257,11 @@
 				</div>
 			</div>
 			<!-- 게시물 더보기 -->
-			<div class="row" v-if="finish && !additionalFinish">	
-				<div class="col">
-					{{memberSetting.watchDistance}}km 이내의 게시물을 모두 확인했습니다. <span class="modal-click-btn" @click="showAdditionalList"> 게시물 더보기</span>
-				</div>
-			</div>
-			<!-- 추가 리스트 -->
-			<div class="row d-flex justify-content-center mt-3">
-				<div class="box m-2" v-for="(board, index) in additionalBoardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)" 
-						 @click="detailViewOn(index)" >
-					<video class="content" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
-							style="object-fit:cover" :autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto"></video>
-					<img class='content' v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video"
-							 :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
-					<img class='content' v-if="board.boardAttachmentList.length==0" src="${pageContext.request.contextPath}/static/image/noimage.png">
-					<div class="content-box" ></div>
-					<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
-					<div class="like-comment" >
-						<span v-if="memberSetting.watchLike"><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
-						<span class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
-					</div>
-				</div>
+			<div v-if="finish && !additionalFinish"  style="max-width: 620px;  margin: 10px auto 10px auto;">
+				<img src="${pageContext.request.contextPath}/static/image/check.png" class="justify-content-center align-items-center" style="width: 150px; height: 150px; margin-left: 230px; margin-bottom: 20px;">
+				<h3 class="justify-content-center text-center">모두 확인했습니다</h3>
+				<h6 class="justify-content-center text-center" style="color:gray; ">{{memberSetting.watchDistance}}km 이내의 게시물을 모두 확인했습니다.</h6>
+				<h6 class="justify-content-center text-center" @click="loadAdditionalList()" style="color: blue; cursor: pointer;">모든 게시물 보기</h6>     	
 			</div>
 		</div>
 	</div>
@@ -701,10 +685,10 @@
 				const resp = await axios.post(contextPath+"/rest/search/", data);
 				window.location.href=contextPath+"/tag/"+tagName;
 			},
-			async moveToMemberDetail(searchMemberNo, memberNick){
+			async moveToMemberDetail(searchMemberNo, searchMemberNick){
 				const data={searchMemberNo:searchMemberNo};
 				const resp = await axios.post(contextPath+"/rest/search/", data);
-				window.location.href=contextPath+"/member/"+memberNick;
+				window.location.href=contextPath+"/member/"+searchMemberNick;
 			},
 			//검색기록 출력
 			async loadSearchedList(){
