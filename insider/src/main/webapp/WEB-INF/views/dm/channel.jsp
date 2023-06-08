@@ -566,6 +566,7 @@
                         });
         				// 읽지 않은 메세지 수 수정
         			    await this.updateUnreadDm(roomNo);
+        				this.setUnreadCountOnMessage();
             	    } 
             	    catch (err) {
             	        console.error("메세지를 불러올 수 없습니다.");
@@ -724,6 +725,7 @@
             		//리스트 형태(시간정보 배열) 일때
             		if(message.length>0){
             			this.userTimeList=[...message];
+            			this.setUnreadCountOnMessage();
             		}
             		//메세지 일 때
             		else{
@@ -1090,6 +1092,21 @@
 				        console.error("읽지 않은 메세지 수 수정 오류", error);
 				    }
 				},
+				//메세지 읽음 표시 카운트 메서드
+				setUnreadCountOnMessage(){
+            		let joiner = this.userTimeList.length;
+            		for(let j=0; j<this.messageList.length; j++){
+	            		let count=0;
+	            		for(let i=0; i<this.userTimeList.length; i++){
+	            			let timeTemp=this.messageList[j].time
+	            			if(this.userTimeList[i]>=timeTemp){
+	            				count++;
+	            			}
+	            		}
+	            		this.unreadCount[j]= joiner-count;
+            		}
+					
+				},
             },
             watch:{
             	//검색
@@ -1101,22 +1118,11 @@
         			this.chooseDmSearch();
         		}, 200),
         		//메세지 읽음 표시
-        		userTimeList:{
+        		/* userTimeList:{
         			deep:true,
         			handler:function(){
-	            		let joiner = this.userTimeList.length;
-	            		for(let j=0; j<this.messageList.length; j++){
-		            		let count=0;
-		            		for(let i=0; i<this.userTimeList.length; i++){
-		            			let timeTemp=this.messageList[j].time
-		            			if(this.userTimeList[i]>=timeTemp){
-		            				count++;
-		            			}
-		            		}
-		            		this.unreadCount[j]= joiner-count;
-	            		}
         			}
-        		},
+        		}, */
             },
             computed:{ 
             	jsonText() {
