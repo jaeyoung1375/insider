@@ -16,8 +16,6 @@ public class MemberNonLoginInterceptor implements HandlerInterceptor {
 			throws Exception {
 		Long memberNo = (Long) request.getSession().getAttribute("memberNo");
 		MemberDto dto = (MemberDto) request.getSession().getAttribute("socialUser");
-		System.out.println("memberNo : "+memberNo);
-		System.out.println("dto : " + dto);
 		
 		if(memberNo == null || dto == null) {
 			response.sendRedirect(request.getContextPath()+"/member/login");

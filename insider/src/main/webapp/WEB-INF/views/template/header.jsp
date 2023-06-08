@@ -548,6 +548,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script>
+	/* GPS 데이터 저장 */
+	let memberGpsLon;
+	let memberGpsLat;
 	  Vue.createApp({
 	    data() {
 	      return {
@@ -928,12 +931,60 @@
 	        	    localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
 	        	  }, 7000);
 	        	},
-
+			/* GPS 얻기 */
+			getGps(){
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(this.showGps, this.showError);
+				} 
+				else {
+				// 브라우저가 Geolocation을 지원하지 않는 경우 처리할 로직
+					console.log("Geolocation is not supported by this browser.");
+				}
+			},
+			showGps(position){
+				// 위치 정보 가져오기 성공 시 처리할 로직
+				memberGpsLat = position.coords.latitude;
+				memberGpsLon = position.coords.longitude;
+				this.setGpsToMember();
+				console.log("새 gps : "+memberGpsLat+" "+memberGpsLon)
+			},
+			showError(error) {
+				// 위치 정보 가져오기 실패 시 처리할 로직(기존꺼 불러옴)
+				switch (error.code) {
+					case error.PERMISSION_DENIED:
+						console.log("User denied the request for Geolocation.");
+						this.getGpsFromMember();
+						break;
+					case error.POSITION_UNAVAILABLE:
+						console.log("Location information is unavailable.");
+						this.getGpsFromMember();
+						break;
+					case error.TIMEOUT:
+						console.log("The request to get user location timed out.");
+						this.getGpsFromMember();
+						break;
+					case error.UNKNOWN_ERROR:
+						console.log("An unknown error occurred.");
+						this.getGpsFromMember();
+						break;
+				}
+			},
+			async getGpsFromMember(){
+				const resp = await axios.get("/rest/member/");
+				memberGpsLat = resp.data.memberLat;
+				memberGpsLon = resp.data.memberLon;
+			},
+			async setGpsToMember(){
+				const data = {memberLon : memberGpsLon, memberLat:memberGpsLat}
+				const resp = await axios.put("/rest/member/", data);
+			},
+			/* GPS 끝 */
 	    },
 	
 	    created() {
 	      // 데이터 불러오는 영역
 	    	this.cleanupLocalStorage();
+			this.getGps();
 	    },
 	    watch: {
 	      // 감시영역
