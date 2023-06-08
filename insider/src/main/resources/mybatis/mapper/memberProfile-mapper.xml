@@ -14,4 +14,5 @@
 <select id="one" resultType="int" parameterType="Long">
 	select attachment_no from member_profile where member_no = #{memberNo}
 </select>
+
 </mapper>
