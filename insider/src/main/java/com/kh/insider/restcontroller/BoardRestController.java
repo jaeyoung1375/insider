@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.BoardLikeDto;
@@ -50,14 +51,20 @@ public class BoardRestController {
 	
 	
 	//무한스크롤
-		@GetMapping("/page/{page}")
-		public List<BoardListVO> paging(@PathVariable int page, HttpSession session) {
-			long memberNo=(Long)session.getAttribute("memberNo");
-			
-			BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
-			boardSearchVO.setBoardCount(2);
-			return boardRepo.selectListWithoutFollow(boardSearchVO);
-			//return boardRepo.selectListWithFollow(boardSearchVO);
+	@GetMapping("/page/{page}")
+	public List<BoardListVO> paging(@PathVariable int page, HttpSession session) {
+		long memberNo=(Long)session.getAttribute("memberNo");
+		
+		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
+		boardSearchVO.setBoardCount(2);
+		return boardRepo.selectListWithoutFollow(boardSearchVO);
+		//return boardRepo.selectListWithFollow(boardSearchVO);
+	}
+	
+	//단일 조회
+	@GetMapping("/one")
+	public BoardListVO selectOne(@RequestParam Integer boardNo) {
+		return boardRepo.selectOneBoard(boardNo);
 	}
 	
 	//무한스크롤 팔로우(3일 이내)
@@ -75,6 +82,7 @@ public class BoardRestController {
 		//return boardRepo.selectListWithFollow(boardSearchVO);
 	}
 	
+	//3일 이후
 	@GetMapping("/old/{page}")
 	public List<BoardListVO> pagingOld(@PathVariable int page, HttpSession session) {
 		long memberNo=(Long)session.getAttribute("memberNo");
