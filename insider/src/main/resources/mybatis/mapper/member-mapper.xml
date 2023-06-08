@@ -83,13 +83,7 @@ WHERE (
         FROM follow
         WHERE member_no = #{memberNo}
     )
-)
-or MEMBER_NO IN (
-    SELECT follow_follower
-    FROM follow
-    WHERE member_no = (SELECT follow_follower FROM follow WHERE member_no = #{memberNo})
-)
-
+    )
   ]]>
 </select>
 
@@ -153,7 +147,7 @@ ORDER BY MAX(ba.ATTACHMENT_NO) DESC
 	</update>
 	<!-- 회원정보 수정(패스워드)-->
 	<update id="changePassword">
-		update member set member_password=#{memberPassword} where member_email=#{memberEmail}
+		update member set member_password=#{memberPassword} where member_no = #{memberNo}
 	</update>
 	<!-- 로그인 시각 갱신 -->
 	<update id="updateLoginTime">

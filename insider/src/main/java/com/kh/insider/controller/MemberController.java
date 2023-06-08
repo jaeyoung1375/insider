@@ -1,7 +1,5 @@
 package com.kh.insider.controller;
 
-import java.net.URISyntaxException;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -21,19 +19,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.kh.insider.dto.BoardDto;
-import com.kh.insider.dto.FollowWithProfileDto;
-import com.kh.insider.dto.FollowerWithProfileDto;
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.FollowRepo;
 import com.kh.insider.repo.MemberRepo;
+import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.SettingRepo;
 import com.kh.insider.service.MemberService;
 import com.kh.insider.service.SocialLoginService;
-import com.kh.insider.vo.FacebookProfileVO;
-import com.kh.insider.vo.FacebookResponseVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,14 +48,18 @@ public class MemberController {
    @Autowired
    private SettingRepo settingRepo;
    
-   @Autowired
-   private SocialLoginService socialLoginService;
    
    @Autowired
    private BoardRepo boardRepo;
    
    @Autowired
    private FollowRepo followRepo;
+   
+   @Autowired
+   private MemberWithProfileRepo memberWithProfileRepo;
+   
+   @Autowired
+   private SocialLoginService socialLoginService;
    
    @GetMapping("/join")
    public String join() {
@@ -71,8 +69,9 @@ public class MemberController {
    @PostMapping("/join")
    public String join(@ModelAttribute MemberDto dto) {
       memberRepo.join(dto);
-      //기본 회원설정값 생성(추후 수정 필요)
-//      settingRepo.basicInsert(dto.getMemberNo());
+      //기본 회원설정값 생성(닉네임 받아서 생성함)
+      MemberWithProfileDto newMemberDto = memberRepo.findByNickName(dto.getMemberNick());
+      settingRepo.basicInsert(newMemberDto.getMemberNo());
       return "redirect:/";
    }
    
@@ -83,18 +82,18 @@ public class MemberController {
    
    @PostMapping("/login")
    public String login(HttpSession session, @ModelAttribute MemberDto dto, RedirectAttributes attr, HttpServletRequest request) {
-   session = request.getSession();
-   MemberDto findMember = memberRepo.login(dto.getMemberEmail(), dto.getMemberPassword());
+   MemberDto findMember = memberRepo.login(dto.getMemberEmail(),dto.getMemberPassword());
    
    if(findMember == null) {
       int result = 0;
       attr.addFlashAttribute("result",result);
       return "redirect:login";
    }
-   memberRepo.updateLoginTime(findMember.getMemberNo());
    session.setAttribute("memberNo",findMember.getMemberNo());
    session.setAttribute("socialUser", findMember);
-      
+   memberRepo.updateLoginTime(findMember.getMemberNo());
+   
+   session.setAttribute("memberLevel",findMember.getMemberLevel());
    return "redirect:/";
    }
    
@@ -102,7 +101,8 @@ public class MemberController {
    public String logout(HttpSession session) {
       session.removeAttribute("memberNo");
       session.removeAttribute("socialUser");
-      session.removeAttribute("member");
+      session.removeAttribute("memberLevel");
+      session.removeAttribute("memberNick");
       
       return "redirect:/";
    }
@@ -128,37 +128,19 @@ public class MemberController {
    @GetMapping("/{memberNick}")
    public String myPage(@PathVariable String memberNick, Model model, HttpSession session) {
       
+	   MemberWithProfileDto dto = memberRepo.findByNickName(memberNick);
       // 프로필 정보 불러오기
-	   MemberWithProfileDto findMember = memberRepo.findByNickName(memberNick);
+	   MemberWithProfileDto findMember = memberWithProfileRepo.selectOne(dto.getMemberNo());
       // 로그인한 사용자
-      MemberDto loginUser = (MemberDto)session.getAttribute("socialUser");
-      log.debug("로그인한 사용자:{}", loginUser);
       // 본인 프로필 인지 여부
-      boolean isOwner = loginUser.getMemberNick().equals(memberNick);
-      // 전체 게시물 개수
-      int totalPostCount = boardRepo.getTotalPostCount(findMember.getMemberNo());  
-      // 본인 팔로우 개수 
-      int totalFollowCount = followRepo.getFollowNumber(findMember.getMemberNo());
-      // 본인 팔로워 개수
-      int totalFollowerCount = followRepo.getFollowerNumber(findMember.getMemberNo());
+      int postCounts = boardRepo.getTotalPostCount(dto.getMemberNo());
+	  long memberNo=(long) session.getAttribute("memberNo");
+      boolean isOwner = memberNo==dto.getMemberNo();
       
-      // 팔로워 목록
-      List<FollowerWithProfileDto> followerList = followRepo.getFollowerList(findMember.getMemberNo());
       
-      // 팔로우 목록
-      List<FollowWithProfileDto> followList = followRepo.getFollowList(findMember.getMemberNo());
-      
-      // 마이페이지 게시물 조회
-      List<BoardDto> getTotalMyPost = boardRepo.getTotalMyPost(findMember.getMemberNo());
-      
-      model.addAttribute("getTotalMyPost",getTotalMyPost);
-      model.addAttribute("totalPostCount",totalPostCount);
-      model.addAttribute("totalFollowCount",totalFollowCount);
-      model.addAttribute("totalFollowerCount",totalFollowerCount);
-      model.addAttribute("followerList",followerList);
-      model.addAttribute("followList",followList);
       model.addAttribute("memberDto",findMember);
       model.addAttribute("isOwner",isOwner);
+      model.addAttribute("postCounts",postCounts);
             
       return "/member/mypage";
    }
@@ -166,8 +148,8 @@ public class MemberController {
    // 팔로우 총 개수
    @GetMapping("/totalFollowCount")
    @ResponseBody
-   public int totalFollowCount(@RequestParam("memberNick") String memberNick) {
-	   MemberWithProfileDto findMember = memberRepo.findByNickName(memberNick);
+   public int totalFollowCount(@RequestParam("memberNo") long memberNo) {
+	   MemberWithProfileDto findMember = memberWithProfileRepo.selectOne(memberNo);
        int totalFollowCount = followRepo.getFollowNumber(findMember.getMemberNo());
        return totalFollowCount;
    }
@@ -175,8 +157,8 @@ public class MemberController {
    // 팔로워 총 개수
    @GetMapping("/totalFollowerCount")
    @ResponseBody
-   public int totalFollowerCount(@RequestParam("memberNick") String memberNick) {
-	   MemberWithProfileDto findMember = memberRepo.findByNickName(memberNick);
+   public int totalFollowerCount(@RequestParam("memberNo") long memberNo) {
+	   MemberWithProfileDto findMember = memberWithProfileRepo.selectOne(memberNo);
        int totalFollowerCount = followRepo.getFollowerNumber(findMember.getMemberNo());
        return totalFollowerCount;
    }
@@ -184,8 +166,8 @@ public class MemberController {
    // 게시물 총 개수
    @GetMapping("/totalPostCount")
    @ResponseBody
-   public int totalPostCount(@RequestParam("memberNick") String memberNick) {
-	   MemberWithProfileDto findMember = memberRepo.findByNickName(memberNick);
+   public int totalPostCount(@RequestParam("memberNo") long memberNo) {
+	   MemberWithProfileDto findMember = memberWithProfileRepo.selectOne(memberNo);
 	   int totalPostCount = boardRepo.getTotalPostCount(findMember.getMemberNo());
 	   return totalPostCount;
    }
@@ -241,24 +223,21 @@ public class MemberController {
    @ResponseBody
    public void passwordChange(@RequestBody MemberDto member) {
 	   member.setMemberEmail(member.getMemberEmail());
-	   member.setMemberPassword(member.getMemberPassword());
+	   member.setMemberPassword(socialLoginService.EncryptCoskey(member.getMemberPassword()));
 
 	   memberRepo.changePassword(member);
    }
-   
-  
-   
-   
-   @GetMapping("/facebook/auth")
-   @ResponseBody
-   public String facebookLogin(String code, FacebookResponseVO response) throws URISyntaxException{
-      
-      response = socialLoginService.facebookTokenCreate(code);
-      FacebookProfileVO profile = socialLoginService.facebookLogin(code, response);
-      System.out.println(profile);
-      
-      return profile.toString();
-   }
+ 
+//   @GetMapping("/facebook/auth")
+//   @ResponseBody
+//   public String facebookLogin(String code, FacebookResponseVO response) throws URISyntaxException{
+//      
+//      response = socialLoginService.facebookTokenCreate(code);
+//      FacebookProfileVO profile = socialLoginService.facebookLogin(code, response);
+//      System.out.println(profile);
+//      
+//      return profile.toString();
+//   }
    
 //   환경설정 페이지
    @GetMapping("/setting")
