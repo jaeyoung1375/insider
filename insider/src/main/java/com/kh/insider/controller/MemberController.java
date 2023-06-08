@@ -87,17 +87,16 @@ public class MemberController {
    
    @PostMapping("/login")
    public String login(HttpSession session, @ModelAttribute MemberDto dto, RedirectAttributes attr, HttpServletRequest request) {
-   session = request.getSession();
-   MemberDto findMember = memberRepo.login(dto.getMemberEmail(), dto.getMemberPassword());
+   MemberDto findMember = memberRepo.login(dto.getMemberEmail(),dto.getMemberPassword());
    
    if(findMember == null) {
       int result = 0;
       attr.addFlashAttribute("result",result);
       return "redirect:login";
    }
-   memberRepo.updateLoginTime(findMember.getMemberNo());
    session.setAttribute("memberNo",findMember.getMemberNo());
    session.setAttribute("socialUser", findMember);
+   memberRepo.updateLoginTime(findMember.getMemberNo());
       
    return "redirect:/";
    }
