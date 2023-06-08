@@ -54,6 +54,11 @@ public class MemberRestController {
 	public MemberWithProfileDto getMember(@PathVariable long memberNo) {
 		return memberWithProfileRepo.selectOne(memberNo);
 	}
+	@GetMapping("/")
+	public MemberWithProfileDto getMemberInfo(HttpSession session) {
+		long memberNo = (long)session.getAttribute("memberNo");
+		return memberWithProfileRepo.selectOne(memberNo);
+	}
 	//멤버정보 수정
 	@PutMapping("/")
 	public void putMember(@RequestBody MemberDto memberDto, HttpSession session) {
@@ -65,12 +70,28 @@ public class MemberRestController {
 	//환경설정 불러오기
 	@GetMapping("/setting/{memberNo}")
 	public SettingDto setting(@PathVariable long memberNo) {
-		return settingRepo.selectOne(memberNo);
+		SettingDto settingDto =settingRepo.selectOne(memberNo);;
+		if(settingDto!=null) {
+			return settingDto; 
+		}
+		else {
+			settingRepo.basicInsert(memberNo);
+			SettingDto newSettingDto = settingRepo.selectOne(memberNo);
+			return newSettingDto;
+		}
 	}
 	@GetMapping("/setting")
 	public SettingDto getSetting(HttpSession session) {
 		long memberNo = (long) session.getAttribute("memberNo");
-		return settingRepo.selectOne(memberNo);
+		SettingDto settingDto =settingRepo.selectOne(memberNo);;
+		if(settingDto!=null) {
+			return settingDto; 
+		}
+		else {
+			settingRepo.basicInsert(memberNo);
+			SettingDto newSettingDto = settingRepo.selectOne(memberNo);
+			return newSettingDto;
+		}
 	}
 	
 	//환경설정 수정

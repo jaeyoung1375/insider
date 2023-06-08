@@ -75,8 +75,9 @@ public class MemberController {
    @PostMapping("/join")
    public String join(@ModelAttribute MemberDto dto) {
       memberRepo.join(dto);
-      //기본 회원설정값 생성(추후 수정 필요)
-//      settingRepo.basicInsert(dto.getMemberNo());
+      //기본 회원설정값 생성(닉네임 받아서 생성함)
+      MemberWithProfileDto newMemberDto = memberRepo.findByNickName(dto.getMemberNick());
+      settingRepo.basicInsert(newMemberDto.getMemberNo());
       return "redirect:/";
    }
    
