@@ -167,6 +167,9 @@
  	.notification-list li { 
  	  margin-bottom: 10px; 
  	} 
+ 	
+ 	
+ 	
 
 </style>
 
@@ -235,6 +238,7 @@
 							      <div class="modal-body">
 							        <ul class="notification-list">
 							        	<span>새로운 알림</span>
+							        	<hr>
 							          <li v-for="notification in notifications"   >
 							          	<div>
 								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/member/'+ notification.memberNick">
@@ -242,10 +246,10 @@
 								          	{{ notification.memberNick }} 님이
 								          	</a>
 								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
-								          	<span v-if="notification.type == 1">게시글을 좋아요 하였습니다.</span>
-								          	<span v-if="notification.type == 2">게시글에 댓글을 달았습니다.</span>
-								          	<span v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</span>
-								          	<span v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</span>
+								          	<p v-if="notification.type == 1">게시글을 좋아요 하였습니다.</p>
+								          	<p v-if="notification.type == 2">게시글에 댓글을 달았습니다.</p>
+								          	<p v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</p>
+								          	<p v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</p>
 								          	</a>
 								          	<span v-if="notification.type == 5">팔로우하였습니다.</span>
 								          	<b>· {{dateCount(notification.boardTimeAuto)}}</b>
@@ -253,7 +257,8 @@
 							          </li>
 							          <hr>
 							          <span>읽은 알림</span>
-							          <a @click="deleteAllNotifications" class="btn btn-secondary" style="float: right; margin-top: 2px;">전체삭제</a>
+							          <a @click="deleteAllNotifications" class="btn btn-secondary" style="position: fixed; top:6%; left:75%;transform: transform(-50%,-50%);">전체삭제</a>
+							          <hr>
 							          <li v-for="notification in storedNotifications" :key="notification.id">
 										  <div :class="{ 'read': notification.status === 'read' }">
 										    <a class="nav-link" :href="'${pageContext.request.contextPath}/member/'+ notification.memberNick">
@@ -477,7 +482,7 @@
 
 	    mounted() {
 	      this.loadNotifications(); // 컴포넌트가 마운트될 때 알림 데이터를 로드
-	      this.intervalId = setInterval(this.loadNotifications, 5000); // 5초마다 알림 데이터를 갱신
+	      this.intervalId = setInterval(this.loadNotifications, 10000); // 5초마다 알림 데이터를 갱신
 	    },
 	    beforeUnmount() {
 	      clearInterval(this.intervalId); //메모리 누수방지
