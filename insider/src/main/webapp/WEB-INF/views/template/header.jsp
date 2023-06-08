@@ -243,14 +243,8 @@
 								          	</a>
 								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
 								          	<span v-if="notification.type == 1">게시글을 좋아요 하였습니다.</span>
-								          	</a>
-								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
 								          	<span v-if="notification.type == 2">게시글에 댓글을 달았습니다.</span>
-								          	</a>
-								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
 								          	<span v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</span>
-								          	</a>
-								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
 								          	<span v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</span>
 								          	</a>
 								          	<span v-if="notification.type == 5">팔로우하였습니다.</span>
@@ -268,19 +262,13 @@
 										    </a>
 									        <a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
 								          	<span v-if="notification.type == 1">게시글을 좋아요 하였습니다.</span>
-								          	</a>
-								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
 								          	<span v-if="notification.type == 2">게시글에 댓글을 달았습니다.</span>
-								          	</a>
-								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
 								          	<span v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</span>
-								          	</a>
-								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
 								          	<span v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</span>
 								          	</a>
-										    <span v-if="notification.type == 5">팔로우하였습니다.</span>
+								          	<span v-if="notification.type == 5">팔로우하였습니다.</span>
 										    <b>· {{dateCount(notification.boardTimeAuto)}}</b>
-										    <a @click="deleteNotification(notification)" class="btn btn-secondary">알림삭제</a>
+<!-- 										    <a @click="deleteNotification(notification)" class="btn btn-secondary">알림삭제</a> -->
 										  </div>
 										</li>
 							          
@@ -404,14 +392,16 @@
 		    	    });
 	      },
 	      
-	      deleteNotification(notification) {
-	    	    const index = this.storedNotifications.findIndex((n) => n.id === notification.id);
-	    	    if (index !== -1) {
-	    	      this.storedNotifications.splice(index, 1);
-	    	      localStorage.setItem("storedNotifications", JSON.stringify(this.storedNotifications));
-	    	    }
-	    	  },
-	    	  
+	      //알림 삭제
+// 	      deleteNotification(notification) {
+// 	    	    const index = this.storedNotifications.findIndex((n) => n.id === notification.id);
+// 	    	    if (index !== -1) {
+// 	    	      this.storedNotifications.splice(index, 1);
+// 	    	      localStorage.setItem("storedNotifications", JSON.stringify(this.storedNotifications));
+// 	    	    }
+// 	    	  },
+	    
+		  //알림 전체 삭제
     	  deleteAllNotifications() {
     		  this.storedNotifications = [];
     		  localStorage.removeItem("storedNotifications");
@@ -443,10 +433,43 @@
 	        	const resp = await axios.get(contextPath+"/rest/member/nickname");
         		window.location.href=contextPath+'/member/'+resp.data;
 	        },
+	        
+	        //7일 뒤 알림 자동 삭제
+// 	        cleanupLocalStorage() {
+// 	            const storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
+// 	            const currentDate = new Date();
+// 	            const expirationDate = new Date();
+// 	            expirationDate.setDate(currentDate.getDate() - 7); // 7 days ago
+
+// 	            const updatedStoredNotifications = storedNotifications.filter((notification) => {
+// 	              const notificationDate = new Date(notification.date);
+// 	              return notificationDate >= expirationDate;
+// 	            });
+
+// 	            localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
+// 	          },
+
+			//7초 뒤 알림 자동 삭제
+	        cleanupLocalStorage() {
+	        	  const storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
+
+	        	  const expirationDate = new Date();
+	        	  expirationDate.setTime(expirationDate.getTime() + 7 * 1000); 
+
+	        	  setTimeout(() => {
+	        	    const updatedStoredNotifications = storedNotifications.filter((notification) => {
+	        	      const notificationDate = new Date(notification.date);
+	        	      return notificationDate >= expirationDate;
+	        	    });
+
+	        	    localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
+	        	  }, 7000); 
+	        	},
 	    },
 	
 	    created() {
 	      // 데이터 불러오는 영역
+// 	    	this.cleanupLocalStorage();
 	    },
 	    watch: {
 	      // 감시영역
