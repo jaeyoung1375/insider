@@ -360,6 +360,7 @@
     	      this.showModal = !this.showModal;
 
     	      if (!this.showModal) {
+    	    	this.cleanupLocalStorage();
     	        this.check();
     	      }
     	    },
@@ -423,26 +424,27 @@
 	        },
 	        
 	        //7일 뒤 알림 자동 삭제
-// 	        cleanupLocalStorage() {
-// 	            const storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
-// 	            const currentDate = new Date();
-// 	            const expirationDate = new Date();
-// 	            expirationDate.setDate(currentDate.getDate() - 7); // 7 days ago
+// 			cleanupLocalStorage() {
+// 			 	const storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
+			
+// 			  	const expirationDate = new Date();
+// 			  	expirationDate.setDate(expirationDate.getDate() - 7); // Subtract 7 days from the current date
+			
+// 			  	const updatedStoredNotifications = storedNotifications.filter((notification) => {
+// 			    const notificationDate = new Date(notification.date);
+// 			    	return notificationDate >= expirationDate;
+// 			  	});
+		
+// 		  		localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
+// 			},
 
-// 	            const updatedStoredNotifications = storedNotifications.filter((notification) => {
-// 	              const notificationDate = new Date(notification.date);
-// 	              return notificationDate >= expirationDate;
-// 	            });
-
-// 	            localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
-// 	          },
 
 			//7초 뒤 알림 자동 삭제
 	        cleanupLocalStorage() {
 	        	  const storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
 
 	        	  const expirationDate = new Date();
-	        	  expirationDate.setTime(expirationDate.getTime() + 7 * 1000); 
+	        	  expirationDate.setTime(expirationDate.getTime() + 7 * 1000);
 
 	        	  setTimeout(() => {
 	        	    const updatedStoredNotifications = storedNotifications.filter((notification) => {
@@ -451,13 +453,14 @@
 	        	    });
 
 	        	    localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
-	        	  }, 7000); 
+	        	  }, 7000);
 	        	},
+
 	    },
 	
 	    created() {
 	      // 데이터 불러오는 영역
-// 	    	this.cleanupLocalStorage();
+	    	this.cleanupLocalStorage();
 	    },
 	    watch: {
 	      // 감시영역
