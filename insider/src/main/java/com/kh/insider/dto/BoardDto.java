@@ -16,8 +16,8 @@ public class BoardDto {
 	public double boardLon;
 	public Date boardTime;
 	public int boardReply;
-	public int boardReplyValid;
-	public int boardLikeValid;
+	public Integer boardReplyValid;
+	public Integer boardLikeValid;
 	public int boardReport;
 	public int boardHide;
 	public int boardKid;
