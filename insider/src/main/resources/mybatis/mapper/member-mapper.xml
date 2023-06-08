@@ -147,7 +147,7 @@ ORDER BY MAX(ba.ATTACHMENT_NO) DESC
 	</update>
 	<!-- 회원정보 수정(패스워드)-->
 	<update id="changePassword">
-		update member set member_password=#{memberPassword} where member_no = #{memberNo}
+		update member set member_password=#{memberPassword} where member_Email = #{memberEmail}
 	</update>
 	<!-- 로그인 시각 갱신 -->
 	<update id="updateLoginTime">
