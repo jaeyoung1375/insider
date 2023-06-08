@@ -153,49 +153,48 @@
 	  border: 1px solid #888;
 	  width: 100%;
 	  max-width: 100%;
+	} 	
+	
+	.file-preview-container {
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	  height: 100%;
 	}
-	 	
+
+	.file-preview-wrapper {
+	  width: 200px;
+	  height: 100%;
+	  overflow: hidden;
+	  margin: 0 10px;
+	}
+	
+	.preview-image,
+	.preview-video {
+	  width: 100%;
+	  height: 100%;
+	  object-fit: cover;
+	}
+	
 </style>
 
 
 <script type="text/javascript">
 
-// <script type="text/javascript">
-// $(function(){
-//     $('[name=summernote]').summernote({
-//         placeholder: '내용 작성',
-//         tabsize: 4,//탭키를 누르면 띄어쓰기 몇 번 할지
-//         height: 250,//최초 표시될 높이(px)
-//         toolbar: [//메뉴 설정
-//             ['style', ['style']],
-//             ['font', ['bold', 'underline', 'clear']],
-//             ['color', ['color']],
-//             ['para', ['ul', 'ol', 'paragraph']],
-//             ['table', ['table']],
-//             ['insert', ['link', 'picture']]
-//         ]
-//     });
-// });
-
-
-
 $(function(){
 
 	$(document).ready(function() {
-		  // Show the modal on page load
+
 		  $('#modalForm').css('display', 'block');
 
-		  // Disable modal closing when clicking outside the modal content
 		  $('.modal-dialog').on('click', function(event) {
 		    event.stopPropagation();
 		  });
 
-		  // Close the modal when the cancel button is clicked
 		  $('.cancel').on('click', function() {
 		    $('#modalForm').css('display', 'none');
 		  });
 
-		  // Close the modal when the close button is clicked
 		  $('.close').on('click', function() {
 		    $('#modalForm').css('display', 'none');
 		  });
@@ -210,15 +209,15 @@ $(document).ready(function() {
         toolbar: false,
         callbacks: {
             onInit: function() {
-                // Retrieve the initial content
+ 
                 var content = $('#summernote').val();
-                // Convert line breaks to <br> tags
+
                 content = content.replace(/\n/g, '<br>');
-                // Set the modified content back to Summernote
+
                 $('#summernote').summernote('code', content);
             },
             onKeyup: function() {
-                // Update the character count
+
                 var content = $('#summernote').summernote('code');
                 var characterCount = content.replace(/<[^>]+>/g, '').length;
                 $('.count').text(characterCount);
@@ -339,7 +338,7 @@ $(document).ready(function() {
 		      	
 		      	<!-- 1-1. 사진 첨부전, 업로드 버튼 영역 -->
 			      <div :class="{'hidefile':files.length > 0}">
-				      <div class="card-body text-center" style="margin-top: 12%;">
+				      <div class="card-body text-center" style="margin-top: 12%; height: 400px;">
 				        <h1 class="card-title" ><i class="fa-regular fa-images"></i></h1>
 				        <p class="card-text fs-5">사진을 선택하세요.</p>
 				        <label for="upload" class="input-upload">업로드</label>
@@ -349,28 +348,32 @@ $(document).ready(function() {
 			      </div>
 			      
 			      <!-- 1-2. 사진 첨부했을 때, 미리보기 영역 -->
-			      <div :class="{'hidefile':files.length==0}">
-				      <div class="file-preview-container">
-				        <div v-for="(file, index) in files" :key="index" class="file-preview-wrapper">
-				        	<div class="file-close-button" @click="fileDeleteButton" :name="file.number">
-				        		X
-				        	</div>
-				        	<img :src="file.preview"/>
-				        </div>
-				        <div class="file-preview-wrapper-upload">
-				        	<div class="image-box" v-show="files.length <5">
-						        <label for="upload2" class="input-uploadPlus">
-						        	<i class="fa-solid fa-plus fa-3x"></i>
-						        </label>
-						        <input type="file" name="boardAttachment" accept="image/*, video/*" id="upload2" ref="files2" @change="imageAddUpload" style="display:none;" multiple/>				        	
-				        	</div>
-				        </div>
-				      </div>
-			      </div>
-		      
+					<div :class="{'hidefile': files.length==0}">
+					  <div class="file-preview-container">
+					    <div v-for="(file, index) in files" :key="index" class="file-preview-wrapper">
+					      <div class="file-close-button" @click="fileDeleteButton" :name="file.number">
+					        X
+					      </div>
+					      <template v-if="file.file.type.startsWith('image/')">
+					        <img :src="file.preview" class="preview-image" />
+					      </template>
+					      <template v-else-if="file.file.type.startsWith('video/')">
+					        <video :src="file.preview" class="preview-video" controls></video>
+					      </template>
+					    </div>
+					    <div class="file-preview-wrapper-upload">
+					      <div class="image-box" v-show="files.length < 5">
+					        <label for="upload2" class="input-uploadPlus">
+					          <i class="fa-solid fa-plus fa-3x"></i>
+					        </label>
+					        <input type="file" name="boardAttachment" accept="image/*, video/*" id="upload2" ref="files2" @change="imageAddUpload" style="display:none;" multiple/>
+					      </div>
+					    </div>
+					  </div>
+					</div>
+
 		      </div>
 		      
-
 		    </div>
 		
 		  </div>
@@ -403,26 +406,34 @@ $(document).ready(function() {
 		      	<div class="row">
 		      		<div class="col-md-7">
 		      			
-		      			<div id="carouselExampleIndicators" class="carousel slide" data-bs-interval="false">
-								  <div class="carousel-indicators">
-								    <button v-for="(file, index) in files" :key="index" type="button" data-bs-target="#carouselExampleIndicators" :data-bs-slide-to="index" :class="{'active':index==0}" :aria-current="index==0" :aria-label="'Slide'+(index+1)"></button>
-								  </div>
-								  
-								  <div class="carousel-inner" >
-									  	<div  v-for="(file, index) in files" :key="index" class="carousel-item" v-bind:class="{'active':index==0}">
-									  		<img :src="file.preview" class="d-block w-100" style="height: 480px;" />
-									  	</div>
-								  </div>
-								  
-								  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-								    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-								    <span class="visually-hidden">Previous</span>
-								  </button>
-								  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-								    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-								    <span class="visually-hidden">Next</span>
-								  </button>
-								</div>
+					<div id="carouselExampleIndicators" class="carousel slide" data-bs-interval="false">
+					  <div class="carousel-indicators">
+					    <button v-for="(file, index) in files" :key="index" type="button" data-bs-target="#carouselExampleIndicators" :data-bs-slide-to="index" :class="{'active':index==0}" :aria-current="index==0" :aria-label="'Slide'+(index+1)"></button>
+					  </div>
+					  
+					  <div class="carousel-inner">
+					    <div v-for="(file, index) in files" :key="index" class="carousel-item" :class="{'active':index==0}">
+					      <template v-if="file.file.type.startsWith('image/')">
+					        <img :src="file.preview" class="d-block w-100" style="max-height: 480px; object-fit: contain;" />
+					      </template>
+					      <template v-else-if="file.file.type.startsWith('video/')">
+					        <video class="d-block w-100" style="max-height: 480px;" controls>
+					          <source :src="file.preview" type="video/mp4">
+					        </video>
+					      </template>
+					    </div>
+					  </div>
+					  
+					  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+					    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+					    <span class="visually-hidden">Previous</span>
+					  </button>
+					  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+					    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+					    <span class="visually-hidden">Next</span>
+					  </button>
+					</div>
+
 		      			
 		      		</div>
 		      		
@@ -525,31 +536,49 @@ $(document).ready(function() {
     	  files : [],
     	  filesPreview: [],
     	  uploadImageIndex: 0,
-
-    	  
-    	  /* //사람태그
-    	  keyword: "",
-    	  nickList: [],
-    	  click: false, */
-        
       }
     },
 
     //methods : 애플리케이션 내에서 언제든 호출 가능한 코드 집합이 필요한 경우 작성한다.
      methods: {
-    	 imageUpload(){
-    		    for(let i = 0; i < this.$refs.files.files.length; i++){
-    		        this.files = [
-    		            ...this.files,
-    		            {
-    		                file: this.$refs.files.files[i],
-    		                preview: URL.createObjectURL(this.$refs.files.files[i]),
-    		                number: i
-    		            }
-    		        ];
-    		    }
-    		    this.uploadImageIndex = this.files.length;
+    	 
+    	 videoUpload() {
+    		  for (let i = 0; i < this.$refs.files.files.length; i++) {
+    		    const file = this.$refs.files.files[i];
+    		    const preview = URL.createObjectURL(file);
+    		    const number = this.files.length + i;
+
+    		    this.files = [
+    		      ...this.files,
+    		      {
+    		        file,
+    		        preview,
+    		        number
+    		      }
+    		    ];
+    		  }
+    		  this.uploadImageIndex = this.files.length;
     		},
+
+    	 
+    	 imageUpload() {
+    		  for (let i = 0; i < this.$refs.files.files.length; i++) {
+    		    const file = this.$refs.files.files[i];
+    		    const preview = URL.createObjectURL(file);
+    		    const number = this.files.length + i;
+
+    		    this.files = [
+    		      ...this.files,
+    		      {
+    		        file,
+    		        preview,
+    		        number
+    		      }
+    		    ];
+    		  }
+    		  this.uploadImageIndex = this.files.length;
+    		},
+
 
      	
      	imageAddUpload(){
