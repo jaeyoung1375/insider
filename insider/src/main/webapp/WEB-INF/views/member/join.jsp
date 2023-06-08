@@ -286,7 +286,7 @@
 	                    password : '',
 	                    passwordCk : '',
 	                    tel : '',
-	                    gender : null,
+	                    gender : "1",
 	                    post : '',
 	                    basicAddr : '',
 	                    detailAddr : '',

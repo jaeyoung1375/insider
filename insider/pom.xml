@@ -87,6 +87,13 @@
 		    <artifactId>jsoup</artifactId>
 		    <version>1.15.4</version>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-core -->
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-core</artifactId>
+		</dependency>
+		
 		<!-- application.properties 읽기 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
