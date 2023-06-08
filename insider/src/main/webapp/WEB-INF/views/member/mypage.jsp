@@ -760,7 +760,7 @@
                      	<div v-for="item in myFollowerList" :key="item.attachmentNo">
                      	 						
                   <!-- 프로필 미리보기 내용 -->
-  						    <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave">
+  					<div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave">
                   <div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" style="border-radius: 50%;"> 
 						  <div>
@@ -1728,7 +1728,7 @@
               	 this.getTotalFollowerCount(item.memberNick), // 팔로워 수 가져오기
               	 this.getTotalPostCount(item.memberNick), // 게시물 수 가져오기 
               	 this.boardList2(item.followFollower), // 게시물 목록 가져오기
-              	 this.boardList3(item.memberNo) // 게시물 목록 가져오기
+              	 //this.boardList3(item.memberNo) // 게시물 목록 가져오기
              
            	  ])          	 
            	    .then(([followCounts,followerCounts,postCounts]) => {

@@ -29,6 +29,7 @@ import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.FollowRepo;
 import com.kh.insider.repo.MemberRepo;
+import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.SettingRepo;
 import com.kh.insider.service.MemberService;
 import com.kh.insider.service.SocialLoginService;
@@ -62,6 +63,9 @@ public class MemberController {
    
    @Autowired
    private FollowRepo followRepo;
+   
+   @Autowired
+   private MemberWithProfileRepo memberWithProfileRepo;
    
    @GetMapping("/join")
    public String join() {
@@ -128,35 +132,16 @@ public class MemberController {
    @GetMapping("/{memberNick}")
    public String myPage(@PathVariable String memberNick, Model model, HttpSession session) {
       
+	   MemberWithProfileDto dto = memberRepo.findByNickName(memberNick);
       // 프로필 정보 불러오기
-	   MemberWithProfileDto findMember = memberRepo.findByNickName(memberNick);
+	   MemberWithProfileDto findMember = memberWithProfileRepo.selectOne(dto.getMemberNo());
       // 로그인한 사용자
       MemberDto loginUser = (MemberDto)session.getAttribute("socialUser");
       log.debug("로그인한 사용자:{}", loginUser);
       // 본인 프로필 인지 여부
-      boolean isOwner = loginUser.getMemberNick().equals(memberNick);
-      // 전체 게시물 개수
-      int totalPostCount = boardRepo.getTotalPostCount(findMember.getMemberNo());  
-      // 본인 팔로우 개수 
-      int totalFollowCount = followRepo.getFollowNumber(findMember.getMemberNo());
-      // 본인 팔로워 개수
-      int totalFollowerCount = followRepo.getFollowerNumber(findMember.getMemberNo());
+      boolean isOwner = loginUser.getMemberNo().equals(dto.getMemberNo());
       
-      // 팔로워 목록
-      List<FollowerWithProfileDto> followerList = followRepo.getFollowerList(findMember.getMemberNo());
       
-      // 팔로우 목록
-      List<FollowWithProfileDto> followList = followRepo.getFollowList(findMember.getMemberNo());
-      
-      // 마이페이지 게시물 조회
-      List<BoardDto> getTotalMyPost = boardRepo.getTotalMyPost(findMember.getMemberNo());
-      
-      model.addAttribute("getTotalMyPost",getTotalMyPost);
-      model.addAttribute("totalPostCount",totalPostCount);
-      model.addAttribute("totalFollowCount",totalFollowCount);
-      model.addAttribute("totalFollowerCount",totalFollowerCount);
-      model.addAttribute("followerList",followerList);
-      model.addAttribute("followList",followList);
       model.addAttribute("memberDto",findMember);
       model.addAttribute("isOwner",isOwner);
             
