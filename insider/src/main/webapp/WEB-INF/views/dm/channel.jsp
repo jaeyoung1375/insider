@@ -251,8 +251,8 @@
 						                	<i class="fa-solid fa-heart fa-xs" style="padding-bottom: 0.51em; padding-right: 0.5em; padding-left: 0.5em; color: #c23616; cursor:pointer;"></i>
 						                </div>
 						                <div class="content-footer">
-						                	<div class=heart><i class="fa-solid fa-heart fa-xs" style="color: #c23616;"></i></div>
-							                <div class=heart-number>23</div>
+						                	<div class=heart><i class="fa-heart fa-xs" :class="{'fa-solid':memberLike[index]==1, 'fa-regular':memberLike[index]==0}" style="color: #c23616;" @click="dmLike(message.messageNo, index)"></i></div>
+							                <div class=heart-number>{{likeCount[index]}}</div>
 						                </div>
 						            </div>
 					            </div>
@@ -512,6 +512,9 @@
    					
    					membersInRoomList:[], //채팅방 회원 목록
    					
+   					//좋아요 개수 목록 및 내가 좋아요한 여부
+   					likeCount:[],
+   					memberLike:[],
                 };
             },
             methods:{
@@ -528,6 +531,10 @@
             	    try {
             	        const resp = await axios.get(url);
             	        this.messageList = resp.data.map(msg => JSON.parse(msg.messageContent));
+            	        //좋아요 개수 및 내가 좋아요 했는지 여부 반환
+            	        this.likeCount = resp.data.map(msg=>JSON.parse(msg.likeCount));
+            	        this.memberLike= resp.data.map(msg=>JSON.parse(msg.memberLike));
+            	        
         				//스크롤 바닥으로 이동
         				this.$nextTick(() => {
                             const scrollContainer = this.$refs.scrollContainer;
@@ -698,8 +705,14 @@
 						if (message.messageType === 6) { // 새로운 메시지 수
 							this.fetchDmRoomList();
 						}
+						else if(message.messageType===8){ //좋아요
+							const index = this.messageList.findIndex(obj => obj.messageNo === message.messageNo);
+							this.likeCount[index]=message.likeCount;
+						}
 						else{
 		            		this.messageList.push(message);
+		            		this.likeCount.push(0);
+		            		this.memberLike.push(0);
 						}
 	            		
             		}
@@ -1044,6 +1057,13 @@
 				    } catch (error) {
 				        console.error("읽지 않은 메세지 수 수정 오류", error);
 				    }
+				},
+				//좋아요 눌렀을 때
+				async dmLike(messageNo, index){
+					const data = { type:8, messageNo:messageNo, memberNo:memberNo, room:this.roomNo };
+                    this.socket.send(JSON.stringify(data));
+                    if(this.memberLike[index]==0) this.memberLike[index]=1;
+                    else this.memberLike[index]=0;
 				},
             },
             watch:{

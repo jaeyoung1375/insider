@@ -1,9 +1,6 @@
 package com.kh.insider.service;
 
 import java.io.IOException;
-
-
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,12 +16,14 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kh.insider.dto.DmLikeDto;
 import com.kh.insider.dto.DmMessageDeletedDto;
 import com.kh.insider.dto.DmMessageDto;
 import com.kh.insider.dto.DmPrivacyRoomDto;
 import com.kh.insider.dto.DmRoomDto;
 import com.kh.insider.dto.DmRoomRenameDto;
 import com.kh.insider.dto.DmUserDto;
+import com.kh.insider.repo.DmLikeRepo;
 import com.kh.insider.repo.DmMessageDeletedRepo;
 import com.kh.insider.repo.DmMessageRepo;
 //import com.kh.insider.repo.DmNoticeRepo;
@@ -61,6 +60,9 @@ public class DmServiceImpl implements DmService {
 	
 	@Autowired
 	private DmRoomRenameRepo dmRoomRenameRepo;
+	
+	@Autowired
+	private DmLikeRepo dmLikeRepo;
 	
 
 	//여러 개의 방을 관리할 저장소
@@ -250,7 +252,6 @@ public class DmServiceImpl implements DmService {
 		
 		//비회원 차단
 		if(user.isMember() == false) return;
-		
 		//메세지 수신
 		ChannelReceiveVO receiveVO = mapper.readValue(message.getPayload(), ChannelReceiveVO.class);
 		log.debug("receiveVO = {}", receiveVO);
@@ -374,7 +375,23 @@ public class DmServiceImpl implements DmService {
 
 //	        this.inviteUsersToRoom(dmRoomVO);
 //	    }
-
+		//좋아요 메세지
+	    else if(receiveVO.getType() == WebSocketConstant.LIKE) {
+	    	DmLikeDto dmLikeDto = new DmLikeDto();
+	    	dmLikeDto.setMemberNo(receiveVO.getMemberNo());
+	    	dmLikeDto.setMessageNo(receiveVO.getMessageNo());
+	    	int count = dmLikeRepo.like(dmLikeDto);
+	    	Map<String, Long> map = new HashMap<>();
+	    	map.put("messageType",8L);
+	    	map.put("messageNo", receiveVO.getMemberNo());
+	    	map.put("likeCount", (long)count);
+	    	
+	    	String json = mapper.writeValueAsString(map);
+	        TextMessage jsonMessage = new TextMessage(json);
+	        
+	    	DmRoomVO dmRoomVO = rooms.get(receiveVO.getRoom());
+			dmRoomVO.broadcast(jsonMessage);
+	    }
 	}
 	//메세지 삭제
 	private void deleteMessage(DmUserVO user, long messageNo) {

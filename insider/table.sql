@@ -261,3 +261,10 @@ ALTER TABLE member ADD CONSTRAINT email_constraint CHECK (REGEXP_LIKE(member_ema
 ALTER TABLE member ADD CONSTRAINT name_constraint CHECK (REGEXP_LIKE(member_name, '^[가-힣a-zA-Z0-9!@#]{2,10}$'));
 ALTER TABLE member ADD CONSTRAINT password_constraint CHECK (not REGEXP_LIKE(member_password, '^[a-zA-Z0-9!@#$%^&*()\-_=+[{\]}\\|<.>/?]{8,16}$'));
 ALTER TABLE member ADD CONSTRAINT tel_constraint CHECK (not REGEXP_LIKE(member_tel, '/^01[0-9]{1}-?[0-9]{3,4}-?[0-9]{4}$/'));
+
+--dm 좋아요
+CREATE TABLE dm_like(
+message_no REFERENCES dm_message(message_no) ON DELETE CASCADE NOT NULL,
+member_no REFERENCES member(member_no) ON DELETE CASCADE NOT NULL,
+unique(message_no, member_no)
+);
