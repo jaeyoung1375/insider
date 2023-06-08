@@ -474,7 +474,7 @@ $(document).ready(function() {
 					    	</div>
 					    	
 					    	<div class="row mt-3">
-					    		<input type="text" name="memberNick" class="form-control" placeholder="@사람태그" id="memberTag" autocomplete="off">
+					    		{{currentAddr}}
 					    	</div>
 					    	
 					    	
@@ -484,7 +484,7 @@ $(document).ready(function() {
 											<label class="fs-5" for="replyCheck">댓글 기능 해제</label>
 										</div>
 										<div class="col-md-3">
-											<input type="checkbox" name="boardReplyValid" value="1" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
+											<input type="checkbox" name="boardReplyValid" v-model="boardReplyValid" :value="boardReplyValid?1:0" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
 										</div>
 									
 					    	</div>
@@ -495,7 +495,7 @@ $(document).ready(function() {
 											<label class="fs-5" for="replyCheck">좋아요 수 숨김</label>
 										</div>
 										<div class="col-md-3">
-											<input type="checkbox" name="boardLikeValid" value="1" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
+											<input type="checkbox" name="boardLikeValid" v-model="boardLikeValid" :value="boardLikeValid?1:0" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
 										</div>
 									
 					    	</div>
@@ -533,7 +533,8 @@ $(document).ready(function() {
 
 <!------------------------------------------------------------------------------------->
 
-
+<!-- 카카오맵 CDN -->
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e45b9604d6c5aa25785459639db6e025&libraries=services"></script>
 <script src="https://unpkg.com/vue@3.2.36"></script>
 <script>
   //div[id=app]을 제어할 수 있는 Vue instance를 생성
@@ -548,8 +549,13 @@ $(document).ready(function() {
 
     	  path : [],
     	  boardNo : ${board.boardNo},
-    	  boardReplyValid : ${board.boardReplyValid},
-    	  boardLikeValid : ${board.boardLikeValid},
+    	  boardReplyValid : ${board.boardReplyValid}==1,
+    	  boardLikeValid : ${board.boardLikeValid}==1,
+    	  gpsLat:memberGpsLat,
+    	  gpsLon:memberGpsLon,
+    	//주소 알아오는 코드
+    	  geocoder:null,
+    	  currentAddr:"",
     	  /* //사람태그
     	  keyword: "",
     	  nickList: [],
@@ -561,20 +567,18 @@ $(document).ready(function() {
     //methods : 애플리케이션 내에서 언제든 호출 가능한 코드 집합이 필요한 경우 작성한다.
      methods: {
     	 imageUpload(){
-     		let num = -1;
-     		for(let i = 0; i < this.$refs.files.files.length; i++){
-     			this.files = [
-     				...this.files,
-     				{
-     					file: this.$refs.files.files[i],
-     					preview: URL.createObjectURL(this.$refs.files.files[i]),
-     					number: i
-     				}
-     			];
-     			num = i;
-     		}
-     		this.uploadImageIndex = num + 1;
-     	},
+ 		    for(let i = 0; i < this.$refs.files.files.length; i++){
+ 		        this.files = [
+ 		            ...this.files,
+ 		            {
+ 		                file: this.$refs.files.files[i],
+ 		                preview: URL.createObjectURL(this.$refs.files.files[i]),
+ 		                number: i
+ 		            }
+ 		        ];
+ 		    }
+ 		    this.uploadImageIndex = this.files.length;
+ 		},
      	
      	imageAddUpload(){
      		let num = -1;
@@ -641,6 +645,23 @@ $(document).ready(function() {
       		} 
     		this.uploadImageIndex = num + 1;
     	},
+    	//주소 알아오는 메소드
+    	searchAddrFromCoords(callback) {
+		    // 좌표로 행정동 주소 정보를 요청합니다
+		    this.geocoder = new kakao.maps.services.Geocoder();
+		    this.geocoder.coord2RegionCode(memberGpsLon, memberGpsLat, callback);
+		},
+		displayCenterInfo(result, status) {
+		    if (status === kakao.maps.services.Status.OK) {
+		        for(var i = 0; i < result.length; i++) {
+		            // 행정동의 region_type 값은 'H' 이므로
+		            if (result[i].region_type === 'H') {
+		                this.currentAddr = result[i].address_name;
+		                break;
+		            }
+		        }
+		    }    
+		},
 		
     },
     
@@ -652,7 +673,7 @@ $(document).ready(function() {
     	//this.files.preview = [...a];
     	//console.log(this.files.preview)
     	this.loadImage();
-    	console.log(this.path);
+    	this.searchAddrFromCoords(this.displayCenterInfo);
     },
     
 

@@ -54,6 +54,11 @@ public class MemberRestController {
 	public MemberWithProfileDto getMember(@PathVariable long memberNo) {
 		return memberWithProfileRepo.selectOne(memberNo);
 	}
+	@GetMapping("/")
+	public MemberWithProfileDto getMemberInfo(HttpSession session) {
+		long memberNo = (long)session.getAttribute("memberNo");
+		return memberWithProfileRepo.selectOne(memberNo);
+	}
 	//멤버정보 수정
 	@PutMapping("/")
 	public void putMember(@RequestBody MemberDto memberDto, HttpSession session) {
@@ -65,12 +70,28 @@ public class MemberRestController {
 	//환경설정 불러오기
 	@GetMapping("/setting/{memberNo}")
 	public SettingDto setting(@PathVariable long memberNo) {
-		return settingRepo.selectOne(memberNo);
+		SettingDto settingDto =settingRepo.selectOne(memberNo);;
+		if(settingDto!=null) {
+			return settingDto; 
+		}
+		else {
+			settingRepo.basicInsert(memberNo);
+			SettingDto newSettingDto = settingRepo.selectOne(memberNo);
+			return newSettingDto;
+		}
 	}
 	@GetMapping("/setting")
 	public SettingDto getSetting(HttpSession session) {
 		long memberNo = (long) session.getAttribute("memberNo");
-		return settingRepo.selectOne(memberNo);
+		SettingDto settingDto =settingRepo.selectOne(memberNo);;
+		if(settingDto!=null) {
+			return settingDto; 
+		}
+		else {
+			settingRepo.basicInsert(memberNo);
+			SettingDto newSettingDto = settingRepo.selectOne(memberNo);
+			return newSettingDto;
+		}
 	}
 	
 	//환경설정 수정
@@ -89,8 +110,9 @@ public class MemberRestController {
 	@PutMapping("/setting/password")
 	public void changePassword(@RequestBody MemberDto memberDto, HttpSession session) {
 		long memberNo = (Long)session.getAttribute("memberNo");
-		memberDto.setMemberNo(memberNo);
-		memberRepo.changePassword(memberDto);
+	    MemberDto existingMember = memberRepo.findByNo(memberNo);
+	    existingMember.setMemberPassword(memberDto.getMemberPassword()); // 새로운 비밀번호 설정
+	    memberRepo.changePassword(existingMember);
 	}
 
 	
@@ -175,7 +197,8 @@ public class MemberRestController {
 		memberRepo.deleteMember(memberNo);
 		session.removeAttribute("memberNo");
 		session.removeAttribute("socialUser");
-		session.removeAttribute("member");
+		session.removeAttribute("memberLevel");
+		session.removeAttribute("memberNick");
 		
 		//리포트가 있으면 찾아서 상태 변경해줌
 		reportService.manageDeleted("member", memberNo);
