@@ -79,7 +79,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            z-index: 99999;
+            z-index: 5555;
             
             background-color: rgba(0, 0, 0, 0.2);
 /*             display: none; */
@@ -400,6 +400,9 @@
 <!-- ---------------------------------게시물 상세보기 모달(게시물)-------------------------- -->
 
 <div v-if="detailView" class="container-fluid fullscreen" @click.self="closeDetail">
+<div class="p-4 mt-2 ms-4 d-flex justify-content-end">
+		<h2 class="btn btn-none" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
+	</div>
 	<div class="row fullscreen-container">
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
@@ -426,7 +429,7 @@
 		</div>
            
          <div class="col-4" style="padding-left: 0;">
-        	<div class="card bg-light" style="border-radius:0; max-height: 700px">
+        	<div class="card bg-light" style="border-radius:0; height: 700px">
            		<div class="card-header">
 	           		<!-- <img class="profile" :src="profileUrl(detailIndex)"> -->
            			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+myBoardList[detailIndex].boardWithNickDto.memberNick"><b>{{myBoardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
@@ -434,9 +437,9 @@
 				
 				<div class="card-body card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
-					<p class="card-text" style="margin-left: 0.5em;">{{myBoardList[detailIndex].boardWithNickDto.boardContent}}
-					<br v-if="myBoardList[detailIndex].boardTagList.length > 0"><br v-if="myBoardList[detailIndex].boardTagList.length > 0">
-                            	<a href="#" v-for="(tag, index3) in myBoardList[detailIndex].boardTagList" :key="index3">\#{{tag.tagName}}</a>
+					<p class="card-text" style="margin-left: 0.5em;">{{myBoardList[detailIndex].boardWithNickDto.boardContent}}<br>
+					<br v-if="myBoardList[detailIndex].boardTagList.length > 0">
+                    <a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in myBoardList[detailIndex].boardTagList" :key="index3" style="margin-right: 0.5em; color: blue; cursor: pointer;">\#{{tag.tagName}}</a>
 					</p>
 					
 					
@@ -474,20 +477,29 @@
 				
 				<div class="card-body"  style="height:110px; padding-top: 0px; padding-left: 0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
-					<p class="card-text" style="margin: 0 0 4px 0">
-						<div class="d-flex">
-						<i :class="{'fa-heart': true, 'like':isLiked[detailIndex],'ms-2':true, 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}" @click="likePost(myBoardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
-						&nbsp;
-						<i class="fa-regular fa-message mb-1" style="font-size: 25px; "></i>
-						<span class="ms-auto" style="margin-right:10px;">
-						<i class="fa-regular fa-bookmark"  @click="bookmarkInsert(myBoardList[detailIndex].boardWithNickDto.boardNo)" v-show="bookmarkChecked(myBoardList[detailIndex].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
-                           <i class="fa-solid fa-bookmark" @click="bookmarkInsert(myBoardList[detailIndex].boardWithNickDto.boardNo)" v-show="!bookmarkChecked(myBoardList[detailIndex].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
-                          </span>
+					<div class="d-flex row">
+						<div class="col-10">
+							<span class="card-text" style="margin: 0 4px 4px 0; padding-left: 0.25em;">
+								<i :class="{'fa-heart': true, 'like':isLiked[detailIndex],'ms-2':true, 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}" @click="likePost(myBoardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
+							</span>
+							<span class="card-text" style="margin: 0 0 4px 0; padding-left: 0.5em;">
+								<i class="fa-regular fa-message mb-1" style="font-size: 25px; "></i>
+							</span>
+						</div>
+						
+						<div class="col-1 p-0 flex-grow-1">
+							<span class="ms-4">
+								<i class="fa-regular fa-bookmark"  @click="bookmarkInsert(myBoardList[detailIndex].boardWithNickDto.boardNo)" v-show="bookmarkChecked(myBoardList[detailIndex].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
+                           		<i class="fa-solid fa-bookmark" @click="bookmarkInsert(myBoardList[detailIndex].boardWithNickDto.boardNo)" v-show="!bookmarkChecked(myBoardList[detailIndex].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
+	                         </span>
                       </div>
-					<p class="card-text" style="margin: 0 0 4px 0"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount[detailIndex]}}개</b></p>
+					</div>
+					<p class="card-text" style="margin: 0 0 4px 0; cursor: pointer;"  @click="showLikeListModal(myBoardList[detailIndex].boardWithNickDto.boardNo)"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount[detailIndex]}}개</b></p>
 					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(myBoardList[detailIndex].boardWithNickDto.boardTimeAuto)}}</p>
 					
 				</div>
+				
+				
 				
 				<div class="input-group">
 					<input ref="replyInput" type="text" class="form-control" :placeholder="placeholder" v-model="replyContent" style="border: none;" aria-label="Recipient's username" aria-describedby="button-addon2" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(detailIndex)">
@@ -495,12 +507,14 @@
 				</div>
 								        	
         	</div> 
-			<button @click="closeDetail()">닫기</button>
         </div>
 	</div>
 </div>
 <!-- ---------------------------------게시물 상세보기 모달(북마크)-------------------------- -->
 <div v-if="detailView2" class="container-fluid fullscreen" @click.self="closeDetail2">
+<div class="p-4 mt-2 ms-4 d-flex justify-content-end">
+		<h2 class="btn btn-none" @click="closeDetail2" style="font-size: 30px; color:#FFFFFF;">X</h2>
+	</div>
 	<div class="row fullscreen-container">
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex2" class="carousel slide">
@@ -526,7 +540,7 @@
            </div>
 		</div>
 		<div class="col-4" style="padding-left: 0;">
-        	<div class="card bg-light" style="border-radius:0; max-height: 700px">
+        	<div class="card bg-light" style="border-radius:0; height: 700px">
            		<div class="card-header">
 	           		<!-- <img class="profile" :src="profileUrl(detailIndex)"> -->
            			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick"><b>{{bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick}}</b></a>
@@ -534,9 +548,9 @@
 				
 				<div class="card-body card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
-					<p class="card-text" style="margin-left: 0.5em;">{{bookmarkMyPostList[detailIndex2].boardWithNickDto.boardContent}}
-					<br v-if="bookmarkMyPostList[detailIndex2].boardTagList.length > 0"><br v-if="bookmarkMyPostList[detailIndex2].boardTagList.length > 0">
-                            	<a href="#" v-for="(tag, index3) in bookmarkMyPostList[detailIndex2].boardTagList" :key="index3">\#{{tag.tagName}}</a>
+					<p class="card-text" style="margin-left: 0.5em;">{{bookmarkMyPostList[detailIndex2].boardWithNickDto.boardContent}}<br>
+					<br v-if="bookmarkMyPostList[detailIndex2].boardTagList.length > 0">
+                           <a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in bookmarkMyPostList[detailIndex2].boardTagList" :key="index3" style="margin-right: 0.5em; color: blue; cursor: pointer;">\#{{tag.tagName}}</a>
 					</p>
 					
 					
@@ -574,17 +588,24 @@
 				
 				<div class="card-body"  style="height:110px; padding-top: 0px; padding-left: 0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
-					<p class="card-text" style="margin: 0 0 4px 0">
-						<div class="d-flex">
-						<i :class="{'fa-heart': true, 'like':isLiked2[detailIndex2],'ms-2':true, 'fa-solid': isLiked2[detailIndex2], 'fa-regular': !isLiked2[detailIndex2]}" @click="likePost2(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo,detailIndex2)" style="font-size: 27px;"></i>
-						&nbsp;
-						<i class="fa-regular fa-message mb-1" style="font-size: 25px; "></i>
-						<span class="ms-auto" style="margin-right:10px;">
-						<i class="fa-regular fa-bookmark"  @click="bookmarkInsert(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" v-show="bookmarkChecked(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
-                           <i class="fa-solid fa-bookmark" @click="bookmarkInsert(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" v-show="!bookmarkChecked(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
-                          </span>
+					<div class="d-flex row">
+						<div class="col-10">
+							<span class="card-text" style="margin: 0 4px 4px 0; padding-left: 0.25em;">
+								<i :class="{'fa-heart': true, 'like':isLiked2[detailIndex2],'ms-2':true, 'fa-solid': isLiked2[detailIndex2], 'fa-regular': !isLiked2[detailIndex2]}" @click="likePost2(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo,detailIndex2)" style="font-size: 27px;"></i>
+							</span>
+							<span class="card-text" style="margin: 0 0 4px 0; padding-left: 0.5em;">
+								<i class="fa-regular fa-message mb-1" style="font-size: 25px; "></i>
+							</span>
+						</div>
+						
+						<div class="col-1 p-0 flex-grow-1">
+							<span class="ms-4">
+								<i class="fa-regular fa-bookmark"  @click="bookmarkInsert(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" v-show="bookmarkChecked(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
+	                           	<i class="fa-solid fa-bookmark" @click="bookmarkInsert(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" v-show="!bookmarkChecked(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
+	                         </span>
                       </div>
-					<p class="card-text" style="margin: 0 0 4px 0"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount2[detailIndex2]}}개</b></p>
+					</div>
+					<p class="card-text" style="margin: 0 0 4px 0; cursor: pointer;" @click="showLikeListModal(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount2[detailIndex2]}}개</b></p>
 					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardTimeAuto)}}</p>
 					
 				</div>
@@ -595,8 +616,8 @@
 				</div>
 								        	
         	</div> 
-			<button @click="closeDetail2()">닫기</button>
-        </div>
+			
+		</div>
 	</div>
 </div>
 
@@ -760,7 +781,7 @@
                      	<div v-for="item in myFollowerList" :key="item.attachmentNo">
                      	 						
                   <!-- 프로필 미리보기 내용 -->
-  						    <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave">
+  					<div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave">
                   <div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" style="border-radius: 50%;"> 
 						  <div>
@@ -1080,6 +1101,44 @@
 	</div>
 	
 <!-- 차단 관련 모달 끝 -->
+
+<!-- 좋아요 목록 모달  -->
+<div class="modal" tabindex="-1" role="dialog" id="likeListModal" data-bs-backdrop="static" ref="likeListModal" style="z-index:9999;">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content">
+				<div class="modal-header">
+        			<h5 class="modal-title col-7" style="font-weight:bold;">좋아요</h5>
+        			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="hideLikeListModal"></button>
+      			</div>
+				<div v-if="likeList.length != 0" class="modal-body p-0">				
+					<div class="row p-2 mt-2"  v-for="(like,index) in likeList" :key="index">
+						<div  class="col d-flex">
+							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick">
+								<img v-if="like.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ like.attachmentNo" width="50" height="50" style="border-radius: 70%;">
+								<img v-else src="https://via.placeholder.com/50x50?text=profile" style="border-radius: 70%; ">
+							</a>
+							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick" style="color:black;text-decoration:none; position:relative;">
+								<h6 style="margin: 14px 0 0 10px;">{{like.memberNick}}</h6>
+							</a>
+						</div>
+					</div>
+				</div>
+				
+				<div class="modal-body p-0" v-else>
+					<div class="row p-2 mt-2" >
+						<div class="col text-center">
+							<h2 class="mt-1">아직 좋아요가 없습니다</h2><br>
+							<h3>첫 번째 좋아요를 눌러주세요</h3>
+						</div>
+	 			 	</div>		
+				</div>
+					
+				
+				
+		</div>
+	</div>
+	</div>
+
         <!-- Modal 창 영역 끝 -->
         
       
@@ -1183,6 +1242,9 @@
 			boardLikeCount2:[], // 좋아요 수를 저장할 변수
             isLiked : [], // 로그인 회원이 좋아요 체크 여부
             isLiked2 : [], // 로그인 회원이 좋아요 체크 여부
+            likeList : [],
+            likeListData : [],
+            likeListModal : false,
             
 			//게시물 댓글 좋아요 기능 전용 변수
 			replyLikeCount : [], // 댓글 좋아요 수 저장 변수
@@ -1728,7 +1790,7 @@
               	 this.getTotalFollowerCount(item.memberNick), // 팔로워 수 가져오기
               	 this.getTotalPostCount(item.memberNick), // 게시물 수 가져오기 
               	 this.boardList2(item.followFollower), // 게시물 목록 가져오기
-              	 this.boardList3(item.memberNo) // 게시물 목록 가져오기
+              	 //this.boardList3(item.memberNo) // 게시물 목록 가져오기
              
            	  ])          	 
            	    .then(([followCounts,followerCounts,postCounts]) => {
@@ -2019,6 +2081,27 @@
                  this.boardLikeCount2[index] = resp.data.count;
              },
              
+             //좋아요 리스트
+             async likeListLoad(boardNo) {
+             	const resp = await axios.get("${pageContext.request.contextPath}/rest/board/like/list/" + boardNo);
+             	this.likeList = [...resp.data];
+             },
+             
+             //좋아요 모달창 열기
+             showLikeListModal(boardNo){
+     			if(this.likeListModal==null) return;
+     			this.likeListLoad(boardNo);
+     			this.likeListModal.show();
+     			this.likeListData=[boardNo];
+     		},
+     		
+     		//좋아요 모달창 닫기
+     		hideLikeListModal(){
+     			if(this.likeListModal==null) return;
+     			this.likeList=[];
+     			this.likeListModal.hide();
+     		},
+             
              
              //댓글 좋아요
              async likeReply(replyNo, index) {
@@ -2174,6 +2257,12 @@
 				    console.error(error);
 				  }
 				},
+				
+				async moveToTagPage(tagName){
+					const data={searchTagName:tagName, searchDelete:1};
+					const resp = await axios.post(contextPath+"/rest/search/", data);
+					window.location.href=contextPath+"/tag/"+tagName;
+				},
              	
                 /*----------------------신고----------------------*/
                 //신고 모달 show, hide
@@ -2261,6 +2350,8 @@
         			console.log("북마크 리스트 : "+this.bookmarkCheck.map(item => item.boardNo));
         		},
         		
+        		
+        		
         		/*---------북마크 종료 ----------------- */
       		
         		// 회원탈퇴       	
@@ -2312,6 +2403,7 @@
             this.followModal = new bootstrap.Modal(this.$refs.followModal);
             this.recommendFriendsAllListModal = new bootstrap.Modal(this.$refs.recommendFriendsAllListModal);
             this.deleteMemberModal = new bootstrap.Modal(this.$refs.deleteMemberModal);
+            this.likeListModal = new bootstrap.Modal(this.$refs.likeListModal);
         
             window.addEventListener("scroll", _.throttle(()=>{
             
