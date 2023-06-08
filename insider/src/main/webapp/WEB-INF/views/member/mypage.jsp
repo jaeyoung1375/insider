@@ -157,7 +157,51 @@
   width: 100%;
   transform: translateX(-50%);
 }
- 
+/* 게시물 네모박스 */
+.box {
+	position: relative;
+	width: 30%;
+	font-size:1.2em;
+}
+.box::after {
+	display: block;
+	content: "";
+	padding-bottom: 100%;
+}
+.content,.content-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.pages {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 1;
+	margin-top:0.5em;
+	margin-right:0.5em;
+	color:white;
+}
+.like-comment{
+	position: absolute;
+	z-index: 10;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color:white;
+	cursor:default;
+	display:none;
+}
+.box:hover .content-box{
+	background-color:rgba(34, 34, 34, 0.13);
+	z-index:5;
+}
+.box:hover .like-comment{
+	display:block;
+}
 </style>
 
       <div id="app" class="container-fluid">
@@ -348,18 +392,20 @@
    </div>
    
    
-    	 <div style="margin-bottom:10px;display: flex;flex-wrap:wrap; width: 100%;">
-	    	<div v-for="(board,index) in myBoardList" :key="index" style="margin-right: 10px;">
-    		 <div class="media-height" style="margin-right: 10px; position:relative;">
-	    		 	<div v-if="board.boardAttachmentList && board.boardAttachmentList[0]">
-					<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+board.boardAttachmentList[0].attachmentNo" style="width:100%; height:250px;">
-					</div>
-    		 	 <i class="fa-solid fa-note-sticky fa-lg" style="color:white;position:absolute;right:0;top:20px;"></i>
-    		 	  <div class="imgHover" style="cursor:pointer;position:absolute;background-color:#22222221;left:0;right:0;top:0;bottom:0;opacity:0;color:white;"  @click="detailViewOn(index)">
-    		 	   <i class="fa-solid fa-heart fa-lg" style="position:absolute;top:50%;left:25%;">{{board.boardWithNickDto.boardLike}}</i>
-    		 	     <i class="fa-regular fa-comment fa-lg" style="position:absolute;top:50%;left:50%;">{{board.boardWithNickDto.boardReply}}</i>	    		 	 	    
-    		 	  </div> 
-    		 </div>  
+    	 <div class="row d-flex justify-content-center w-100">
+	    	<div class="box m-2" v-for="(board,index) in myBoardList" :key="index" @click="detailViewOn(index)">
+	    		<video class="content" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
+							style="object-fit:cover" autoplay muted controls loop></video>
+				<img class="content" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+board.boardAttachmentList[0].attachmentNo">
+			<!-- 쉐도우용 더미 -->
+				<div class="content-box" ></div>
+			<!-- 사진 여러장일 때 -->
+    		 	<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
+    		<!-- 좋아요, 댓글 개수 -->
+				<div class="like-comment" >
+					<span><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
+					<span class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
+				</div>
     		</div>
      
     	</div>
@@ -377,21 +423,22 @@
 		 	</div>
 		</div>
 
-
-	    <div style="margin-bottom:10px;display: flex;flex-wrap:wrap; width: 100%; margin-top:20px;" v-else>
-	    	<div v-for="(bookmark,index) in bookmarkMyPostList" :key="bookmark.boardNo">
-	    		 <div class="media-height" style="margin-right: 10px; position:relative;">
-	    		 	<div v-if="bookmark.boardAttachmentList && bookmark.boardAttachmentList[0]">
-					<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+bookmark.boardAttachmentList[0].attachmentNo" style="width:100%; height:250px;">
-					</div>
-    		 	 <i class="fa-solid fa-note-sticky fa-lg" style="color:white;position:absolute;right:0;top:20px;"></i>
-    		 	  <div class="imgHover" style="cursor:pointer;position:absolute;background-color:#22222221;left:0;right:0;top:0;bottom:0;opacity:0;color:white;"  @click="detailViewOn2(index)">
-    		 	   <i class="fa-solid fa-heart fa-lg" style="position:absolute;top:50%;left:25%;">{{bookmark.boardWithNickDto.boardLike}}</i>
-    		 	     <i class="fa-regular fa-comment fa-lg" style="position:absolute;top:50%;left:50%;">{{bookmark.boardWithNickDto.boardReply}}</i>	    		 	 	    
-    		 	  </div> 
-    		 </div>  
-	    	</div>
-	    </div>
+    	 <div class="row d-flex justify-content-center w-100">
+	    	<div class="box m-2" v-for="(bookmark,index) in bookmarkMyPostList" :key="bookmark.boardNo" @click="detailViewOn2(index)">
+	    		<video class="content" :src="'${pageContext.request.contextPath}'+bookmark.boardAttachmentList[0].imageURL" v-if="bookmark.boardAttachmentList[0].video"
+							style="object-fit:cover" autoplay muted controls loop></video>
+				<img class="content" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+bookmark.boardAttachmentList[0].attachmentNo">
+			<!-- 쉐도우용 더미 -->
+				<div class="content-box" ></div>
+			<!-- 사진 여러장일 때 -->
+    		 	<i class="fa-regular fa-copy pages" v-if="bookmark.boardAttachmentList.length>1"></i>
+    		<!-- 좋아요, 댓글 개수 -->
+				<div class="like-comment" >
+					<span><i class="fa-solid fa-heart"></i> {{bookmark.boardWithNickDto.boardLike}}</span> 
+					<span class="ms-3"><i class="fa-solid fa-comment"></i> {{bookmark.boardWithNickDto.boardReply}}</span>
+				</div>
+    		</div>
+    	</div>
     </div>
     
 </div>

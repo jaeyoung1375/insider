@@ -95,8 +95,12 @@
 
 /* 모달이 사이즈가 커지면 스크롤이 생기고 헤더 고정 */
 .modal-content{
+	margin:0;
+	padding:0.4em;
+	padding-right:0.7em;
 	max-height:100%;
-	overflow-y:auto
+	overflow-y:auto;
+	overflow-x:hidden;
 }
 .modal-header-custom{
 	padding:1.3em;

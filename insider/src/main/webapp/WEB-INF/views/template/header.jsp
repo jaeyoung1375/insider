@@ -182,8 +182,8 @@
 			<nav class="mt-3">
 				<div class="container-fluid" style="width:60%; max-width:900px; min-width:700px">
 					<div class="row ps-5 pe-5" style="max-width:1200px">
-						<div class="col-2">
-							<a href="${pageContext.request.contextPath}/" class="logo d-flex align-items-center" style="color:inherit">
+						<div class="col-3">
+							<a href="${pageContext.request.contextPath}/" class="logo d-flex align-items-center" style="color:inherit;">
 								<img class="me-2" src="${pageContext.request.contextPath}/static/image/logo.png" width="50" height="50">
 								insider
 							</a>
@@ -233,7 +233,7 @@
 								</div>
 							<!-- dm -->
 								<div class="col p-0 m-2">
-									<a class="" href="${pageContext.request.contextPath}/dm/channel" style="color:inherit"><i class="fa-regular fa-message header-menu-option" style="font-size:40px; margin-top:2px"></i></a>
+									<a class="" href="${pageContext.request.contextPath}/dm/channel" style="color:inherit"><i class="fa-regular fa-message header-menu-option" style="font-size:40px; margin-top:3px"></i></a>
 								</div>
 							<!-- 게시물작성 -->
 								<div class="col p-0 m-2">

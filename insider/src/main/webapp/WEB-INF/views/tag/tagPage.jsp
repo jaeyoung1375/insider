@@ -2,9 +2,10 @@
     pageEncoding="UTF-8"%>
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 <style>
+/* 게시물 네모박스 */
 .box {
 	position: relative;
-	width: 30.9%;
+	width: 30%;
 	font-size:1.2em;
 }
 .box::after {
@@ -27,11 +28,11 @@
 	z-index: 1;
 	margin-top:0.5em;
 	margin-right:0.5em;
-	color:lightgray;
+	color:white;
 }
 .like-comment{
 	position: absolute;
-	z-index: 1;
+	z-index: 10;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
@@ -112,7 +113,7 @@
 	}
 	
 </style>
-<div class="container-fluid mt-4" id="app">
+<div class="container-fluid mt-4" id="app" style="width:70%; max-width:1300px">
 	<div class="row">
 		<div class="col-4 text-center">
 			<img class="rounded-circle profile-image-box" :src="'${pageContext.request.contextPath}'+mainImage" width = "150" height="150">
@@ -145,16 +146,20 @@
 	</div>
 	<hr>
 	<!-- 게시물 목록 -->
-	<div class="row d-flex justify-content-center">
-		<div class="box m-2" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)"
-			@click="detailViewOn(index)">
-			<img class='content' v-if="board.boardAttachmentList.length>0" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
-			<img class='content' v-else src="${pageContext.request.contextPath}/static/image/noimage.png">
-			<div class="content-box"></div>
-			<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
-			<div class="like-comment">
-				<span><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
-				<span class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
+	<div class="row">
+		<div class="col d-flex justify-content-center">
+			<div class="row d-flex justify-content-center" style="width:80%">
+				<div class="box m-2" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)"
+					@click="detailViewOn(index)">
+					<img class='content' v-if="board.boardAttachmentList.length>0" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
+					<img class='content' v-else src="${pageContext.request.contextPath}/static/image/noimage.png">
+					<div class="content-box"></div>
+					<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
+					<div class="like-comment">
+						<span><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
+						<span class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
