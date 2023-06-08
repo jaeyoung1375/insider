@@ -211,7 +211,8 @@
 								      <div class="modal-header"></div>
 								      <div class="modal-body">
 								        <ul class="notification-list">
-								        	<span>새로운 알림</span>
+								        <div v-if="notifications.length >0">
+								        	<span><i class="fa-sharp fa-regular fa-bell fa-shake"></i>새로운 알림</span>
 								        	<hr>
 								          <li v-for="notification in notifications"   >
 								          	<div>
@@ -230,7 +231,8 @@
 								          	</div>
 								          </li>
 								          <hr>
-								          <span>읽은 알림</span>
+								          </div>
+								          <span><i class="fa-regular fa-eye"></i>읽은 알림</span>
 								          <a @click="deleteAllNotifications" class="btn btn-secondary" style="position: fixed; top:6%; left:75%;transform: transform(-50%,-50%);">전체삭제</a>
 								          <hr>
 								          <li v-for="notification in storedNotifications" :key="notification.id">
@@ -475,4 +477,3 @@
 	   	}
 	  }).mount("#aside");
 </script>
-
