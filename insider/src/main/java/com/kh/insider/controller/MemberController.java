@@ -1,7 +1,5 @@
 package com.kh.insider.controller;
 
-import java.net.URISyntaxException;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -21,9 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.kh.insider.dto.BoardDto;
-import com.kh.insider.dto.FollowWithProfileDto;
-import com.kh.insider.dto.FollowerWithProfileDto;
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.repo.BoardRepo;
@@ -33,8 +28,6 @@ import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.SettingRepo;
 import com.kh.insider.service.MemberService;
 import com.kh.insider.service.SocialLoginService;
-import com.kh.insider.vo.FacebookProfileVO;
-import com.kh.insider.vo.FacebookResponseVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,8 +48,6 @@ public class MemberController {
    @Autowired
    private SettingRepo settingRepo;
    
-   @Autowired
-   private SocialLoginService socialLoginService;
    
    @Autowired
    private BoardRepo boardRepo;
@@ -66,6 +57,9 @@ public class MemberController {
    
    @Autowired
    private MemberWithProfileRepo memberWithProfileRepo;
+   
+   @Autowired
+   private SocialLoginService socialLoginService;
    
    @GetMapping("/join")
    public String join() {
@@ -225,24 +219,21 @@ public class MemberController {
    @ResponseBody
    public void passwordChange(@RequestBody MemberDto member) {
 	   member.setMemberEmail(member.getMemberEmail());
-	   member.setMemberPassword(member.getMemberPassword());
+	   member.setMemberPassword(socialLoginService.EncryptCoskey(member.getMemberPassword()));
 
 	   memberRepo.changePassword(member);
    }
-   
-  
-   
-   
-   @GetMapping("/facebook/auth")
-   @ResponseBody
-   public String facebookLogin(String code, FacebookResponseVO response) throws URISyntaxException{
-      
-      response = socialLoginService.facebookTokenCreate(code);
-      FacebookProfileVO profile = socialLoginService.facebookLogin(code, response);
-      System.out.println(profile);
-      
-      return profile.toString();
-   }
+ 
+//   @GetMapping("/facebook/auth")
+//   @ResponseBody
+//   public String facebookLogin(String code, FacebookResponseVO response) throws URISyntaxException{
+//      
+//      response = socialLoginService.facebookTokenCreate(code);
+//      FacebookProfileVO profile = socialLoginService.facebookLogin(code, response);
+//      System.out.println(profile);
+//      
+//      return profile.toString();
+//   }
    
 //   환경설정 페이지
    @GetMapping("/setting")
