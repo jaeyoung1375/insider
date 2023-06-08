@@ -286,7 +286,7 @@
 								      <div class="modal-body">
 								        <ul class="notification-list">
 								        <div v-if="notifications.length >0">
-								        	<span><i class="fa-sharp fa-regular fa-bell fa-shake"></i>새로운 알림</span>
+								        	<span><i class="fa-sharp fa-regular fa-bell fa-shake" style=color:#f1c40f;></i>새로운 알림</span>
 								        	<hr>
 								          <li v-for="(notification,index) in notifications"   >
 								          	<div>
@@ -306,7 +306,7 @@
 								          </li>
 								          <hr>
 								          </div>
-								          <span><i class="fa-regular fa-eye"></i>읽은 알림</span>
+								          <span><i class="fa-regular fa-eye" style=color:#3498db;></i>읽은 알림</span>
 								          <a @click="deleteAllNotifications" class="btn btn-secondary" style="position: fixed; top:6%; left:75%;transform: transform(-50%,-50%);">전체삭제</a>
 								          <hr>
 								          <li v-for="(notification,index) in storedNotifications" :key="notification.id">
@@ -908,37 +908,39 @@
 	        },
 	        
 	        //7일 뒤 알림 자동 삭제
-// 			cleanupLocalStorage() {
-// 			 	const storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
+			cleanupLocalStorage() {
+			  const storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
+			  
+			  const expirationDate = new Date();
+			  expirationDate.setDate(expirationDate.getDate() - 7);
 			
-// 			  	const expirationDate = new Date();
-// 			  	expirationDate.setDate(expirationDate.getDate() - 7); // Subtract 7 days from the current date
+			  const updatedStoredNotifications = storedNotifications.filter((notification) => {
+			    const notificationDate = new Date(notification.date);
+			    return notificationDate >= expirationDate;
+			  });
 			
-// 			  	const updatedStoredNotifications = storedNotifications.filter((notification) => {
-// 			    const notificationDate = new Date(notification.date);
-// 			    	return notificationDate >= expirationDate;
-// 			  	});
-		
-// 		  		localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
-// 			},
+			  localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
+			},
+
 
 
 			//7초 뒤 알림 자동 삭제
-	        cleanupLocalStorage() {
-	        	  const storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
+// 	        cleanupLocalStorage() {
+// 	        	  const storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
 
-	        	  const expirationDate = new Date();
-	        	  expirationDate.setTime(expirationDate.getTime() + 7 * 1000);
+// 	        	  const expirationDate = new Date();
+// 	        	  expirationDate.setTime(expirationDate.getTime() + 7 * 1000);
 
-	        	  setTimeout(() => {
-	        	    const updatedStoredNotifications = storedNotifications.filter((notification) => {
-	        	      const notificationDate = new Date(notification.date);
-	        	      return notificationDate >= expirationDate;
-	        	    });
+// 	        	  setTimeout(() => {
+// 	        	    const updatedStoredNotifications = storedNotifications.filter((notification) => {
+// 	        	      const notificationDate = new Date(notification.date);
+// 	        	      return notificationDate >= expirationDate;
+// 	        	    });
 
-	        	    localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
-	        	  }, 7000);
-	        	},
+// 	        	    localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
+// 	        	  }, 7000);
+// 	        	},
+	        	
 			/* GPS 얻기 */
 			getGps(){
 				if (navigator.geolocation) {
