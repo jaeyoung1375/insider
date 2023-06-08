@@ -31,10 +31,6 @@
 <style>
 	.logo{
 		font-size: 50px;
-		color: black;
-	}
-	.navbar-light .navbar-nav .nav-link {
-		color: black;
 	}
      html, body{
           width: 100%;
@@ -43,6 +39,7 @@
           padding: 0;
       }
       .wrap{
+      
           width: 100%;
           height: 100%;
           display: flex;
@@ -148,7 +145,8 @@
  	} 
 	.header-menu-option{
 		font-size: 45px;
-		color:black;
+		color:inherit;
+		cursor:pointer
 	}
 </style>
 
@@ -182,10 +180,10 @@
 	<main>
 		<header id="aside">	
 			<nav class="mt-3">
-				<div class="container-fluid" style="width:60%">
-					<div class="row">
-						<div class="col">
-							<a href="${pageContext.request.contextPath}/" class="logo d-flex align-items-center">
+				<div class="container-fluid" style="width:60%; max-width:900px; min-width:700px">
+					<div class="row ps-5 pe-5" style="max-width:1200px">
+						<div class="col-2">
+							<a href="${pageContext.request.contextPath}/" class="logo d-flex align-items-center" style="color:inherit">
 								<img class="me-2" src="${pageContext.request.contextPath}/static/image/logo.png" width="50" height="50">
 								insider
 							</a>
@@ -194,16 +192,16 @@
 							<div class="row">
 							<!-- 관리자 -->
 								<div class="col p-0 m-2">
-									<a class="" href="${pageContext.request.contextPath}/admin/?adminMenu=1"><i class="fa-regular fa-id-card header-menu-option"></i></a>
+									<a class="" href="${pageContext.request.contextPath}/admin/?adminMenu=1" style="color:inherit"><i class="fa-regular fa-id-card header-menu-option" style="font-size:43px;margin-top:2px"></i></a>
 								</div>
 							<!-- 검색 -->
 								<div class="col p-0 m-2">
-									<a class="" href="${pageContext.request.contextPath}/search"><i class="fa-regular fa-solid fa-magnifying-glass header-menu-option"></i></a>
+									<a class="" href="${pageContext.request.contextPath}/search" style="color:inherit"><i class="fa-regular fa-solid fa-magnifying-glass header-menu-option" style="font-size:40px;margin-top:2px"></i></a>
 								</div>
 								<!-- 알림 -->
 								<div class="col p-0 m-2" style="position:relative;">
 								  <div>
-									  <a class="notice" @click="toggleModal">
+									  <a class="notice" @click="toggleModal" style="color:inherit">
 									    <i class="fa-regular fa-heart header-menu-option"></i>
 									    <i class="fa-solid fa-circle" v-show="hasNewNotification" style="display:none;position: absolute;font-size: 0.3em;color: #eb6864;right:15%;bottom: 17%;"></i>
 									  </a>
@@ -235,36 +233,30 @@
 								</div>
 							<!-- dm -->
 								<div class="col p-0 m-2">
-									<a class="" href="${pageContext.request.contextPath}/dm/channel"><i class="fa-regular fa-message header-menu-option"></i></a>
+									<a class="" href="${pageContext.request.contextPath}/dm/channel" style="color:inherit"><i class="fa-regular fa-message header-menu-option" style="font-size:40px; margin-top:2px"></i></a>
 								</div>
 							<!-- 게시물작성 -->
 								<div class="col p-0 m-2">
-									<a class="" href="${pageContext.request.contextPath}/board/insert"><i class="fa-regular fa-square-plus header-menu-option"></i></a>
+									<a class="" href="${pageContext.request.contextPath}/board/insert" style="color:inherit"><i class="fa-regular fa-square-plus header-menu-option"></i></a>
 								</div>
 							<!-- 프로필 -->
 								<div class="col p-0 m-2">
-									<a class="" style="cursor:pointer" @click="moveToMyPage()"><i class="fa-regular fa-circle-user header-menu-option"></i></a>
+									<a class="" style="cursor:pointer; color:inherit" @click="moveToMyPage()" ><i class="fa-regular fa-circle-user header-menu-option" style="font-size:43px;margin-top:2px"></i></a>
 								</div>
 							</div>
 						</div>
 					</div>
 					
-    				<div class="wrap">
-			        	<div class="darkmode">
-			            	<div class="inner">
-			                	<input type="radio" name="toggle" id="toggle-radio-light" checked><label for="toggle-radio-light" class="tolight"><i class="fas fa-sun tolight"></i></label>
-			                	<input type="radio" name="toggle" id="toggle-radio-dark"><label for="toggle-radio-dark" class="todark"><i class="fas fa-moon todark"></i></label>
-			                	<div class="darkmode-bg"></div>
-			            	</div>
-			        	</div>
-			    	</div>
-			    	
-					<div class="collapse navbar-collapse justify-content-end" id="navbarColor03">
-					</div>
-
 				</div>
 			</nav>
-			<aside style="position:fixed; left:0; top:50%" >
+			<aside style="position:absolute; right:5em; top:5em" >
+	        	<div class="darkmode">
+	            	<div class="inner">
+	                	<input type="radio" name="toggle" id="toggle-radio-light" checked><label for="toggle-radio-light" class="tolight"><i class="fas fa-sun tolight"></i></label>
+	                	<input type="radio" name="toggle" id="toggle-radio-dark"><label for="toggle-radio-dark" class="todark"><i class="fas fa-moon todark"></i></label>
+	                	<div class="darkmode-bg"></div>
+	            	</div>
+	        	</div>
 				<div class="dropdown" :class="{'show':sideMenu}">
 					<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @click="showSideMenu()">
 						<i class="fa-solid fa-bars"></i>

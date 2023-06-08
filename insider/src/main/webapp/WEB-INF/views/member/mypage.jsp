@@ -360,7 +360,7 @@
     		 	     <i class="fa-regular fa-comment fa-lg" style="position:absolute;top:50%;left:50%;">{{board.boardWithNickDto.boardReply}}</i>	    		 	 	    
     		 	  </div> 
     		 </div>  
-    	</div>
+    		</div>
      
     	</div>
     </div>

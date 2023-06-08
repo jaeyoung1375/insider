@@ -162,7 +162,7 @@
 		padding-left: 35px;
 	} 
 </style>
-<div class="container-fluid mt-4" id="app" style="width:60%">
+<div class="container-fluid mt-4" id="app" style="width:55%">
 	<div class="row">
 		<div class="col p-0">
 		<!-- 검색창 -->
