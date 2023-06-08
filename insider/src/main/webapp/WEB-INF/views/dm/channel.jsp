@@ -20,6 +20,18 @@
     .card-scroll::-webkit-scrollbar {
 		display: none;
 	} 
+	.cardList-scroll{
+       	overflow-y: auto;
+       	-ms-overflow-style: none;
+	}   
+	.cardList-scroll::-webkit-scrollbar {
+		width: 5px;
+		background-color: transparent;
+	}
+	.cardList-scroll::-webkit-scrollbar-thumb {
+		background-color: rgba(0, 0, 0, 0.3); 
+		border-radius: 3px;
+	}
 	.hover {
 		background-color: rgb(244, 246, 248)
 	}
@@ -179,7 +191,7 @@
 								</span>
 							</a>
 						</div>
-						<span v-if="roomNo == null" style="position:absolute; top:21px; right:0; margin-right:15px;">
+						<span v-if="this.roomNo == null" style="position:absolute; top:21px; right:0; margin-right:15px;">
 							<i class="fa-regular fa-pen-to-square fa-lg" style="margin-right: 11px; cursor:pointer;" @click="fetchFollowerList(); showCreateRoomModal();"></i>
 						</span>
 						<span v-else style="position:absolute; top:21px; right:0; margin-right:15px;">
@@ -190,7 +202,7 @@
 					
 					<!-- 채팅방 이름 -->
 					<div class="card col-8" style="border-radius:0;border-left:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
-						<div v-if="roomNo != null">
+						<div v-if="this.roomNo != null">
 							채팅방 이름
 							<span style="position:absolute; top:21px; right:0; margin-right:19px;">
 								<i class="fa-solid fa-file-pen fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showRoomNameModal()"></i>
@@ -204,11 +216,10 @@
 				<div class="row" style="width:1000px;margin-left:7px; margin-right:100px; margin-top:0; height:70vh">
 					<!-- 채팅방 목록 -->
 					<div class="card col-3" style="width:290px;border-radius:0;border-top:none;padding:0;">
-						<div class="card-body card-scroll" style="padding:0;padding-top:10px; max-height: 633px;">
+						<div class="card-body cardList-scroll" style="padding:0;padding-top:10px; max-height: 633px;">
 							<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo" class="roomList" :class="{'hover': isHovered[index] }"
-         						@mouseover="isHovered[index] = true" @mouseleave="isHovered[index] = false" style="padding-bottom: 5px;padding-top: 4px;padding-left: 13px;cursor:pointer;">
+         						@mouseover="isHovered[index] = true" @mouseleave="isHovered[index] = false" @click="enterRoom(room.roomNo)" style="padding-bottom: 5px;padding-top: 4px;padding-left: 13px;cursor:pointer;">
 							    <div style="position:relative; height: 2.4em; display: flex; align-items: center;">
-								    <a :href="'channel?room=' + room.roomNo" style="color: black; text-decoration: none;">
 							    	<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"class="profile rounded-circle" style="position:absolute; 
 								    	width:34px; height:34px; margin-top:0em;cursor:pointer;">
 				          			<img v-else src="https://via.placeholder.com/34x34?text=P" style="border-radius: 50%; position:absolute; margin-top:0em;">
@@ -218,7 +229,6 @@
 			   						<span v-if="unreadMessage[index] > 0" style="color:#eb4d4b; font-size:0.85em;padding-left:1.5em; padding-top:0.1em">
 			   						 	{{unreadMessage[index]}}
 			   						</span>
-									</a>
 			   						<span v-if="unreadMessage[index] > 0" style="color:#eb4d4b; position:absolute;right:15px; top:13px;font-size: 10px;">
 			   							<i class="fa-solid fa-circle"></i>
 			   						</span>
@@ -454,9 +464,11 @@
 		      </div>
 		      <div class="modal-body" style="width:300px;">
 		        <div v-for="(member,index) in membersInRoomList" :key="index" style="margin-top:20px;position:relative;">
-		          <img v-if="member.attachmentNo > 0"  :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
-			      <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
-		          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+		          <a href="${pageContext.request.contextPath}/member/{member.memberNick}" style="color: black; text-decoration: none;">
+			          <img v-if="member.attachmentNo > 0"  :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
+				      <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
+			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+		          </a>
 		          <br>
 		          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 		          <span style="position:absolute;right:0;top:10px;">
@@ -530,9 +542,13 @@
                 };
             },
             methods:{
+            	enterRoom(roomNo) {
+           		    this.roomNo = roomNo;
+           		 	this.openHandler(roomNo);
+           		    this.loadMessage(roomNo);
+           		},
             	// 메세지 불러오는 함수
-            	async loadMessage() {
-            	    const roomNo = new URLSearchParams(location.search).get("room");
+            	async loadMessage(roomNo) {
             	    if(roomNo==null){
             	    	this.isRoomJoin=false; 
             	    	return;
@@ -609,9 +625,7 @@
 				showCreateRoomModal(){
                     if(this.createRoomModal == null) return;
                     this.selectedMembers = []; 
-                    this.keyword = ""; 
                     this.dmMemberList = [];
-                    this.searchDmList = []; 
                     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
                     checkboxes.forEach(checkbox => (checkbox.checked = false));
                     this.createRoomModal.show();
@@ -635,9 +649,7 @@
 				showInviteModal(){
                     if(this.inviteModal == null) return;
                     this.selectedMembers = []; 
-                    this.keyword = ""; 
                     this.dmMemberList = [];
-                    this.searchDmList = [];
                     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
                     checkboxes.forEach(checkbox => (checkbox.checked = false));
                     this.inviteModal.show();
@@ -695,11 +707,9 @@
             			app.messageHandler(e);
             		};
             	},
-            	openHandler(){
-            		const room = new URLSearchParams(location.search).get("room");
-                    const data = { type:2, room:room };
+            	openHandler(roomNo){
+                    const data = { type:2, room:roomNo };
                     this.socket.send(JSON.stringify(data));
-                    this.roomNo = room; //vue에 반환
                     console.log("서버에 연결되었습니다.");
             	},
             	closeHandler(){
@@ -743,7 +753,7 @@
             	    const messageNo = this.messageList[index].messageNo;
             	    const data = { type: 3, messageNo: messageNo, memberNo: this.memberNo };
             	    this.socket.send(JSON.stringify(data));
-            	    this.loadMessage();
+            	    this.loadMessage(this.roomNo);
             	},
             	//디자인 - 시간
                 checkSameTime(index) {
@@ -836,7 +846,7 @@
 				},
 				//채팅방에 참여한 회원 목록
 				async fetchUsersByRoomNo() {
-					const roomNo = new URLSearchParams(location.search).get("room");
+					const roomNo = this.roomNo;
 					const url = "${pageContext.request.contextPath}/rest/users/"+roomNo;
 					console.log("roomNo : ", roomNo);
 					try {
@@ -927,7 +937,7 @@
 				async leaveTheRoom() {
 				    try {
 				        const memberNo = this.memberNo;
-				        const roomNo = new URLSearchParams(location.search).get("room");
+				        const roomNo = this.roomNo;
 				        const exitData = {
 				            memberNo: memberNo,
 				            roomNo: roomNo
@@ -953,6 +963,7 @@
 				        window.location.href = "${pageContext.request.contextPath}/dm/channel";
 				        
         				await this.fetchDmRoomList(); // 채팅방 목록 불러오기
+        				this.roomNo=null;
 				    } catch (error) {
 				        console.error("회원 퇴장에서 오류가 발생하였습니다.", error);
 				    }
@@ -1041,8 +1052,6 @@
 								memberNo: this.memberNo
 							};
 							const resp = await axios.get(countUrl, { params: data });
-							//console.log(resp);
-							//console.log(resp.data);
 							//수정
 							const unreadMessage = resp.data[0];
 							this.unreadMessage.push(unreadMessage); //vue에 반환
@@ -1067,6 +1076,7 @@
 							unreadMessage: 0
 						};
 						await axios.put(updateUrl, data);
+						this.fetchDmRoomList();
 				    } catch (error) {
 				        console.error("읽지 않은 메세지 수 수정 오류", error);
 				    }
