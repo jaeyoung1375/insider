@@ -191,49 +191,34 @@ $(function(){
 		    event.stopPropagation();
 		  });
 
-		  $('.cancel').on('click', function() {
-		    $('#modalForm').css('display', 'none');
-		  });
-
 		  $('.close').on('click', function() {
 		    $('#modalForm').css('display', 'none');
 		  });
 		});
 
 
-
+	$(document).ready(function() {
+	    $('#summernote').summernote({
+	        toolbar: false,
+	        callbacks: {
+	            onInit: function() {
+	 
+	                var content = $('#summernote').val();
 	
+	                content = content.replace(/\n/g, '<br>');
 	
-$(document).ready(function() {
-    $('#summernote').summernote({
-        toolbar: false,
-        callbacks: {
-            onInit: function() {
- 
-                var content = $('#summernote').val();
-
-                content = content.replace(/\n/g, '<br>');
-
-                $('#summernote').summernote('code', content);
-            },
-            onKeyup: function() {
-
-                var content = $('#summernote').summernote('code');
-                var characterCount = content.replace(/<[^>]+>/g, '').length;
-                $('.count').text(characterCount);
-            }
-        }
-    });
-});
-
-	$(".cancel").click(function(){
-		 event.stopPropagation(); 
-		const text = confirm("게시물을 삭제하시겠어요?\n지금 나가면 수정 내용이 저장되지 않습니다.");
-		
-		if(text){
-			location.replace("/")
-		}
+	                $('#summernote').summernote('code', content);
+	            },
+	            onKeyup: function() {
+	
+	                var content = $('#summernote').summernote('code');
+	                var characterCount = content.replace(/<[^>]+>/g, '').length;
+	                $('.count').text(characterCount);
+	            }
+	        }
+	    });
 	});
+
 		
 	
 	$(".form-submit").submit(function(e){
@@ -269,32 +254,33 @@ $(document).ready(function() {
 		
 	});
 	
-		//멀티 페이지
-		let index = 0;
-		move(index);
+	//멀티 페이지
+	let index = 0;
+	move(index);
+	
+	$(".btn-next").click(function(){
 		
-		$(".btn-next").click(function(){
-			
-			if($("#upload").val() == "" && $("#upload2").val() == ""){
-					alert("사진을 선택하세요.");
-					$(".btn-next").attr("disabled", false);
-			}
-			else{
-				index++;
-				move(index);
-			}	
-			
-		});
-		
-		$(".btn-prev").click(function(){
-			index--;
-			move(index);
-		});
-		
-		function move(index){
-			$(".page").hide();
-			$(".page").eq(index).show();
+		if($("#upload").val() == "" && $("#upload2").val() == ""){
+				alert("사진을 선택하세요.");
+				$(".btn-next").attr("disabled", false);
 		}
+		else{
+			index++;
+			move(index);
+		}	
+		
+	});
+	
+	$(".btn-prev").click(function(){
+		index--;
+		move(index);
+	});
+	
+	function move(index){
+		$(".page").hide();
+		$(".page").eq(index).show();
+	}
+	
 });
 
 
@@ -318,20 +304,20 @@ $(document).ready(function() {
 		<div class="row w-70 mt-5" style="float: none; margin: 0 auto;">
 		  <div class="col">
 		
-		    <div class="card border-primary mb-3" style="height: 600px;">
-		      <div class="card-header">
-		        <div class="row">
-		          <div class="col-md-2">
-		            <button type="button" class="btn btn-secondary cancel" style="float:left;">취소</button>
-		          </div>
-		          <div class="col-md-8">
-		            <h4 class="text-primary text-center" style="margin-top: 1%;">새 게시물 만들기</h4>
-		          </div>
-		          <div class="col-md-2">
-		            <button type="button" class="btn btn-secondary btn-next" style="float:right;">다음</button>
-		          </div>
+		  <div class="card border-primary mb-3" style="height: 600px;">
+		    <div class="card-header">
+		      <div class="row">
+		        <div class="col-md-2">
+		          <button type="button" class="btn btn-secondary cancel" style="float:left;" @click="cancelPost">취소</button>
+		        </div>
+		        <div class="col-md-8">
+		          <h4 class="text-primary text-center" style="margin-top: 1%;">새 게시물 만들기</h4>
+		        </div>
+		        <div class="col-md-2">
+		          <button type="button" class="btn btn-secondary btn-next" style="float:right;">다음</button>
 		        </div>
 		      </div>
+		    </div>
 		      
 		      
 		      <div>
@@ -541,6 +527,15 @@ $(document).ready(function() {
 
     //methods : 애플리케이션 내에서 언제든 호출 가능한 코드 집합이 필요한 경우 작성한다.
      methods: {
+    	 
+    	 cancelPost(event) {
+    	      event.stopPropagation();
+    	      const text = confirm("게시물을 삭제하시겠어요?\n지금 나가면 수정 내용이 저장되지 않습니다.");
+
+    	      if (text) {
+    	    	 window.history.back();
+    	      }
+    	    },
     	 
     	 videoUpload() {
     		  for (let i = 0; i < this.$refs.files.files.length; i++) {
