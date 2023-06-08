@@ -329,6 +329,8 @@ $(document).ready(function() {
 
 <form action="edit" method="post" enctype="multipart/form-data" class="form-submit">
 	<input type="hidden" name="boardNo" value="${board.boardNo}">
+	<input type="hidden" name="boardLon" v-model="gpsLon">
+	<input type="hidden" name="boardLat" v-model="gpsLat">
 	<div class="container-fluid" style="width: 1200px">
 	
 		<div class="row mt-3"></div>
@@ -474,7 +476,7 @@ $(document).ready(function() {
 					    	</div>
 					    	
 					    	<div class="row mt-3">
-					    		<input type="text" name="memberNick" class="form-control" placeholder="@사람태그" id="memberTag" autocomplete="off">
+					    		{{currentAddr}}
 					    	</div>
 					    	
 					    	
@@ -533,7 +535,8 @@ $(document).ready(function() {
 
 <!------------------------------------------------------------------------------------->
 
-
+<!-- 카카오맵 CDN -->
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e45b9604d6c5aa25785459639db6e025&libraries=services"></script>
 <script src="https://unpkg.com/vue@3.2.36"></script>
 <script>
   //div[id=app]을 제어할 수 있는 Vue instance를 생성
@@ -550,6 +553,11 @@ $(document).ready(function() {
     	  boardNo : ${board.boardNo},
     	  boardReplyValid : ${board.boardReplyValid}==1,
     	  boardLikeValid : ${board.boardLikeValid}==1,
+    	  gpsLat:memberGpsLat,
+    	  gpsLon:memberGpsLon,
+    	//주소 알아오는 코드
+    	  geocoder:null,
+    	  currentAddr:"",
     	  /* //사람태그
     	  keyword: "",
     	  nickList: [],
@@ -641,6 +649,23 @@ $(document).ready(function() {
       		} 
     		this.uploadImageIndex = num + 1;
     	},
+    	//주소 알아오는 메소드
+    	searchAddrFromCoords(callback) {
+		    // 좌표로 행정동 주소 정보를 요청합니다
+		    this.geocoder = new kakao.maps.services.Geocoder();
+		    this.geocoder.coord2RegionCode(memberGpsLon, memberGpsLat, callback);
+		},
+		displayCenterInfo(result, status) {
+		    if (status === kakao.maps.services.Status.OK) {
+		        for(var i = 0; i < result.length; i++) {
+		            // 행정동의 region_type 값은 'H' 이므로
+		            if (result[i].region_type === 'H') {
+		                this.currentAddr = result[i].address_name;
+		                break;
+		            }
+		        }
+		    }    
+		},
 		
     },
     
@@ -652,7 +677,7 @@ $(document).ready(function() {
     	//this.files.preview = [...a];
     	//console.log(this.files.preview)
     	this.loadImage();
-    	console.log(this.path);
+    	this.searchAddrFromCoords(this.displayCenterInfo);
     },
     
 
