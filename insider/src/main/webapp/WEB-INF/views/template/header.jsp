@@ -29,25 +29,9 @@
 
 </head>
 <style>
-	main{
-		width:1000px;
-		margin: 0 auto;
-	}
-
 	.logo{
 		font-size: 50px;
-		color: black;
 	}
-
-	.nav-item > a {
-		font-size: 51px;
-		
-	}
-
-	.navbar-light .navbar-nav .nav-link {
-		color: black;
-	}
-	
      html, body{
           width: 100%;
           height: 100%;
@@ -55,6 +39,7 @@
           padding: 0;
       }
       .wrap{
+      
           width: 100%;
           height: 100%;
           display: flex;
@@ -114,15 +99,6 @@
           left: 44px;
       }
       
- 	  .nav-item { 
- 		  position: relative; 
- 	  } 
-		
- 	  .nav-link { 
- 		  display: flex; 
- 		  align-items: center; 
-	  } 
-		
  	 .modal-window { 
  		  position: absolute; 
  		  top: calc(100% + 10px); 
@@ -167,10 +143,11 @@
  	.notification-list li { 
  	  margin-bottom: 10px; 
  	} 
- 	
- 	
- 	
-
+	.header-menu-option{
+		font-size: 45px;
+		color:inherit;
+		cursor:pointer
+	}
 </style>
 
  <script type="text/javascript">
@@ -202,105 +179,110 @@
 <body>
 	<main>
 		<header id="aside">	
-			<nav class="navbar navbar-expand-lg navbar-light mt-3">
-				<div class="container-fluid">
-					<a class="navbar-brand" href="${pageContext.request.contextPath}/"><img src="${pageContext.request.contextPath}/static/image/logo.png" width="50" height="50"></a>
-					<a href="${pageContext.request.contextPath}/" class="logo">insider</a>
-    				<div class="wrap">
-			        	<div class="darkmode">
-			            	<div class="inner">
-			                	<input type="radio" name="toggle" id="toggle-radio-light" checked><label for="toggle-radio-light" class="tolight"><i class="fas fa-sun tolight"></i></label>
-			                	<input type="radio" name="toggle" id="toggle-radio-dark"><label for="toggle-radio-dark" class="todark"><i class="fas fa-moon todark"></i></label>
-			                	<div class="darkmode-bg"></div>
-			            	</div>
-			        	</div>
-			    	</div>
-			    	
-					<div class="collapse navbar-collapse justify-content-end" id="navbarColor03">
-						<ul class="navbar-nav">
-						<!-- 관리자 -->
-							<li class="nav-item mt-2">
-								<a class="nav-link" href="${pageContext.request.contextPath}/admin/?adminMenu=1"><i class="fa-regular fa-id-card mt-1" style="font-size: 45px;"></i></a>
-							</li>
-						<!-- 검색 -->
-							<li class="nav-item mt-2">
-								<a class="nav-link" href="${pageContext.request.contextPath}/search"><i class="fa-regular fa-solid fa-magnifying-glass mt-1" style="font-size: 45px;"></i></a>
-							</li>
-							<!-- 알림 -->
-							<li class="nav-item mt-2">
-							  <a class="nav-link notice" @click="toggleModal">
-							    <i class="fa-regular fa-heart"></i>
-							    <i class="fa-solid fa-circle" v-show="hasNewNotification" style="display:none;position: absolute;font-size: 0.3em;color: #eb6864;right:15%;bottom: 17%;"></i>
-							  </a>
-							  <div class="modal-window" v-if="showModal">
-							    <div class="modal-content">
-							      <div class="modal-header"></div>
-							      <div class="modal-body">
-							        <ul class="notification-list">
-							        	<span>새로운 알림</span>
-							        	<hr>
-							          <li v-for="notification in notifications"   >
-							          	<div>
-								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/member/'+ notification.memberNick">
-								          	<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
-								          	{{ notification.memberNick }} 님이
-								          	</a>
-								          	<a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
-								          	<p v-if="notification.type == 1">게시글을 좋아요 하였습니다.</p>
-								          	<p v-if="notification.type == 2">게시글에 댓글을 달았습니다.</p>
-								          	<p v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</p>
-								          	<p v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</p>
-								          	</a>
-								          	<span v-if="notification.type == 5">팔로우하였습니다.</span>
-								          	<b>· {{dateCount(notification.boardTimeAuto)}}</b>
-							          	</div>
-							          </li>
-							          <hr>
-							          <span>읽은 알림</span>
-							          <a @click="deleteAllNotifications" class="btn btn-secondary" style="position: fixed; top:6%; left:75%;transform: transform(-50%,-50%);">전체삭제</a>
-							          <hr>
-							          <li v-for="notification in storedNotifications" :key="notification.id">
-										  <div :class="{ 'read': notification.status === 'read' }">
-										    <a class="nav-link" :href="'${pageContext.request.contextPath}/member/'+ notification.memberNick">
-										      <img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
-										      {{ notification.memberNick }} 님이
-										    </a>
-									        <a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
-								          	<span v-if="notification.type == 1">게시글을 좋아요 하였습니다.</span>
-								          	<span v-if="notification.type == 2">게시글에 댓글을 달았습니다.</span>
-								          	<span v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</span>
-								          	<span v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</span>
-								          	</a>
-								          	<span v-if="notification.type == 5">팔로우하였습니다.</span>
-										    <b>· {{dateCount(notification.boardTimeAuto)}}</b>
-<!-- 										    <a @click="deleteNotification(notification)" class="btn btn-secondary">알림삭제</a> -->
-										  </div>
-										</li>
-							          
-							        </ul>
-							      </div>
-							      <div class="modal-footer"></div>
-							    </div>
-							  </div>
-							</li>
-						<!-- dm -->
-							<li class="nav-item mt-2">
-								<a class="nav-link" href="${pageContext.request.contextPath}/dm/channel"><i class="fa-regular fa-message mt-1" style="font-size: 45px;"></i></a>
-							</li>
-						<!-- 게시물작성 -->
-							<li class="nav-item mt-2">
-								<a class="nav-link" href="${pageContext.request.contextPath}/board/insert"><i class="fa-regular fa-square-plus"></i></a>
-							</li>
-						<!-- 프로필 -->
-							<li class="nav-item mt-2">
-								<a class="nav-link" style="cursor:pointer" @click="moveToMyPage()"><i class="fa-regular fa-circle-user mt-1" style="font-size: 45px;"></i></a>
-							</li>
-						</ul>
+			<nav class="mt-3">
+				<div class="container-fluid" style="width:60%; max-width:900px; min-width:700px">
+					<div class="row ps-5 pe-5" style="max-width:1200px">
+						<div class="col-3">
+							<a href="${pageContext.request.contextPath}/" class="logo d-flex align-items-center" style="color:inherit;">
+								<img class="me-2" src="${pageContext.request.contextPath}/static/image/logo.png" width="50" height="50">
+								insider
+							</a>
+						</div>
+						<div class="col d-flex align-items-center justify-content-end">
+							<div class="row">
+							<!-- 관리자 -->
+								<div class="col p-0 m-2">
+									<a class="" href="${pageContext.request.contextPath}/admin/?adminMenu=1" style="color:inherit"><i class="fa-regular fa-id-card header-menu-option" style="font-size:43px;margin-top:2px"></i></a>
+								</div>
+							<!-- 검색 -->
+								<div class="col p-0 m-2">
+									<a class="" href="${pageContext.request.contextPath}/search" style="color:inherit"><i class="fa-regular fa-solid fa-magnifying-glass header-menu-option" style="font-size:40px;margin-top:2px"></i></a>
+								</div>
+								<!-- 알림 -->
+								<div class="col p-0 m-2" style="position:relative;">
+								  <div>
+									  <a class="notice" @click="toggleModal" style="color:inherit">
+									    <i class="fa-regular fa-heart header-menu-option"></i>
+									    <i class="fa-solid fa-circle" v-show="hasNewNotification" style="display:none;position: absolute;font-size: 0.3em;color: #eb6864;right:15%;bottom: 17%;"></i>
+									  </a>
+								  </div>
+								  <div class="modal-window" v-if="showModal">
+								    <div class="modal-content">
+								      <div class="modal-header"></div>
+								      <div class="modal-body">
+								        <ul class="notification-list">
+								        	<span>새로운 알림</span>
+								        	<hr>
+								          <li v-for="notification in notifications"   >
+								          	<div>
+									          	<a class="nav-link" :href="'${pageContext.request.contextPath}/member/'+ notification.memberNick">
+									          	<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
+									          	{{ notification.memberNick }} 님이
+									          	</a>
+									          	<a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
+									          	<p v-if="notification.type == 1">게시글을 좋아요 하였습니다.</p>
+									          	<p v-if="notification.type == 2">게시글에 댓글을 달았습니다.</p>
+									          	<p v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</p>
+									          	<p v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</p>
+									          	</a>
+									          	<span v-if="notification.type == 5">팔로우하였습니다.</span>
+									          	<b>· {{dateCount(notification.boardTimeAuto)}}</b>
+								          	</div>
+								          </li>
+								          <hr>
+								          <span>읽은 알림</span>
+								          <a @click="deleteAllNotifications" class="btn btn-secondary" style="position: fixed; top:6%; left:75%;transform: transform(-50%,-50%);">전체삭제</a>
+								          <hr>
+								          <li v-for="notification in storedNotifications" :key="notification.id">
+											  <div :class="{ 'read': notification.status === 'read' }">
+											    <a class="nav-link" :href="'${pageContext.request.contextPath}/member/'+ notification.memberNick">
+											      <img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
+											      {{ notification.memberNick }} 님이
+											    </a>
+										        <a class="nav-link" :href="'${pageContext.request.contextPath}/board/'+ notification.boardNo">
+									          	<span v-if="notification.type == 1">게시글을 좋아요 하였습니다.</span>
+									          	<span v-if="notification.type == 2">게시글에 댓글을 달았습니다.</span>
+									          	<span v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</span>
+									          	<span v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</span>
+									          	</a>
+									          	<span v-if="notification.type == 5">팔로우하였습니다.</span>
+											    <b>· {{dateCount(notification.boardTimeAuto)}}</b>
+	<!-- 										    <a @click="deleteNotification(notification)" class="btn btn-secondary">알림삭제</a> -->
+											  </div>
+											</li>
+								          
+								        </ul>
+								      </div>
+								      <div class="modal-footer"></div>
+								    </div>
+								  </div>
+								</div>
+							<!-- dm -->
+								<div class="col p-0 m-2">
+									<a class="" href="${pageContext.request.contextPath}/dm/channel" style="color:inherit"><i class="fa-regular fa-message header-menu-option" style="font-size:40px; margin-top:3px"></i></a>
+								</div>
+							<!-- 게시물작성 -->
+								<div class="col p-0 m-2">
+									<a class="" href="${pageContext.request.contextPath}/board/insert" style="color:inherit"><i class="fa-regular fa-square-plus header-menu-option"></i></a>
+								</div>
+							<!-- 프로필 -->
+								<div class="col p-0 m-2">
+									<a class="" style="cursor:pointer; color:inherit" @click="moveToMyPage()" ><i class="fa-regular fa-circle-user header-menu-option" style="font-size:43px;margin-top:2px"></i></a>
+								</div>
+							</div>
+						</div>
 					</div>
-
+					
 				</div>
 			</nav>
-			<aside style="position:fixed; left:0; top:50%" >
+			<aside style="position:absolute; right:5em; top:5em" >
+	        	<div class="darkmode">
+	            	<div class="inner">
+	                	<input type="radio" name="toggle" id="toggle-radio-light" checked><label for="toggle-radio-light" class="tolight"><i class="fas fa-sun tolight"></i></label>
+	                	<input type="radio" name="toggle" id="toggle-radio-dark"><label for="toggle-radio-dark" class="todark"><i class="fas fa-moon todark"></i></label>
+	                	<div class="darkmode-bg"></div>
+	            	</div>
+	        	</div>
 				<div class="dropdown" :class="{'show':sideMenu}">
 					<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @click="showSideMenu()">
 						<i class="fa-solid fa-bars"></i>
@@ -317,8 +299,9 @@
 				</div>
 			</aside>
 		</header>
-	</main>
-</body>
+<section>	
+
+
 
 <script>
 	  Vue.createApp({
