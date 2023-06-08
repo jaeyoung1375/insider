@@ -484,7 +484,7 @@ $(document).ready(function() {
 											<label class="fs-5" for="replyCheck">댓글 기능 해제</label>
 										</div>
 										<div class="col-md-3">
-											<input type="checkbox" name="boardReplyValid" value="1" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
+											<input type="checkbox" name="boardReplyValid" v-model="boardReplyValid" :value="boardReplyValid?1:0" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
 										</div>
 									
 					    	</div>
@@ -495,7 +495,7 @@ $(document).ready(function() {
 											<label class="fs-5" for="replyCheck">좋아요 수 숨김</label>
 										</div>
 										<div class="col-md-3">
-											<input type="checkbox" name="boardLikeValid" value="1" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
+											<input type="checkbox" name="boardLikeValid" v-model="boardLikeValid" :value="boardLikeValid?1:0" class="form-check-input fs-5" style="margin-left: 0;" id="replyCheck">
 										</div>
 									
 					    	</div>
@@ -548,8 +548,8 @@ $(document).ready(function() {
 
     	  path : [],
     	  boardNo : ${board.boardNo},
-    	  boardReplyValid : ${board.boardReplyValid},
-    	  boardLikeValid : ${board.boardLikeValid},
+    	  boardReplyValid : ${board.boardReplyValid}==1,
+    	  boardLikeValid : ${board.boardLikeValid}==1,
     	  /* //사람태그
     	  keyword: "",
     	  nickList: [],

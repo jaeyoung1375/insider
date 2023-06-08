@@ -11,6 +11,8 @@
 		const contextPath = "${pageContext.request.contextPath}";
 		<!-- MemberNo -->
 		const memberNo = "${sessionScope.memberNo}";
+		<!-- memberLevel -->
+		const memberLevel = "${sessionScope.memberLevel}"
 	</script>
 	<!-- BootStrap CDN -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
@@ -191,9 +193,11 @@
 						<div class="col d-flex align-items-center justify-content-end">
 							<div class="row">
 							<!-- 관리자 -->
-								<div class="col p-0 m-2">
-									<a class="" href="${pageContext.request.contextPath}/admin/?adminMenu=1" style="color:inherit"><i class="fa-regular fa-id-card header-menu-option" style="font-size:43px;margin-top:2px"></i></a>
-								</div>
+								<c:if test="${sessionScope.memberLevel==1}">
+									<div class="col p-0 m-2">
+										<a class="" href="${pageContext.request.contextPath}/admin/?adminMenu=1" style="color:inherit"><i class="fa-regular fa-id-card header-menu-option" style="font-size:43px;margin-top:2px"></i></a>
+									</div>
+								</c:if>
 							<!-- 검색 -->
 								<div class="col p-0 m-2">
 									<a class="" href="${pageContext.request.contextPath}/search" style="color:inherit"><i class="fa-regular fa-solid fa-magnifying-glass header-menu-option" style="font-size:40px;margin-top:2px"></i></a>
@@ -276,13 +280,15 @@
 				</div>
 			</nav>
 			<aside style="position:absolute; right:5em; top:5em" >
-	        	<div class="darkmode">
-	            	<div class="inner">
-	                	<input type="radio" name="toggle" id="toggle-radio-light" checked><label for="toggle-radio-light" class="tolight"><i class="fas fa-sun tolight"></i></label>
-	                	<input type="radio" name="toggle" id="toggle-radio-dark"><label for="toggle-radio-dark" class="todark"><i class="fas fa-moon todark"></i></label>
-	                	<div class="darkmode-bg"></div>
-	            	</div>
-	        	</div>
+				<c:if test="${sessionScope.memberLevel==0}">
+		        	<div class="darkmode">
+		            	<div class="inner">
+		                	<input type="radio" name="toggle" id="toggle-radio-light" checked><label for="toggle-radio-light" class="tolight"><i class="fas fa-sun tolight"></i></label>
+		                	<input type="radio" name="toggle" id="toggle-radio-dark"><label for="toggle-radio-dark" class="todark"><i class="fas fa-moon todark"></i></label>
+		                	<div class="darkmode-bg"></div>
+		            	</div>
+		        	</div>
+				</c:if>
 				<div class="dropdown" :class="{'show':sideMenu}">
 					<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @click="showSideMenu()">
 						<i class="fa-solid fa-bars"></i>
