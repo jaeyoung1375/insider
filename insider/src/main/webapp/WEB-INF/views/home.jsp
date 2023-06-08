@@ -1408,9 +1408,14 @@ Vue.createApp({
     		
     	});
     },
-    created(){
+    async created(){
     	this.followCheck();
-    	this.loadNewList();
+    	await this.loadNewList();
+    	
+    	if(this.boardList.length === 0){
+    		await this.loadOldList();
+    	}
+		    			
     	this.bookmarkList();
     	this.loadMemberSetting();
     	this.loadFollowCount();
