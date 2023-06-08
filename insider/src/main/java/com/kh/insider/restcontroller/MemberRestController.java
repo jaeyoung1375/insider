@@ -89,8 +89,9 @@ public class MemberRestController {
 	@PutMapping("/setting/password")
 	public void changePassword(@RequestBody MemberDto memberDto, HttpSession session) {
 		long memberNo = (Long)session.getAttribute("memberNo");
-		memberDto.setMemberNo(memberNo);
-		memberRepo.changePassword(memberDto);
+	    MemberDto existingMember = memberRepo.findByNo(memberNo);
+	    existingMember.setMemberPassword(memberDto.getMemberPassword()); // 새로운 비밀번호 설정
+	    memberRepo.changePassword(existingMember);
 	}
 
 	

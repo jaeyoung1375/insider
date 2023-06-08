@@ -133,10 +133,11 @@ public class MemberController {
       log.debug("로그인한 사용자:{}", loginUser);
       // 본인 프로필 인지 여부
       boolean isOwner = loginUser.getMemberNo().equals(dto.getMemberNo());
-      
+      int postCounts = boardRepo.getTotalPostCount(dto.getMemberNo());
       
       model.addAttribute("memberDto",findMember);
       model.addAttribute("isOwner",isOwner);
+      model.addAttribute("postCounts",postCounts);
             
       return "/member/mypage";
    }
@@ -144,8 +145,8 @@ public class MemberController {
    // 팔로우 총 개수
    @GetMapping("/totalFollowCount")
    @ResponseBody
-   public int totalFollowCount(@RequestParam("memberNick") String memberNick) {
-	   MemberWithProfileDto findMember = memberRepo.findByNickName(memberNick);
+   public int totalFollowCount(@RequestParam("memberNo") long memberNo) {
+	   MemberWithProfileDto findMember = memberWithProfileRepo.selectOne(memberNo);
        int totalFollowCount = followRepo.getFollowNumber(findMember.getMemberNo());
        return totalFollowCount;
    }
@@ -153,8 +154,8 @@ public class MemberController {
    // 팔로워 총 개수
    @GetMapping("/totalFollowerCount")
    @ResponseBody
-   public int totalFollowerCount(@RequestParam("memberNick") String memberNick) {
-	   MemberWithProfileDto findMember = memberRepo.findByNickName(memberNick);
+   public int totalFollowerCount(@RequestParam("memberNo") long memberNo) {
+	   MemberWithProfileDto findMember = memberWithProfileRepo.selectOne(memberNo);
        int totalFollowerCount = followRepo.getFollowerNumber(findMember.getMemberNo());
        return totalFollowerCount;
    }
@@ -162,8 +163,8 @@ public class MemberController {
    // 게시물 총 개수
    @GetMapping("/totalPostCount")
    @ResponseBody
-   public int totalPostCount(@RequestParam("memberNick") String memberNick) {
-	   MemberWithProfileDto findMember = memberRepo.findByNickName(memberNick);
+   public int totalPostCount(@RequestParam("memberNo") long memberNo) {
+	   MemberWithProfileDto findMember = memberWithProfileRepo.selectOne(memberNo);
 	   int totalPostCount = boardRepo.getTotalPostCount(findMember.getMemberNo());
 	   return totalPostCount;
    }
