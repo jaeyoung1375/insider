@@ -329,8 +329,6 @@ $(document).ready(function() {
 
 <form action="edit" method="post" enctype="multipart/form-data" class="form-submit">
 	<input type="hidden" name="boardNo" value="${board.boardNo}">
-	<input type="hidden" name="boardLon" v-model="gpsLon">
-	<input type="hidden" name="boardLat" v-model="gpsLat">
 	<div class="container-fluid" style="width: 1200px">
 	
 		<div class="row mt-3"></div>
