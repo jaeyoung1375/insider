@@ -79,7 +79,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            z-index: 99999;
+            z-index: 5555;
             
             background-color: rgba(0, 0, 0, 0.2);
 /*             display: none; */
@@ -157,21 +157,69 @@
   width: 100%;
   transform: translateX(-50%);
 }
- 
+/* 게시물 네모박스 */
+.box {
+	position: relative;
+	width: 30%;
+	font-size:1.2em;
+}
+.box::after {
+	display: block;
+	content: "";
+	padding-bottom: 100%;
+}
+.content,.content-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.pages {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 1;
+	margin-top:0.5em;
+	margin-right:0.5em;
+	color:white;
+}
+.like-comment{
+	position: absolute;
+	z-index: 10;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color:white;
+	cursor:default;
+	display:none;
+}
+.box:hover .content-box{
+	background-color:rgba(34, 34, 34, 0.13);
+	z-index:5;
+}
+.box:hover .like-comment{
+	display:block;
+}
+.image-margin{
+	margin-left:260px;
+	margin-top:30px;
+}
 </style>
 
-      <div id="app" class="container-fluid">
-             <div class="row">
+      <div id="app" class="container-fluid" style="width:1300px;">
+            <div class="row">
                 <!-- 본인 여부에 따른 프로필 변경  -->
             <div class="col-4 text-center">
                <c:choose>
                <c:when test="${isOwner}">
                 <img style="border-radius: 70%;" :src="profileUrl"
-             width = "150" height="150" @click="openFileInput">
+             width = "150" height="150" @click="openFileInput" class="image-margin">
              <input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*" style="display: none;">
                 </c:when>       
                 <c:otherwise> 
-                  <img style="border-radius: 70%;" width="150" height="150" :src="profileUrl">
+                  <img style="border-radius: 70%;" width="150" height="150" :src="profileUrl" class="image-margin">
                 </c:otherwise>
                 </c:choose>           
             </div>
@@ -182,25 +230,25 @@
            </div>
               <c:choose>
               <c:when test="${isOwner}"> <!-- 본인 프로필 이라면 -->
-                 <div class="col-7">
+                 <div class="col-5">
                   <a class="btn btn-secondary" href="/member/setting?page=1">프로필 편집</a>
                   </div>
-                  <div class="col-5" style=" width:30%;">
+                  <div class="col-5" style=" width:20%;">
                <button class="btn btn-secondary" @click="recommend">
                		<i :class="iconClass"></i>
                </button>
                </div>
-               <div class="col-5" style="width:40%;">
+               <div class="col-5">
                <button class="btn btn-secondary" @click="myOptionModalShow" style="background-color: white; border:none;"><i class="fa-sharp fa-solid fa-gear" style="font-size:24px;"></i></button>
              </div>
               </c:when>
               <c:otherwise> <!-- 본인 프로필이 아니라면 -->
-                    <div class="col-5">
-              <button class="btn btn-primary" @click="follow(${memberDto.memberNo})" v-if="followCheckIf(${memberDto.memberNo})">팔로우</button>
-			  <button class="btn btn-secondary" @click="unFollow(${memberDto.memberNo})" v-else>팔로잉</button>
+               <div class="col-5" style="width:30%;">
+		             <button class="btn btn-primary" @click="follow(${memberDto.memberNo})" v-if="followCheckIf(${memberDto.memberNo})">팔로우</button>
+					 <button class="btn btn-secondary" @click="unFollow(${memberDto.memberNo})" v-else>팔로잉</button>
                </div>
-               <div class="col-5"  style=" width:70%;">
-               <button class="btn btn-secondary">메시지 보내기</button>
+               <div class="col-5"  style=" width:50%;">
+               		<button class="btn btn-secondary">메시지 보내기</button>
                </div>
                
                <div class="col-5" style="width:40%;">
@@ -211,18 +259,18 @@
               
              </div>
                <div class="row mt-4" style="width:130%;">
-                  <div class="col-7" style="display:flex; margin-left:10px;">
-                     <div class="col-6">
+                  <div class="col-6" style="display:flex; margin-left:10px;">
+                     <div class="col-5">
                         <span>게시물 
-                           <span style="font-weight: bold;">${totalPostCount}</span>
+                           <span style="font-weight: bold;">${postCounts}</span>
                         </span>
                      </div>
-                     <div class="col-6" @click="followerModalShow">
+                     <div class="col-5" @click="followerModalShow">
                         <span>팔로워
                         <span style="font-weight: bold;">{{totalFollowerCnt}}</span>
                          </span>
                      </div>
-                     <div class="col-6" @click="followModalShow">
+                     <div class="col-5" @click="followModalShow">
                         <span>팔로우
                         <span style="font-weight: bold;">{{totalFollowCnt}}</span>
                          </span>
@@ -336,6 +384,16 @@
       </li>
   </ul>
   </div>
+  <div class="mypage-tab" v-else>
+  <ul class="nav nav-tabs" style="width: 100%;">
+    <li class="nav-item col-6">
+       <a class="nav-link" :class="{'active': actTab === 'boardTab'}" @click="changeTab2('boardTab')" style="font-size:17px; padding:14px 0;">
+       <i class="fa-solid fa-chess-board"></i>
+       게시물
+       </a>
+    </li>
+    </ul>
+  </div>
    
   
 	<!-- 게시물 목록 -->
@@ -348,19 +406,21 @@
    </div>
    
    
-    	 <div style="margin-bottom:10px;display: flex;flex-wrap:wrap; width: 100%;">
-	    	<div v-for="(board,index) in myBoardList" :key="index" style="margin-right: 10px;">
-    		 <div class="media-height" style="margin-right: 10px; position:relative;">
-	    		 	<div v-if="board.boardAttachmentList && board.boardAttachmentList[0]">
-					<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+board.boardAttachmentList[0].attachmentNo" style="width:100%; height:250px;">
-					</div>
-    		 	 <i class="fa-solid fa-note-sticky fa-lg" style="color:white;position:absolute;right:0;top:20px;"></i>
-    		 	  <div class="imgHover" style="cursor:pointer;position:absolute;background-color:#22222221;left:0;right:0;top:0;bottom:0;opacity:0;color:white;"  @click="detailViewOn(index)">
-    		 	   <i class="fa-solid fa-heart fa-lg" style="position:absolute;top:50%;left:25%;">{{board.boardWithNickDto.boardLike}}</i>
-    		 	     <i class="fa-regular fa-comment fa-lg" style="position:absolute;top:50%;left:50%;">{{board.boardWithNickDto.boardReply}}</i>	    		 	 	    
-    		 	  </div> 
-    		 </div>  
-    	</div>
+    	 <div class="row d-flex justify-content-center w-100">
+	    	<div class="box m-2" v-for="(board,index) in myBoardList" :key="index" @click="detailViewOn(index)">
+	    		<video class="content" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
+							style="object-fit:cover" autoplay muted controls loop></video>
+				<img class="content" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+board.boardAttachmentList[0].attachmentNo">
+			<!-- 쉐도우용 더미 -->
+				<div class="content-box" ></div>
+			<!-- 사진 여러장일 때 -->
+    		 	<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
+    		<!-- 좋아요, 댓글 개수 -->
+				<div class="like-comment" >
+					<span><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
+					<span class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
+				</div>
+    		</div>
      
     	</div>
     </div>
@@ -377,21 +437,22 @@
 		 	</div>
 		</div>
 
-
-	    <div style="margin-bottom:10px;display: flex;flex-wrap:wrap; width: 100%; margin-top:20px;" v-else>
-	    	<div v-for="(bookmark,index) in bookmarkMyPostList" :key="bookmark.boardNo">
-	    		 <div class="media-height" style="margin-right: 10px; position:relative;">
-	    		 	<div v-if="bookmark.boardAttachmentList && bookmark.boardAttachmentList[0]">
-					<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+bookmark.boardAttachmentList[0].attachmentNo" style="width:100%; height:250px;">
-					</div>
-    		 	 <i class="fa-solid fa-note-sticky fa-lg" style="color:white;position:absolute;right:0;top:20px;"></i>
-    		 	  <div class="imgHover" style="cursor:pointer;position:absolute;background-color:#22222221;left:0;right:0;top:0;bottom:0;opacity:0;color:white;"  @click="detailViewOn2(index)">
-    		 	   <i class="fa-solid fa-heart fa-lg" style="position:absolute;top:50%;left:25%;">{{bookmark.boardWithNickDto.boardLike}}</i>
-    		 	     <i class="fa-regular fa-comment fa-lg" style="position:absolute;top:50%;left:50%;">{{bookmark.boardWithNickDto.boardReply}}</i>	    		 	 	    
-    		 	  </div> 
-    		 </div>  
-	    	</div>
-	    </div>
+    	 <div class="row d-flex justify-content-center w-100">
+	    	<div class="box m-2" v-for="(bookmark,index) in bookmarkMyPostList" :key="bookmark.boardNo" @click="detailViewOn2(index)">
+	    		<video class="content" :src="'${pageContext.request.contextPath}'+bookmark.boardAttachmentList[0].imageURL" v-if="bookmark.boardAttachmentList[0].video"
+							style="object-fit:cover" autoplay muted controls loop></video>
+				<img class="content" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+bookmark.boardAttachmentList[0].attachmentNo">
+			<!-- 쉐도우용 더미 -->
+				<div class="content-box" ></div>
+			<!-- 사진 여러장일 때 -->
+    		 	<i class="fa-regular fa-copy pages" v-if="bookmark.boardAttachmentList.length>1"></i>
+    		<!-- 좋아요, 댓글 개수 -->
+				<div class="like-comment" >
+					<span><i class="fa-solid fa-heart"></i> {{bookmark.boardWithNickDto.boardLike}}</span> 
+					<span class="ms-3"><i class="fa-solid fa-comment"></i> {{bookmark.boardWithNickDto.boardReply}}</span>
+				</div>
+    		</div>
+    	</div>
     </div>
     
 </div>
@@ -400,6 +461,9 @@
 <!-- ---------------------------------게시물 상세보기 모달(게시물)-------------------------- -->
 
 <div v-if="detailView" class="container-fluid fullscreen" @click.self="closeDetail">
+<div class="p-4 mt-2 ms-4 d-flex justify-content-end">
+		<h2 class="btn btn-none" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
+	</div>
 	<div class="row fullscreen-container">
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
@@ -426,7 +490,7 @@
 		</div>
            
          <div class="col-4" style="padding-left: 0;">
-        	<div class="card bg-light" style="border-radius:0; max-height: 700px">
+        	<div class="card bg-light" style="border-radius:0; height: 700px">
            		<div class="card-header">
 	           		<!-- <img class="profile" :src="profileUrl(detailIndex)"> -->
            			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+myBoardList[detailIndex].boardWithNickDto.memberNick"><b>{{myBoardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
@@ -434,9 +498,9 @@
 				
 				<div class="card-body card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
-					<p class="card-text" style="margin-left: 0.5em;">{{myBoardList[detailIndex].boardWithNickDto.boardContent}}
-					<br v-if="myBoardList[detailIndex].boardTagList.length > 0"><br v-if="myBoardList[detailIndex].boardTagList.length > 0">
-                            	<a href="#" v-for="(tag, index3) in myBoardList[detailIndex].boardTagList" :key="index3">\#{{tag.tagName}}</a>
+					<p class="card-text" style="margin-left: 0.5em;">{{myBoardList[detailIndex].boardWithNickDto.boardContent}}<br>
+					<br v-if="myBoardList[detailIndex].boardTagList.length > 0">
+                    <a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in myBoardList[detailIndex].boardTagList" :key="index3" style="margin-right: 0.5em; color: blue; cursor: pointer;">\#{{tag.tagName}}</a>
 					</p>
 					
 					
@@ -474,20 +538,29 @@
 				
 				<div class="card-body"  style="height:110px; padding-top: 0px; padding-left: 0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
-					<p class="card-text" style="margin: 0 0 4px 0">
-						<div class="d-flex">
-						<i :class="{'fa-heart': true, 'like':isLiked[detailIndex],'ms-2':true, 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}" @click="likePost(myBoardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
-						&nbsp;
-						<i class="fa-regular fa-message mb-1" style="font-size: 25px; "></i>
-						<span class="ms-auto" style="margin-right:10px;">
-						<i class="fa-regular fa-bookmark"  @click="bookmarkInsert(myBoardList[detailIndex].boardWithNickDto.boardNo)" v-show="bookmarkChecked(myBoardList[detailIndex].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
-                           <i class="fa-solid fa-bookmark" @click="bookmarkInsert(myBoardList[detailIndex].boardWithNickDto.boardNo)" v-show="!bookmarkChecked(myBoardList[detailIndex].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
-                          </span>
+					<div class="d-flex row">
+						<div class="col-10">
+							<span class="card-text" style="margin: 0 4px 4px 0; padding-left: 0.25em;">
+								<i :class="{'fa-heart': true, 'like':isLiked[detailIndex],'ms-2':true, 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}" @click="likePost(myBoardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
+							</span>
+							<span class="card-text" style="margin: 0 0 4px 0; padding-left: 0.5em;">
+								<i class="fa-regular fa-message mb-1" style="font-size: 25px; "></i>
+							</span>
+						</div>
+						
+						<div class="col-1 p-0 flex-grow-1">
+							<span class="ms-4">
+								<i class="fa-regular fa-bookmark"  @click="bookmarkInsert(myBoardList[detailIndex].boardWithNickDto.boardNo)" v-show="bookmarkChecked(myBoardList[detailIndex].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
+                           		<i class="fa-solid fa-bookmark" @click="bookmarkInsert(myBoardList[detailIndex].boardWithNickDto.boardNo)" v-show="!bookmarkChecked(myBoardList[detailIndex].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
+	                         </span>
                       </div>
-					<p class="card-text" style="margin: 0 0 4px 0"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount[detailIndex]}}개</b></p>
+					</div>
+					<p class="card-text" style="margin: 0 0 4px 0; cursor: pointer;"  @click="showLikeListModal(myBoardList[detailIndex].boardWithNickDto.boardNo)"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount[detailIndex]}}개</b></p>
 					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(myBoardList[detailIndex].boardWithNickDto.boardTimeAuto)}}</p>
 					
 				</div>
+				
+				
 				
 				<div class="input-group">
 					<input ref="replyInput" type="text" class="form-control" :placeholder="placeholder" v-model="replyContent" style="border: none;" aria-label="Recipient's username" aria-describedby="button-addon2" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(detailIndex)">
@@ -495,12 +568,14 @@
 				</div>
 								        	
         	</div> 
-			<button @click="closeDetail()">닫기</button>
         </div>
 	</div>
 </div>
 <!-- ---------------------------------게시물 상세보기 모달(북마크)-------------------------- -->
 <div v-if="detailView2" class="container-fluid fullscreen" @click.self="closeDetail2">
+<div class="p-4 mt-2 ms-4 d-flex justify-content-end">
+		<h2 class="btn btn-none" @click="closeDetail2" style="font-size: 30px; color:#FFFFFF;">X</h2>
+	</div>
 	<div class="row fullscreen-container">
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex2" class="carousel slide">
@@ -526,7 +601,7 @@
            </div>
 		</div>
 		<div class="col-4" style="padding-left: 0;">
-        	<div class="card bg-light" style="border-radius:0; max-height: 700px">
+        	<div class="card bg-light" style="border-radius:0; height: 700px">
            		<div class="card-header">
 	           		<!-- <img class="profile" :src="profileUrl(detailIndex)"> -->
            			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick"><b>{{bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick}}</b></a>
@@ -534,9 +609,9 @@
 				
 				<div class="card-body card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
-					<p class="card-text" style="margin-left: 0.5em;">{{bookmarkMyPostList[detailIndex2].boardWithNickDto.boardContent}}
-					<br v-if="bookmarkMyPostList[detailIndex2].boardTagList.length > 0"><br v-if="bookmarkMyPostList[detailIndex2].boardTagList.length > 0">
-                            	<a href="#" v-for="(tag, index3) in bookmarkMyPostList[detailIndex2].boardTagList" :key="index3">\#{{tag.tagName}}</a>
+					<p class="card-text" style="margin-left: 0.5em;">{{bookmarkMyPostList[detailIndex2].boardWithNickDto.boardContent}}<br>
+					<br v-if="bookmarkMyPostList[detailIndex2].boardTagList.length > 0">
+                           <a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in bookmarkMyPostList[detailIndex2].boardTagList" :key="index3" style="margin-right: 0.5em; color: blue; cursor: pointer;">\#{{tag.tagName}}</a>
 					</p>
 					
 					
@@ -550,7 +625,7 @@
 						</a>
 						<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em;">{{replyList[index].replyContent}}</p>
 <!-- 						<p style="padding-left:4.0em;margin-bottom:1px;font-size:0.8em; color:gray;"> -->
-						<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
+						<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount2[index]}}개 &nbsp;
 							<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
 							<i :class="{'fa-heart': true, 'like':isReplyLiked2[index],'ms-2':true, 'fa-solid': isReplyLiked2[index], 'fa-regular': !isReplyLiked2[index]}" @click="likeReply2(reply.replyNo,index)" style="font-size: 0.9em;"></i>
 							&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
@@ -574,17 +649,24 @@
 				
 				<div class="card-body"  style="height:110px; padding-top: 0px; padding-left: 0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
 					<h5 class="card-title"></h5>
-					<p class="card-text" style="margin: 0 0 4px 0">
-						<div class="d-flex">
-						<i :class="{'fa-heart': true, 'like':isLiked2[detailIndex2],'ms-2':true, 'fa-solid': isLiked2[detailIndex2], 'fa-regular': !isLiked2[detailIndex2]}" @click="likePost2(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo,detailIndex2)" style="font-size: 27px;"></i>
-						&nbsp;
-						<i class="fa-regular fa-message mb-1" style="font-size: 25px; "></i>
-						<span class="ms-auto" style="margin-right:10px;">
-						<i class="fa-regular fa-bookmark"  @click="bookmarkInsert(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" v-show="bookmarkChecked(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
-                           <i class="fa-solid fa-bookmark" @click="bookmarkInsert(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" v-show="!bookmarkChecked(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
-                          </span>
+					<div class="d-flex row">
+						<div class="col-10">
+							<span class="card-text" style="margin: 0 4px 4px 0; padding-left: 0.25em;">
+								<i :class="{'fa-heart': true, 'like':isLiked2[detailIndex2],'ms-2':true, 'fa-solid': isLiked2[detailIndex2], 'fa-regular': !isLiked2[detailIndex2]}" @click="likePost2(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo,detailIndex2)" style="font-size: 27px;"></i>
+							</span>
+							<span class="card-text" style="margin: 0 0 4px 0; padding-left: 0.5em;">
+								<i class="fa-regular fa-message mb-1" style="font-size: 25px; "></i>
+							</span>
+						</div>
+						
+						<div class="col-1 p-0 flex-grow-1">
+							<span class="ms-4">
+								<i class="fa-regular fa-bookmark"  @click="bookmarkInsert(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" v-show="bookmarkChecked(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
+	                           	<i class="fa-solid fa-bookmark" @click="bookmarkInsert(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" v-show="!bookmarkChecked(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)" style="font-size:25px;"></i>
+	                         </span>
                       </div>
-					<p class="card-text" style="margin: 0 0 4px 0"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount2[detailIndex2]}}개</b></p>
+					</div>
+					<p class="card-text" style="margin: 0 0 4px 0; cursor: pointer;" @click="showLikeListModal(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo)"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCount2[detailIndex2]}}개</b></p>
 					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardTimeAuto)}}</p>
 					
 				</div>
@@ -595,52 +677,41 @@
 				</div>
 								        	
         	</div> 
-			<button @click="closeDetail2()">닫기</button>
-        </div>
+			
+		</div>
 	</div>
 </div>
 
   
       <!-- Modal 창 영역 -->
-                   <div class="modal" tabindex="-1" role="dialog" id="modal03"
-                            data-bs-backdrop="static"
-                            ref="modal03" @click.self="hideModal">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header" style="display:flex; justify-content: center;">
-                        <h5 class="modal-title" style="text-align:center;">
-                            <img style="border-radius: 70%;" :src="profileUrl"
-                      width = "150" height="150">
-                      <div class="nickname">
-                      ${memberDto.memberNick}
-                      </div>   
-                   <div class="content" style="text-align:left;">
-                      <div class="content">
-                      <p style="font-size: 12px; color:gray;">신뢰할 수 있는 커뮤니티를 유지하기 위해 Insider 계정에 대한 정보가 표시됩니다</p>
-                      </div>
-                      <div class="date" style="display:flex;">
-                      <i class="fa-solid fa-calendar-days"></i>&nbsp;&nbsp;
-                      <h5>최근 로그인 일자</h5>
-                      </div>
-                      <p style="font-size:12px; color:gray;">
-                      ${memberDto.memberLogin}
-                      </p>
-                      <div class="location" style="display:flex;">
-                      <i class="fa-solid fa-location-dot"></i>&nbsp;&nbsp;
-                      <h5>계정 기본 위치</h5>
-                      </div>
+                   <div class="modal" tabindex="-1" role="dialog" id="modal03" data-bs-backdrop="static" ref="modal03" @click.self="hideModal">
+            		 <div class="modal-dialog" role="document">
+                		<div class="modal-content">
+                   		 	<div class="modal-header" style="display:flex; justify-content: center;">
+                        		<h5 class="modal-title" style="text-align:center;">
+                            <img style="border-radius: 70%;" :src="profileUrl" width = "150" height="150">
+                      			<div class="nickname">${memberDto.memberNick}</div>   
+                   			<div class="content" style="text-align:left;">
+                      				<p style="font-size: 12px; color:gray;">신뢰할 수 있는 커뮤니티를 유지하기 위해 Insider 계정에 대한 정보가 표시됩니다</p>
+		                      <div class="date" style="display:flex;">
+			                      <i class="fa-solid fa-calendar-days"></i>&nbsp;&nbsp;
+			                      <h5>최근 로그인 일자</h5>
+		                      </div>
+		                      <p style="font-size:12px; color:gray;">
+		                      ${memberDto.memberLogin}
+		                      </p>
+		                      <div class="location" style="display:flex;">
+			                      <i class="fa-solid fa-location-dot"></i>&nbsp;&nbsp;
+			                      <h5>계정 기본 위치</h5>
+		                      </div>
                       <p style="font-size:12px; color:gray;">한국</p>
-                   </div>   
-                        </h5>
-                    </div>
-                   
-                 
-                        <button type="button" class="btn"
-                                data-bs-dismiss="modal">닫기</button>
-                   
-                </div>      
-            </div>
-        </div>
+                   		</div>   
+                        	</h5>
+                    	</div>   
+                        <button type="button" class="btn" data-bs-dismiss="modal">닫기</button>
+                		</div>      
+            		</div>
+        		</div>
         
         
           <div class="modal" tabindex="-1" role="dialog" id="myOptionModal"
@@ -752,7 +823,7 @@
                             data-bs-backdrop="static"
                             ref="followerModal" @click.self="followerModalHide">	
             <div class="modal-dialog" role="document">
-                   <div class="modal-content" style="max-width:400px; min-height:300px; max-height:300px;">
+                   <div class="modal-content" style="max-width:400px; min-height:300px; max-height:400px;">
                        <div class="modal-header text-center" style="display:flex; justify-content: center;">
 							<h5 class="modal-title">팔로워</h5>
                        </div>
@@ -760,7 +831,7 @@
                      	<div v-for="item in myFollowerList" :key="item.attachmentNo">
                      	 						
                   <!-- 프로필 미리보기 내용 -->
-  						    <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave">
+  					<div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave">
                   <div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" style="border-radius: 50%;"> 
 						  <div>
@@ -815,10 +886,10 @@
                   
                   
           
-                  	 <button class="float-end btn btn-primary" @click="follow(item.memberNo)" v-if="followCheckIf(item.memberNo)" :class="{'hide' : item.memberNo == ${memberNo}}">팔로우</button>
-                  	 <button class="btn btn-primary">메시지 보내기</button>
-          			 <button class="float-end btn btn-secondary" @click="myUnFollower(item.memberNo)" v-if="!followCheckIf(item.memberNo) && ${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}">팔로잉</button>					  
-					 <button class="float-end btn btn-secondary unfollow-button" @click="unFollower(item.memberNo)" v-if="!followCheckIf(item.memberNo) && !${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}">팔로잉</button>
+                  	 <button class="float-end btn btn-primary" @click="follow(item.memberNo)" v-if="followCheckIf(item.memberNo)" :class="{'hide' : item.memberNo == ${memberNo}}" style="flex-grow:1;">팔로우</button>
+                  	 <button class="btn btn-primary" v-if="!followCheckIf(item.memberNo) && item.memberNo != ${memberNo}" style="width:50%;">메시지 보내기</button>
+          			 <button class="float-end btn btn-secondary" @click="myUnFollower(item.memberNo)" v-if="!followCheckIf(item.memberNo) && ${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}" style="width:50%; margin-left:20px;">팔로잉</button>					  
+					 <button class="float-end btn btn-secondary unfollow-button" @click="unFollower(item.memberNo)" v-if="!followCheckIf(item.memberNo) && !${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}" style="width:50%; margin-left:20px;">팔로잉</button>
                    
                     </div>
           </div><!-- 팔로워 미리보기 끝 -->
@@ -865,14 +936,13 @@
       		
         <div v-for="item in myFollowList" :key="item.attachmentNo">
       		 	<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
-          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover(item)" style="border-radius:50%;">
+          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover2(item)" style="border-radius:50%;">
 						   <div style="display: flex; flex-direction: column; justify-content: flex-start;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
           					<p class="modalName">{{item.memberName}}</p>
 						  </div>
           <button class="float-end btn btn-primary" @click="follow(item.followFollower)" v-show="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto; ">팔로우</button>
           <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-show="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
-          
           </div>
             <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave">
                   <!-- 프로필 미리보기 내용 -->
@@ -933,12 +1003,11 @@
                     </div>
                     <div class="col-9" style="display:flex; justify-content: space-between; margin-left:40px; margin-top:15px;">
                   	 <button class="btn btn-primary" @click="follow(item.followFollower)" v-if="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="flex-grow:1;">팔로우</button>
-                  	 <button class="btn btn-primary" v-if="!followCheckIf(item.followFollower)" style="width:50%;">메시지 보내기</button>
+                  	 <button class="btn btn-primary" v-if="!followCheckIf(item.followFollower) && item.followFollower != ${memberNo}" style="width:50%;">메시지 보내기</button>
           			<button class="btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-if="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="width:50%; margin-left:20px;" >팔로잉</button>
                  </div>
                  
           </div> <!-- 팔로우 미리보기 끝 -->
-          
           
           
 			</div>
@@ -979,7 +1048,7 @@
                             data-bs-backdrop="static"
                             ref="recommendFriendsAllListModal" @click.self="recommendFriendsAllListModalHide">
              <div class="modal-dialog" role="document">
-    <div class="modal-content" style="max-width:400px; min-height:200px max-height:400px;">
+    <div class="modal-content" style="max-width:400px; min-height:400px; max-height:400px;">
       <div class="modal-header text-center" style="display:flex; justify-content: center;">
         <h5 class="modal-title" >비슷한 계정</h5>
       </div>
@@ -1080,6 +1149,44 @@
 	</div>
 	
 <!-- 차단 관련 모달 끝 -->
+
+<!-- 좋아요 목록 모달  -->
+<div class="modal" tabindex="-1" role="dialog" id="likeListModal" data-bs-backdrop="static" ref="likeListModal" style="z-index:9999;">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content">
+				<div class="modal-header">
+        			<h5 class="modal-title col-7" style="font-weight:bold;">좋아요</h5>
+        			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="hideLikeListModal"></button>
+      			</div>
+				<div v-if="likeList.length != 0" class="modal-body p-0">				
+					<div class="row p-2 mt-2"  v-for="(like,index) in likeList" :key="index">
+						<div  class="col d-flex">
+							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick">
+								<img v-if="like.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ like.attachmentNo" width="50" height="50" style="border-radius: 70%;">
+								<img v-else src="https://via.placeholder.com/50x50?text=profile" style="border-radius: 70%; ">
+							</a>
+							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick" style="color:black;text-decoration:none; position:relative;">
+								<h6 style="margin: 14px 0 0 10px;">{{like.memberNick}}</h6>
+							</a>
+						</div>
+					</div>
+				</div>
+				
+				<div class="modal-body p-0" v-else>
+					<div class="row p-2 mt-2" >
+						<div class="col text-center">
+							<h2 class="mt-1">아직 좋아요가 없습니다</h2><br>
+							<h3>첫 번째 좋아요를 눌러주세요</h3>
+						</div>
+	 			 	</div>		
+				</div>
+					
+				
+				
+		</div>
+	</div>
+	</div>
+
         <!-- Modal 창 영역 끝 -->
         
       
@@ -1183,6 +1290,9 @@
 			boardLikeCount2:[], // 좋아요 수를 저장할 변수
             isLiked : [], // 로그인 회원이 좋아요 체크 여부
             isLiked2 : [], // 로그인 회원이 좋아요 체크 여부
+            likeList : [],
+            likeListData : [],
+            likeListModal : false,
             
 			//게시물 댓글 좋아요 기능 전용 변수
 			replyLikeCount : [], // 댓글 좋아요 수 저장 변수
@@ -1223,16 +1333,16 @@
             }
          },
          async getFollowCount() {
-             return async (memberNick) => {
-               if (!this.followCounts[memberNick]) {
+             return async (memberNo) => {
+               if (!this.followCounts[memberNo]) {
                  const resp = await axios.get("totalFollowCount", {
                    params: {
-                     memberNick: memberNick,
+                	   memberNo: memberNo,
                    },
                  });
-                 this.followCounts[memberNick] = resp.data;
+                 this.followCounts[memberNo] = resp.data;
                }
-               return this.followCounts[memberNick];
+               return this.followCounts[memberNo];
              };
            },
            
@@ -1528,7 +1638,7 @@
          async totalFollowCount() {
         	    const resp = await axios.get("totalFollowCount", {
         	        params: {
-        	            memberNick: this.memberNick
+        	            memberNo: this.memberNo
         	        }
         	    });
         	    this.totalFollowCnt = resp.data;
@@ -1539,40 +1649,40 @@
             async totalFollowerCount() {
            	    const resp = await axios.get("totalFollowerCount", {
            	        params: {
-           	            memberNick: this.memberNick
+           	            memberNo: this.memberNo
            	        }
            	    });
            	    this.totalFollowerCnt = resp.data;           	    
            	},
            	
            	// 호버시 팔로우 총 개수
-           	async getTotalFollowCount(memberNick) {
+           	async getTotalFollowCount(memberNo) {
            
            	      const resp = await axios.get("totalFollowCount", {
            	        params: {
-           	          memberNick: memberNick
+           	          memberNo: memberNo
            	        }
            	      });
            	     return resp.data;	   
            	},
            	
          	// 호버시 팔로워 총 개수
-           	async getTotalFollowerCount(memberNick) {
+           	async getTotalFollowerCount(memberNo) {
            
            	      const resp = await axios.get("totalFollowerCount", {
            	        params: {
-           	          memberNick: memberNick
+           	        	memberNo: memberNo
            	        }
            	      });
            	     return resp.data;	   
            	},
            	
            	// 호버시 게시물 총 개수
-           		async getTotalPostCount(memberNick) {
+           		async getTotalPostCount(memberNo) {
            
            	      const resp = await axios.get("totalPostCount", {
            	        params: {
-           	          memberNick: memberNick
+           	        	memberNo: memberNo
            	        }
            	      });
            	     return resp.data;	   
@@ -1607,6 +1717,8 @@
 		    if (resp.data.length < 3) {
 		      this.followFinish = true;
 		    }
+	
+
 		    
 		  // this.followCheck();
 		  } catch (error) {
@@ -1724,10 +1836,10 @@
            	 
            	  
            	  Promise.all([
-           		 this.getTotalFollowCount(item.memberNick), // 팔로우 수 가져오기
-              	 this.getTotalFollowerCount(item.memberNick), // 팔로워 수 가져오기
-              	 this.getTotalPostCount(item.memberNick), // 게시물 수 가져오기 
-              	 this.boardList2(item.followFollower), // 게시물 목록 가져오기
+           		 this.getTotalFollowCount(item.memberNo), // 팔로우 수 가져오기
+              	 this.getTotalFollowerCount(item.memberNo), // 팔로워 수 가져오기
+              	 this.getTotalPostCount(item.memberNo), // 게시물 수 가져오기 
+              	 //this.boardList2(item.memberNo), // 게시물 목록 가져오기
               	 this.boardList3(item.memberNo) // 게시물 목록 가져오기
              
            	  ])          	 
@@ -1738,14 +1850,40 @@
            	      this.hoverSettingHide = settingHide;
            	      this.hoverFollowerCheck = this.followCheckIf(item.memberNo);
            	      this.hoverFollowCheck = this.followCheckIf(item.followFollower);
-           	   		console.log("settingHide : "+this.hoverSettingHide);
-           	   		console.log("hoverFollowerCheck : " + this.followCheckIf(item.memberNo));
-           	   		console.log("hoverFollowCheck : " + this.followCheckIf(item.followFollower));
            	    })
            	    .catch(error => {
            	      console.error(error);
            	    });
            	},
+           	
+            async profileHover2(item) {           		
+             	  this.selectedItem = item; // 선택한 항목의 정보 저장
+             	  
+             	  // settingHide 불러오기 위해서 선언
+             	const resp = await axios.get("/rest/member/setting/"+item.memberNo);
+             	  const settingHide = resp.data.settingHide;
+             	 
+             	  
+             	  Promise.all([
+             		 this.getTotalFollowCount(item.followFollower), // 팔로우 수 가져오기
+                	 this.getTotalFollowerCount(item.followFollower), // 팔로워 수 가져오기
+                	 this.getTotalPostCount(item.followFollower), // 게시물 수 가져오기 
+                	 this.boardList2(item.followFollower), // 게시물 목록 가져오기
+                	 //this.boardList3(item.memberNo) // 게시물 목록 가져오기
+               
+             	  ])          	 
+             	    .then(([followCounts,followerCounts,postCounts]) => {
+             	      this.followCounts = followCounts; // 프로미스가 해결된 값 저장
+             	      this.followerCounts = followerCounts; // 프로미스가 해결된 값 저장
+             	      this.postCounts = postCounts; // 프로미스가 해결된 값 저장
+             	      this.hoverSettingHide = settingHide;
+             	      this.hoverFollowerCheck = this.followCheckIf(item.memberNo);
+             	      this.hoverFollowCheck = this.followCheckIf(item.followFollower);
+             	    })
+             	    .catch(error => {
+             	      console.error(error);
+             	    });
+             	},
            	
            	profileLeave(){
            		this.selectedItem = null;
@@ -2019,6 +2157,27 @@
                  this.boardLikeCount2[index] = resp.data.count;
              },
              
+             //좋아요 리스트
+             async likeListLoad(boardNo) {
+             	const resp = await axios.get("${pageContext.request.contextPath}/rest/board/like/list/" + boardNo);
+             	this.likeList = [...resp.data];
+             },
+             
+             //좋아요 모달창 열기
+             showLikeListModal(boardNo){
+     			if(this.likeListModal==null) return;
+     			this.likeListLoad(boardNo);
+     			this.likeListModal.show();
+     			this.likeListData=[boardNo];
+     		},
+     		
+     		//좋아요 모달창 닫기
+     		hideLikeListModal(){
+     			if(this.likeListModal==null) return;
+     			this.likeList=[];
+     			this.likeListModal.hide();
+     		},
+             
              
              //댓글 좋아요
              async likeReply(replyNo, index) {
@@ -2174,6 +2333,12 @@
 				    console.error(error);
 				  }
 				},
+				
+				async moveToTagPage(tagName){
+					const data={searchTagName:tagName, searchDelete:1};
+					const resp = await axios.post(contextPath+"/rest/search/", data);
+					window.location.href=contextPath+"/tag/"+tagName;
+				},
              	
                 /*----------------------신고----------------------*/
                 //신고 모달 show, hide
@@ -2261,6 +2426,8 @@
         			console.log("북마크 리스트 : "+this.bookmarkCheck.map(item => item.boardNo));
         		},
         		
+        		
+        		
         		/*---------북마크 종료 ----------------- */
       		
         		// 회원탈퇴       	
@@ -2312,6 +2479,7 @@
             this.followModal = new bootstrap.Modal(this.$refs.followModal);
             this.recommendFriendsAllListModal = new bootstrap.Modal(this.$refs.recommendFriendsAllListModal);
             this.deleteMemberModal = new bootstrap.Modal(this.$refs.deleteMemberModal);
+            this.likeListModal = new bootstrap.Modal(this.$refs.likeListModal);
         
             window.addEventListener("scroll", _.throttle(()=>{
             

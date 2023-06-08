@@ -99,7 +99,7 @@
 	            
 
 
-  <div class="row form-floating mb-3">
+  <div class="row form-floating mb-3">  				
 	                <input class="form-control" type="text" name="memberName" placeholder="성명" v-model="name" @blur="validateName" :class="{'is-valid': name !== '' && !showNameWarning, 'is-invalid': (name === '' && showNameWarning) || (name !== '' && showNameWarning)}">
 	                  <label for="floatingInput">이름 <span style="color:red;">*</span></label>
 	                <p v-if="showNameWarning" class="name-warning-message">2~10자 한글, 영문 대소문자, 숫자, 특수문자를 사용하세요.</p>

@@ -1,6 +1,9 @@
 package com.kh.insider.service;
 
 import java.io.IOException;
+
+
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,6 +27,7 @@ import com.kh.insider.dto.DmRoomRenameDto;
 import com.kh.insider.dto.DmUserDto;
 import com.kh.insider.repo.DmMessageDeletedRepo;
 import com.kh.insider.repo.DmMessageRepo;
+//import com.kh.insider.repo.DmNoticeRepo;
 import com.kh.insider.repo.DmPrivacyRoomRepo;
 import com.kh.insider.repo.DmRoomRenameRepo;
 import com.kh.insider.repo.DmRoomRepo;
