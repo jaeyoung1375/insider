@@ -49,11 +49,11 @@ public class joinTests {
 	public void test1() {
 		int memberNo = 0;
 		
-		List<MemberWithProfileDto> result = sqlSession.selectList("member.recommendFriends", memberNo);
-		for (MemberWithProfileDto dto : result) {
-		    log.debug("Result = {}", dto);
-		}
-		
+		/*
+		 * List<MemberWithProfileDto> result =
+		 * sqlSession.selectList("member.recommendFriends", memberNo); for
+		 * (MemberWithProfileDto dto : result) { log.debug("Result = {}", dto); }
+		 */
 		
 	}
 
