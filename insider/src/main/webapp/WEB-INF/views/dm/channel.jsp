@@ -223,7 +223,7 @@
 				<div class="row" style="width:1000px;margin-left:7px; margin-right:100px; margin-top:0; height:70vh">
 					<!-- 채팅방 목록 -->
 					<div class="card col-3" style="width:290px;border-radius:0;border-top:none;padding:0;">
-						<div class="card-body cardList-scroll" style="padding:0;padding-top:10px; max-height: 633px;">
+						<div class="card-body cardList-scroll" style="padding:0;padding-top:10px; max-height: 720px;">
 							<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo":class="{'hover': isHovered[index] }"
          						@mouseover="isHovered[index] = true" @mouseleave="isHovered[index] = false" @click="enterRoom(room.roomNo)" style="padding-bottom: 5px;padding-top: 4px;padding-left: 13px;cursor:pointer;">
 							    <div style="position:relative; height: 2.4em; display: flex; align-items: center;">
