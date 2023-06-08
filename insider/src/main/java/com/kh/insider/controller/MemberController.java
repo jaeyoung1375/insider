@@ -98,7 +98,6 @@ public class MemberController {
    }
    memberRepo.updateLoginTime(findMember.getMemberNo());
    session.setAttribute("memberNo",findMember.getMemberNo());
-   session.setAttribute("socialUser", findMember);
       
    return "redirect:/";
    }
@@ -107,7 +106,8 @@ public class MemberController {
    public String logout(HttpSession session) {
       session.removeAttribute("memberNo");
       session.removeAttribute("socialUser");
-      session.removeAttribute("member");
+      session.removeAttribute("memberLevel");
+      session.removeAttribute("memberNick");
       
       return "redirect:/";
    }
@@ -137,10 +137,9 @@ public class MemberController {
       // 프로필 정보 불러오기
 	   MemberWithProfileDto findMember = memberWithProfileRepo.selectOne(dto.getMemberNo());
       // 로그인한 사용자
-      MemberDto loginUser = (MemberDto)session.getAttribute("socialUser");
-      log.debug("로그인한 사용자:{}", loginUser);
       // 본인 프로필 인지 여부
-      boolean isOwner = loginUser.getMemberNo().equals(dto.getMemberNo());
+	  long memberNo=(long) session.getAttribute("memberNo");
+      boolean isOwner = memberNo==dto.getMemberNo();
       
       
       model.addAttribute("memberDto",findMember);

@@ -196,7 +196,8 @@ public class MemberRestController {
 		memberRepo.deleteMember(memberNo);
 		session.removeAttribute("memberNo");
 		session.removeAttribute("socialUser");
-		session.removeAttribute("member");
+		session.removeAttribute("memberLevel");
+		session.removeAttribute("memberNick");
 		
 		//리포트가 있으면 찾아서 상태 변경해줌
 		reportService.manageDeleted("member", memberNo);

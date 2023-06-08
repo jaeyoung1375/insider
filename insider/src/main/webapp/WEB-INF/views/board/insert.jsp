@@ -536,8 +536,6 @@ $(document).ready(function() {
     	  //주소 알아오는 코드
     	  geocoder:null,
     	  currentAddr:"",
-    	  map:null,
-    	  options:{},
     	  /* //사람태그
     	  keyword: "",
     	  nickList: [],
