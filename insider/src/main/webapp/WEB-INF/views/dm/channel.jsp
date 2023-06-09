@@ -472,7 +472,7 @@
 		      </div>
 		      <div class="modal-body" style="width:300px;">
 		        <div v-for="(member,index) in membersInRoomList" :key="index" style="margin-top:20px;position:relative;">
-		          <a href="${pageContext.request.contextPath}/member/{member.memberNick}" style="color: black; text-decoration: none;">
+		          <a :href="'${pageContext.request.contextPath}/member/'+member.memberNick" style="color: black; text-decoration: none;">
 			          <img v-if="member.attachmentNo > 0"  :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
 				      <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
 			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
