@@ -116,22 +116,22 @@
  		  overflow-x: hidden;  
  	  } 
 
- 	  .modal-content { 
+ 	  .modal-content.in-header { 
  	  	margin: 10px; 
  	  } 
 	
- 	  .modal-header { 
+ 	  .modal-header.in-header { 
  		  text-align: center; 
  		  margin-bottom: 10px; 
  	  } 
 	
- 	.modal-body { 
+  	.modal-body.in-header { 
  	  max-height: 300px;  
  	  overflow-x: hidden;  
  	  overflow-y: auto;  
- 	} 
+ 	}
 
- 	.modal-footer { 
+ 	.modal-footer.in-header { 
  	  -align: center; 
  	  margin-top: 10px; 
  	} 
@@ -222,7 +222,7 @@
 	}
 </style>
 
- <script type="text/javascript">
+<!--  <script type="text/javascript">
   document.addEventListener('DOMContentLoaded', function() {
 
     const darkModeEnabled = localStorage.getItem('darkmode') === 'on';
@@ -245,7 +245,7 @@
       }
     });
   });
-</script>
+</script> -->
 
 
 <body>
@@ -281,9 +281,9 @@
 									  </a>
 								  </div>
 								  <div class="modal-window" v-if="showModal">
-								    <div class="modal-content">
-								      <div class="modal-header"></div>
-								      <div class="modal-body">
+								    <div class="modal-content in-header">
+								      <div class="modal-header in-header"></div>
+								      <div class="modal-body in-header">
 								        <ul class="notification-list">
 								        <div v-if="notifications.length >0">
 								        	<span><i class="fa-sharp fa-regular fa-bell fa-shake" style=color:#f1c40f;></i>새로운 알림</span>
@@ -329,7 +329,7 @@
 								          
 								        </ul>
 								      </div>
-								      <div class="modal-footer"></div>
+								      <div class="modal-footer in-header"></div>
 								    </div>
 								  </div>
 								</div>
@@ -355,7 +355,7 @@
 				</div>
 			</nav>
 			<aside style="position:absolute; right:5em; top:5em" >
-				<c:if test="${sessionScope.memberLevel==0}">
+<%-- 				<c:if test="${sessionScope.memberLevel==0}">
 		        	<div class="darkmode">
 		            	<div class="inner">
 		                	<input type="radio" name="toggle" id="toggle-radio-light" checked><label for="toggle-radio-light" class="tolight"><i class="fas fa-sun tolight"></i></label>
@@ -363,7 +363,7 @@
 		                	<div class="darkmode-bg"></div>
 		            	</div>
 		        	</div>
-				</c:if>
+				</c:if> --%>
 				<div class="dropdown" :class="{'show':sideMenu}">
 					<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @click="showSideMenu()">
 						<i class="fa-solid fa-bars"></i>
