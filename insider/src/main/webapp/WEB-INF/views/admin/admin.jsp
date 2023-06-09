@@ -94,7 +94,7 @@
 /* 게시물 네모박스 css 끝 */
 
 /* 모달이 사이즈가 커지면 스크롤이 생기고 헤더 고정 */
-.modal-content{
+.modal-content-custom{
 	margin:0;
 	padding:0.4em;
 	padding-right:0.7em;
@@ -1187,7 +1187,7 @@
 	<!-- ---------------------------------신고 내용 관리 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportContentModal">
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">신고 내용 관리</h5>
@@ -1239,7 +1239,7 @@
 	<!-- ---------------------------------정지 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="suspensionModal">
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">회원 정지</h5>
@@ -1395,7 +1395,7 @@
 	<!-- ---------------------------------신고창에서 보는 정지 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportSuspensionModal">
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">회원 정지</h5>
@@ -1551,7 +1551,7 @@
 	<!-- ---------------------------------신고 세부 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportDetailModal">
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">신고 내용 관리</h5>
@@ -1703,7 +1703,7 @@
 	<!-- ---------------------------------게시물 미리보기 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="boardViewModal" style="z-index:3000">
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">게시물 미리보기</h5>
@@ -1833,7 +1833,7 @@
 	<!-- ---------------------------------신고받은 게시물 미리보기 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportedBoardModal" style="z-index:2000">
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">신고받은 게시물 리스트</h5>
@@ -1871,7 +1871,7 @@
 	<!-- ---------------------------------신고받은 댓글 미리보기 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportedReplyModal" >
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">신고받은 댓글 리스트</h5>
@@ -1912,7 +1912,7 @@
 	<!-- ---------------------------------신고받은 댓글 정보보기 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportedReplyDetailModal">
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">댓글 정보보기</h5>
@@ -1972,7 +1972,7 @@
 	<!-- ---------------------------------신고받은 게시물 미리보기 상세보기 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportedBoardDetailModal" style="z-index:3000">
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">게시물 미리보기</h5>
@@ -2239,8 +2239,12 @@
 				const queryParams = new URLSearchParams(window.location.search);
 				const adminMenu = queryParams.get('adminMenu');
 				const modal = queryParams.get('modal');
-				this.adminMenu = adminMenu;
-				this.modal=modal;
+				if(this.adminMenu!=adminMenu){
+					this.adminMenu = adminMenu;
+				}
+				if(this.modal!=modal){
+					this.modal=modal;
+				}
 			},
 			//쿼리 업데이트를 위한 page 데이터 변경 및 쿼리 변경 메서드
 			changeAdminMenu(adminMenu){
@@ -2251,14 +2255,17 @@
 				//쿼리 히스토리 저장
 				window.history.pushState({ query: queryParams.toString() }, '', newURL);
 			},
-			changeModal(modal){
+			changeModal(modal, noHistory){
+				if(this.modal==modal) return;
 				this.modal=modal;
 				const queryParams = new URLSearchParams(window.location.search);
-				queryParams.set('adminMenu', this.adminMenu);
+				//queryParams.set('adminMenu', this.adminMenu);
 				queryParams.set('modal', this.modal);
 				const newURL = `?`+queryParams.toString();
 				//쿼리 히스토리 저장
-				window.history.pushState({ query: queryParams.toString() }, '', newURL);
+				if(!noHistory){					
+					window.history.pushState({ query: queryParams.toString() }, '', newURL);
+				}
 			},
 			hideAllModal(){
 				if(this.boardViewModal){
@@ -3249,7 +3256,7 @@
 				}
 			},
 			adminMenu(){
-				this.changeModal("");
+				this.changeModal("", true);
 				if(this.adminMenu==1){
 					//회원관리
 					this.loadMemberList();
