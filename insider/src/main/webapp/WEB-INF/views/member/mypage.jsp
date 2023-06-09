@@ -288,7 +288,7 @@
             </div>
             <!-- 친구 추천 목록 -->
     
-            <div  style="display: flex; flex-direction: column; width: 930px; height:280px; background-color: white; border:1px solid gray; margin: 0 auto;" v-if="recommendFriends">
+            <div  style="display: flex; flex-direction: column; width: 830px; height:280px; background-color: white; border:1px solid gray; margin: 0 auto; margin-top:12px;" v-if="recommendFriends">
         		<div class="recommend-id" style="display:flex; justify-content: space-between;">
         			<span style="color:gray; font-weight: bold;">추천계정</span>
         			<a class="" style="text-decoration: none; font-weight: bold;" @click="recommendFriendsAllListModalShow">모두 보기</a>
@@ -310,13 +310,13 @@
 				</div>
 
 			  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style="display:flex;">
-			    <div class="card" style="width: 174px; height: 192px; margin-left: 30px;">
+			    <div class="card" style="width: 150px; height: 170px; margin-left: 30px;">
 			      <div class="ms-auto" style="margin-right:8px;">
 			      	<span @click="deleteRecommendFriend(item.memberNo)">x</span>
 			      </div>
-			      <div class="profile d-flex justify-content-center align-items-start">
-			        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="54" height="54" style="border-radius:50%;">
-			      </div>
+			      <div class="profile d-flex justify-content-center align-items-start" style="text-align: center; margin-left:60px;">
+					  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="54" height="54" style="border-radius:50%;">
+				  </div>
 			      <div class="recommend-nickname d-flex justify-content-center align-items-start">
 			        {{ item.memberNick }}
 			      </div>
@@ -325,8 +325,8 @@
 			      </div>
 			      <div class="recommend-name d-flex justify-content-center align-items-start">
 			      <!-- 다음 페이지로 이동하는 버튼 -->
-			        <button class="btn btn-primary" style="width:85px; margin-top:8px;" @click="follow(item.memberNo)" v-show="followCheckIf(item.memberNo)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로우</button>
-			        <button class="btn btn-secondary" style="width:85px; margin-top:8px;" @click="unFollow(item.memberNo)" v-show="!followCheckIf(item.memberNo)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로잉</button>
+			        <button class="btn btn-primary" style="width: 65%; margin-top:8px;" @click="follow(item.memberNo)" v-show="followCheckIf(item.memberNo)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로우</button>
+			        <button class="btn btn-secondary" style="width: 65%; margin-top:8px;" @click="unFollow(item.memberNo)" v-show="!followCheckIf(item.memberNo)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로잉</button>
 			      </div>
 			    </div>
 			  </div>
@@ -473,7 +473,9 @@
                
                 <div class="carousel-inner">
                   <div  v-for="(attach, index2) in myBoardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
-                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" style="width:700px; height:700px;"> 
+                  	<video  style="width:700px; height:700px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+attach.imageURL" v-if="attach.video"
+							:autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto"></video> 
+                   	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" style="width:700px; height:700px;" v-else> 
                   </div>
                 </div>
                
@@ -901,7 +903,7 @@
   						 		</div>
   						
 						   <button class="float-end btn btn-primary" @click="follow(item.memberNo)" v-if="followCheckIf(item.memberNo)" :class="{'hide' : item.memberNo == ${memberNo}}" style="margin-left:auto;">팔로우</button>
-						  <button class="float-end btn btn-secondary" @click="myUnFollower(item.memberNo)" v-if="!followCheckIf(item.memberNo) && ${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}" style="margin-left:auto;">팔로잉</button>					  
+						  <button class="float-end btn btn-secondary" @click="myUnFollower(item.memberNo)" v-if="!followCheckIf(item.memberNo) && ${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}" style="margin-left:auto;">삭제</button>					  
 						  <button class="float-end btn btn-secondary unfollow-button" @click="unFollower(item.memberNo)" v-if="!followCheckIf(item.memberNo) && !${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
 						 
 						</div>
@@ -942,7 +944,8 @@
           					<p class="modalName">{{item.memberName}}</p>
 						  </div>
           <button class="float-end btn btn-primary" @click="follow(item.followFollower)" v-show="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto; ">팔로우</button>
-          <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-show="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
+          <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-show="!followCheckIf(item.followFollower) && !${isOwner}" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
+          <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-show="!followCheckIf(item.followFollower) && ${isOwner}" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">삭제</button>
           </div>
             <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave">
                   <!-- 프로필 미리보기 내용 -->
@@ -1321,6 +1324,13 @@
 			bookmarkMyPostList : [],
 			bookmarkCheck : [],
 			agreeChecked : false,
+			
+			MemberSetting:{
+	            //반경설정
+	            watchDistance:"",
+	            //동영상 자동재생
+	            videoAuto:false,
+            },
          };
       },
       computed: {
@@ -1470,6 +1480,13 @@
               const resp = await axios.get(contextPath+"/rest/member/"+memberNo);
               Object.assign(this.member, resp.data);
            },
+           
+           //회원 환경 설정 로드
+           async loadMemberSetting(){
+   			const resp = await axios.get(contextPath+"/rest/member/setting");
+               this.memberSetting.watchDistance=resp.data.settingDistance;
+               this.memberSetting.videoAuto=resp.data.videoAuto;
+   		},
               
              //프로필 사진 변경 누르면 실행
             openFileInput() {
@@ -2448,6 +2465,7 @@
     	  this.hashtagFollowCheck();
     	  this.bookmarkMyPost();
     	  this.bookmarkList();
+    	  this.loadMemberSetting();
     	  Promise.all([this.followListPaging(), this.followerListPaging(), this.boardList()])
     	    .then(() => {
     	      this.followCheck();
