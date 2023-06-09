@@ -328,6 +328,12 @@ public class DmServiceImpl implements DmService {
 
 		    // 채팅방으로 이미지 메세지 전송
 		    this.broadcastPicture(user, roomNo, jsonMessage, messageNo, messageType ,attachmentNo);
+		    
+		    //채팅 참가자 시간 데이터 전송
+			this.broadcastRoom(roomNo);
+			
+			//방 참가자들에게 새 메세지 왔다고 알림 전송
+			this.broadcastRoom(roomNo, 6);
 		}
 		
 	    //메시지 삭제
