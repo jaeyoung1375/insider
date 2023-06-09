@@ -910,7 +910,7 @@
 						</div>
                      		
                        </div>           
-                        <button type="button" class="btn" data-bs-dismiss="modal" style="color:red;">취소</button>
+                        <button type="button" class="btn btn-default" data-bs-dismiss="modal" style="color:red;">취소</button>
                 </div>      
             </div>
         </div><!-- 팔로워 목록 끝 -->

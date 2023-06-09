@@ -45,7 +45,7 @@
 	background-color:white
 }
 </style>
-<div class="container-fluid mt-4" id="app" style="width:60%; min-width:1000px">
+<div class="container-fluid mt-4" id="app" style="width:60%; min-width:900px">
 	<div class="row">
 	<!-- 좌측 사이드 메뉴바 -->
 		<div class="col-3">
@@ -85,7 +85,7 @@
 			</div>
 		</div>
 	<!------------------------------------------- 개인정보 변경 ------------------------------------------->
-		<div class="col-lg-9 select-option-box" v-show="page==0">
+		<div class="col-md-9 select-option-box" v-show="page==0">
 			<div class="row">
 				<div class="col">
 					<h2>개인정보 변경</h2>
@@ -102,9 +102,6 @@
 					<div class="row mb-3">
 						<div class="col-10">
 							<h5 class="ms-3">{{member.memberEmail}}</h5>
-						</div>
-						<div class="col-2 modal-click-btn">
-							변경
 						</div>
 					</div>
 					<div class="row">

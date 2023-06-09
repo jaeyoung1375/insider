@@ -263,6 +263,7 @@ ALTER TABLE member ADD CONSTRAINT password_constraint CHECK (not REGEXP_LIKE(mem
 ALTER TABLE member ADD CONSTRAINT tel_constraint CHECK (not REGEXP_LIKE(member_tel, '/^01[0-9]{1}-?[0-9]{3,4}-?[0-9]{4}$/'));
 
 
+
 -- 인증번호 테이블
 create table cert(
     email varchar2(30) not null,
@@ -270,3 +271,11 @@ create table cert(
     limit date default sysdate not null,
     primary key(email,secret)
 );
+
+--dm 좋아요
+CREATE TABLE dm_like(
+message_no REFERENCES dm_message(message_no) ON DELETE CASCADE NOT NULL,
+member_no REFERENCES member(member_no) ON DELETE CASCADE NOT NULL,
+unique(message_no, member_no)
+);
+

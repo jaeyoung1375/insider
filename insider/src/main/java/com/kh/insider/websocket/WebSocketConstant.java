@@ -10,7 +10,7 @@ public interface WebSocketConstant {
 	int LEAVE = 5;
 	int NEW_MESSAGE = 6;
 	int PICTURE = 7;
-	
+	int LIKE = 8;
 	Integer WAITING_ROOM_NO = -1;
 
 }
