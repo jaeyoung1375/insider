@@ -577,7 +577,7 @@
             	        //좋아요 개수 및 내가 좋아요 했는지 여부 반환
             	        this.likeCount = resp.data.map(msg=>JSON.parse(msg.likeCount));
             	        this.memberLike= resp.data.map(msg=>JSON.parse(msg.memberLike));
-        				//스크롤 아로로 이동
+        				//스크롤 아래로 이동
 						this.$nextTick(() => {
 						    const scrollContainer = this.$refs.scrollContainer;
 						    if (scrollContainer) {
@@ -764,8 +764,14 @@
 		            		this.likeCount.push(0);
 		            		this.memberLike.push(0);
 						}
-	            		
             		}
+    				//스크롤 아래로 이동
+					this.$nextTick(() => {
+					    const scrollContainer = this.$refs.scrollContainer;
+					    if (scrollContainer) {
+					        scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'smooth' });
+					    }
+					});
 	            },
 	            sendMessage() {
             		if(this.text.length == 0) return;
