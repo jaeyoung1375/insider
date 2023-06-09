@@ -255,6 +255,12 @@
 		<include refid="topNheader"></include>
 	 		select * from board_with_nick 
 	 		<where>
+	 			<if test="blockExist">
+	 				and member_no not in
+	 				<foreach collection="blockDtoList" open="(" close=")" item="blockDto" separator=",">
+	 					#{blockDto.blockNo}
+	 				</foreach>
+	 			</if>
 	 			<choose>
 		 			<when test="followExist">
 		 				and member_no in
@@ -266,12 +272,6 @@
 		 				and member_no in(-1)
 		 			</otherwise>
 	 			</choose>
-	 			<if test="blockExist">
-	 				and member_no not in
-	 				<foreach collection="blockDtoList" open="(" close=")" item="blockDto" separator=",">
-	 					#{blockDto.blockNo}
-	 				</foreach>
-	 			</if>
 	 		</where>
 	 		order by board_no asc
 	 	<include refid="topNfooter"></include>	
@@ -286,6 +286,13 @@
 		<include refid="topNheader"></include>
 	 		select * from board_with_nick 
 	 		<where>
+	 			<if test="blockExist">
+	 				and member_no not in
+	 				<foreach collection="blockDtoList" open="(" close=")" item="blockDto" separator=",">
+	 					#{blockDto.blockNo}
+	 				</foreach>
+	 				
+	 			</if>
 	 			<choose>
 		 			<when test="followExist">
 			 			 and (
@@ -316,13 +323,6 @@
 	 				<otherwise>
 	 				</otherwise>
 	 			</choose>
-	 			<if test="blockExist">
-	 				and member_no not in
-	 				<foreach collection="blockDtoList" open="(" close=")" item="blockDto" separator=",">
-	 					#{blockDto.blockNo}
-	 				</foreach>
-	 				
-	 			</if>
 	 		</where>
 	 		order by board_no desc
 	 	<include refid="topNfooter"></include>	
@@ -338,6 +338,12 @@
 		<include refid="topNheader"></include>
 	 		select * from board_with_nick 
 	 		<where>
+	 			<if test="blockExist">
+	 				and member_no not in
+	 				<foreach collection="blockDtoList" open="(" close=")" item="blockDto" separator=",">
+	 					#{blockDto.blockNo}
+	 				</foreach>
+	 			</if>
 	 			<choose>
 		 			<when test="followExist">
 			 			 or (
@@ -376,12 +382,6 @@
 	 				<otherwise>
 	 				</otherwise>
 	 			</choose>
-	 			<if test="blockExist">
-	 				and member_no not in
-	 				<foreach collection="blockDtoList" open="(" close=")" item="blockDto" separator=",">
-	 					#{blockDto.blockNo}
-	 				</foreach>
-	 			</if>
 	 		</where>
 	 		order by board_no desc
 	 	<include refid="topNfooter"></include>	
@@ -426,6 +426,12 @@
 		<include refid="topNheader"></include>
 	 		select * from board_with_nick 
 	 		<where>
+	 			<if test="blockExist">
+	 				and member_no not in
+	 				<foreach collection="blockDtoList" open="(" close=")" item="blockDto" separator=",">
+	 					#{blockDto.blockNo}
+	 				</foreach>
+	 			</if>
 	 			<if test="settingDistanceExist">
 	 				<![CDATA[
 					and (
@@ -438,12 +444,6 @@
 						)
 					) > #{settingDistance}
 					]]>
-	 			</if>
-	 			<if test="blockExist">
-	 				and member_no not in
-	 				<foreach collection="blockDtoList" open="(" close=")" item="blockDto" separator=",">
-	 					#{blockDto.blockNo}
-	 				</foreach>
 	 			</if>
 	 		</where>
 	 		order by board_no desc
