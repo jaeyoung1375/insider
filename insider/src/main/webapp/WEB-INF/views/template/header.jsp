@@ -254,7 +254,7 @@
 			<nav class="mt-3">
 				<div class="container-fluid" style="width:60%; max-width:900px; min-width:700px">
 					<div class="row ps-5 pe-5" style="max-width:1200px">
-						<div class="col-3">
+						<div class="col-4">
 							<a href="${pageContext.request.contextPath}/" class="logo d-flex align-items-center" style="color:inherit;">
 								<img class="me-2" src="${pageContext.request.contextPath}/static/image/logo.png" width="50" height="50">
 								insider

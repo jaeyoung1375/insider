@@ -210,8 +210,8 @@
 	                         </select>
 	           </div> -->
 <div class="gender-buttons">
-  <button type="button" class="gender-button active" data-gender="male" @click="selectGender(0)">남성</button>
-  <button type="button" class="gender-button" data-gender="female" @click="selectGender(1)">여성</button>
+  <button type="button" class="gender-button" :class="{ active: gender === 0 }" data-gender="male" @click="selectGender(0)">남성</button>
+  <button type="button" class="gender-button" :class="{ active: gender === 1 }" data-gender="female" @click="selectGender(1)">여성</button>
 </div>
 <input type="hidden" name="memberGender" :value="gender">
 
@@ -310,6 +310,7 @@
 	                    selectedDay: new Date().getDate(),
 	                    isDisabled : false,
             			count : 0,
+            			 activeButton: 0,
 	                };
 	            },
 	            computed: {
@@ -470,8 +471,15 @@
 	                    	 event.preventDefault();
 	                         return;
 	                    }
+	                 	const certDto = {
+   	                			secret : this.emailCode,
+   	                			email : this.email
+   	                		};
+	                      axios.post("/member/checkCert",certDto);
 	                       this.stepOneHidden = true;	
-	                      this.$refs.joinForm.submit();
+	                       this.$refs.joinForm.submit();
+ 	                		
+	                	
 	         
 	                },
 	                selectGender(gender){
@@ -517,7 +525,19 @@
 	                    }).open();
 	                },
 	                
-	                async sendEmail(memberEmail){	     			       		
+	                async sendEmail(memberEmail){	   
+	                	
+	                	this.isDisabled = true;
+	                	
+	                	this.count = 299;
+	     				this.timer = setInterval(() => {
+	     					this.count--;
+	     					 if (this.count === 0) {
+	     				        clearInterval(this.timer); // 타이머 종료
+	     				        this.emailCode == '';
+	     				      }
+	     				},1000);
+	                	
 	     				const response = await axios.get("sendMail",{
 	     					params : {
 	     						memberEmail : this.email
@@ -527,17 +547,7 @@
 	     				this.num = response.data;
 	     				// num을 다른메서드에서 쓰기 위함
 	     				this.emailVerifyCode();
-	     				
-						this.isDisabled = true;
-	     				this.count = 299;
-	     				this.timer = setInterval(() => {
-	     					this.count--;
-	     					 if (this.count === 0) {
-	     				        clearInterval(this.timer); // 타이머 종료
-	     				        this.emailCode == '';
-	     				      }
-	     				},1000);
-	     				
+	
 	                },
 	                
 	                emailVerifyCode(){
@@ -545,16 +555,16 @@
 	                	if(this.num != this.emailCode){
 	                		this.showEmailCodeWarning = true;
 	                	}else{
-	                		this.showEmailCodeWarning = false;
-	                	}
-		                	
+	                		this.showEmailCodeWarning = false;       		                	
+	                }
 	                },
+	                	
 	          		prevBtn(){
 	                	this.stepOneHidden = false;
 	                	
 	                },    
-	          
-	            },	      
+	            },
+	                 
 	        });
 	        app.mount("#app");
 	    </script>

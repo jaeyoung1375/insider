@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dmLike">
+	<insert id="insert">
+		insert into dm_like(message_no, member_no) values(#{messageNo}, #{memberNo})
+	</insert>
+	<delete id="delete">
+		delete dm_like where message_no=#{messageNo} and member_no=#{memberNo}
+	</delete>
+	<select id="selectOne" resultType="dmLikeDto">
+		select * from dm_like where message_no=#{messageNo} and member_no=#{memberNo}
+	</select>
+	<select id="selectCount" resultType="int">
+		select count(*) from dm_like where message_no=#{messageNo}
+	</select>
+</mapper>

@@ -12,8 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
+
+import com.kh.insider.dto.CertDto;
+import com.kh.insider.repo.CertRepo;
 
 @Repository
 public class MemberServiceImpl implements MemberService{
@@ -22,6 +26,13 @@ public class MemberServiceImpl implements MemberService{
    
    @Autowired
    private JavaMailSender sender;
+   
+   @Autowired
+   private CertRepo certRepo;
+   
+   @Autowired
+   private PasswordEncoder encoder;
+   
    Random random = new Random();
 
    @Override
@@ -61,8 +72,15 @@ public class MemberServiceImpl implements MemberService{
            emailContent.replace(emailContent.indexOf("${num}"), emailContent.indexOf("${num}") + "${num}".length(), String.valueOf(num));
 
            helper.setText(emailContent.toString(), true);
-
+   
+           // 이메일 발송
            sender.send(message);
+           
+           // 데이터베이스 등록
+           CertDto certDto = new CertDto();
+           certDto.setEmail(email);
+           certDto.setSecret(Integer.toString(num));
+           certRepo.insert(certDto);
        } catch (MessagingException e) {
            e.printStackTrace();
        }
