@@ -124,6 +124,8 @@
 		display: none;
 	}
 	
+	
+	
 
 /* 차단 관련 css */
 .report-content:hover{
@@ -146,6 +148,14 @@
 .profile-container:hover .profile-preview {
   display: block; 
 }
+
+/* 친구추천  */
+	.recommend{
+		margin-top: 20px;
+		width:468px;
+		height:118px;
+		border: 1px solid black;
+	}
 </style>
 
 <script>
@@ -168,7 +178,7 @@
                 headings[i].style.color = '#fff';
             }
             
-            var containers = document.getElementsByTagName('a'); // Change to the appropriate tag for your headings
+            var containers = document.getElementsByTagName('a');
             for (var i = 0; i < containers.length; i++) {
             	containers[i].style.color = 'white';
             }
@@ -185,6 +195,24 @@
 </script>
 
 <div id="app"class="darkmode">
+	<!-- 친구추천 -->
+		<div class="container recommend">
+		<div class="d-flex justify-content-end">
+			<p style="font-size:12px; color:gray;">회원님을 위한 친구추천</p>
+		</div>
+			<div class="d-flex justify-content-flex-start" style="margin-left:17px;">
+		  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style="margin-right:10px;">
+		  <a :href="'${pageContext.request.contextPath}/member/'+ item.memberNick">
+		    <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="65" height="65" style="border-radius:50%; margin-right:15px;">
+		  </a>
+		    <div class="recommend-nickname d-flex" style="min-width:120%;">
+		      <p style="font-size:11px;">{{ item.memberNick }}</p>
+		    </div>		    
+		  </div>
+		</div>
+
+	</div>
+	<!-- 친구추천  끝-->
 	
 	<div v-if="followCount == 0 && tagFollowCount == 0" class="container" style="margin-top: 20px; max-width: 1000px">
 		<div class="text-center">
@@ -218,30 +246,29 @@
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼사진▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div style="padding: 4px 8px 8px 8px;">
                             <div :id="'carouselExampleIndicators'+index" class="carousel slide">
-                                
-                                <div class="carousel-indicators">
-                                  <button v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#carouselExampleIndicators'+index" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
-                                </div>
-                               
-                                <div class="carousel-inner">
-                                  <div  v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
-                                   	<video class="content" :src="'${pageContext.request.contextPath}'+ attach.imageURL" v-if="board.boardAttachmentList[0].video" 
-										style="object-fit:cover" :autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto" @dblclick="likePost(board.boardWithNickDto.boardNo,index)"></video>
-									<img class='content' v-else
-								 		:src="'${pageContext.request.contextPath}'+attach.imageURL" @dblclick="likePost(board.boardWithNickDto.boardNo,index)">
-                                  </div>
-                                  
-                                </div>
-                               
-                                <button class="carousel-control-prev" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="prev">
-                                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                  <span class="visually-hidden">Previous</span>
-                                </button>
-                                <button  class="carousel-control-next" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="next">
-                                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                  <span class="visually-hidden">Next</span>
-                                </button>
-                              </div>
+							  <div class="carousel-indicators">
+							    <button v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#carouselExampleIndicators'+index" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
+							  </div>
+							
+							  <div class="carousel-inner">
+							    <template v-for="(attach, index2) in boardList[index].boardAttachmentList">
+							      <div :key="index2" class="carousel-item" :class="{'active':index2==0}">
+							        <video class="content" v-if="attach.video" :src="'${pageContext.request.contextPath}'+ attach.imageURL" style="object-fit: cover" :autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto" @dblclick="likePost(board.boardWithNickDto.boardNo,index)"></video>
+							        <img class="content" v-else :src="'${pageContext.request.contextPath}'+attach.imageURL" @dblclick="likePost(board.boardWithNickDto.boardNo,index)">
+							      </div>
+							    </template>
+							  </div>
+							
+							  <button class="carousel-control-prev" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="prev">
+							    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+							    <span class="visually-hidden">Previous</span>
+							  </button>
+							  <button class="carousel-control-next" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="next">
+							    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+							    <span class="visually-hidden">Next</span>
+							  </button>
+							</div>
+
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲사진▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼좋아요▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-1" style="height: 40px;">
@@ -296,7 +323,7 @@
           <div class="profile-preview" v-if="selectedItem === board.boardWithNickDto" @mouseleave="profileLeave">
                   <!-- 프로필 미리보기 내용 -->
                    	<div style="display: flex; align-items: center;">
-						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' +board.boardWithNickDto.attachmentNo" width="75" height="75" style="border-radius: 50%;"> 
+						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' +board.boardWithNickDto.attachmentNo" width="75" height="75" style="border-radius: 50%;" @mouseleave="profileLeave"> 
 						  <div>
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + board.boardWithNickDto.memberNick">{{ board.boardWithNickDto.memberNick }}</a>
 						    <p class="modalName">{{ board.boardWithNickDto.memberName }}</p>
@@ -742,6 +769,11 @@ Vue.createApp({
 	         totalFollowerCnt: 0,
 	         hoverPostList : [],
 	         hoverSettingHide : null,
+	         
+	         // 친구추천
+			recommendFriendsList : [], // 친구 추천목록 리스트
+			currentPage: 0,
+			itemsPerPage : 5,
         };
     },
     //데이터 실시간 계산 영역
@@ -757,6 +789,21 @@ Vue.createApp({
     		      }
     		    };
     		  },
+    	paginatedRecommendFriends() {
+          	const totalPages = Math.ceil(this.recommendFriendsList.length / this.itemsPerPage);
+          	const paginatedArray = [];
+
+          	 for (let i = 0; i < totalPages; i++) {
+          	      const startIndex = i * this.itemsPerPage;
+          	      const endIndex = startIndex + this.itemsPerPage;
+          	      const pageItems = this.recommendFriendsList.slice(startIndex, endIndex);
+          	      paginatedArray.push(pageItems);
+          	    }
+          	    return paginatedArray;
+          	  },
+          	  displayedItems() {
+          		 return this.paginatedRecommendFriends[this.currentPage];
+          		},
     	
     },
     //메소드
@@ -1259,9 +1306,9 @@ Vue.createApp({
              	  const settingHide = resp.data.settingHide;
            	  
         	  Promise.all([
-            	 this.getTotalFollowCount(item.memberNick), // 팔로우 수 가져오기
-               	 this.getTotalFollowerCount(item.memberNick), // 팔로워 수 가져오기
-               	 this.getTotalPostCount(item.memberNick), // 게시물 수 가져오기 
+            	 this.getTotalFollowCount(item.memberNo), // 팔로우 수 가져오기
+               	 this.getTotalFollowerCount(item.memberNo), // 팔로워 수 가져오기
+               	 this.getTotalPostCount(item.memberNo), // 게시물 수 가져오기 
                	 this.boardList2(item.memberNo), // 게시물 목록 가져오기
               
               
@@ -1285,31 +1332,31 @@ Vue.createApp({
        		this.selectedItem = null;
        	},
      	// 호버시 팔로우 총 개수
-       	async getTotalFollowCount(memberNick) {
+       	async getTotalFollowCount(memberNo) {
        
        	      const resp = await axios.get("/member/totalFollowCount", {
        	        params: {
-       	          memberNick: memberNick
+       	        	memberNo: memberNo
        	        }
        	      });
        	     return resp.data;	   
        	},
      // 호버시 팔로워 총 개수
-       	async getTotalFollowerCount(memberNick) {
+       	async getTotalFollowerCount(memberNo) {
        
        	      const resp = await axios.get("/member/totalFollowerCount", {
        	        params: {
-       	          memberNick: memberNick
+       	        	memberNo: memberNo
        	        }
        	      });
        	     return resp.data;	   
        	},
     	// 호버시 게시물 총 개수
-   		async getTotalPostCount(memberNick) {
+   		async getTotalPostCount(memberNo) {
    
    	      const resp = await axios.get("/member/totalPostCount", {
    	        params: {
-   	          memberNick: memberNick
+   	        	memberNo: memberNo
    	        }
    	      });
    	     return resp.data;	   
@@ -1357,6 +1404,16 @@ Vue.createApp({
 			    console.error("언팔로우 요청 실패", error);
 			  }
 			},
+			
+			 // 친구 추천목록 조회
+            async recommendList(){
+           	const resp = await axios.get("/rest/member/recommendFriendsList");
+           	this.recommendFriendsList.push(...resp.data);
+           	
+           	// sessionStorage에 친구 추천목록 저장
+           	sessionStorage.setItem("recommendFriendsList",JSON.stringify(this.recommendFriendsList));
+           	console.log("친구 추천 목록 : " +this.recommendFriendsList.length);
+            },
    	
 		
     },
@@ -1419,6 +1476,7 @@ Vue.createApp({
     	this.bookmarkList();
     	this.loadMemberSetting();
     	this.loadFollowCount();
+    	this.recommendList();
     },
 }).mount("#app");
 </script>

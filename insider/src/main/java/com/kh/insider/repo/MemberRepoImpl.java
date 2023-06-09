@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.MemberDto;
@@ -18,9 +20,16 @@ public class MemberRepoImpl implements MemberRepo{
 	
 	@Autowired
 	private SqlSession sqlSession;
+	
+	@Autowired
+	private PasswordEncoder encoder;
 
 	@Override
 	public void join(MemberDto dto) {
+		
+		encoder = new BCryptPasswordEncoder();
+		String encrypt = encoder.encode(dto.getMemberPassword());
+		dto.setMemberPassword(encrypt);
 	
 		sqlSession.insert("member.join",dto);
 	}
@@ -60,11 +69,28 @@ public class MemberRepoImpl implements MemberRepo{
 	
 	@Override
 	public MemberDto login(String memberEmail, String memberPassword) {
-		Map<String,String> param = new HashMap<>();
-		param.put("memberEmail", memberEmail);
-		param.put("memberPassword", memberPassword);
+	
+		
+//		MemberDto findMember = sqlSession.selectOne("member.findByEmail",memberEmail);
+//		Map<String, Object> param = new HashMap<>();
+//		param.put("memberEmail",memberEmail);
+//		param.put("memberPassword",findMember.getMemberPassword());
+//		
+//		System.out.println("findMember : "+findMember);
+//		System.out.println("memberPassword : "+memberPassword);
+//		System.out.println("findMember.getPAssword : "+findMember.getMemberPassword());
+//		if(encoder.matches(memberPassword, findMember.getMemberPassword())) {	
+//			return sqlSession.selectOne("member.login",param);
+//		}else {
+//			return null;
+//		}	
+		
+		Map<String, Object> param = new HashMap<>();
+		param.put("memberEmail",memberEmail);
+		param.put("memberPassword",memberPassword);
 		
 		return sqlSession.selectOne("member.login",param);
+		
 	}
 
 	@Override

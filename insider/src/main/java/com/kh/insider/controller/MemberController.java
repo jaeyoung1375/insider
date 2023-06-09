@@ -1,7 +1,5 @@
 package com.kh.insider.controller;
 
-import java.net.URISyntaxException;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -21,9 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.kh.insider.dto.BoardDto;
-import com.kh.insider.dto.FollowWithProfileDto;
-import com.kh.insider.dto.FollowerWithProfileDto;
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.repo.BoardRepo;
@@ -33,8 +28,6 @@ import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.SettingRepo;
 import com.kh.insider.service.MemberService;
 import com.kh.insider.service.SocialLoginService;
-import com.kh.insider.vo.FacebookProfileVO;
-import com.kh.insider.vo.FacebookResponseVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,8 +48,6 @@ public class MemberController {
    @Autowired
    private SettingRepo settingRepo;
    
-   @Autowired
-   private SocialLoginService socialLoginService;
    
    @Autowired
    private BoardRepo boardRepo;
@@ -66,6 +57,9 @@ public class MemberController {
    
    @Autowired
    private MemberWithProfileRepo memberWithProfileRepo;
+   
+   @Autowired
+   private SocialLoginService socialLoginService;
    
    @GetMapping("/join")
    public String join() {
@@ -88,16 +82,17 @@ public class MemberController {
    
    @PostMapping("/login")
    public String login(HttpSession session, @ModelAttribute MemberDto dto, RedirectAttributes attr, HttpServletRequest request) {
-   session = request.getSession();
-   MemberDto findMember = memberRepo.login(dto.getMemberEmail(), dto.getMemberPassword());
+   MemberDto findMember = memberRepo.login(dto.getMemberEmail(),dto.getMemberPassword());
    
    if(findMember == null) {
       int result = 0;
       attr.addFlashAttribute("result",result);
       return "redirect:login";
    }
-   memberRepo.updateLoginTime(findMember.getMemberNo());
    session.setAttribute("memberNo",findMember.getMemberNo());
+   session.setAttribute("socialUser", findMember);
+   memberRepo.updateLoginTime(findMember.getMemberNo());
+   
    session.setAttribute("memberLevel",findMember.getMemberLevel());
    return "redirect:/";
    }
@@ -138,12 +133,14 @@ public class MemberController {
 	   MemberWithProfileDto findMember = memberWithProfileRepo.selectOne(dto.getMemberNo());
       // 로그인한 사용자
       // 본인 프로필 인지 여부
+      int postCounts = boardRepo.getTotalPostCount(dto.getMemberNo());
 	  long memberNo=(long) session.getAttribute("memberNo");
       boolean isOwner = memberNo==dto.getMemberNo();
       
       
       model.addAttribute("memberDto",findMember);
       model.addAttribute("isOwner",isOwner);
+      model.addAttribute("postCounts",postCounts);
             
       return "/member/mypage";
    }
@@ -151,8 +148,8 @@ public class MemberController {
    // 팔로우 총 개수
    @GetMapping("/totalFollowCount")
    @ResponseBody
-   public int totalFollowCount(@RequestParam("memberNick") String memberNick) {
-	   MemberWithProfileDto findMember = memberRepo.findByNickName(memberNick);
+   public int totalFollowCount(@RequestParam("memberNo") long memberNo) {
+	   MemberWithProfileDto findMember = memberWithProfileRepo.selectOne(memberNo);
        int totalFollowCount = followRepo.getFollowNumber(findMember.getMemberNo());
        return totalFollowCount;
    }
@@ -160,8 +157,8 @@ public class MemberController {
    // 팔로워 총 개수
    @GetMapping("/totalFollowerCount")
    @ResponseBody
-   public int totalFollowerCount(@RequestParam("memberNick") String memberNick) {
-	   MemberWithProfileDto findMember = memberRepo.findByNickName(memberNick);
+   public int totalFollowerCount(@RequestParam("memberNo") long memberNo) {
+	   MemberWithProfileDto findMember = memberWithProfileRepo.selectOne(memberNo);
        int totalFollowerCount = followRepo.getFollowerNumber(findMember.getMemberNo());
        return totalFollowerCount;
    }
@@ -169,8 +166,8 @@ public class MemberController {
    // 게시물 총 개수
    @GetMapping("/totalPostCount")
    @ResponseBody
-   public int totalPostCount(@RequestParam("memberNick") String memberNick) {
-	   MemberWithProfileDto findMember = memberRepo.findByNickName(memberNick);
+   public int totalPostCount(@RequestParam("memberNo") long memberNo) {
+	   MemberWithProfileDto findMember = memberWithProfileRepo.selectOne(memberNo);
 	   int totalPostCount = boardRepo.getTotalPostCount(findMember.getMemberNo());
 	   return totalPostCount;
    }
@@ -226,24 +223,21 @@ public class MemberController {
    @ResponseBody
    public void passwordChange(@RequestBody MemberDto member) {
 	   member.setMemberEmail(member.getMemberEmail());
-	   member.setMemberPassword(member.getMemberPassword());
+	   member.setMemberPassword(socialLoginService.EncryptCoskey(member.getMemberPassword()));
 
 	   memberRepo.changePassword(member);
    }
-   
-  
-   
-   
-   @GetMapping("/facebook/auth")
-   @ResponseBody
-   public String facebookLogin(String code, FacebookResponseVO response) throws URISyntaxException{
-      
-      response = socialLoginService.facebookTokenCreate(code);
-      FacebookProfileVO profile = socialLoginService.facebookLogin(code, response);
-      System.out.println(profile);
-      
-      return profile.toString();
-   }
+ 
+//   @GetMapping("/facebook/auth")
+//   @ResponseBody
+//   public String facebookLogin(String code, FacebookResponseVO response) throws URISyntaxException{
+//      
+//      response = socialLoginService.facebookTokenCreate(code);
+//      FacebookProfileVO profile = socialLoginService.facebookLogin(code, response);
+//      System.out.println(profile);
+//      
+//      return profile.toString();
+//   }
    
 //   환경설정 페이지
    @GetMapping("/setting")

@@ -810,7 +810,7 @@
 			//비밀번호 변경 통신
 			async changePassword(){
 				let sendNewPassword = {memberPassword:this.newPassword}
-				const resp = await axios.put(contextPath+"/rest/member/setting/password", sendNewPassword)
+				const resp = await axios.put(contextPath+"/rest/member/setting/password", sendNewPassword);
 				this.hidePasswordChangeModal();
 			},
             validatePassword(){

@@ -285,7 +285,8 @@
 								      <div class="modal-header"></div>
 								      <div class="modal-body">
 								        <ul class="notification-list">
-								        	<span>새로운 알림</span>
+								        <div v-if="notifications.length >0">
+								        	<span><i class="fa-sharp fa-regular fa-bell fa-shake"></i>새로운 알림</span>
 								        	<hr>
 								          <li v-for="(notification,index) in notifications"   >
 								          	<div>
@@ -304,7 +305,8 @@
 								          	</div>
 								          </li>
 								          <hr>
-								          <span>읽은 알림</span>
+								          </div>
+								          <span><i class="fa-regular fa-eye"></i>읽은 알림</span>
 								          <a @click="deleteAllNotifications" class="btn btn-secondary" style="position: fixed; top:6%; left:75%;transform: transform(-50%,-50%);">전체삭제</a>
 								          <hr>
 								          <li v-for="(notification,index) in storedNotifications" :key="notification.id">
@@ -333,7 +335,10 @@
 								</div>
 							<!-- dm -->
 								<div class="col p-0 m-2">
-									<a class="" href="${pageContext.request.contextPath}/dm/channel" style="color:inherit"><i class="fa-regular fa-message header-menu-option" style="font-size:40px; margin-top:3px"></i></a>
+									<a class="" href="${pageContext.request.contextPath}/dm/channel" style="color:inherit">
+                    <i class="fa-regular fa-message header-menu-option" style="font-size:40px; margin-top:3px"></i>
+                    <i class="fa-solid fa-circle"v-if="hasUnreadMessages"style="position: absolute;font-size: 0.3em;color: #eb6864;right:15%;bottom: 17%;"></i>
+                  </a>
 								</div>
 							<!-- 게시물작성 -->
 								<div class="col p-0 m-2">
@@ -568,6 +573,9 @@
 	        storedNotifications: [],
 	        memberNick : "${socialUser.memberNick}",
 	        
+          //dm 읽지 않은 메세지 수
+          hasUnreadMessages: false,
+          
 	      	//상세보기 및 댓글
 			detailView:false,
 			detailIndex:"",
@@ -594,8 +602,7 @@
 	            //동영상 자동재생
 	            videoAuto:false,
             },
-            
-          	
+              
 	      };
 	    },
 	    computed: {
@@ -828,12 +835,29 @@
 	    	        this.hasNewNotification = false;
 	    	        this.storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
 	    	      }
+	    	   	  //dm 읽지 않은 메세지 수 조회
+	    	      this.unreadMessageCount();
 	    	    })
 	    	    .catch((error) => {
 	    	      console.log(error);
 	    	    });
 	    	},
-
+	    	//dm 읽지 않은 메세지 수 조회
+        async unreadMessageCount() {
+          const countUrl = "${pageContext.request.contextPath}/rest/notice/isChat";
+          try {
+            const resp = await axios.get(countUrl);
+            const unreadCount = resp.data;
+            if (unreadCount > 0) {
+                this.hasUnreadMessages = true;
+            } 
+            else {
+                this.hasUnreadMessages = false;
+            }
+          } catch (error) {
+            console.error("읽지 않은 메세지 수 조회 오류", error);
+          }
+        },
 	         
 	      toggleModal() {
     		if (!this.showModal) {
@@ -1000,10 +1024,10 @@
 	      this.loadNotifications(); // 컴포넌트가 마운트될 때 알림 데이터를 로드
 	      this.intervalId = setInterval(this.loadNotifications, 10000); // 5초마다 알림 데이터를 갱신
 	      this.likeListModal = new bootstrap.Modal(this.$refs.likeListModal);
+        this.unreadMessageCount(); //dm 알림
 	    },
 	    beforeUnmount() {
 	      clearInterval(this.intervalId); //메모리 누수방지
 	   	}
 	  }).mount("#aside");
 </script>
-

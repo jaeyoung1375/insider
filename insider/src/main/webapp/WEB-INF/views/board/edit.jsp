@@ -567,20 +567,18 @@ $(document).ready(function() {
     //methods : 애플리케이션 내에서 언제든 호출 가능한 코드 집합이 필요한 경우 작성한다.
      methods: {
     	 imageUpload(){
-     		let num = -1;
-     		for(let i = 0; i < this.$refs.files.files.length; i++){
-     			this.files = [
-     				...this.files,
-     				{
-     					file: this.$refs.files.files[i],
-     					preview: URL.createObjectURL(this.$refs.files.files[i]),
-     					number: i
-     				}
-     			];
-     			num = i;
-     		}
-     		this.uploadImageIndex = num + 1;
-     	},
+ 		    for(let i = 0; i < this.$refs.files.files.length; i++){
+ 		        this.files = [
+ 		            ...this.files,
+ 		            {
+ 		                file: this.$refs.files.files[i],
+ 		                preview: URL.createObjectURL(this.$refs.files.files[i]),
+ 		                number: i
+ 		            }
+ 		        ];
+ 		    }
+ 		    this.uploadImageIndex = this.files.length;
+ 		},
      	
      	imageAddUpload(){
      		let num = -1;

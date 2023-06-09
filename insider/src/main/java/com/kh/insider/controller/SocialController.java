@@ -43,22 +43,15 @@ public class SocialController {
          KakaoProfileVO profile = socialLoginService.kakaoLogin(code,token);
          Long memberNo = profile.getId();
          String memberEmail = profile.kakao_account.getEmail();
-         String memberPw = cosKey;
+         String memberPw = socialLoginService.EncryptCoskey(cosKey);
          MemberDto originalMember = memberRepo.findByEmail(profile.kakao_account.getEmail());
-         
-         
-         
+      
          if(originalMember == null) {
             System.out.println("회원가입을 진행합니다..");
             kakaoUser.setMemberNo(memberNo);
-          
-            
-            kakaoUser.setMemberEmail(memberEmail != null ? memberEmail : "jaeyoung1342@naver.com");          
-            
+            kakaoUser.setMemberEmail(memberEmail);                   
             kakaoUser.setMemberPassword(memberPw);
-            
-        
-               
+                                  
          }else {
             System.out.println("기존회원이므로 로그인을 진행합니다.");
             // 로그인 시각 갱신
