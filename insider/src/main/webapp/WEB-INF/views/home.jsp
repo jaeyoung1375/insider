@@ -396,19 +396,19 @@
 <!--        </div>   -->
 <!--      </div> -->
      
+</div>     
+     
+     
+     
      <div v-if="newListFinish"  style="max-width: 620px;  margin: 10px auto 10px auto;">
      	<img src="${pageContext.request.contextPath}/static/image/check.png" class="justify-content-center align-items-center" style="width: 150px; height: 150px; margin-left: 230px; margin-bottom: 20px;">
      	<h3 class="justify-content-center text-center">모두 확인했습니다</h3>
      	<h6 class="justify-content-center text-center" style="color:gray; ">최근 3일 동안 올라온 게시물을 모두 확인했습니다.</h6>
      	<h6 class="justify-content-center text-center" @click="loadOldList()" style="color: blue; cursor: pointer;">이전 게시물 보기</h6>     	
      </div>
-     
-     
-     
-</div>     
-</div>     
     
  
+</div>     
     
  
     
