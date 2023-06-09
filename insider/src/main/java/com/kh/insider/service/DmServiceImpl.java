@@ -31,6 +31,7 @@ import com.kh.insider.repo.DmPrivacyRoomRepo;
 import com.kh.insider.repo.DmRoomRenameRepo;
 import com.kh.insider.repo.DmRoomRepo;
 import com.kh.insider.repo.DmUserRepo;
+import com.kh.insider.repo.MemberProfileRepo;
 import com.kh.insider.vo.ChannelReceiveVO;
 import com.kh.insider.vo.DmRoomVO;
 import com.kh.insider.vo.DmUserVO;
@@ -63,6 +64,9 @@ public class DmServiceImpl implements DmService {
 	
 	@Autowired
 	private DmLikeRepo dmLikeRepo;
+	
+	@Autowired
+	private MemberProfileRepo memberProfileRepo;
 	
 
 	//여러 개의 방을 관리할 저장소
@@ -275,7 +279,10 @@ public class DmServiceImpl implements DmService {
 			msg.setMemberNo(user.getMemberNo());
 			msg.setMessageType(MessageType);
 			msg.setRoomNo(roomNo);
-			
+			//프로필 사진 번호 입력
+			int attachmentNo = memberProfileRepo.selectAttachNo(user.getMemberNo());
+			msg.setProfileNo(attachmentNo);
+			System.out.println("들어옴ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ"+attachmentNo);
 			//JSON 변환
 			String json = mapper.writeValueAsString(msg);
 			TextMessage jsonMessage = new TextMessage(json);
