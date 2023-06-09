@@ -749,8 +749,8 @@
 						if (message.messageType === 6) { // 새로운 메시지 수
 							this.fetchDmRoomList();
 						}
-						else if(message.messageType===8){ //좋아요
-							const index = this.messageList.findIndex(obj => obj.messageNo === message.messageNo);
+						else if(message.messageType==8){ //좋아요
+							const index = this.messageList.findIndex(obj => obj.messageNo == message.messageNo);
 							this.likeCount[index]=message.likeCount;
 						}
 						else{

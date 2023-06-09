@@ -249,9 +249,8 @@ public class DmServiceImpl implements DmService {
 	public void receiveHandler(WebSocketSession session, TextMessage message) throws IOException {
 		//회원 정보 생성
 		DmUserVO user = new DmUserVO(session);
-		
 		//비회원 차단
-		if(user.isMember() == false) return;
+		//if(user.isMember() == false) return;
 		//메세지 수신
 		ChannelReceiveVO receiveVO = mapper.readValue(message.getPayload(), ChannelReceiveVO.class);
 		log.debug("receiveVO = {}", receiveVO);
@@ -389,7 +388,7 @@ public class DmServiceImpl implements DmService {
 	    	int count = dmLikeRepo.like(dmLikeDto);
 	    	Map<String, Long> map = new HashMap<>();
 	    	map.put("messageType",8L);
-	    	map.put("messageNo", receiveVO.getMemberNo());
+	    	map.put("messageNo", receiveVO.getMessageNo());
 	    	map.put("likeCount", (long)count);
 	    	
 	    	String json = mapper.writeValueAsString(map);
