@@ -334,7 +334,7 @@
 								  </div>
 								</div>
 							<!-- dm -->
-								<div class="col p-0 m-2">
+								<div class="col p-0 m-2"style="position:relative;">
 									<a class="" href="${pageContext.request.contextPath}/dm/channel" style="color:inherit">
 										<i class="fa-regular fa-message header-menu-option" style="font-size:40px; margin-top:3px"></i>
 					                    <i class="fa-solid fa-circle"v-if="hasUnreadMessages"style="cursor:pointer; position: absolute;font-size: 0.3em;color: #eb6864;right:15%;bottom: 17%;"></i>
