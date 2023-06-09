@@ -282,7 +282,7 @@ public class DmServiceImpl implements DmService {
 			//프로필 사진 번호 입력
 			int attachmentNo = memberProfileRepo.selectAttachNo(user.getMemberNo());
 			msg.setProfileNo(attachmentNo);
-			System.out.println("들어옴ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ"+attachmentNo);
+			
 			//JSON 변환
 			String json = mapper.writeValueAsString(msg);
 			TextMessage jsonMessage = new TextMessage(json);

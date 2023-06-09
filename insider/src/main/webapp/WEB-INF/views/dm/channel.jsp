@@ -171,6 +171,9 @@
 	.message-content {
 	    display: flex;
 	}
+	.half-size {
+	    width: 27%;
+	}
 </style>
 
 </head>
@@ -192,7 +195,7 @@
 								</span>
 							</a>
 						</div>
-						<span v-if="this.roomNo == null" style="position:absolute; top:21px; right:0; margin-right:15px;">
+						<span v-if="roomNo == null" style="position:absolute; top:21px; right:0; margin-right:15px;">
 							<i class="fa-regular fa-pen-to-square fa-lg" style="margin-right: 11px; cursor:pointer;" @click="fetchFollowerList(); showCreateRoomModal();"></i>
 						</span>
 						<span v-else style="position:absolute; top:21px; right:0; margin-right:15px;">
@@ -204,7 +207,7 @@
 					<!-- 채팅방 이름 -->
 					<div class="card col-8" style="border-radius:0;border-left:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
 						<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo">
-							<div v-if="this.roomNo != null">
+							<div v-if="roomNo != null">
 								<div v-if="this.roomNo === room.roomNo">
 									<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"
 										width="45" height="45" class="profile rounded-circle" style="position:absolute; top:0.75em; left:1.3em;" >
@@ -226,8 +229,8 @@
 					<div class="card col-3" style="width:290px;border-radius:0;border-top:none;padding:0;">
 						<div class="card-body cardList-scroll" style="padding:0;padding-top:10px; max-height: 720px;">
 							<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo":class="{'hover': isHovered[index] }"
-         						@mouseover="isHovered[index] = true" @mouseleave="isHovered[index] = false" @click="enterRoom(room.roomNo)" style="padding-bottom: 5px;padding-top: 4px;padding-left: 13px;cursor:pointer;">
-							    <div style="position:relative; height: 2.4em; display: flex; align-items: center;">
+         						@mouseover="isHovered[index] = true" @mouseleave="isHovered[index] = false" style="padding-bottom: 5px;padding-top: 4px;padding-left: 13px;cursor:pointer;">
+							    <div style="position:relative; height: 2.4em; display: flex; align-items: center;" @click="changeRoomMenu(room.roomNo)">
 							    	<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"class="profile rounded-circle" style="position:absolute; 
 								    	width:34px; height:34px; margin-top:0em;cursor:pointer;">
 				          			<img v-else src="https://via.placeholder.com/34x34?text=P" style="border-radius: 50%; position:absolute; margin-top:0em;">
@@ -264,7 +267,8 @@
 									</div>
 									<div class="message-content">
 						                <div class="profile-wrapper" v-if="!checkMyMessage(index)">
-	                                			<img src="https://via.placeholder.com/100x100?text=P" width="100%" v-if="!checkSameTime(index)">
+						                	<img v-if="message.profileNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+message.profileNo"class="profile rounded-circle"v-if="!checkSameTime(index)">
+	                                		<img v-else src="https://via.placeholder.com/100x100?text=P" width="100%" v-if="!checkSameTime(index)">
 						                </div>
 						                <div class="content-wrapper">
 							                <div class="content-header" v-if="!checkSameTime(index)">
@@ -272,7 +276,7 @@
 							                </div>
 							                <div class="content-body">
 								                <div v-if="message.attachmentNo == 0" class="message-wrapper">{{message.content}}</div>
-								                <img class="photo" v-if="message.attachmentNo > 0" 
+								                <img class="photo half-size" v-if="message.attachmentNo > 0" 
 													:src="'${pageContext.request.contextPath}/rest/attachment/download/'+message.attachmentNo">
 								                <div class="info-wrapper">
 								                	<div class="number-wrapper" v-show="unreadCount[index] !== 0">{{unreadCount[index]}}</div>
@@ -280,9 +284,11 @@
 								                </div>
 							                	<i class="fa-solid fa-x fa-xs" @click="showDeleteMsgModal(index)" style="padding-bottom: 0.51em; padding-right: 0.6em; padding-left: 0.7em; color: #ced6e0; cursor:pointer;"></i>
 							                	<i class="fa-solid fa-trash fa-xs" style="padding-bottom: 0.51em; padding-right: 0.51em; padding-left: 0.51em; color: #ced6e0; cursor:pointer;"></i>
+							                	<i class="fa-solid fa-heart fa-xs" :class="{'fa-solid':memberLike[index]==1, 'fa-regular':memberLike[index]==0}" @click="dmLike(message.messageNo, index)"
+							                		style="padding-bottom: 0.51em; padding-right: 0.5em; padding-left: 0.5em; color: #c23616; cursor:pointer;"></i>
 							                </div>
-							                <div class="content-footer">
-							                	<div class=heart><i class="fa-heart fa-xs" :class="{'fa-solid':memberLike[index]==1, 'fa-regular':memberLike[index]==0}" style="color: #c23616;" @click="dmLike(message.messageNo, index)"></i></div>
+							                <div v-if="likeCount[index]" class="content-footer">
+							                   <div class=heart><i class="fa-solid fa-heart fa-xs"style="color: #c23616;"></i></div>
 							             	   <div class=heart-number>{{likeCount[index]}}</div>
 							                </div>
 							            </div>
@@ -550,16 +556,14 @@
    					//좋아요 개수 목록 및 내가 좋아요한 여부
    					likeCount:[],
    					memberLike:[],
+   					
+   					roomMenu: null, //뒤로가기
                 };
             },
             methods:{
-            	enterRoom(roomNo) {
-           		    this.roomNo = roomNo;
-           		 	this.openHandler(roomNo);
-           		    this.loadMessage(roomNo);
-           		},
             	// 메세지 불러오는 함수
-            	async loadMessage(roomNo) {
+            	async loadMessage() {
+            		const roomNo = new URLSearchParams(location.search).get("room");
             	    if(roomNo==null){
             	    	this.isRoomJoin=false; 
             	    	return;
@@ -724,9 +728,11 @@
             			app.messageHandler(e);
             		};
             	},
-            	openHandler(roomNo){
-                    const data = { type:2, room:roomNo };
+            	openHandler(){
+            		const room = new URLSearchParams(location.search).get("room");
+                    const data = { type:2, room:room };
                     this.socket.send(JSON.stringify(data));
+                    this.roomNo = room; //vue에 반환
                     console.log("서버에 연결되었습니다.");
             	},
             	closeHandler(){
@@ -881,7 +887,7 @@
 				},
 				//채팅방에 참여한 회원 목록
 				async fetchUsersByRoomNo() {
-					const roomNo = this.roomNo;
+					const roomNo = new URLSearchParams(location.search).get("room");
 					const url = "${pageContext.request.contextPath}/rest/users/"+roomNo;
 					try {
 						const resp = await axios.get(url);
@@ -917,7 +923,7 @@
 				            await axios.put(updateRoomUrl, updateRoomData);
 				        }
 				        await this.fetchDmRoomList(); //채팅방 목록 불러오기
-				        this.enterRoom(roomNo);  // 채팅방으로 이동
+				        window.location.href = "${pageContext.request.contextPath}/dm/channel?room=" + roomNo;
 				        console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
 				    } catch (error) {
 				        console.error("방 생성, 입장, 초대 중 오류가 발생했습니다.", error);
@@ -970,7 +976,7 @@
 				async leaveTheRoom() {
 				    try {
 				        const memberNo = this.memberNo;
-				        const roomNo = this.roomNo;
+				        const roomNo = new URLSearchParams(location.search).get("room");
 				        const exitData = {
 				            memberNo: memberNo,
 				            roomNo: roomNo
@@ -1142,7 +1148,21 @@
 	            		}
 	            		this.unreadCount[j]= joiner-count;
             		}
-					
+				},
+            	//쿼리 값 page로 반환
+            	initializePageFromQuery() {
+					const queryParams = new URLSearchParams(window.location.search);
+					const roomMenu = queryParams.get('room');
+					this.roomMenu = roomMenu;
+				},
+				//쿼리 업데이트를 위한 page 데이터 변경 및 쿼리 변경 메서드
+				changeRoomMenu(roomMenu){
+					this.roomMenu=roomMenu;
+					const queryParams = new URLSearchParams(window.location.search);
+					queryParams.set('room', this.roomMenu);
+					const newURL = `?`+queryParams.toString();
+					//쿼리 히스토리 저장
+					window.history.pushState({ query: queryParams.toString() }, '', newURL);
 				},
             },
             watch:{
@@ -1171,6 +1191,10 @@
         	            });
         	        },
         	        immediate: true,
+        	    },
+        	    roomMenu() {
+        	    	//메세지 리스트 불러오기
+        	    	this.loadMessage();
         	    },
             },
             computed:{ 
@@ -1208,6 +1232,10 @@
 			    	this.keyword = '';
 			        this.searchDmList = [];
 			    });
+				//쿼리 초기화 및 변화 감지
+				this.initializePageFromQuery();
+				//뒤로가기, 앞으로가기 누르면 이전 쿼리 반환
+				window.addEventListener('popstate', this.initializePageFromQuery);
 	        },
         }).mount("#app");
     </script>
