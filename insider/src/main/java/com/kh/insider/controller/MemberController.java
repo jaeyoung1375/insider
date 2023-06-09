@@ -6,6 +6,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,9 +20,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.kh.insider.dto.CertDto;
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.repo.BoardRepo;
+import com.kh.insider.repo.CertRepo;
 import com.kh.insider.repo.FollowRepo;
 import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
@@ -54,6 +57,9 @@ public class MemberController {
    
    @Autowired
    private FollowRepo followRepo;
+   
+   @Autowired
+   private CertRepo certRepo;
    
    @Autowired
    private MemberWithProfileRepo memberWithProfileRepo;
@@ -197,6 +203,20 @@ public class MemberController {
       return Integer.toString(num);
       
    }
+   
+   @PostMapping("/checkCert")
+   @ResponseBody
+   public String check(@RequestBody CertDto certDto) {
+	  
+	   
+	   if(certRepo.exist(certDto)) {
+		   certRepo.delete(certDto);
+		   return "Y";	  
+		}else {
+			return "N";
+		}
+   }
+   
    
    @GetMapping("/nickCheck")
    @ResponseBody

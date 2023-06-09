@@ -180,7 +180,7 @@
 	
 		<div class="container-fluid">
 			<div class="row">
-				<div class="row mt-3" style="width:1000px;margin-bottom:0;margin-left:7px; margin-right:0px;height:70px;">
+				<div class="row mt-3" style="width:1000px;margin-bottom:0;margin-left:355px; margin-right:0px;height:70px;">
 					<!-- 로그인한 회원 프로필 -->
 					<div class="card col-3" style="width:290px;border-radius:0;padding-bottom:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
 						<div style="padding-left: 0.4em;">
@@ -221,7 +221,7 @@
 					</div>
 				</div>
 				
-				<div class="row" style="width:1000px;margin-left:7px; margin-right:100px; margin-top:0; height:70vh">
+				<div class="row" style="width:1000px;margin-left:355px; margin-right:100px; margin-top:0; height:70vh">
 					<!-- 채팅방 목록 -->
 					<div class="card col-3" style="width:290px;border-radius:0;border-top:none;padding:0;">
 						<div class="card-body cardList-scroll" style="padding:0;padding-top:10px; max-height: 720px;">
@@ -280,11 +280,10 @@
 								                </div>
 							                	<i class="fa-solid fa-x fa-xs" @click="showDeleteMsgModal(index)" style="padding-bottom: 0.51em; padding-right: 0.6em; padding-left: 0.7em; color: #ced6e0; cursor:pointer;"></i>
 							                	<i class="fa-solid fa-trash fa-xs" style="padding-bottom: 0.51em; padding-right: 0.51em; padding-left: 0.51em; color: #ced6e0; cursor:pointer;"></i>
-							                	<i class="fa-solid fa-heart fa-xs" style="padding-bottom: 0.51em; padding-right: 0.5em; padding-left: 0.5em; color: #c23616; cursor:pointer;"></i>
 							                </div>
 							                <div class="content-footer">
-							                	<div class=heart><i class="fa-solid fa-heart fa-xs" style="color: #c23616;"></i></div>
-								                <div class=heart-number>23</div>
+							                	<div class=heart><i class="fa-heart fa-xs" :class="{'fa-solid':memberLike[index]==1, 'fa-regular':memberLike[index]==0}" style="color: #c23616;" @click="dmLike(message.messageNo, index)"></i></div>
+							             	   <div class=heart-number>{{likeCount[index]}}</div>
 							                </div>
 							            </div>
 							    	</div>
@@ -548,6 +547,9 @@
    					membersInRoomList:[], //채팅방 회원 목록
    					messageToDelete: null, //메세지 삭제
    					
+   					//좋아요 개수 목록 및 내가 좋아요한 여부
+   					likeCount:[],
+   					memberLike:[],
                 };
             },
             methods:{
@@ -568,6 +570,9 @@
             	    try {
             	        const resp = await axios.get(url);
             	        this.messageList = resp.data.map(msg => JSON.parse(msg.messageContent));
+            	        //좋아요 개수 및 내가 좋아요 했는지 여부 반환
+            	        this.likeCount = resp.data.map(msg=>JSON.parse(msg.likeCount));
+            	        this.memberLike= resp.data.map(msg=>JSON.parse(msg.memberLike));
         				//스크롤 아로로 이동
 						this.$nextTick(() => {
 						    const scrollContainer = this.$refs.scrollContainer;
@@ -744,8 +749,14 @@
 						if (message.messageType === 6) { // 새로운 메시지 수
 							this.fetchDmRoomList();
 						}
+						else if(message.messageType==8){ //좋아요
+							const index = this.messageList.findIndex(obj => obj.messageNo == message.messageNo);
+							this.likeCount[index]=message.likeCount;
+						}
 						else{
 		            		this.messageList.push(message);
+		            		this.likeCount.push(0);
+		            		this.memberLike.push(0);
 						}
 	            		
             		}
@@ -906,7 +917,7 @@
 				            await axios.put(updateRoomUrl, updateRoomData);
 				        }
 				        await this.fetchDmRoomList(); //채팅방 목록 불러오기
-				        window.location.href = "${pageContext.request.contextPath}/dm/channel?room=" + roomNo;
+				        this.enterRoom(roomNo);  // 채팅방으로 이동
 				        console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
 				    } catch (error) {
 				        console.error("방 생성, 입장, 초대 중 오류가 발생했습니다.", error);
@@ -983,7 +994,6 @@
 				        
 				        console.log("회원이 퇴장 하였습니다.");
 				        window.location.href = "${pageContext.request.contextPath}/dm/channel";
-				        
         				await this.fetchDmRoomList(); // 채팅방 목록 불러오기
         				this.roomNo=null;
 				    } catch (error) {
@@ -1111,6 +1121,13 @@
 				    } catch (error) {
 				        console.error("읽지 않은 메세지 수 수정 오류", error);
 				    }
+				},
+				//좋아요 눌렀을 때
+				async dmLike(messageNo, index){
+					const data = { type:8, messageNo:messageNo, memberNo:memberNo, room:this.roomNo };
+                    this.socket.send(JSON.stringify(data));
+                    if(this.memberLike[index]==0) this.memberLike[index]=1;
+                    else this.memberLike[index]=0;
 				},
 				//메세지 읽음 표시 카운트 메서드
 				setUnreadCountOnMessage(){

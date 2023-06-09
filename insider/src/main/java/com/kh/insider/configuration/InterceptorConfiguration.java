@@ -5,18 +5,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.kh.insider.interceptor.AdminInterceptor;
 import com.kh.insider.interceptor.MemberNonLoginInterceptor;
 
 @Configuration
 public class InterceptorConfiguration implements WebMvcConfigurer {
 	@Autowired
 	private MemberNonLoginInterceptor memberNonLoginInterceptor;
-	
+	@Autowired
+	private AdminInterceptor adminInterceptor;
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		
 		// 1. MemberNonLoginInterceptor
-
 //		registry.addInterceptor(memberNonLoginInterceptor)
 //				.addPathPatterns(
 //						"/**"
@@ -33,7 +34,8 @@ public class InterceptorConfiguration implements WebMvcConfigurer {
 //						"/member/passwordChange",
 //						"/static/**"
 //						);
-
-	
+		//Admin 인터셉터
+		registry.addInterceptor(adminInterceptor)
+				.addPathPatterns("/admin/**");
 	}
 }
