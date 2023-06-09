@@ -264,7 +264,8 @@
 									</div>
 									<div class="message-content">
 						                <div class="profile-wrapper" v-if="!checkMyMessage(index)">
-	                                			<img src="https://via.placeholder.com/100x100?text=P" width="100%" v-if="!checkSameTime(index)">
+						                	<img v-if="message.profileNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+message.profileNo"class="profile rounded-circle"v-if="!checkSameTime(index)">
+	                                		<img v-else src="https://via.placeholder.com/100x100?text=P" width="100%" v-if="!checkSameTime(index)">
 						                </div>
 						                <div class="content-wrapper">
 							                <div class="content-header" v-if="!checkSameTime(index)">
