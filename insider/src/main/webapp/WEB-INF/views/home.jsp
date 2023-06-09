@@ -154,8 +154,13 @@
 		margin-top: 20px;
 		width:468px;
 		height:118px;
-		border: 1px solid black;
 	}
+
+.feed-hr {
+	display: inline;
+	align-items: center;
+	width: 480px;
+}
 </style>
 
 <script>
@@ -201,11 +206,11 @@
 			<p style="font-size:12px; color:gray;">회원님을 위한 친구추천</p>
 		</div>
 			<div class="d-flex justify-content-flex-start" style="margin-left:17px;">
-		  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style="margin-right:10px;">
+		  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style=" padding-right: 10px">
 		  <a :href="'${pageContext.request.contextPath}/member/'+ item.memberNick">
-		    <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="65" height="65" style="border-radius:50%; margin-right:15px;">
+		    <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="65" height="65" style="border-radius:50%;">
 		  </a>
-		    <div class="recommend-nickname d-flex" style="min-width:120%;">
+		    <div class="recommend-nickname d-flex justify-content-center" style="min-width:120%;">
 		      <p style="font-size:11px;">{{ item.memberNick }}</p>
 		    </div>		    
 		  </div>
@@ -226,7 +231,7 @@
             <!--●●●●●●●●●●●●●●피드공간●●●●●●●●●●●●●●●●●●●●●●-->
             <div class="col" style="max-width: 620px; margin: 0 auto 10px auto;">
                 <!--피드001-->
-                <div class="head_feed" style="border: 0.5px solid #b4b4b4; border-radius: 10px;">
+                <div class="head_feed" style="  box-shadow: 0 4px 4px -6px rgba(0, 0, 0, 0.5) inset;">
                     <div class="d-flex flex-column">
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼ID▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div style="padding: 8px 8px 4px 8px;">
@@ -250,14 +255,14 @@
 							    <button v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#carouselExampleIndicators'+index" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
 							  </div>
 							
-							  <div class="carousel-inner">
-							    <template v-for="(attach, index2) in boardList[index].boardAttachmentList">
-							      <div :key="index2" class="carousel-item" :class="{'active':index2==0}">
-							        <video class="content" v-if="attach.video" :src="'${pageContext.request.contextPath}'+ attach.imageURL" style="object-fit: cover" :autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto" @dblclick="likePost(board.boardWithNickDto.boardNo,index)"></video>
-							        <img class="content" v-else :src="'${pageContext.request.contextPath}'+attach.imageURL" @dblclick="likePost(board.boardWithNickDto.boardNo,index)">
-							      </div>
-							    </template>
-							  </div>
+							  <template v-for="(attach, index2) in boardList[index].boardAttachmentList">
+								  <div class="carousel-inner">
+								      <div :key="index2" class="carousel-item" :class="{'active':index2==0}">
+								        <video class="content" v-if="attach.video" :src="'${pageContext.request.contextPath}'+ attach.imageURL" style="object-fit: cover" :autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto" @dblclick="likePost(board.boardWithNickDto.boardNo,index)"></video>
+								        <img class="content" v-else :src="'${pageContext.request.contextPath}'+attach.imageURL" @dblclick="likePost(board.boardWithNickDto.boardNo,index)">
+								      </div>
+								  </div>
+							  </template>
 							
 							  <button class="carousel-control-prev" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="prev">
 							    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -319,6 +324,7 @@
             </div>
          </div>
          
+        
          
           <div class="profile-preview" v-if="selectedItem === board.boardWithNickDto" @mouseleave="profileLeave">
                   <!-- 프로필 미리보기 내용 -->
@@ -385,8 +391,10 @@
                  
           </div> <!-- 팔로우 미리보기 끝 -->
          
-         
-     </div>
+<!--        <div class="d-flex justify-content-center"> -->
+<!--       		<hr class="feed-hr"> -->
+<!--        </div>   -->
+<!--      </div> -->
      
      <div v-if="newListFinish"  style="max-width: 620px;  margin: 10px auto 10px auto;">
      	<img src="${pageContext.request.contextPath}/static/image/check.png" class="justify-content-center align-items-center" style="width: 150px; height: 150px; margin-left: 230px; margin-bottom: 20px;">
@@ -397,6 +405,7 @@
      
      
      
+</div>     
 </div>     
     
  
