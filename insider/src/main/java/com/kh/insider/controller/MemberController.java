@@ -94,6 +94,7 @@ public class MemberController {
    memberRepo.updateLoginTime(findMember.getMemberNo());
    
    session.setAttribute("memberLevel",findMember.getMemberLevel());
+   session.setAttribute("memberNick",findMember.getMemberNick());
    return "redirect:/";
    }
    
