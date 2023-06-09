@@ -278,7 +278,7 @@
 								                	<div class="number-wrapper" v-show="unreadCount[index] !== 0">{{unreadCount[index]}}</div>
 								                	<div class="time-wrapper" v-if="calculateDisplay(index)">{{timeFormat(message.time)}}</div>
 								                </div>
-							                	<i class="fa-solid fa-x fa-xs" @click="deleteMessage(index)"  style="padding-bottom: 0.51em; padding-right: 0.6em; padding-left: 0.7em; color: #ced6e0; cursor:pointer;"></i>
+							                	<i class="fa-solid fa-x fa-xs" @click="showDeleteMsgModal(index)" style="padding-bottom: 0.51em; padding-right: 0.6em; padding-left: 0.7em; color: #ced6e0; cursor:pointer;"></i>
 							                	<i class="fa-solid fa-trash fa-xs" style="padding-bottom: 0.51em; padding-right: 0.51em; padding-left: 0.51em; color: #ced6e0; cursor:pointer;"></i>
 							                </div>
 							                <div class="content-footer">
@@ -323,9 +323,9 @@
 		        <div v-if="searchDmList.length==0" >
 			        <div v-for="(member,index) in dmMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
 			          <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:45px; height:45px;">
-			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
-			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+			          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
 			          	<input type="checkbox" v-model="selectedMembers" :value="member.memberNo" style="transform: scale(1.2); margin-right:1em;">
 			          </span>
@@ -334,9 +334,9 @@
 		        <div v-if="searchDmList.length>0">
 			        <div v-for="(member,index) in searchDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
 			          <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
-			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
-			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+			          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
 					  	<input type="checkbox" v-model="selectedMembers" :value="member.memberNo" style="transform: scale(1.2); margin-right:1em;">
 			          </span>
@@ -367,9 +367,9 @@
 			        <div v-for="(member,index) in dmMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
 			          <img v-if="dmMemberList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
 			          <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
-			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
-			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+			          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
 			          	<input type="checkbox" v-model="selectedMembers" :value="member.memberNo" style="transform: scale(1.2); margin-right:1em;">
 			          </span>
@@ -379,9 +379,9 @@
 			        <div v-for="(member,index) in searchDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
 			          <img v-if="searchDmList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
 			          <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
-			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
-			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+			          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
 			          	<input type="checkbox" v-model="selectedMembers" :value="member.memberNo" style="transform: scale(1.2); margin-right:1em;">
 			          </span>
@@ -452,7 +452,7 @@
 					다른 사람의 채팅방에는 메시지가 계속 표시됩니다.
 		      </div>
 		      <div class="modal-footer btn-center">
-		        <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close" style="color:red; margin-right: 11em; height: 2em;">삭제</button>
+		        <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close" @click="deleteMessage(index)" style="color:red; margin-right: 11em; height: 2em;">삭제</button>
 		      </div>
 		      <div class="modal-footer btn-center">
 		        <button type="button" class="btn" data-bs-dismiss="modal" style="margin-right: 11em; height: 2em;">취소</button>
@@ -460,6 +460,7 @@
 		    </div>
 		  </div>
 		</div>
+
 		
 		<!-- 채팅방에 참여 중인 회원 -->
 		<div class="modal fade" tabindex="-1" id="membersInRoomModal" data-bs-backdrop="static" ref="membersInRoomModal">
@@ -474,10 +475,10 @@
 		          <a href="${pageContext.request.contextPath}/member/{member.memberNick}" style="color: black; text-decoration: none;">
 			          <img v-if="member.attachmentNo > 0"  :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
 				      <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
-			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 		          </a>
 		          <br>
-		          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+		          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 		          <span style="position:absolute;right:0;top:10px;">
 		            <button class="btn btn-outline-secondary" style="padding: 0.3rem 0.2rem;font-weight: 100;line-height: 1;font-size:0.8em; margin-right: 0.5em;"data-bs-dismiss="modal" aria-label="Close" >
 		              차단
@@ -543,8 +544,8 @@
    					
    					isHovered: [],
    					scrollContainer: null, //스크롤
-   					
    					membersInRoomList:[], //채팅방 회원 목록
+   					messageToDelete: null, //메세지 삭제
    					
    					//좋아요 개수 목록 및 내가 좋아요한 여부
    					likeCount:[],
@@ -572,12 +573,13 @@
             	        //좋아요 개수 및 내가 좋아요 했는지 여부 반환
             	        this.likeCount = resp.data.map(msg=>JSON.parse(msg.likeCount));
             	        this.memberLike= resp.data.map(msg=>JSON.parse(msg.memberLike));
-            	        
-        				//스크롤 바닥으로 이동
-        				this.$nextTick(() => {
-                            const scrollContainer = this.$refs.scrollContainer;
-                            scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'smooth' });
-                        });
+        				//스크롤 아로로 이동
+						this.$nextTick(() => {
+						    const scrollContainer = this.$refs.scrollContainer;
+						    if (scrollContainer) {
+						        scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'smooth' });
+						    }
+						});
         				// 읽지 않은 메세지 수 수정
         			    await this.updateUnreadDm(roomNo);
         				this.setUnreadCountOnMessage();
@@ -610,7 +612,6 @@
 				    const fileInput = this.$refs.fileInput;
 				    const file = fileInput.files[0];
 				    if(!file) {
-				        console.log("선택된 이미지 메세지 파일이 없습니다.");
 				        return;
 				    }
 				    const formData = new FormData();
@@ -684,7 +685,8 @@
                     this.roomNameModal.hide();
                     this.roomName = "";
                 },
-				showDeleteMsgModal(){
+                showDeleteMsgModal(index){
+                	this.messageToDelete = index;
                     if(this.deleteMsgModal == null) return;
                     this.deleteMsgModal.show();
                 },
@@ -759,10 +761,20 @@
 	            		
             		}
 	            },
-            	sendMessage() {
+	            sendMessage() {
             		if(this.text.length == 0) return;
             		this.socket.send(this.jsonText);
             		this.text = "";
+            		
+            		//메세지 전송 후 스크롤 아래로 이동
+            		this.$nextTick(() => {
+            	        setTimeout(() => {
+            	            const scrollContainer = this.$refs.scrollContainer;
+            	            if (scrollContainer) {
+            	                scrollContainer.scrollTop = scrollContainer.scrollHeight;
+            	            }
+            	        }, 110);
+            	    });
             	},
             	timeFormat(time) {
             		return moment(time).format("A h:mm");
@@ -772,10 +784,11 @@
             	},
             	//메세지 삭제
             	deleteMessage(index) {
-            	    const messageNo = this.messageList[index].messageNo;
+            	    const messageNo = this.messageList[this.messageToDelete].messageNo;
             	    const data = { type: 3, messageNo: messageNo, memberNo: this.memberNo };
             	    this.socket.send(JSON.stringify(data));
             	    this.loadMessage(this.roomNo);
+            	    this.messageToDelete = null; // 메시지 삭제 후에 index를 초기화
             	},
             	//디자인 - 시간
                 checkSameTime(index) {
@@ -870,10 +883,8 @@
 				async fetchUsersByRoomNo() {
 					const roomNo = this.roomNo;
 					const url = "${pageContext.request.contextPath}/rest/users/"+roomNo;
-					console.log("roomNo : ", roomNo);
 					try {
 						const resp = await axios.get(url);
-						console.log("resp : ", resp);
 						this.membersInRoomList.splice(0);
 						this.membersInRoomList.push(...resp.data);
 					} catch (error) {
@@ -1150,6 +1161,18 @@
         			handler:function(){
         			}
         		}, */
+        		//메세지 스크롤 아래로 이동
+        	    messageList: {
+        	        handler() {
+        	            this.$nextTick(() => {
+        	                const scrollContainer = this.$refs.scrollContainer;
+        	                if (scrollContainer) {
+        	                    scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        	                }
+        	            });
+        	        },
+        	        immediate: true,
+        	    },
             },
             computed:{ 
             	jsonText() {
