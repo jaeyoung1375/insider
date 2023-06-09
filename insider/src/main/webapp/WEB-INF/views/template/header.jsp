@@ -256,8 +256,7 @@
 					<div class="row ps-5 pe-5" style="max-width:1200px">
 						<div class="col-4">
 							<a href="${pageContext.request.contextPath}/" class="logo d-flex align-items-center" style="color:inherit;">
-								<img class="me-2" src="${pageContext.request.contextPath}/static/image/logo.png" width="50" height="50">
-								insider
+								<img class="me-2" src="${pageContext.request.contextPath}/static/image/insider.png" width="300"height="80">
 							</a>
 						</div>
 						<div class="col d-flex align-items-center justify-content-end">
