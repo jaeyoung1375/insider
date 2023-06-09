@@ -53,6 +53,7 @@
         height: 480px;
         object-fit: cover;
         background-color: white;
+
     }
     
     .carousel-inner video {
@@ -592,7 +593,7 @@
 <!-- ---------------------------------신고 모달-------------------------- -->
 	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal" style="z-index:9999">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
-			<div class="modal-content" >
+			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title" style="font-weight:bold; text-align:center">신고</h5>
 					<button type="button" class="btn-close" @click="hideReportMenuModal" aria-label="Close">
@@ -607,8 +608,8 @@
 						</div>
 					</div>
 					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo" style="border-top:var(--bs-modal-border-width) solid var(--bs-modal-border-color)">
-						<div class="col d-flex p-3 report-content" @click="reportContent(report.reportListContent)" style="cursor:pointer">
-							<h5 style="margin:0; margin-left:1em">{{report.reportListContent}}</h5>
+						<div class="col d-flex p-2 report-content" @click="reportContent(report.reportListContent)" style="cursor:pointer">
+							<h6 style="margin:0; margin-left:1em">{{report.reportListContent}}</h6>
 						</div>
 					</div>
 				</div>

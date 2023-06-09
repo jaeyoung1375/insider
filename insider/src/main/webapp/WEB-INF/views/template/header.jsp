@@ -116,22 +116,22 @@
  		  overflow-x: hidden;  
  	  } 
 
- 	  .modal-content { 
+ 	  .modal-content.in-header { 
  	  	margin: 10px; 
  	  } 
 	
- 	  .modal-header { 
+ 	  .modal-header.in-header { 
  		  text-align: center; 
  		  margin-bottom: 10px; 
  	  } 
 	
- 	.modal-body { 
+  	.modal-body.in-header { 
  	  max-height: 300px;  
  	  overflow-x: hidden;  
  	  overflow-y: auto;  
- 	} 
+ 	}
 
- 	.modal-footer { 
+ 	.modal-footer.in-header { 
  	  -align: center; 
  	  margin-top: 10px; 
  	} 
@@ -222,7 +222,7 @@
 	}
 </style>
 
- <script type="text/javascript">
+<!--  <script type="text/javascript">
   document.addEventListener('DOMContentLoaded', function() {
 
     const darkModeEnabled = localStorage.getItem('darkmode') === 'on';
@@ -245,7 +245,7 @@
       }
     });
   });
-</script>
+</script> -->
 
 
 <body>
@@ -281,12 +281,12 @@
 									  </a>
 								  </div>
 								  <div class="modal-window" v-if="showModal">
-								    <div class="modal-content">
-								      <div class="modal-header"></div>
-								      <div class="modal-body">
+								    <div class="modal-content in-header">
+								      <div class="modal-header in-header"></div>
+								      <div class="modal-body in-header">
 								        <ul class="notification-list">
 								        <div v-if="notifications.length >0">
-								        	<span><i class="fa-sharp fa-regular fa-bell fa-shake"></i>새로운 알림</span>
+								        	<span><i class="fa-sharp fa-regular fa-bell fa-shake" style=color:#f1c40f;></i>새로운 알림</span>
 								        	<hr>
 								          <li v-for="(notification,index) in notifications"   >
 								          	<div>
@@ -306,7 +306,7 @@
 								          </li>
 								          <hr>
 								          </div>
-								          <span><i class="fa-regular fa-eye"></i>읽은 알림</span>
+								          <span><i class="fa-regular fa-eye" style=color:#3498db;></i>읽은 알림</span>
 								          <a @click="deleteAllNotifications" class="btn btn-secondary" style="position: fixed; top:6%; left:75%;transform: transform(-50%,-50%);">전체삭제</a>
 								          <hr>
 								          <li v-for="(notification,index) in storedNotifications" :key="notification.id">
@@ -329,16 +329,16 @@
 								          
 								        </ul>
 								      </div>
-								      <div class="modal-footer"></div>
+								      <div class="modal-footer in-header"></div>
 								    </div>
 								  </div>
 								</div>
 							<!-- dm -->
-								<div class="col p-0 m-2">
+								<div class="col p-0 m-2"style="position:relative;">
 									<a class="" href="${pageContext.request.contextPath}/dm/channel" style="color:inherit">
-                    <i class="fa-regular fa-message header-menu-option" style="font-size:40px; margin-top:3px"></i>
-                    <i class="fa-solid fa-circle"v-if="hasUnreadMessages"style="position: absolute;font-size: 0.3em;color: #eb6864;right:15%;bottom: 17%;"></i>
-                  </a>
+										<i class="fa-regular fa-message header-menu-option" style="font-size:40px; margin-top:3px"></i>
+					                    <i class="fa-solid fa-circle"v-if="hasUnreadMessages"style="cursor:pointer; position: absolute;font-size: 0.3em;color: #eb6864;right:15%;bottom: 17%;"></i>
+					                </a>
 								</div>
 							<!-- 게시물작성 -->
 								<div class="col p-0 m-2">
@@ -355,7 +355,7 @@
 				</div>
 			</nav>
 			<aside style="position:absolute; right:5em; top:5em" >
-				<c:if test="${sessionScope.memberLevel==0}">
+<%-- 				<c:if test="${sessionScope.memberLevel==0}">
 		        	<div class="darkmode">
 		            	<div class="inner">
 		                	<input type="radio" name="toggle" id="toggle-radio-light" checked><label for="toggle-radio-light" class="tolight"><i class="fas fa-sun tolight"></i></label>
@@ -363,7 +363,7 @@
 		                	<div class="darkmode-bg"></div>
 		            	</div>
 		        	</div>
-				</c:if>
+				</c:if> --%>
 				<div class="dropdown" :class="{'show':sideMenu}">
 					<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @click="showSideMenu()">
 						<i class="fa-solid fa-bars"></i>
@@ -930,37 +930,40 @@
 	        },
 	        
 	        //7일 뒤 알림 자동 삭제
-// 			cleanupLocalStorage() {
-// 			 	const storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
+			cleanupLocalStorage() {
+			  const storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
 			
-// 			  	const expirationDate = new Date();
-// 			  	expirationDate.setDate(expirationDate.getDate() - 7); // Subtract 7 days from the current date
+			  const expirationDate = new Date();
+			  expirationDate.setDate(expirationDate.getDate() + 7);
 			
-// 			  	const updatedStoredNotifications = storedNotifications.filter((notification) => {
-// 			    const notificationDate = new Date(notification.date);
-// 			    	return notificationDate >= expirationDate;
-// 			  	});
-		
-// 		  		localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
-// 			},
+			  setTimeout(() => {
+			    const updatedStoredNotifications = storedNotifications.filter((notification) => {
+			      const notificationDate = new Date(notification.date);
+			      return notificationDate >= expirationDate;
+			    });
+			
+			    localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
+			  }, 7 * 24 * 60 * 60 * 1000); // 7일 뒤 삭제
+			},
 
 
 			//7초 뒤 알림 자동 삭제
-	        cleanupLocalStorage() {
-	        	  const storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
+// 	        cleanupLocalStorage() {
+// 	        	  const storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
 
-	        	  const expirationDate = new Date();
-	        	  expirationDate.setTime(expirationDate.getTime() + 7 * 1000);
+// 	        	  const expirationDate = new Date();
+// 	        	  expirationDate.setTime(expirationDate.getTime() + 7 * 1000);
 
-	        	  setTimeout(() => {
-	        	    const updatedStoredNotifications = storedNotifications.filter((notification) => {
-	        	      const notificationDate = new Date(notification.date);
-	        	      return notificationDate >= expirationDate;
-	        	    });
+// 	        	  setTimeout(() => {
+// 	        	    const updatedStoredNotifications = storedNotifications.filter((notification) => {
+// 	        	      const notificationDate = new Date(notification.date);
+// 	        	      return notificationDate >= expirationDate;
+// 	        	    });
 
-	        	    localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
-	        	  }, 7000);
-	        	},
+// 	        	    localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
+// 	        	  }, 7000);
+// 	        	},
+
 			/* GPS 얻기 */
 			getGps(){
 				if (navigator.geolocation) {
