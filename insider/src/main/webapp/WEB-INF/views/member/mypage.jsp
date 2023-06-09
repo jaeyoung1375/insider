@@ -206,6 +206,7 @@
 	margin-left:260px;
 	margin-top:30px;
 }
+
 </style>
 
       <div id="app" class="container-fluid" style="width:1300px;">
@@ -265,12 +266,12 @@
                            <span style="font-weight: bold;">${postCounts}</span>
                         </span>
                      </div>
-                     <div class="col-5" @click="followerModalShow">
+                     <div class="col-5" @click="followerModalShow" style="cursor:pointer;">
                         <span>팔로워
                         <span style="font-weight: bold;">{{totalFollowerCnt}}</span>
                          </span>
                      </div>
-                     <div class="col-5" @click="followModalShow">
+                     <div class="col-5" @click="followModalShow" style="cursor:pointer;">
                         <span>팔로우
                         <span style="font-weight: bold;">{{totalFollowCnt}}</span>
                          </span>
@@ -288,7 +289,7 @@
             </div>
             <!-- 친구 추천 목록 -->
     
-            <div  style="display: flex; flex-direction: column; width: 830px; height:280px; background-color: white; border:1px solid gray; margin: 0 auto; margin-top:12px;" v-if="recommendFriends">
+            <div  style="display: flex; flex-direction: column; width: 830px; height:280px; background-color: white; border:1px solid gray; margin: 0 auto; margin-top:12px; border:none;" v-if="recommendFriends">
         		<div class="recommend-id" style="display:flex; justify-content: space-between;">
         			<span style="color:gray; font-weight: bold;">추천계정</span>
         			<a class="" style="text-decoration: none; font-weight: bold;" @click="recommendFriendsAllListModalShow">모두 보기</a>
@@ -310,7 +311,7 @@
 				</div>
 
 			  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style="display:flex;">
-			    <div class="card" style="width: 150px; height: 170px; margin-left: 30px;">
+			    <div class="card" style="width: 170px; height: 185px; margin-left: 30px;">
 			      <div class="ms-auto" style="margin-right:8px;">
 			      	<span @click="deleteRecommendFriend(item.memberNo)">x</span>
 			      </div>
@@ -1484,8 +1485,8 @@
            //회원 환경 설정 로드
            async loadMemberSetting(){
    			const resp = await axios.get(contextPath+"/rest/member/setting");
-               this.memberSetting.watchDistance=resp.data.settingDistance;
-               this.memberSetting.videoAuto=resp.data.videoAuto;
+               this.MemberSetting.watchDistance=resp.data.settingDistance;
+               this.MemberSetting.videoAuto=resp.data.videoAuto;
    		},
               
              //프로필 사진 변경 누르면 실행
