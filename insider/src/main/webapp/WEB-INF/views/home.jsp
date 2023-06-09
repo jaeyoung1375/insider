@@ -163,6 +163,9 @@
 	align-items: center;
 	width: 480px;
 }
+.hide{
+display:none;
+}
 </style>
 
 <script>
@@ -204,10 +207,15 @@
 <div id="app"class="darkmode">
 	<!-- 친구추천 -->
 		<div class="container recommend">
+		
 		<div class="d-flex justify-content-end">
 			<p style="font-size:12px; color:gray;">회원님을 위한 친구추천</p>
 		</div>
 			<div class="d-flex justify-content-flex-start" style="margin-left:17px;">
+				<!-- 이전 버튼 -->
+				<div class="button-container" style="display: flex; justify-content: center; align-items: center;">
+					<i class="fa-solid fa-arrow-left"  @click="currentPage--" :class="{'hide' : currentPage === 0}" style="height:24px; weight:24px; margin-left:5px;"></i>
+				</div>
 		  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style=" padding-right: 25px">
 		  <a :href="'${pageContext.request.contextPath}/member/'+ item.memberNick">
 		    <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="65" height="65" style="border-radius:50%;">
@@ -216,8 +224,12 @@
 		      <p style="width:50px; font-size:11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ item.memberNick }}</p>
 		    </div>		    
 		  </div>
+		  		<!-- 다음 버튼 -->
+				<div class="button-container" style="display: flex; justify-content: center; align-items: center;"> 		
+  					<i class="fa-sharp fa-solid fa-arrow-right" @click="currentPage++"  :class="{'hide':currentPage === paginatedRecommendFriends.length - 1}" 
+  					style="height: 24px; weight: 24px; margin-left:20px;"></i>
+				</div>
 		</div>
-
 	</div>
 	<!-- 친구추천  끝-->
 	
@@ -386,8 +398,8 @@
                     	 </div>
                     </div>
                 <div class="col-9" style="display:flex; justify-content: space-between; margin-left:40px; margin-top:15px;">
-                  	 <button class="btn btn-primary" @click="follow(board.boardWithNickDto.memberNo)" style="flex-grow:1;" v-if="followCheckIf(board.boardWithNickDto.memberNo)">팔로우</button>
-                  	 <button class="btn btn-secondary" @click="unFollow(board.boardWithNickDto.memberNo)" style="flex-grow:1;"  v-if="!followCheckIf(board.boardWithNickDto.memberNo)">팔로잉</button>
+                  	 <button class="btn btn-primary" @click="follow(board.boardWithNickDto.memberNo)" style="flex-grow:1; margin-right:10px;" v-if="followCheckIf(board.boardWithNickDto.memberNo)">팔로우</button>
+                  	 <button class="btn btn-secondary" @click="unFollow(board.boardWithNickDto.memberNo)" style="flex-grow:1; margin-right:10px;"  v-if="!followCheckIf(board.boardWithNickDto.memberNo)">팔로잉</button>
                   	 <button class="btn btn-primary" style="width:50%;">메시지 보내기</button>
                  </div> 
                  
