@@ -92,7 +92,7 @@ public class MemberController {
    session.setAttribute("memberNo",findMember.getMemberNo());
    session.setAttribute("socialUser", findMember);
    memberRepo.updateLoginTime(findMember.getMemberNo());
-      
+   
    session.setAttribute("memberLevel",findMember.getMemberLevel());
    return "redirect:/";
    }
