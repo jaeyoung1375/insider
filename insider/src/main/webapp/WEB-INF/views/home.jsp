@@ -154,7 +154,8 @@
 		margin-top: 20px;
 		width:468px;
 		height:118px;
-		border: 1px solid black;
+		border: 1px solid #b4b4b4;
+		border-radius:12px;
 	}
 </style>
 
@@ -421,7 +422,7 @@
                   <div  v-for="(attach, index2) in boardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
                    	<video  style="width:700px; height:700px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+attach.imageURL" v-if="attach.video"
 							:autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto" 
-							@dblclick="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" ></video>
+							@dblclick="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)"></video>
 	                <img v-else :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)"
 	                 style="width:700px; height:700px;" @dblclick="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)"> 
                   </div>
