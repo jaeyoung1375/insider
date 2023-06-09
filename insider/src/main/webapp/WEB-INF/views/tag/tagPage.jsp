@@ -13,7 +13,7 @@
 	content: "";
 	padding-bottom: 100%;
 }
-.content,.content-box {
+.content-in-list,.content-box {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -151,8 +151,8 @@
 			<div class="row d-flex justify-content-center" style="width:80%">
 				<div class="box m-2" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)"
 					@click="detailViewOn(index)">
-					<img class='content' v-if="board.boardAttachmentList.length>0" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
-					<img class='content' v-else src="${pageContext.request.contextPath}/static/image/noimage.png">
+					<img class='content-in-list' v-if="board.boardAttachmentList.length>0" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
+					<img class='content-in-list' v-else src="${pageContext.request.contextPath}/static/image/noimage.png">
 					<div class="content-box"></div>
 					<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
 					<div class="like-comment">
