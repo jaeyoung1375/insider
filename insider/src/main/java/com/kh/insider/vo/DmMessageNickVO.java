@@ -18,4 +18,5 @@ public class DmMessageNickVO {
     
     private int likeCount;
     private int memberLike;
+    private int memberAttachmentNo;
 }

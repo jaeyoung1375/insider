@@ -118,13 +118,23 @@
    							  this.showEmailWarning = true;
    							  return;
    						  }
-	     				
+   						this.isDisabled = true;
+   						
+   						this.count = 299;
+	     				this.timer = setInterval(() => {
+	     					this.count--;
+	     					 if (this.count === 0) {
+	     				        clearInterval(this.timer); // 타이머 종료
+	     				       this.emailCode == '';
+	     				      }
+	     				},1000);
+   						
 	     				const response = await axios.get("sendMail",{
 	     					params : {
 	     						memberEmail : this.email
 	     					}
 	     				});
-	     				this.isDisabled = true;
+	     				
 	     				 // CryptoJS 라이브러리를 사용하여 이메일 암호화
 	     	              this.encryptedEmail = CryptoJS.AES.encrypt(this.email, 'encryptionKey').toString();
 	     				// 인증번호
@@ -133,20 +143,26 @@
 	     				this.emailVerifyCode();
 	     				
 	     				
-	     				this.count = 299;
-	     				this.timer = setInterval(() => {
-	     					this.count--;
-	     					 if (this.count === 0) {
-	     				        clearInterval(this.timer); // 타이머 종료
-	     				       this.emailCode == '';
-	     				      }
-	     				},1000);
+	     			
 	                },
 	                emailVerifyCode(){
 	  	   	   
    	                	if(this.num == this.emailCode){
    	                		this.showEmailCodeWarning = true;
-   	                		window.location.href= this.getResetPasswordUrl();
+   	                		const certDto = {
+   	                			secret : this.num,
+   	                			email : this.email
+   	                		};
+   	                		axios.post("/member/checkCert",certDto)
+   	                		.then(response => {
+   	                			if(response.data === 'Y'){
+   	                				window.location.href= this.getResetPasswordUrl();
+   	                				
+   	                			}
+   	                		}).catch(error => {
+   	                			console.error(error);
+   	                		});
+   	                
    	                	}else{
    	                		this.showEmailCodeWarning = false;
    	                	}

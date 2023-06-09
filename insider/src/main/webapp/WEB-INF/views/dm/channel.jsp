@@ -180,7 +180,7 @@
 	
 		<div class="container-fluid">
 			<div class="row">
-				<div class="row mt-3" style="width:1000px;margin-bottom:0;margin-left:7px; margin-right:0px;height:70px;">
+				<div class="row mt-3" style="width:1000px;margin-bottom:0;margin-left:355px; margin-right:0px;height:70px;">
 					<!-- 로그인한 회원 프로필 -->
 					<div class="card col-3" style="width:290px;border-radius:0;padding-bottom:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
 						<div style="padding-left: 0.4em;">
@@ -221,7 +221,7 @@
 					</div>
 				</div>
 				
-				<div class="row" style="width:1000px;margin-left:7px; margin-right:100px; margin-top:0; height:70vh">
+				<div class="row" style="width:1000px;margin-left:355px; margin-right:100px; margin-top:0; height:70vh">
 					<!-- 채팅방 목록 -->
 					<div class="card col-3" style="width:290px;border-radius:0;border-top:none;padding:0;">
 						<div class="card-body cardList-scroll" style="padding:0;padding-top:10px; max-height: 720px;">
@@ -917,7 +917,7 @@
 				            await axios.put(updateRoomUrl, updateRoomData);
 				        }
 				        await this.fetchDmRoomList(); //채팅방 목록 불러오기
-				        window.location.href = "${pageContext.request.contextPath}/dm/channel?room=" + roomNo;
+				        this.enterRoom(roomNo);  // 채팅방으로 이동
 				        console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
 				    } catch (error) {
 				        console.error("방 생성, 입장, 초대 중 오류가 발생했습니다.", error);
@@ -994,7 +994,6 @@
 				        
 				        console.log("회원이 퇴장 하였습니다.");
 				        window.location.href = "${pageContext.request.contextPath}/dm/channel";
-				        
         				await this.fetchDmRoomList(); // 채팅방 목록 불러오기
         				this.roomNo=null;
 				    } catch (error) {
