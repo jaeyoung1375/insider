@@ -101,20 +101,21 @@
           left: 44px;
       }
       
- 	 .modal-window { 
- 		  position: absolute; 
- 		  top: calc(100% + 10px); 
- 		  left: 50%; 
- 		  transform: translateX(-50%); 
- 		  border-radius: 1.5em; 
- 		  border: 1px solid #000; 
- 		  width: 500px; 
- 		  background-color: #fff; 
- 		  z-index: 999; 
- 		  padding: 10px; 
- 		  overflow-y: auto; 
- 		  overflow-x: hidden;  
- 	  } 
+		.modal-window {
+			position: absolute;
+			top: calc(100% + 10px);
+			left: 50%;
+			transform: translateX(-50%);
+			border-radius: 1.5em;
+			width: 500px;
+			background-color: #fff;
+			z-index: 999;
+			padding: 10px;
+			overflow-y: auto;
+			overflow-x: hidden;
+			box-shadow: 4px 4px 4px -6px rgba(0, 0, 0, 0.5), 0 4px 5px rgba(0, 0, 0, 0.2);
+		}
+
 
  	  .modal-content { 
  	  	margin: 10px; 
@@ -286,7 +287,7 @@
 								      <div class="modal-body">
 								        <ul class="notification-list">
 								        <div v-if="notifications.length >0">
-								        	<span><i class="fa-sharp fa-regular fa-bell fa-shake" style=color:#f1c40f;></i>새로운 알림</span>
+								        	<span style="display: flex; align-items: center;"><i class="fa-sharp fa-regular fa-bell fa-shake" style="color:#f1c40f; font-size: 1.5em; margin-right: 10px;"></i>새로운 알림</span>
 								        	<hr>
 								          <li v-for="(notification,index) in notifications"   >
 								          	<div>
@@ -306,7 +307,7 @@
 								          </li>
 								          <hr>
 								          </div>
-								          <span><i class="fa-regular fa-eye" style=color:#3498db;></i>읽은 알림</span>
+								          <span style="display: flex; align-items: center;"><i class="fa-regular fa-eye" style="color: #3498db; font-size: 1.5em; margin-right: 10px;"></i>읽은 알림</span>
 								          <a @click="deleteAllNotifications" class="btn btn-secondary" style="position: fixed; top:6%; left:75%;transform: transform(-50%,-50%);">전체삭제</a>
 								          <hr>
 								          <li v-for="(notification,index) in storedNotifications" :key="notification.id">
@@ -842,22 +843,23 @@
 	    	      console.log(error);
 	    	    });
 	    	},
+	    	
 	    	//dm 읽지 않은 메세지 수 조회
-        async unreadMessageCount() {
-          const countUrl = "${pageContext.request.contextPath}/rest/notice/isChat";
-          try {
-            const resp = await axios.get(countUrl);
-            const unreadCount = resp.data;
-            if (unreadCount > 0) {
-                this.hasUnreadMessages = true;
-            } 
-            else {
-                this.hasUnreadMessages = false;
-            }
-          } catch (error) {
-            console.error("읽지 않은 메세지 수 조회 오류", error);
-          }
-        },
+	        async unreadMessageCount() {
+	          const countUrl = "${pageContext.request.contextPath}/rest/notice/isChat";
+	          try {
+	            const resp = await axios.get(countUrl);
+	            const unreadCount = resp.data;
+	            if (unreadCount > 0) {
+	                this.hasUnreadMessages = true;
+	            } 
+	            else {
+	                this.hasUnreadMessages = false;
+	            }
+	          } catch (error) {
+	            console.error("읽지 않은 메세지 수 조회 오류", error);
+	          }
+	        },
 	         
 	      toggleModal() {
     		if (!this.showModal) {
@@ -870,6 +872,7 @@
     	        this.check();
     	      }
     	    },
+    	    
 	      check() {
 		  //알림확인
 		       axios
@@ -947,12 +950,12 @@
 			},
 
 
-			//7초 뒤 알림 자동 삭제
+			//10초 뒤 알림 자동 삭제
 // 	        cleanupLocalStorage() {
 // 	        	  const storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
 
 // 	        	  const expirationDate = new Date();
-// 	        	  expirationDate.setTime(expirationDate.getTime() + 7 * 1000);
+// 	        	  expirationDate.setTime(expirationDate.getTime() + 10 * 1000);
 
 // 	        	  setTimeout(() => {
 // 	        	    const updatedStoredNotifications = storedNotifications.filter((notification) => {
@@ -961,7 +964,7 @@
 // 	        	    });
 
 // 	        	    localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
-// 	        	  }, 7000);
+// 	        	  }, 10000);
 // 	        	},
 
 			/* GPS 얻기 */
@@ -1025,7 +1028,7 @@
 
 	    mounted() {
 	      this.loadNotifications(); // 컴포넌트가 마운트될 때 알림 데이터를 로드
-	      this.intervalId = setInterval(this.loadNotifications, 10000); // 5초마다 알림 데이터를 갱신
+	      this.intervalId = setInterval(this.loadNotifications, 5000); // 5초마다 알림 데이터를 갱신
 	      this.likeListModal = new bootstrap.Modal(this.$refs.likeListModal);
         this.unreadMessageCount(); //dm 알림
 	    },
