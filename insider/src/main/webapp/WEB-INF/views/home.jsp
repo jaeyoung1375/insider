@@ -832,6 +832,7 @@ Vue.createApp({
 		
 		//쿼리 업데이트를 위한 page 데이터 변경 및 쿼리 변경 메서드
 		changeBoardNo(boardNo){
+			if(this.boardNo==boardNo) return;
 			this.boardNo=boardNo;
 			const queryParams = new URLSearchParams(window.location.search);
 			queryParams.set('boardNo', this.boardNo);
