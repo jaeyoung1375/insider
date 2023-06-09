@@ -298,7 +298,7 @@
 					        <div class="input-wrapper" style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 5px;">
 						        <div class="row justify-content-between" style="margin-top:10px;margin-bottom:10px;padding-left:calc(var(--bs-gutter-x) * .5);padding-right:calc(var(--bs-gutter-x) * .5);height:38px;">
 							        <!-- 입력창 -->
-							        <input type="text" v-model="text" v-on:input="text=$event.target.value" placeholder="메세지 입력" style="border-radius: 3rem;width:75%;">
+							        <input type="text" v-model="text" v-on:input="text=$event.target.value" placeholder="메세지 입력" style="border-radius: 3rem;width:75%;"@keyup.enter="sendMessage">
 							        <label for="fileDm" style="display: contents;">
 										<i class="fa-solid fa-image" style="font-size: xx-large;color: #eb6864;padding-top: 3px;"></i>
 									</label>
@@ -1163,6 +1163,9 @@
 					const newURL = `?`+queryParams.toString();
 					//쿼리 히스토리 저장
 					window.history.pushState({ query: queryParams.toString() }, '', newURL);
+					//채팅방 입장을 위한 채팅방 번호 전달
+					roomNo = roomMenu;
+					this.openHandler(roomNo);
 				},
             },
             watch:{
