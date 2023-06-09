@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.service.NoticeService;
+import com.kh.insider.service.NoticeServiceImpl;
 import com.kh.insider.vo.NoticeVO;
 
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,9 @@ public class NoticeRestController {
 
 	@Autowired
 	private NoticeService noticeService;
+	
+	@Autowired
+	private NoticeServiceImpl noticeServiceImpl;
 	
 	
 	@GetMapping("/")
@@ -71,5 +75,12 @@ public class NoticeRestController {
 		noticeService.check(memberNo);
 	}
 	
+	
+	//dm 알림
+	@GetMapping("/isChat")
+	public int isDm(HttpSession session) {
+		long memberNo = (Long)session.getAttribute("memberNo");
+		return noticeServiceImpl.isDm(memberNo);
+	}
 	
 }

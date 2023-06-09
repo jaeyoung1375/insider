@@ -20,5 +20,5 @@ public class MemberMessageVO {
 	private int messageType;
 	private int attachmentNo;
 	private int roomNo;
-
+	private int profileNo;
 }

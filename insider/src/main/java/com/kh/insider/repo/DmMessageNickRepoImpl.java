@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.insider.dto.DmMessageNickDto;
+import com.kh.insider.vo.DmMessageNickVO;
 
 @Repository
 public class DmMessageNickRepoImpl implements DmMessageNickRepo {
@@ -23,5 +24,14 @@ public class DmMessageNickRepoImpl implements DmMessageNickRepo {
         params.put("roomNo", roomNo);
         params.put("memberNo", memberNo);
         return sqlSession.selectList("getUndeletedMessages", params);
+	}
+
+	@Override
+	public List<DmMessageNickVO> getMessagesWithLike(long messageSender, int roomNo, long memberNo) {
+		Map<String, Object> params = new HashMap<>();
+        params.put("messageSender", messageSender);
+        params.put("roomNo", roomNo);
+        params.put("memberNo", memberNo);
+        return sqlSession.selectList("dmMessageNick.getMessagesWithLike", params);
 	}
 }

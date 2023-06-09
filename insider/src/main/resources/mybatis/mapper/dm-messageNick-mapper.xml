@@ -23,4 +23,20 @@
 		ORDER BY dm.message_no ASC
 	</select>
 
+	<select id="getMessagesWithLike" resultType="DmMessageNickVO">
+		SELECT dm.*, ma.attachment_no, (select count(*) from dm_like dll where dll.message_no=dm.message_no) as like_count
+		, (select count(*) from dm_like dl where dl.message_no=dm.message_no and dl.member_no=#{memberNo}) as member_like
+		FROM dm_message_nick dm 
+		LEFT OUTER JOIN member_profile ma ON dm.message_sender = ma.member_no
+		JOIN dm_user u ON dm.room_no = u.room_no
+		WHERE dm.room_no = #{roomNo}
+		AND dm.message_no NOT IN (
+		    SELECT message_no 
+		    FROM dm_message_deleted 
+		    WHERE member_no = #{memberNo}
+		)
+		AND dm.message_send_time > u.join_time
+		AND u.member_no = #{memberNo}
+		ORDER BY dm.message_no ASC
+	</select>
 </mapper>

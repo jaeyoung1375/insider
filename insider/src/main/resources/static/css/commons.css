@@ -51,6 +51,10 @@
 		background-color: #02925d;
 		border-color: #02925d;
 	}	
+/* 디폴트 버튼 */
+	.btn.btn-default:active{
+		border-color:rgba(0,0,0,0);
+	}
 /* input, textarea 클릭 시 그림자효과 조정 (rounded)와 함께 씀 */
 	.form-control:focus{
 	    border-color:#dee2e6;

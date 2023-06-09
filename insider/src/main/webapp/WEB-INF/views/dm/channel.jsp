@@ -20,6 +20,18 @@
     .card-scroll::-webkit-scrollbar {
 		display: none;
 	} 
+	.cardList-scroll{
+       	overflow-y: auto;
+       	-ms-overflow-style: none;
+	}   
+	.cardList-scroll::-webkit-scrollbar {
+		width: 5px;
+		background-color: transparent;
+	}
+	.cardList-scroll::-webkit-scrollbar-thumb {
+		background-color: rgba(0, 0, 0, 0.3); 
+		border-radius: 3px;
+	}
 	.hover {
 		background-color: rgb(244, 246, 248)
 	}
@@ -50,35 +62,36 @@
 	    display: flex;
 	    font-size: 17.5px;
 	    margin-top: 0.65em;
+	    display: block;
 	}
-	.message-wrapper > .message > .profile-wrapper {
+	.message-wrapper > .message > .message-content > .profile-wrapper {
 	    min-width: 45px;
 	    max-width: 45px;
 	}
-	.message-wrapper > .message > .profile-wrapper > img {
+	.message-wrapper > .message > .message-content > .profile-wrapper > img {
 	    border-radius: 50%;
 	    width:100%;
 	}
-	.message-wrapper > .message > .content-wrapper {
+	.message-wrapper > .message > .message-content > .content-wrapper {
 	    flex-grow: 1;
 	    display: flex;
 	    flex-direction: column;
 	    padding: 0 0.5em;
 	}
-	.message-wrapper > .message > .content-wrapper > .content-header {
+	.message-wrapper > .message > .message-content > .content-wrapper > .content-header {
 	    font-size: 0.90em;
 	    padding-right: 0.3em;
 	    padding-left: 0.3em;
 	    color: #3c6382;
 	}
-	.message-wrapper > .message > .content-wrapper > .content-body {
+	.message-wrapper > .message > .message-content > .content-wrapper > .content-body {
 	    display: flex;
 	    font-weight: normal;
 	    padding-top: 0.35em;
 	    padding-right: 0.4em;
 	    align-items: flex-end;
 	}
-	.message-wrapper > .message > .content-wrapper > .content-body > .message-wrapper {
+	.message-wrapper > .message > .message-content > .content-wrapper > .content-body > .message-wrapper {
 	    background-color: rgba(239, 239, 239);
 	    font-size: 0.85em;
 	    border-radius: 1.5em;
@@ -89,65 +102,74 @@
 		padding-left: 0.9em;
 		padding-right: 0.9em;
 	}
-	.message-wrapper > .message > .content-wrapper > .content-body > .info-wrapper {
+	.message-wrapper > .message > .message-content > .content-wrapper > .content-body > .info-wrapper {
 	    min-width: 50px;
 	}
-	.message-wrapper > .message > .content-wrapper > .content-body > .info-wrapper > .time-wrapper {
+	.message-wrapper > .message > .message-content > .content-wrapper > .content-body > .info-wrapper > .time-wrapper {
 	    font-size: 0.5em;
 	    padding: 0 0.30em;
 	}
-	.message-wrapper > .message > .content-wrapper > .content-body > .info-wrapper > .number-wrapper {
+	.message-wrapper > .message >.message-content >  .content-wrapper > .content-body > .info-wrapper > .number-wrapper {
 	    font-size: 0.6em;
 	    padding: 0 0.45em;
 	    color: orange;
 	    font-weight: bold;
 	}
-	.message-wrapper > .message > .content-wrapper > .content-footer {
+	.message-wrapper > .message > .message-content > .content-wrapper > .content-footer {
 	    padding-top: 0.05em;
 	    align-items: flex-end;
 	}
-	.message-wrapper > .message > .content-wrapper > .content-footer > .heart {
+	.message-wrapper > .message > .message-content > .content-wrapper > .content-footer > .heart {
 	    display: inline-block;
 	    padding-left: 0.75em;
 	}
-	.message-wrapper > .message > .content-wrapper > .content-footer > .heart-number {
+	.message-wrapper > .message > .message-content > .content-wrapper > .content-footer > .heart-number {
 	    display: inline-block;
 	    padding-left: 0.28em;
 	    font-size: 0.7em;
 	    color: #c23616;
 	}
 	
-	.message-wrapper > .message.my > .content-wrapper > .content-header {
+	.message-wrapper > .message.my > .message-content > .content-wrapper > .content-header {
 	    text-align: right;
 	    padding-right: 0.9em;
 	}
-	.message-wrapper > .message.my > .content-wrapper > .content-body {
+	.message-wrapper > .message.my > .message-content > .content-wrapper > .content-body {
 	    flex-direction: row-reverse;
 	}
-	.message-wrapper > .message.my > .content-wrapper > .content-body > .message-wrapper {
+	.message-wrapper > .message.my > .message-content > .content-wrapper > .content-body > .message-wrapper {
 	    background-color: rgba(75, 161, 255);
 	    color: white;
 	}
-	.message-wrapper > .message.my > .content-wrapper > .content-body > .info-wrapper > .time-wrapper {
+	.message-wrapper > .message.my > .message-content > .content-wrapper > .content-body > .info-wrapper > .time-wrapper {
 	    text-align: right;
 	    padding-right: 0.45em;
 	}
-	.message-wrapper > .message.my > .content-wrapper > .content-body > .info-wrapper > .number-wrapper {
+	.message-wrapper > .message.my > .message-content > .content-wrapper > .content-body > .info-wrapper > .number-wrapper {
 	    text-align: right;
 	    padding-right: 0.45em;
 	}
-	.message-wrapper > .message.my > .content-wrapper > .content-footer {
+	.message-wrapper > .message.my > .message-content > .content-wrapper > .content-footer {
 	    text-align: right;
 	}
-	.message-wrapper > .message.my > .content-wrapper > .content-footer > .heart {
+	.message-wrapper > .message.my > .message-content > .content-wrapper > .content-footer > .heart {
 	    padding-left: 0.65em;
 	    padding-right:0.02em;
 	}
-	.message-wrapper > .message.my > .content-wrapper > .content-footer >.heart-number {
+	.message-wrapper > .message.my > .message-content > .content-wrapper > .content-footer >.heart-number {
 	    padding-left: 0.28em;
 	    font-size: 0.7em;
 	    padding-right: 1.5em;
 	    color: #c23616;
+	}
+	.dateShow {
+	    color:  gray;
+	    font-size: 0.78em;
+	    text-align: center;
+	    display: block;
+	}
+	.message-content {
+	    display: flex;
 	}
 </style>
 
@@ -158,18 +180,19 @@
 	
 		<div class="container-fluid">
 			<div class="row">
-				<div class="row mt-3" style="width:1000px;margin-bottom:0;margin-left:7px; margin-right:0px;height:70px;">
+				<div class="row mt-3" style="width:1000px;margin-bottom:0;margin-left:355px; margin-right:0px;height:70px;">
 					<!-- 로그인한 회원 프로필 -->
 					<div class="card col-3" style="width:290px;border-radius:0;padding-bottom:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
 						<div style="padding-left: 0.4em;">
-							<a href="#"   style="color: black; text-decoration: none;">
-							<img src="https://via.placeholder.com/45x45?text=P" style="border-radius: 50%; position:absolute; top:0.75em" >
+							<a href="${pageContext.request.contextPath}/member/login" style="color: black; text-decoration: none;">
+							<img v-if="${attach!=0}" src="${pageContext.request.contextPath}/rest/attachment/download/${attach}" width="45" height="45" class="profile rounded-circle" style="position:absolute; top:0.75em" >
+							<img v-else src="https://via.placeholder.com/45x45?text=P" style="border-radius: 50%; position:absolute; margin-top:0em;">
 								<span style="padding-left:3.5em; word-wrap:normal;">
 										${sessionScope.memberNick}
 								</span>
 							</a>
 						</div>
-						<span v-if="roomNo == null" style="position:absolute; top:21px; right:0; margin-right:15px;">
+						<span v-if="this.roomNo == null" style="position:absolute; top:21px; right:0; margin-right:15px;">
 							<i class="fa-regular fa-pen-to-square fa-lg" style="margin-right: 11px; cursor:pointer;" @click="fetchFollowerList(); showCreateRoomModal();"></i>
 						</span>
 						<span v-else style="position:absolute; top:21px; right:0; margin-right:15px;">
@@ -180,26 +203,32 @@
 					
 					<!-- 채팅방 이름 -->
 					<div class="card col-8" style="border-radius:0;border-left:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
-						<div v-if="roomNo != null">
-							채팅방 이름
-							<span style="position:absolute; top:21px; right:0; margin-right:19px;">
-								<i class="fa-solid fa-file-pen fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showRoomNameModal()"></i>
-								<i class="fa-solid fa-door-open fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showExitModal()"></i>
-								<i class="fa-solid fa-circle-info fa-xl" style="cursor:pointer; color: #b2bec3" @click="showMembersInRoomModal()"></i>
-							</span>
+						<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo">
+							<div v-if="this.roomNo != null">
+								<div v-if="this.roomNo === room.roomNo">
+									<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"
+										width="45" height="45" class="profile rounded-circle" style="position:absolute; top:0.75em; left:1.3em;" >
+					          		<img v-else src="https://via.placeholder.com/34x34?text=P" style="border-radius: 50%; position:absolute; margin-top:0em;">
+									<span style="font-size:0.86em;padding-left:4.7em; word-wrap:normal;">{{room.roomName}}</span>
+								</div>
+								<span style="position:absolute; top:21px; right:0; margin-right:19px;">
+									<i class="fa-solid fa-file-pen fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showRoomNameModal()"></i>
+									<i class="fa-solid fa-door-open fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showExitModal()"></i>
+									<i class="fa-solid fa-circle-info fa-xl" style="cursor:pointer; color: #b2bec3" @click="showMembersInRoomModal()"></i>
+								</span>
+							</div>
 						</div>
 					</div>
 				</div>
 				
-				<div class="row" style="width:1000px;margin-left:7px; margin-right:100px; margin-top:0; height:70vh">
+				<div class="row" style="width:1000px;margin-left:355px; margin-right:100px; margin-top:0; height:70vh">
 					<!-- 채팅방 목록 -->
 					<div class="card col-3" style="width:290px;border-radius:0;border-top:none;padding:0;">
-						<div class="card-body card-scroll" style="padding:0;padding-top:10px; max-height: 633px;">
-							<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo" class="roomList" :class="{'hover': isHovered[index] }"
-         						@mouseover="isHovered[index] = true" @mouseleave="isHovered[index] = false" style="padding-bottom: 5px;padding-top: 4px;padding-left: 13px;cursor:pointer;">
+						<div class="card-body cardList-scroll" style="padding:0;padding-top:10px; max-height: 720px;">
+							<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo":class="{'hover': isHovered[index] }"
+         						@mouseover="isHovered[index] = true" @mouseleave="isHovered[index] = false" @click="enterRoom(room.roomNo)" style="padding-bottom: 5px;padding-top: 4px;padding-left: 13px;cursor:pointer;">
 							    <div style="position:relative; height: 2.4em; display: flex; align-items: center;">
-								    <a :href="'channel?room=' + room.roomNo" style="color: black; text-decoration: none;">
-							    	<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"style="border-radius: 50%; position:absolute; 
+							    	<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"class="profile rounded-circle" style="position:absolute; 
 								    	width:34px; height:34px; margin-top:0em;cursor:pointer;">
 				          			<img v-else src="https://via.placeholder.com/34x34?text=P" style="border-radius: 50%; position:absolute; margin-top:0em;">
 								    <span style="font-size:0.86em;padding-left:3.2em; word-wrap:normal;">
@@ -208,7 +237,6 @@
 			   						<span v-if="unreadMessage[index] > 0" style="color:#eb4d4b; font-size:0.85em;padding-left:1.5em; padding-top:0.1em">
 			   						 	{{unreadMessage[index]}}
 			   						</span>
-									</a>
 			   						<span v-if="unreadMessage[index] > 0" style="color:#eb4d4b; position:absolute;right:15px; top:13px;font-size: 10px;">
 			   							<i class="fa-solid fa-circle"></i>
 			   						</span>
@@ -231,30 +259,34 @@
 						<div class="card-body card-scroll" ref="scrollContainer" style="padding:0; max-height: 570px;" v-show="isRoomJoin">
 					        <div class="message-wrapper">
 					            <div class="message" v-for="(message, index) in messageList" :key="message.no" :class="{my:checkMyMessage(index)}">
-					                <div class="profile-wrapper" v-if="!checkMyMessage(index)">
-                                			<img src="https://via.placeholder.com/100x100?text=P" width="100%" v-if="!checkSameTime(index)">
-					                </div>
-					                <div class="content-wrapper">
-						                <div class="content-header" v-if="!checkSameTime(index)">
-						                	{{message.memberNick}}
+						            <div v-if="dateCheck(index)" class="dateShow">
+										 <div>{{timeFormat2(message.time)}}</div>
+									</div>
+									<div class="message-content">
+						                <div class="profile-wrapper" v-if="!checkMyMessage(index)">
+	                                			<img src="https://via.placeholder.com/100x100?text=P" width="100%" v-if="!checkSameTime(index)">
 						                </div>
-						                <div class="content-body">
-							                <div v-if="message.attachmentNo == 0" class="message-wrapper">{{message.content}}</div>
-							                <img class="photo" v-if="message.attachmentNo > 0" 
-												:src="'${pageContext.request.contextPath}/rest/attachment/download/'+message.attachmentNo">
-							                <div class="info-wrapper">
-							                	<div class="number-wrapper" v-show="unreadCount[index] !== 0">{{unreadCount[index]}}</div>
-							                	<div class="time-wrapper" v-if="calculateDisplay(index)">{{timeFormat(message.time)}}</div>
+						                <div class="content-wrapper">
+							                <div class="content-header" v-if="!checkSameTime(index)">
+							                	{{message.memberNick}}
 							                </div>
-						                	<i class="fa-solid fa-x fa-xs" @click="deleteMessage(index)"  style="padding-bottom: 0.51em; padding-right: 0.6em; padding-left: 0.7em; color: #ced6e0; cursor:pointer;"></i>
-						                	<i class="fa-solid fa-trash fa-xs" style="padding-bottom: 0.51em; padding-right: 0.51em; padding-left: 0.51em; color: #ced6e0; cursor:pointer;"></i>
-						                	<i class="fa-solid fa-heart fa-xs" style="padding-bottom: 0.51em; padding-right: 0.5em; padding-left: 0.5em; color: #c23616; cursor:pointer;"></i>
-						                </div>
-						                <div class="content-footer">
-						                	<div class=heart><i class="fa-solid fa-heart fa-xs" style="color: #c23616;"></i></div>
-							                <div class=heart-number>23</div>
-						                </div>
-						            </div>
+							                <div class="content-body">
+								                <div v-if="message.attachmentNo == 0" class="message-wrapper">{{message.content}}</div>
+								                <img class="photo" v-if="message.attachmentNo > 0" 
+													:src="'${pageContext.request.contextPath}/rest/attachment/download/'+message.attachmentNo">
+								                <div class="info-wrapper">
+								                	<div class="number-wrapper" v-show="unreadCount[index] !== 0">{{unreadCount[index]}}</div>
+								                	<div class="time-wrapper" v-if="calculateDisplay(index)">{{timeFormat(message.time)}}</div>
+								                </div>
+							                	<i class="fa-solid fa-x fa-xs" @click="showDeleteMsgModal(index)" style="padding-bottom: 0.51em; padding-right: 0.6em; padding-left: 0.7em; color: #ced6e0; cursor:pointer;"></i>
+							                	<i class="fa-solid fa-trash fa-xs" style="padding-bottom: 0.51em; padding-right: 0.51em; padding-left: 0.51em; color: #ced6e0; cursor:pointer;"></i>
+							                </div>
+							                <div class="content-footer">
+							                	<div class=heart><i class="fa-heart fa-xs" :class="{'fa-solid':memberLike[index]==1, 'fa-regular':memberLike[index]==0}" style="color: #c23616;" @click="dmLike(message.messageNo, index)"></i></div>
+							             	   <div class=heart-number>{{likeCount[index]}}</div>
+							                </div>
+							            </div>
+							    	</div>
 					            </div>
 						      </div>
 					        <div class="input-wrapper" style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 5px;">
@@ -290,10 +322,10 @@
 		        </div>
 		        <div v-if="searchDmList.length==0" >
 			        <div v-for="(member,index) in dmMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
-			          <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:45px; height:45px;">
-			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:45px; height:45px;">
+			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
-			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+			          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
 			          	<input type="checkbox" v-model="selectedMembers" :value="member.memberNo" style="transform: scale(1.2); margin-right:1em;">
 			          </span>
@@ -301,10 +333,10 @@
 		        </div>
 		        <div v-if="searchDmList.length>0">
 			        <div v-for="(member,index) in searchDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
-			          <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:40px; height:40px;">
-			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
+			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
-			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+			          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
 					  	<input type="checkbox" v-model="selectedMembers" :value="member.memberNo" style="transform: scale(1.2); margin-right:1em;">
 			          </span>
@@ -333,11 +365,11 @@
 		        </div>
 		        <div v-if="searchDmList.length==0" >
 			        <div v-for="(member,index) in dmMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
-			          <img v-if="dmMemberList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:40px; height:40px;">
+			          <img v-if="dmMemberList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
 			          <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
-			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
-			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+			          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
 			          	<input type="checkbox" v-model="selectedMembers" :value="member.memberNo" style="transform: scale(1.2); margin-right:1em;">
 			          </span>
@@ -345,11 +377,11 @@
 		        </div>
 		        <div v-if="searchDmList.length>0">
 			        <div v-for="(member,index) in searchDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
-			          <img v-if="searchDmList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:40px; height:40px;">
+			          <img v-if="searchDmList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
 			          <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
-			          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
-			          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+			          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
 			          	<input type="checkbox" v-model="selectedMembers" :value="member.memberNo" style="transform: scale(1.2); margin-right:1em;">
 			          </span>
@@ -420,7 +452,7 @@
 					다른 사람의 채팅방에는 메시지가 계속 표시됩니다.
 		      </div>
 		      <div class="modal-footer btn-center">
-		        <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close" style="color:red; margin-right: 11em; height: 2em;">삭제</button>
+		        <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close" @click="deleteMessage(index)" style="color:red; margin-right: 11em; height: 2em;">삭제</button>
 		      </div>
 		      <div class="modal-footer btn-center">
 		        <button type="button" class="btn" data-bs-dismiss="modal" style="margin-right: 11em; height: 2em;">취소</button>
@@ -428,6 +460,7 @@
 		    </div>
 		  </div>
 		</div>
+
 		
 		<!-- 채팅방에 참여 중인 회원 -->
 		<div class="modal fade" tabindex="-1" id="membersInRoomModal" data-bs-backdrop="static" ref="membersInRoomModal">
@@ -439,11 +472,13 @@
 		      </div>
 		      <div class="modal-body" style="width:300px;">
 		        <div v-for="(member,index) in membersInRoomList" :key="index" style="margin-top:20px;position:relative;">
-		          <img v-if="member.attachmentNo > 0"  :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"style="border-radius: 50%; position:absolute; top:0.3em; width:40px; height:40px;">
-			      <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
-		          <span style="padding-left:3.3em;font-size:0.9em;">{{member.memberNick}}</span>
+		          <a href="${pageContext.request.contextPath}/member/{member.memberNick}" style="color: black; text-decoration: none;">
+			          <img v-if="member.attachmentNo > 0"  :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
+				      <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
+			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
+		          </a>
 		          <br>
-		          <span style="padding-left:4.2em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+		          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 		          <span style="position:absolute;right:0;top:10px;">
 		            <button class="btn btn-outline-secondary" style="padding: 0.3rem 0.2rem;font-weight: 100;line-height: 1;font-size:0.8em; margin-right: 0.5em;"data-bs-dismiss="modal" aria-label="Close" >
 		              차단
@@ -509,15 +544,22 @@
    					
    					isHovered: [],
    					scrollContainer: null, //스크롤
-   					
    					membersInRoomList:[], //채팅방 회원 목록
+   					messageToDelete: null, //메세지 삭제
    					
+   					//좋아요 개수 목록 및 내가 좋아요한 여부
+   					likeCount:[],
+   					memberLike:[],
                 };
             },
             methods:{
+            	enterRoom(roomNo) {
+           		    this.roomNo = roomNo;
+           		 	this.openHandler(roomNo);
+           		    this.loadMessage(roomNo);
+           		},
             	// 메세지 불러오는 함수
-            	async loadMessage() {
-            	    const roomNo = new URLSearchParams(location.search).get("room");
+            	async loadMessage(roomNo) {
             	    if(roomNo==null){
             	    	this.isRoomJoin=false; 
             	    	return;
@@ -528,13 +570,19 @@
             	    try {
             	        const resp = await axios.get(url);
             	        this.messageList = resp.data.map(msg => JSON.parse(msg.messageContent));
-        				//스크롤 바닥으로 이동
-        				this.$nextTick(() => {
-                            const scrollContainer = this.$refs.scrollContainer;
-                            scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'smooth' });
-                        });
+            	        //좋아요 개수 및 내가 좋아요 했는지 여부 반환
+            	        this.likeCount = resp.data.map(msg=>JSON.parse(msg.likeCount));
+            	        this.memberLike= resp.data.map(msg=>JSON.parse(msg.memberLike));
+        				//스크롤 아로로 이동
+						this.$nextTick(() => {
+						    const scrollContainer = this.$refs.scrollContainer;
+						    if (scrollContainer) {
+						        scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'smooth' });
+						    }
+						});
         				// 읽지 않은 메세지 수 수정
         			    await this.updateUnreadDm(roomNo);
+        				this.setUnreadCountOnMessage();
             	    } 
             	    catch (err) {
             	        console.error("메세지를 불러올 수 없습니다.");
@@ -564,7 +612,6 @@
 				    const fileInput = this.$refs.fileInput;
 				    const file = fileInput.files[0];
 				    if(!file) {
-				        console.log("선택된 이미지 메세지 파일이 없습니다.");
 				        return;
 				    }
 				    const formData = new FormData();
@@ -594,16 +641,18 @@
 				showCreateRoomModal(){
                     if(this.createRoomModal == null) return;
                     this.selectedMembers = []; 
-                    this.keyword = ""; 
                     this.dmMemberList = [];
-                    this.searchDmList = []; 
                     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
                     checkboxes.forEach(checkbox => (checkbox.checked = false));
                     this.createRoomModal.show();
+                    //모달창 스크롤바를 사용할 때, 페이지 스크롤바 사용 불가능
+                    document.body.style.overflow = "hidden";
                 },
                 hideCreateRoomModal(){
                     if(this.createRoomModal == null) return;
                     this.createRoomModal.hide();
+                  //모달창 스크롤바를 사용할 때, 페이지 스크롤바 사용 불가능
+                    document.body.style.overflow = "unset";
                 },
 				showExitModal(){
                     if(this.exitModal == null) return;
@@ -616,16 +665,16 @@
 				showInviteModal(){
                     if(this.inviteModal == null) return;
                     this.selectedMembers = []; 
-                    this.keyword = ""; 
                     this.dmMemberList = [];
-                    this.searchDmList = [];
                     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
                     checkboxes.forEach(checkbox => (checkbox.checked = false));
                     this.inviteModal.show();
+                    document.body.style.overflow = "hidden";
                 },
                 hideInviteModal(){
                     if(this.inviteModal == null) return;
                     this.inviteModal.hide();
+                    document.body.style.overflow = "unset";
                 },
 				showRoomNameModal(){
                     if(this.roomNameModal == null) return;
@@ -636,7 +685,8 @@
                     this.roomNameModal.hide();
                     this.roomName = "";
                 },
-				showDeleteMsgModal(){
+                showDeleteMsgModal(index){
+                	this.messageToDelete = index;
                     if(this.deleteMsgModal == null) return;
                     this.deleteMsgModal.show();
                 },
@@ -648,10 +698,12 @@
                     if(this.membersInRoomModal == null) return;
                     this.fetchUsersByRoomNo(this.roomNo);
                     this.membersInRoomModal.show();
+                    document.body.style.overflow = "hidden";
                 },
                 hideMembersInRoomModal(){
                     if(this.membersInRoomModal == null) return;
                     this.membersInRoomModal.hide();
+                    document.body.style.overflow = "unset";
                 },
 			    connect(){
             		const url = "${pageContext.request.contextPath}/ws/channel";
@@ -672,11 +724,9 @@
             			app.messageHandler(e);
             		};
             	},
-            	openHandler(){
-            		const room = new URLSearchParams(location.search).get("room");
-                    const data = { type:2, room:room };
+            	openHandler(roomNo){
+                    const data = { type:2, room:roomNo };
                     this.socket.send(JSON.stringify(data));
-                    this.roomNo = room; //vue에 반환
                     console.log("서버에 연결되었습니다.");
             	},
             	closeHandler(){
@@ -691,6 +741,7 @@
             		//리스트 형태(시간정보 배열) 일때
             		if(message.length>0){
             			this.userTimeList=[...message];
+            			this.setUnreadCountOnMessage();
             		}
             		//메세지 일 때
             		else{
@@ -698,26 +749,46 @@
 						if (message.messageType === 6) { // 새로운 메시지 수
 							this.fetchDmRoomList();
 						}
+						else if(message.messageType==8){ //좋아요
+							const index = this.messageList.findIndex(obj => obj.messageNo == message.messageNo);
+							this.likeCount[index]=message.likeCount;
+						}
 						else{
 		            		this.messageList.push(message);
+		            		this.likeCount.push(0);
+		            		this.memberLike.push(0);
 						}
 	            		
             		}
 	            },
-            	sendMessage() {
+	            sendMessage() {
             		if(this.text.length == 0) return;
             		this.socket.send(this.jsonText);
             		this.text = "";
+            		
+            		//메세지 전송 후 스크롤 아래로 이동
+            		this.$nextTick(() => {
+            	        setTimeout(() => {
+            	            const scrollContainer = this.$refs.scrollContainer;
+            	            if (scrollContainer) {
+            	                scrollContainer.scrollTop = scrollContainer.scrollHeight;
+            	            }
+            	        }, 110);
+            	    });
             	},
             	timeFormat(time) {
             		return moment(time).format("A h:mm");
             	},
+            	timeFormat2(time) {
+            		return moment(time).format("YYYY년 M월 D일");
+            	},
             	//메세지 삭제
             	deleteMessage(index) {
-            	    const messageNo = this.messageList[index].messageNo;
+            	    const messageNo = this.messageList[this.messageToDelete].messageNo;
             	    const data = { type: 3, messageNo: messageNo, memberNo: this.memberNo };
             	    this.socket.send(JSON.stringify(data));
-            	    this.loadMessage();
+            	    this.loadMessage(this.roomNo);
+            	    this.messageToDelete = null; // 메시지 삭제 후에 index를 초기화
             	},
             	//디자인 - 시간
                 checkSameTime(index) {
@@ -743,6 +814,15 @@
                     if(this.memberNick == this.messageList[index].memberNick) return true;
                     return false;
                },
+               //날짜
+				dateCheck(index) {
+				    if (index != 0) {
+				        const currentMessageDate = moment(this.messageList[index].time).format('YYYY-MM-DD');
+				        const previousMessageDate = moment(this.messageList[index - 1].time).format('YYYY-MM-DD');
+				        return currentMessageDate !== previousMessageDate;
+				    }
+				    return true;  //첫 번째 메세지는 항상 새로운 날짜로 간주
+				},
                //팔로우 회원 목록
                async fetchFollowerList() {
             	   const url = "${pageContext.request.contextPath}/rest/dmMemberList";
@@ -801,12 +881,10 @@
 				},
 				//채팅방에 참여한 회원 목록
 				async fetchUsersByRoomNo() {
-					const roomNo = new URLSearchParams(location.search).get("room");
+					const roomNo = this.roomNo;
 					const url = "${pageContext.request.contextPath}/rest/users/"+roomNo;
-					console.log("roomNo : ", roomNo);
 					try {
 						const resp = await axios.get(url);
-						console.log("resp : ", resp);
 						this.membersInRoomList.splice(0);
 						this.membersInRoomList.push(...resp.data);
 					} catch (error) {
@@ -839,7 +917,7 @@
 				            await axios.put(updateRoomUrl, updateRoomData);
 				        }
 				        await this.fetchDmRoomList(); //채팅방 목록 불러오기
-				        window.location.href = "${pageContext.request.contextPath}/dm/channel?room=" + roomNo;
+				        this.enterRoom(roomNo);  // 채팅방으로 이동
 				        console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
 				    } catch (error) {
 				        console.error("방 생성, 입장, 초대 중 오류가 발생했습니다.", error);
@@ -892,7 +970,7 @@
 				async leaveTheRoom() {
 				    try {
 				        const memberNo = this.memberNo;
-				        const roomNo = new URLSearchParams(location.search).get("room");
+				        const roomNo = this.roomNo;
 				        const exitData = {
 				            memberNo: memberNo,
 				            roomNo: roomNo
@@ -916,8 +994,8 @@
 				        
 				        console.log("회원이 퇴장 하였습니다.");
 				        window.location.href = "${pageContext.request.contextPath}/dm/channel";
-				        
         				await this.fetchDmRoomList(); // 채팅방 목록 불러오기
+        				this.roomNo=null;
 				    } catch (error) {
 				        console.error("회원 퇴장에서 오류가 발생하였습니다.", error);
 				    }
@@ -1006,8 +1084,6 @@
 								memberNo: this.memberNo
 							};
 							const resp = await axios.get(countUrl, { params: data });
-							//console.log(resp);
-							//console.log(resp.data);
 							//수정
 							const unreadMessage = resp.data[0];
 							this.unreadMessage.push(unreadMessage); //vue에 반환
@@ -1032,6 +1108,7 @@
 							unreadMessage: 0
 						};
 						await axios.put(updateUrl, data);
+						this.fetchDmRoomList();
 				    } catch (error) {
 				        console.error("읽지 않은 메세지 수 수정 오류", error);
 				    }
@@ -1045,6 +1122,28 @@
 				        console.error("읽지 않은 메세지 수 수정 오류", error);
 				    }
 				},
+				//좋아요 눌렀을 때
+				async dmLike(messageNo, index){
+					const data = { type:8, messageNo:messageNo, memberNo:memberNo, room:this.roomNo };
+                    this.socket.send(JSON.stringify(data));
+                    if(this.memberLike[index]==0) this.memberLike[index]=1;
+                    else this.memberLike[index]=0;
+				},
+				//메세지 읽음 표시 카운트 메서드
+				setUnreadCountOnMessage(){
+            		let joiner = this.userTimeList.length;
+            		for(let j=0; j<this.messageList.length; j++){
+	            		let count=0;
+	            		for(let i=0; i<this.userTimeList.length; i++){
+	            			let timeTemp=this.messageList[j].time
+	            			if(this.userTimeList[i]>=timeTemp){
+	            				count++;
+	            			}
+	            		}
+	            		this.unreadCount[j]= joiner-count;
+            		}
+					
+				},
             },
             watch:{
             	//검색
@@ -1056,22 +1155,23 @@
         			this.chooseDmSearch();
         		}, 200),
         		//메세지 읽음 표시
-        		userTimeList:{
+        		/* userTimeList:{
         			deep:true,
         			handler:function(){
-	            		let joiner = this.userTimeList.length;
-	            		for(let j=0; j<this.messageList.length; j++){
-		            		let count=0;
-		            		for(let i=0; i<this.userTimeList.length; i++){
-		            			let timeTemp=this.messageList[j].time
-		            			if(this.userTimeList[i]>=timeTemp){
-		            				count++;
-		            			}
-		            		}
-		            		this.unreadCount[j]= joiner-count;
-	            		}
         			}
-        		},
+        		}, */
+        		//메세지 스크롤 아래로 이동
+        	    messageList: {
+        	        handler() {
+        	            this.$nextTick(() => {
+        	                const scrollContainer = this.$refs.scrollContainer;
+        	                if (scrollContainer) {
+        	                    scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        	                }
+        	            });
+        	        },
+        	        immediate: true,
+        	    },
             },
             computed:{ 
             	jsonText() {
@@ -1098,6 +1198,16 @@
 				this.roomNameModal = new bootstrap.Modal(this.$refs.roomNameModal);
 				this.deleteMsgModal = new bootstrap.Modal(this.$refs.deleteMsgModal);
 				this.membersInRoomModal = new bootstrap.Modal(this.$refs.membersInRoomModal);
+				
+				//검색창 초기화
+			    $('#memberListModal').on('hidden.bs.modal', () => {
+			    	this.keyword = '';
+			        this.searchDmList = [];
+			    });
+			    $('#inviteModal').on('hidden.bs.modal', () => {
+			    	this.keyword = '';
+			        this.searchDmList = [];
+			    });
 	        },
         }).mount("#app");
     </script>
