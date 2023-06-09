@@ -254,7 +254,7 @@
 			<nav class="mt-3">
 				<div class="container-fluid" style="width:60%; max-width:900px; min-width:700px">
 					<div class="row ps-5 pe-5" style="max-width:1200px">
-						<div class="col-3">
+						<div class="col-4">
 							<a href="${pageContext.request.contextPath}/" class="logo d-flex align-items-center" style="color:inherit;">
 								<img class="me-2" src="${pageContext.request.contextPath}/static/image/logo.png" width="50" height="50">
 								insider
@@ -335,7 +335,10 @@
 								</div>
 							<!-- dm -->
 								<div class="col p-0 m-2">
-									<a class="" href="${pageContext.request.contextPath}/dm/channel" style="color:inherit"><i class="fa-regular fa-message header-menu-option" style="font-size:40px; margin-top:3px"></i></a>
+									<a class="" href="${pageContext.request.contextPath}/dm/channel" style="color:inherit">
+                    <i class="fa-regular fa-message header-menu-option" style="font-size:40px; margin-top:3px"></i>
+                    <i class="fa-solid fa-circle"v-if="hasUnreadMessages"style="position: absolute;font-size: 0.3em;color: #eb6864;right:15%;bottom: 17%;"></i>
+                  </a>
 								</div>
 							<!-- 게시물작성 -->
 								<div class="col p-0 m-2">
@@ -570,6 +573,9 @@
 	        storedNotifications: [],
 	        memberNick : "${socialUser.memberNick}",
 	        
+          //dm 읽지 않은 메세지 수
+          hasUnreadMessages: false,
+          
 	      	//상세보기 및 댓글
 			detailView:false,
 			detailIndex:"",
@@ -596,8 +602,7 @@
 	            //동영상 자동재생
 	            videoAuto:false,
             },
-            
-          	
+              
 	      };
 	    },
 	    computed: {
@@ -830,12 +835,29 @@
 	    	        this.hasNewNotification = false;
 	    	        this.storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
 	    	      }
+	    	   	  //dm 읽지 않은 메세지 수 조회
+	    	      this.unreadMessageCount();
 	    	    })
 	    	    .catch((error) => {
 	    	      console.log(error);
 	    	    });
 	    	},
-
+	    	//dm 읽지 않은 메세지 수 조회
+        async unreadMessageCount() {
+          const countUrl = "${pageContext.request.contextPath}/rest/notice/isChat";
+          try {
+            const resp = await axios.get(countUrl);
+            const unreadCount = resp.data;
+            if (unreadCount > 0) {
+                this.hasUnreadMessages = true;
+            } 
+            else {
+                this.hasUnreadMessages = false;
+            }
+          } catch (error) {
+            console.error("읽지 않은 메세지 수 조회 오류", error);
+          }
+        },
 	         
 	      toggleModal() {
     		if (!this.showModal) {
@@ -910,18 +932,19 @@
 	        //7일 뒤 알림 자동 삭제
 			cleanupLocalStorage() {
 			  const storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
-			  
+			
 			  const expirationDate = new Date();
-			  expirationDate.setDate(expirationDate.getDate() - 7);
+			  expirationDate.setDate(expirationDate.getDate() + 7);
 			
-			  const updatedStoredNotifications = storedNotifications.filter((notification) => {
-			    const notificationDate = new Date(notification.date);
-			    return notificationDate >= expirationDate;
-			  });
+			  setTimeout(() => {
+			    const updatedStoredNotifications = storedNotifications.filter((notification) => {
+			      const notificationDate = new Date(notification.date);
+			      return notificationDate >= expirationDate;
+			    });
 			
-			  localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
+			    localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
+			  }, 7 * 24 * 60 * 60 * 1000); // 7일 뒤 삭제
 			},
-
 
 
 			//7초 뒤 알림 자동 삭제
@@ -940,7 +963,7 @@
 // 	        	    localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
 // 	        	  }, 7000);
 // 	        	},
-	        	
+
 			/* GPS 얻기 */
 			getGps(){
 				if (navigator.geolocation) {
@@ -1004,6 +1027,7 @@
 	      this.loadNotifications(); // 컴포넌트가 마운트될 때 알림 데이터를 로드
 	      this.intervalId = setInterval(this.loadNotifications, 10000); // 5초마다 알림 데이터를 갱신
 	      this.likeListModal = new bootstrap.Modal(this.$refs.likeListModal);
+        this.unreadMessageCount(); //dm 알림
 	    },
 	    beforeUnmount() {
 	      clearInterval(this.intervalId); //메모리 누수방지
