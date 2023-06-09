@@ -238,7 +238,7 @@
                         <div style="padding: 8px 8px 4px 8px;">
                             <div class="d-flex">
 
-                                <div class="p-2"><a style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><img class="profile rounded-circle" :src="profileUrl(index)" style="object-fit: cover;" @mouseover="profileHover(board.boardWithNickDto)"></a></div>
+                                <div class="p-2"><a style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><img class="profile rounded-circle" :src="profileUrl(index)" style="object-fit: cover; " @mouseover="profileHover(board.boardWithNickDto)"></a></div>
                                 <div class="p-2" style="margin-top: 8px;"><h4><a class="btn btn-none" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a><b style="color: gray;">  · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
 
                                 <div v-if="followCheckIfNew(index)" @click="follow(board.boardWithNickDto.memberNo)" class="p-2 me-5" style="margin-top: 8px;"><h4><b style="font-size: 15px; color:blue; cursor: pointer;">팔로우</b></h4></div>
@@ -327,7 +327,7 @@
          
         
          
-          <div class="profile-preview" v-if="selectedItem === board.boardWithNickDto" @mouseleave="profileLeave">
+          <div class="profile-preview" v-if="selectedItem === board.boardWithNickDto" @mouseleave="profileLeave" style="border-radius:15px; margin-left:70px; margin-bottom:70px;">
                   <!-- 프로필 미리보기 내용 -->
                    	<div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' +board.boardWithNickDto.attachmentNo" width="75" height="75" style="border-radius: 50%;" @mouseleave="profileLeave"> 
@@ -1308,8 +1308,6 @@ Vue.createApp({
 		// 호버
 		 async profileHover(item) {           		
            	  this.selectedItem = item; // 선택
-           	  console.log("닉네임 : " +item.memberNick);
-           	  console.log("멤버번호 : " +item.memberNo);
            	  
         	  // settingHide 불러오기 위해서 선언
              	const resp = await axios.get("/rest/member/setting/"+item.memberNo);
