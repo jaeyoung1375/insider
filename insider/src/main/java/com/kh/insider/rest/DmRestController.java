@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.DmMemberInfoDto;
 import com.kh.insider.dto.DmMemberListDto;
-import com.kh.insider.dto.DmMessageNickDto;
 import com.kh.insider.dto.DmRoomDto;
 import com.kh.insider.dto.DmRoomRenameDto;
 import com.kh.insider.dto.DmUserDto;
@@ -30,6 +29,7 @@ import com.kh.insider.repo.DmRoomRepo;
 import com.kh.insider.repo.DmRoomUserProfileRepo;
 import com.kh.insider.repo.DmUserRepo;
 import com.kh.insider.service.DmServiceImpl;
+import com.kh.insider.vo.DmMessageNickVO;
 import com.kh.insider.vo.DmRoomVO;
 import com.kh.insider.vo.DmUserVO;
 
@@ -61,7 +61,7 @@ public class DmRestController {
 
 	//메세지 리스트
 	@GetMapping("/message/{roomNo}")
-	public List<DmMessageNickDto> roomMessage (
+	public List<DmMessageNickVO> roomMessage (
 			@PathVariable int roomNo,
 			HttpSession session) {
 		long memberNo = (Long) session.getAttribute("memberNo");
@@ -75,7 +75,9 @@ public class DmRestController {
 		dmUserDto.setRoomNo(roomNo);
 		dmUserRepo.updateReadTime(dmUserDto);
 		
-		return dmMessageNickRepo.getUndeletedMessages(messageSender, roomNo, memberNo);
+		//return dmMessageNickRepo.getUndeletedMessages(messageSender, roomNo, memberNo);
+		//좋아요까지 출력
+		return dmMessageNickRepo.getMessagesWithLike(messageSender, roomNo, memberNo);
 	}
 
 	//팔로워 회원 목록

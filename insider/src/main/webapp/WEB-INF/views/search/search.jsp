@@ -241,7 +241,7 @@
 			
 		<!-- 리스트 -->
 			<div class="row d-flex justify-content-center mt-3">
-				<div class="box m-2" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)" 
+				<div class="box m-1" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)" 
 						 @click="detailViewOn(index)" >
 					<video class="content" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
 							style="object-fit:cover" :autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto"></video>
@@ -251,8 +251,8 @@
 					<div class="content-box" ></div>
 					<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
 					<div class="like-comment" >
-						<span v-if="memberSetting.watchLike"><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
-						<span class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
+						<span v-if="memberSetting.watchLike && board.boardWithNickDto.boardLikeValid==0"><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
+						<span v-if="board.boardWithNickDto.boardReplyValid==0" class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
 					</div>
 				</div>
 			</div>
