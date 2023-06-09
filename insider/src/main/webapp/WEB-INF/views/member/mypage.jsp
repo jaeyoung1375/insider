@@ -168,7 +168,7 @@
 	content: "";
 	padding-bottom: 100%;
 }
-.content,.content-box {
+.content-in-list,.content-box {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -408,9 +408,9 @@
    
     	 <div class="row d-flex justify-content-center w-100">
 	    	<div class="box m-2" v-for="(board,index) in myBoardList" :key="index" @click="detailViewOn(index)">
-	    		<video class="content" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
+	    		<video class="content-in-list" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
 							style="object-fit:cover" autoplay muted controls loop></video>
-				<img class="content" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+board.boardAttachmentList[0].attachmentNo">
+				<img class="content-in-list" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+board.boardAttachmentList[0].attachmentNo">
 			<!-- 쉐도우용 더미 -->
 				<div class="content-box" ></div>
 			<!-- 사진 여러장일 때 -->
@@ -752,12 +752,20 @@
             <div class="modal-dialog" role="document" style="width:30%;">
                 <div class="modal-content">
                     <div class="modal-header" style="display:flex; justify-content: center; flex-direction: column;">
-                     <h5 class="modal-title" style="text-align:center;">
-                        ${memberDto.memberNick}님을 차단하시겠어요?
-                     </h5>
-                     <div class="content" style="font-size:12px; text-align:center;">
-                        상대방은 Insider에서 회원님의 프로필, 게시물 및 스토리를 찾을 수 없게 됩니다. Insider은 회원님이 차단한 사실을 상대방에게 알리지 않습니다.                     
-                     </div>
+                    	<div class="row">
+                    		<div class="col">
+			                    <h5 class="modal-title" style="text-align:center;">
+		                        ${memberDto.memberNick}님을 차단하시겠어요?
+			                    </h5>
+                    		</div>
+                    	</div>
+                    	<div class="row">
+                    		<div class="col">
+		                        상대방은 Insider에서 회원님의 프로필, 게시물 및 스토리를 찾을 수 없게 됩니다. Insider은 회원님이 차단한 사실을 상대방에게 알리지 않습니다.                     
+                    		</div>
+                    	</div>
+	                     <div class="content" style="font-size:12px; text-align:center;">
+	                     </div>
                     </div>
                      <div class="modal-header" style="display:flex; justify-content: center;" >
                          <button type="button" class="btn" data-bs-dismiss="modal" style="color:red;">취소</button>
