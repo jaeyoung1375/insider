@@ -17,5 +17,5 @@ public class ChannelReceiveVO {
 	
 	private int messageType;
 	private int attachmentNo;
-
+	private int profileNo;
 }
