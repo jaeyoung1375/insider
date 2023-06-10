@@ -215,6 +215,28 @@ public class SocialLoginServiceImpl implements SocialLoginService {
 		coskey = encrypt;
 		return coskey;
 	}
+
+	@Override
+	public void kakaoDelete(String accessToken) throws URISyntaxException{
+		
+		  URI uri = new URI("https://kapi.kakao.com/v1/user/unlink");
+			
+	      RestTemplate rt = new RestTemplate();
+	      
+	      HttpHeaders headers = new HttpHeaders();
+	      headers.add("Authorization","KakaoAK  "+"19ed9f4c278a576b0b9e2f7268c4e11d");
+	      headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+	      
+	   	 
+	      
+	      // Header + Body를 하나의 오브젝트에 담기
+	      HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
+	      
+	      ResponseEntity<String> response = rt.exchange(uri, HttpMethod.POST,request,String.class);
+	      
+	   
+	     System.out.println(response.getStatusCode());
+	}
    
    
 
