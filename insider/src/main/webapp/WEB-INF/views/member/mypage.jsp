@@ -1147,7 +1147,7 @@
 						</div>
 					</div>
 					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo" style="border-top:var(--bs-modal-border-width) solid var(--bs-modal-border-color)">
-						<div class="col d-flex p-3 report-content" @click="reportContent(report.reportListContent)" style="cursor:pointer">
+						<div class="col d-flex p-2 report-content" @click="reportContent(report.reportListContent)" style="cursor:pointer">
 							<h5 style="margin:0; margin-left:1em">{{report.reportListContent}}</h5>
 						</div>
 					</div>
