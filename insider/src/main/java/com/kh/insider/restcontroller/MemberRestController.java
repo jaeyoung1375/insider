@@ -125,20 +125,6 @@ public class MemberRestController {
 	}
 
 	
-//	// 팔로워 목록 불러오기
-//	@GetMapping("/followerList")
-//	public List<FollowerWithProfileDto> followerList(@RequestParam long memberNo){
-//		List<FollowerWithProfileDto> followerList = followRepo.getFollowerList(memberNo);
-//		return followerList;
-//	}
-//	
-//	// 팔로우 목록 불러오기
-//	@GetMapping("/followList")
-//	public List<FollowWithProfileDto> followList(@RequestParam long memberNo){
-//			List<FollowWithProfileDto> followList = followRepo.getFollowList(memberNo);
-//		return followList;
-//	}
-	
 	// 팔로우 목록 불러오기(무한스크롤)
 		@GetMapping("/followListPaging/{page}")
 		public List<FollowWithProfileDto> followList(@PathVariable int page, @RequestParam long memberNo){
