@@ -94,12 +94,12 @@
 /* 게시물 네모박스 css 끝 */
 
 /* 모달이 사이즈가 커지면 스크롤이 생기고 헤더 고정 */
-.modal-content{
+.modal-content-custom{
 	margin:0;
 	padding:0.4em;
 	padding-right:0.7em;
 	max-height:100%;
-	overflow-y:auto;
+	overflow-y:hidden;
 	overflow-x:hidden;
 }
 .modal-header-custom{
@@ -123,7 +123,7 @@
 }
 
 .modal-body-custom{
-	padding:1em;
+	padding:0.4em;
 	position:sticky; 
 	top:0;
 	max-height:700px;
@@ -527,7 +527,7 @@
 							<option value="board_like asc">좋아요 적은순</option>
 						</select>
 					</div>
-					<div class="col p-0">
+					<div class="col-3 p-0">
 						<button type="button" class="col-6 btn btn-secondary" @click="resetBoardSearchOption">초기화</button>
 						<button type="button" class="col-6 btn btn-primary" @click="getBoardListWithSearchOption">검색</button>
 					</div>
@@ -1187,7 +1187,7 @@
 	<!-- ---------------------------------신고 내용 관리 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportContentModal">
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">신고 내용 관리</h5>
@@ -1208,7 +1208,7 @@
 							<button class="btn btn-primary w-100" @click="insertReportContent">등록</button>
 						</div>
 					</div>
-					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo">
+					<div class="row justify-content-center" v-for="(report, index) in reportContentList" :key="report.reportListNo">
 						<div class="row" v-if="!reportContentListEdit[index]">
 							<div class="col-10 p-2">
 								<h5 class="m-0">{{report.reportListContent}}</h5>
@@ -1239,7 +1239,7 @@
 	<!-- ---------------------------------정지 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="suspensionModal">
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">회원 정지</h5>
@@ -1253,7 +1253,7 @@
 				<div class="row modal-body-custom">
 					<div class="row mb-3" v-if="suspensionIndex[0]>=0">
 						<div class="row">
-							<div class="col-3 d-flex justify-content-center item-aligns-center">
+							<div class="col-3 d-flex justify-content-end align-items-center">
 								<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+memberList[suspensionIndex[0]].imageURL">
 							</div>
 							<div class="col-9">
@@ -1268,30 +1268,30 @@
 							<div class="col">
 								<div class="row">
 									<div class="row">
-										<div class="col-3" style="text-align:right">
+										<div class="offset-1 col-3" style="text-align:right">
 										정지 횟수 :
 										</div>
-										<div class="col-9 p-0">
+										<div class="col-8 p-0">
 										{{memberList[suspensionIndex[0]].memberSuspensionTimes}}
 										</div>
 									</div>
 								</div>
 								<div class="row">
 									<div class="row">
-										<div class="col-3" style="text-align:right">
+										<div class="offset-1 col-3" style="text-align:right">
 										정지 사유 :
 										</div>
-										<div class="col-9 p-0">
+										<div class="col-8 p-0">
 										{{memberList[suspensionIndex[0]].memberSuspensionContent}}
 										</div>
 									</div>
 								</div>
 								<div class="row">
 									<div class="row">
-										<div class="col-3" style="text-align:right">
+										<div class="offset-1 col-3" style="text-align:right">
 										기간 :
 										</div>
-										<div class="col-9 p-0">
+										<div class="col-8 p-0">
 										{{memberList[suspensionIndex[0]].memberSuspensionDays}}
 										</div>
 									</div>
@@ -1325,20 +1325,20 @@
 						<div class="row mb-4">
 							<div class="col" v-if="memberList[suspensionIndex[0]].memberSuspensionTimes>0">
 								<div class="row">
-									<div class="col-3" style="text-align:right">
+									<div class="offset-1 col-3" style="text-align:right">
 									정지 횟수 :
 									</div>
-									<div class="col-9 p-0">
+									<div class="col-8 p-0">
 									{{memberList[suspensionIndex[0]].memberSuspensionTimes}}
 									</div>
 								</div>
 							</div>
 							<div class="col" v-else>
 								<div class="row">
-									<div class="col-3" style="text-align:right">
+									<div class="offset-1 col-3" style="text-align:right">
 									정지 횟수 :
 									</div>
-									<div class="col-9 p-0">
+									<div class="col-8 p-0">
 									0
 									</div>
 								</div>
@@ -1395,7 +1395,7 @@
 	<!-- ---------------------------------신고창에서 보는 정지 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportSuspensionModal">
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">회원 정지</h5>
@@ -1409,7 +1409,7 @@
 				<div class="row modal-body-custom">
 					<div class="row mb-3" v-if="reportSuspensionIndex[0]>=0">
 						<div class="row">
-							<div class="col-3 d-flex justify-content-center item-aligns-center">
+							<div class="col-3 d-flex justify-content-end align-items-center">
 								<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+reportList[reportSuspensionIndex[0]].imageURL">
 							</div>
 							<div class="col-9">
@@ -1424,30 +1424,30 @@
 							<div class="col">
 								<div class="row">
 									<div class="row">
-										<div class="col-3" style="text-align:right">
+										<div class="offset-1 col-3" style="text-align:right">
 										정지 횟수 :
 										</div>
-										<div class="col-9 p-0">
+										<div class="col-8 p-0">
 										{{reportList[reportSuspensionIndex[0]].memberSuspensionTimes}}
 										</div>
 									</div>
 								</div>
 								<div class="row">
 									<div class="row">
-										<div class="col-3" style="text-align:right">
+										<div class="offset-1 col-3" style="text-align:right">
 										정지 사유 :
 										</div>
-										<div class="col-9 p-0">
+										<div class="col-8 p-0">
 										{{reportList[reportSuspensionIndex[0]].memberSuspensionContent}}
 										</div>
 									</div>
 								</div>
 								<div class="row">
 									<div class="row">
-										<div class="col-3" style="text-align:right">
+										<div class="offset-1 col-3" style="text-align:right">
 										기간 :
 										</div>
-										<div class="col-9 p-0">
+										<div class="col-8 p-0">
 										{{reportList[reportSuspensionIndex[0]].memberSuspensionDays}}
 										</div>
 									</div>
@@ -1481,20 +1481,20 @@
 						<div class="row mb-4">
 							<div class="col" v-if="reportList[reportSuspensionIndex[0]].memberSuspensionTimes>0">
 								<div class="row">
-									<div class="col-3" style="text-align:right">
+									<div class="offset-1 col-3" style="text-align:right">
 									정지 횟수 :
 									</div>
-									<div class="col-9 p-0">
+									<div class="col-8 p-0">
 									{{reportList[reportSuspensionIndex[0]].memberSuspensionTimes}}
 									</div>
 								</div>
 							</div>
 							<div class="col" v-else>
 								<div class="row">
-									<div class="col-3" style="text-align:right">
+									<div class="offset-1 col-3" style="text-align:right">
 									정지 횟수 :
 									</div>
-									<div class="col-9 p-0">
+									<div class="col-8 p-0">
 									0
 									</div>
 								</div>
@@ -1526,21 +1526,21 @@
 				<div class="row modal-footer-custom">
 					<div class="row" v-if="reportSuspensionIndex[1]==0">
 						<div class="offset-3 col-3 p-0">
-							<button type="button" class="btn btn-primary" @click="insertReportSuspension()" :class="{'disabled':reportSuspensionContent[0]=='' || reportSuspensionContent[1]==''}">수정</button>
+							<button type="button" class="btn btn-primary w-100" @click="insertReportSuspension()" :class="{'disabled':reportSuspensionContent[0]=='' || reportSuspensionContent[1]==''}">수정</button>
 						</div>
 						<div class="col-3 p-0">
-							<button type="button" class="btn btn-primary" @click="deleteReportSuspension()">해제</button>
+							<button type="button" class="btn btn-primary w-100" @click="deleteReportSuspension()">해제</button>
 						</div>
 						<div class="col-3 p-0">
-							<button type="button" class="btn btn-secondary" @click="hideReportSuspensionModal">취소</button>
+							<button type="button" class="btn btn-secondary w-100" @click="hideReportSuspensionModal">취소</button>
 						</div>
 					</div>
 					<div class="row" v-else>
 						<div class="offset-6 col-3 p-0">
-							<button type="button" class="btn btn-primary" @click="insertReportSuspension()" :class="{'disabled':reportSuspensionContent[0]=='' || reportSuspensionContent[1]==''}">정지</button>
+							<button type="button" class="btn btn-primary w-100" @click="insertReportSuspension()" :class="{'disabled':reportSuspensionContent[0]=='' || reportSuspensionContent[1]==''}">정지</button>
 						</div>
 						<div class="col-3 p-0">
-							<button type="button" class="btn btn-secondary" @click="hideReportSuspensionModal">취소</button>
+							<button type="button" class="btn btn-secondary w-100" @click="hideReportSuspensionModal">취소</button>
 						</div>
 					</div>
 				</div>
@@ -1551,7 +1551,7 @@
 	<!-- ---------------------------------신고 세부 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportDetailModal">
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">신고 내용 관리</h5>
@@ -1565,7 +1565,7 @@
 				<div class="row modal-body-custom">
 				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
 					<div class="row" >
-						<div class="col-3 d-flex justify-content-center item-aligns-center">
+						<div class="col-3 d-flex justify-content-end align-items-center">
 							<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+reportDetailData.imageURL">
 						</div>
 						<div class="col-9">
@@ -1703,7 +1703,7 @@
 	<!-- ---------------------------------게시물 미리보기 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="boardViewModal" style="z-index:3000">
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">게시물 미리보기</h5>
@@ -1716,12 +1716,11 @@
 				</div>
 				<div class="row modal-body-custom">
 					<div class="row" >
-						<div class="col-3 d-flex justify-content-center item-aligns-center">
+						<div class="col-3 d-flex justify-content-end align-items-center">
 							<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+boardViewContent.boardWithNickDto.imageURL">
 						</div>
-						<div class="col-9">
-							<div class="ms-2" style="font-weight:bold; font-size:1.2em">{{boardViewContent.boardWithNickDto.memberNick}}</div>
-							<div class="ms-2">{{boardViewContent.boardWithNickDto.memberName}}</div>
+						<div class="col-9 d-flex align-items-center">
+							<div class="" style="font-weight:bold; font-size:1.2em">{{boardViewContent.boardWithNickDto.memberNick}}</div>
 						</div>
 					</div>
 					<div class="row p-2">
@@ -1783,12 +1782,17 @@
 					<div class="row">
 						<div class="col">
 							<div class="row m-0 p-0">
-								<div class="col p-2 d-flex justify-content-center item-aligns-center" @click="moveScroll('a')" style="cursor:pointer">
+								<div class="col d-flex justify-content-center align-items-center" @click="moveScroll('a')" style="cursor:pointer; padding:0.4em">
 									a-z
 								</div>
 							</div> 
+							<div class="row m-0 p-0">
+								<div class="col d-flex justify-content-center align-items-center" @click="moveScroll('ㄱ')" style="cursor:pointer; padding:0.4em">
+									ㄱ-ㅎ
+								</div>
+							</div> 
 							<div class="row m-0 p-0" v-for="(word, index) in dictionary" :key="index">
-								<div class="col p-2 d-flex justify-content-center item-aligns-center" @click="moveScroll(word)" style="cursor:pointer">
+								<div class="col d-flex justify-content-center align-items-center" @click="moveScroll(word)" style="cursor:pointer; padding:0.4em">
 									{{word}}
 								</div>
 							</div>
@@ -1811,11 +1815,11 @@
 				</div>
 			</div>
 			<hr class="mt-2">
-			<div class="row m-0 p-0 mt-2 mb-3">
+			<div class="row m-0 p-0 mt-2 mb-3 ">
 				<div class="col">
 					<div class="row">
 						<div class="col">
-							<input class="form-control" type="text" v-model="forbiddenWord">
+							<input class="form-control" type="text" v-model="forbiddenWord" @input="forbiddenWord=$event.target.value">
 						</div>
 					</div>
 					<div class="row mt-2">
@@ -1833,7 +1837,7 @@
 	<!-- ---------------------------------신고받은 게시물 미리보기 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportedBoardModal" style="z-index:2000">
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">신고받은 게시물 리스트</h5>
@@ -1871,7 +1875,7 @@
 	<!-- ---------------------------------신고받은 댓글 미리보기 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportedReplyModal" >
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">신고받은 댓글 리스트</h5>
@@ -1912,7 +1916,7 @@
 	<!-- ---------------------------------신고받은 댓글 정보보기 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportedReplyDetailModal">
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">댓글 정보보기</h5>
@@ -1972,7 +1976,7 @@
 	<!-- ---------------------------------신고받은 게시물 미리보기 상세보기 모달-------------------------- -->
 	<div class="fullscreen container-fluid" tabindex="-1" v-if="reportedBoardDetailModal" style="z-index:3000">
 		<div class="row fullscreen-container">
-			<div class="modal-content">
+			<div class="modal-content-custom">
 				<div class="row modal-header-custom">
 					<div class="col-10">
 						<h5 class="modal-title">게시물 미리보기</h5>
@@ -1985,12 +1989,11 @@
 				</div>
 				<div class="row modal-body-custom">
 					<div class="row" >
-						<div class="col-3 d-flex justify-content-center item-aligns-center">
+						<div class="col-3 d-flex justify-content-end align-items-center">
 							<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+boardViewContent.boardWithNickDto.imageURL">
 						</div>
-						<div class="col-9">
+						<div class="col-9 d-flex align-items-center">
 							<div class="ms-2" style="font-weight:bold; font-size:1.2em">{{boardViewContent.boardWithNickDto.memberNick}}</div>
-							<div class="ms-2">{{boardViewContent.boardWithNickDto.memberName}}</div>
 						</div>
 					</div>
 					<div class="row p-2">
@@ -2239,8 +2242,12 @@
 				const queryParams = new URLSearchParams(window.location.search);
 				const adminMenu = queryParams.get('adminMenu');
 				const modal = queryParams.get('modal');
-				this.adminMenu = adminMenu;
-				this.modal=modal;
+				if(this.adminMenu!=adminMenu){
+					this.adminMenu = adminMenu;
+				}
+				if(this.modal!=modal){
+					this.modal=modal;
+				}
 			},
 			//쿼리 업데이트를 위한 page 데이터 변경 및 쿼리 변경 메서드
 			changeAdminMenu(adminMenu){
@@ -2251,14 +2258,17 @@
 				//쿼리 히스토리 저장
 				window.history.pushState({ query: queryParams.toString() }, '', newURL);
 			},
-			changeModal(modal){
+			changeModal(modal, noHistory){
+				if(this.modal==modal) return;
 				this.modal=modal;
 				const queryParams = new URLSearchParams(window.location.search);
-				queryParams.set('adminMenu', this.adminMenu);
+				//queryParams.set('adminMenu', this.adminMenu);
 				queryParams.set('modal', this.modal);
 				const newURL = `?`+queryParams.toString();
 				//쿼리 히스토리 저장
-				window.history.pushState({ query: queryParams.toString() }, '', newURL);
+				if(!noHistory){					
+					window.history.pushState({ query: queryParams.toString() }, '', newURL);
+				}
 			},
 			hideAllModal(){
 				if(this.boardViewModal){
@@ -3199,6 +3209,8 @@
 		},
 		created(){
 			//데이터 불러오는 영역
+			this.loadMemberList();
+			this.loadReportContent();
 		},
 		watch:{
 			//감시영역
@@ -3249,7 +3261,7 @@
 				}
 			},
 			adminMenu(){
-				this.changeModal("");
+				this.changeModal("", true);
 				if(this.adminMenu==1){
 					//회원관리
 					this.loadMemberList();
@@ -3317,7 +3329,10 @@
 				if(this.modal==''){
 					this.hideAllModal();
 				}
-			}
+			},
+			forbiddenWord:_.throttle(function(){
+				this.moveScroll(this.forbiddenWord);
+			}, 500),
 		},
 		mounted(){
 			//쿼리 초기화 및 변화 감지

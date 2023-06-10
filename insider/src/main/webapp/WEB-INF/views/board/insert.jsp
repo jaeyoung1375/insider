@@ -144,6 +144,7 @@
 	  height: 100%;
 	  overflow: auto;
 	  background-color: rgba(0, 0, 0, 0.5);
+	  box-shadow: 4px 4px 4px -6px rgba(0, 0, 0, 0.5), 0 4px 5px rgba(0, 0, 0, 0.2);
 	}
 	
 	.modal-content {
@@ -184,6 +185,20 @@
 $(function(){
 
 	$(document).ready(function() {
+
+		  $('#modalForm').css('display', 'block');
+
+		  $('.modal-dialog').on('click', function(event) {
+		    event.stopPropagation();
+		  });
+
+		  $('.close').on('click', function() {
+		    $('#modalForm').css('display', 'none');
+		  });
+		});
+
+
+	$(document).ready(function() {
 	    $('#summernote').summernote({
 	        toolbar: false,
 	        callbacks: {
@@ -205,18 +220,6 @@ $(function(){
 	    });
 	});
 
-	$(document).ready(function() {
-
-		  $('#modalForm').css('display', 'block');
-
-		  $('.modal-dialog').on('click', function(event) {
-		    event.stopPropagation();
-		  });
-
-		  $('.close').on('click', function() {
-		    $('#modalForm').css('display', 'none');
-		  });
-		});
 		
 	
 	$(".form-submit").submit(function(e){
@@ -257,15 +260,17 @@ $(function(){
 	move(index);
 	
 	$(".btn-next").click(function(){
-		  if (this.files.length === 0) {
-		    alert("사진을 선택하세요.");
-		    $(".btn-next").attr("disabled", false);
-		  } else {
-		    index++;
-		    move(index);
-		  }
-		});
-
+		
+		if($("#upload").val() == "" && $("#upload2").val() == ""){
+				alert("사진을 선택하세요.");
+				$(".btn-next").attr("disabled", false);
+		}
+		else{
+			index++;
+			move(index);
+		}	
+		
+	});
 	
 	$(".btn-prev").click(function(){
 		index--;
@@ -321,10 +326,10 @@ $(function(){
 		      <div>
 		      	
 		      	<!-- 1-1. 사진 첨부전, 업로드 버튼 영역 -->
-			      <div :class="{'hidefile':files.length > 0}" @dragover="dragOverHandler" @drop="dropHandler">
+			      <div :class="{'hidefile':files.length > 0}">
 				      <div class="card-body text-center" style="margin-top: 12%; height: 400px;">
 				        <h1 class="card-title" ><i class="fa-regular fa-images"></i></h1>
-				        <p class="card-text fs-5">사진을 폴더에서 선택 혹은 끌어넣기 하세요.</p>
+				        <p class="card-text fs-5">사진을 선택하세요.</p>
 				        <label for="upload" class="input-upload">업로드</label>
 				        <input type="file" name="boardAttachment" accept="image/*, video/*" id="upload" ref="files" @change="imageUpload" style="display:none;" multiple>
 				        <p style="margin-top: 20px;">* 이미지는 최대 5개까지 선택 가능합니다.</p>
@@ -333,7 +338,7 @@ $(function(){
 			      </div>
 			      
 			      <!-- 1-2. 사진 첨부했을 때, 미리보기 영역 -->
-					<div :class="{'hidefile': files.length==0}" @dragover="dragOverHandler" @drop="dropHandler">
+					<div :class="{'hidefile': files.length==0}">
 					  <div class="file-preview-container">
 					    <div v-for="(file, index) in files" :key="index" class="file-preview-wrapper">
 					      <div class="file-close-button" @click="fileDeleteButton" :name="file.number">
@@ -590,60 +595,31 @@ $(function(){
     			  this.uploadImageIndex = this.files.length;
     			},
 
-   			imageAddUpload() {
-   			  let num = -1;
-   			  for (let i = 0; i < this.$refs.files2.files.length; i++) {
-   			    const file = this.$refs.files2.files[i];
-   			    const fileSizeInMB = file.size / (1024 * 1024); // mb로 계산
+    			imageAddUpload() {
+    			  let num = -1;
+    			  for (let i = 0; i < this.$refs.files2.files.length; i++) {
+    			    const file = this.$refs.files2.files[i];
+    			    const fileSizeInMB = file.size / (1024 * 1024); // mb로 계산
 
-   			    if (fileSizeInMB > 5) {
-   			   	  alert('첨부파일 용량은 5MB를 넘을 수 없습니다.'); 
-   			      return; // 업로드 중지
-   			    }
+    			    if (fileSizeInMB > 5) {
+    			   		alert('첨부파일 용량은 5MB를 넘을 수 없습니다.'); 
+    			      return; // 업로드 중지
+    			    }
 
-   			    this.files = [
-   			      ...this.files,
-   			      {
-   			        file: file,
-   			        preview: URL.createObjectURL(file),
-   			        number: i + this.uploadImageIndex
-   			      }
-   			    ];
-   			    num = i;
-   			  }
-   			  this.uploadImageIndex = this.uploadImageIndex + num + 1;
-   			},
-   	
-   			
-   			dragOverHandler(event) {
-   			  event.preventDefault();
-   			},
+    			    this.files = [
+    			      ...this.files,
+    			      {
+    			        file: file,
+    			        preview: URL.createObjectURL(file),
+    			        number: i + this.uploadImageIndex
+    			      }
+    			    ];
+    			    num = i;
+    			  }
+    			  this.uploadImageIndex = this.uploadImageIndex + num + 1;
+    			},
 
-   			dropHandler(event) {
-   				  event.preventDefault();
-   				  const files = event.dataTransfer.files;
-   				  
-   				  for (let i = 0; i < files.length; i++) {
-   				    const file = files[i];
-   				    const fileSizeInMB = file.size / (1024 * 1024); // MB로 계산
-
-   				    if (fileSizeInMB > 5) {
-   				      alert('첨부파일 용량은 5MB를 넘을 수 없습니다.');
-   				      return; // 업로드 중지
-   				    }
-
-   				    this.files = [
-   				      ...this.files,
-   				      {
-   				        file,
-   				        preview: URL.createObjectURL(file),
-   				        number: this.uploadImageIndex++
-   				      }
-   				    ];
-   				  }
-   				},
-
-
+      
     	fileDeleteButton(e){
     		const name = e.target.getAttribute('name');
     		this.files = this.files.filter(data => data.number != Number(name));

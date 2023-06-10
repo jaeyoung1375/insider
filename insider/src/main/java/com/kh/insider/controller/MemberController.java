@@ -74,7 +74,7 @@ public class MemberController {
    
    @PostMapping("/join")
    public String join(@ModelAttribute MemberDto dto) {
-      memberRepo.join(dto);
+	   memberService.join(dto);
       //기본 회원설정값 생성(닉네임 받아서 생성함)
       MemberWithProfileDto newMemberDto = memberRepo.findByNickName(dto.getMemberNick());
       settingRepo.basicInsert(newMemberDto.getMemberNo());
@@ -88,7 +88,7 @@ public class MemberController {
    
    @PostMapping("/login")
    public String login(HttpSession session, @ModelAttribute MemberDto dto, RedirectAttributes attr, HttpServletRequest request) {
-   MemberDto findMember = memberRepo.login(dto.getMemberEmail(),dto.getMemberPassword());
+   MemberDto findMember = memberService.login(dto.getMemberEmail(),dto.getMemberPassword());
    
    if(findMember == null) {
       int result = 0;

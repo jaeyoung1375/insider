@@ -101,37 +101,38 @@
           left: 44px;
       }
       
- 	 .modal-window { 
- 		  position: absolute; 
- 		  top: calc(100% + 10px); 
- 		  left: 50%; 
- 		  transform: translateX(-50%); 
- 		  border-radius: 1.5em; 
- 		  border: 1px solid #000; 
- 		  width: 500px; 
- 		  background-color: #fff; 
- 		  z-index: 999; 
- 		  padding: 10px; 
- 		  overflow-y: auto; 
- 		  overflow-x: hidden;  
- 	  } 
+		.modal-window {
+			position: absolute;
+			top: calc(100% + 10px);
+			left: 50%;
+			transform: translateX(-50%);
+			border-radius: 1.5em;
+			width: 500px;
+			background-color: #fff;
+			z-index: 999;
+			padding: 10px;
+			overflow-y: auto;
+			overflow-x: hidden;
+			box-shadow: 4px 4px 4px -6px rgba(0, 0, 0, 0.5), 0 4px 5px rgba(0, 0, 0, 0.2);
+		}
 
- 	  .modal-content { 
+
+ 	  .modal-content.in-header { 
  	  	margin: 10px; 
  	  } 
 	
- 	  .modal-header { 
+ 	  .modal-header.in-header { 
  		  text-align: center; 
  		  margin-bottom: 10px; 
  	  } 
 	
- 	.modal-body { 
+  	.modal-body.in-header { 
  	  max-height: 300px;  
  	  overflow-x: hidden;  
  	  overflow-y: auto;  
- 	} 
+ 	}
 
- 	.modal-footer { 
+ 	.modal-footer.in-header { 
  	  -align: center; 
  	  margin-top: 10px; 
  	} 
@@ -176,7 +177,7 @@
 		cursor: pointer;
 	}
 	
-	.fullscreen{
+	.fullscreen.in-header{
 
             position:fixed;
             top: 0;
@@ -188,7 +189,7 @@
 /*             display: none; */
     }
 
-     .fullscreen > .fullscreen-container{
+     .fullscreen > .fullscreen-container.in-header{
          position: absolute;
          left: 50%;
          top: 50%;
@@ -199,11 +200,11 @@
          transform: translate(-50%, -50%);
      }
      
-    .card-scroll{
+    .card-scroll.in-header{
         	overflow-y: auto;
         	-ms-overflow-style: none;
 		}        
-    .card-scroll::-webkit-scrollbar {
+    .card-scroll.in-header::-webkit-scrollbar {
 		    display: none;
 	}
 	
@@ -222,7 +223,7 @@
 	}
 </style>
 
- <script type="text/javascript">
+<!--  <script type="text/javascript">
   document.addEventListener('DOMContentLoaded', function() {
 
     const darkModeEnabled = localStorage.getItem('darkmode') === 'on';
@@ -245,7 +246,7 @@
       }
     });
   });
-</script>
+</script> -->
 
 
 <body>
@@ -256,8 +257,7 @@
 					<div class="row ps-5 pe-5" style="max-width:1200px">
 						<div class="col-4">
 							<a href="${pageContext.request.contextPath}/" class="logo d-flex align-items-center" style="color:inherit;">
-								<img class="me-2" src="${pageContext.request.contextPath}/static/image/logo.png" width="50" height="50">
-								insider
+								<img class="me-2" src="${pageContext.request.contextPath}/static/image/insider.png" width="300"height="80">
 							</a>
 						</div>
 						<div class="col d-flex align-items-center justify-content-end">
@@ -281,12 +281,12 @@
 									  </a>
 								  </div>
 								  <div class="modal-window" v-if="showModal">
-								    <div class="modal-content">
-								      <div class="modal-header"></div>
-								      <div class="modal-body">
+								    <div class="modal-content in-header">
+								      <div class="modal-header in-header"></div>
+								      <div class="modal-body in-header">
 								        <ul class="notification-list">
 								        <div v-if="notifications.length >0">
-								        	<span><i class="fa-sharp fa-regular fa-bell fa-shake" style=color:#f1c40f;></i>새로운 알림</span>
+								        	<span style="display: flex; align-items: center;"><i class="fa-sharp fa-regular fa-bell fa-shake" style="color:#f1c40f; font-size: 1.5em; margin-right: 10px;"></i>새로운 알림</span>
 								        	<hr>
 								          <li v-for="(notification,index) in notifications"   >
 								          	<div>
@@ -306,7 +306,7 @@
 								          </li>
 								          <hr>
 								          </div>
-								          <span><i class="fa-regular fa-eye" style=color:#3498db;></i>읽은 알림</span>
+								          <span style="display: flex; align-items: center;"><i class="fa-regular fa-eye" style="color: #3498db; font-size: 1.5em; margin-right: 10px;"></i>읽은 알림</span>
 								          <a @click="deleteAllNotifications" class="btn btn-secondary" style="position: fixed; top:6%; left:75%;transform: transform(-50%,-50%);">전체삭제</a>
 								          <hr>
 								          <li v-for="(notification,index) in storedNotifications" :key="notification.id">
@@ -329,7 +329,7 @@
 								          
 								        </ul>
 								      </div>
-								      <div class="modal-footer"></div>
+								      <div class="modal-footer in-header"></div>
 								    </div>
 								  </div>
 								</div>
@@ -355,7 +355,7 @@
 				</div>
 			</nav>
 			<aside style="position:absolute; right:5em; top:5em" >
-				<c:if test="${sessionScope.memberLevel==0}">
+<%-- 				<c:if test="${sessionScope.memberLevel==0}">
 		        	<div class="darkmode">
 		            	<div class="inner">
 		                	<input type="radio" name="toggle" id="toggle-radio-light" checked><label for="toggle-radio-light" class="tolight"><i class="fas fa-sun tolight"></i></label>
@@ -363,7 +363,7 @@
 		                	<div class="darkmode-bg"></div>
 		            	</div>
 		        	</div>
-				</c:if>
+				</c:if> --%>
 				<div class="dropdown" :class="{'show':sideMenu}">
 					<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @click="showSideMenu()">
 						<i class="fa-solid fa-bars"></i>
@@ -383,12 +383,12 @@
 			
 <!-- ---------------------------------게시물 상세보기 모달-------------------------- -->
 
-<div v-if="detailView" class="container-fluid fullscreen" @click="closeDetail">
+<div v-if="detailView" class="container-fluid fullscreen in-header" @click="closeDetail">
 	
 	<div class="p-4 mt-2 ms-4 d-flex justify-content-end">
 		<h2 class="btn btn-none" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
 	</div>
-	<div class="row fullscreen-container" @click.stop >
+	<div class="row fullscreen-container in-header" @click.stop >
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
                 <div class="carousel-indicators">
@@ -418,21 +418,21 @@
 		</div>
            
         <div class="col-4" style="padding-left: 0;">
-        	<div class="card bg-light" style="border-radius:0; max-height: 700px">
-           		<div class="card-header">
+        	<div class="card in-header bg-light" style="border-radius:0; max-height: 700px">
+           		<div class="card-header in-header">
 	           		<img class="profile" :src="profileUrl(detailIndex)">
            			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardData[0].boardWithNickDto.memberNick"><b>{{boardData[0].boardWithNickDto.memberNick}}</b></a>
            		</div>
 				
-				<div class="card-body card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
-					<h5 class="card-title"></h5>
-					<p class="card-text" style="margin-left: 0.5em;">{{boardData[0].boardWithNickDto.boardContent}}
+				<div class="card-body in-header card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
+					<h5 class="card-title in-header"></h5>
+					<p class="card-text in-header" style="margin-left: 0.5em;">{{boardData[0].boardWithNickDto.boardContent}}
 					<br v-if="boardData[0].boardTagList.length > 0"><br v-if="boardData[0].boardTagList.length > 0">
                             	<a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in boardData[0].boardTagList" :key="index3" style="margin-right: 0.5em; color: blue; cursor: pointer;">\#{{tag.tagName}}</a>
 					</p>
 					
 					
-					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
+					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text in-header" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
 						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="text-decoration:none; position:relative;">
 							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="45" height="45" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
 							<img v-else src="https://via.placeholder.com/45x45?text=profile" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
@@ -461,7 +461,7 @@
 <!-- 						</p> -->
 					</div>
 					
-					<div v-else class="card-text" style="position: relative;">
+					<div v-else class="card-text in-header" style="position: relative;">
 						<b style="margin-left: 0.5em;">첫 댓글을 작성해보세요</b>
 					</div>
 					
@@ -469,8 +469,8 @@
 				</div>
 				<hr style="margin-top: 0; margin-bottom: 0;">
 				
-				<div class="card-body"  style="height:110px; padding-top: 0px; padding-left: 0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
-					<h5 class="card-title"></h5>
+				<div class="card-body in-header"  style="height:110px; padding-top: 0px; padding-left: 0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
+					<h5 class="card-title in-header"></h5>
 					<!-- 북마크 오른쪽 정렬 수정 06/04 재영 -->
 					<!-- <p class="card-text" style="margin: 0 0 4px 0;">
 						
@@ -481,11 +481,11 @@
 					</p> -->
 				  <div class="d-flex row">
 					  <div class="col-10">
-						<span class="card-text" style="margin: 0 4px 4px 0; padding-left: 0.5em">
+						<span class="card-text in-header" style="margin: 0 4px 4px 0; padding-left: 0.5em">
 						    <i :class="{'fa-heart': true, 'like':isLikedOne, 'fa-solid': isLikedOne, 'fa-regular': !isLikedOne}"
 						       @click="likePost(boardData[0].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
 						</span>
-						<span class="card-text" style="margin: 0 0 4px 0; padding-left: 0.5em;">
+						<span class="card-text in-header" style="margin: 0 0 4px 0; padding-left: 0.5em;">
 					    	<i class="fa-regular fa-message mb-1" style="font-size: 25px;"></i>
 						</span>
 					  </div>
@@ -500,8 +500,8 @@
 				  </div>
 					
 					
-					<p class="card-text" style="margin: 0 0 4px 0; cursor: pointer;" @click="showLikeListModal(boardData[0].boardWithNickDto.boardNo)"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCountOne}}개</b></p>
-					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(boardData[0].boardWithNickDto.boardTimeAuto)}}</p>
+					<p class="card-text in-header" style="margin: 0 0 4px 0; cursor: pointer;" @click="showLikeListModal(boardData[0].boardWithNickDto.boardNo)"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCountOne}}개</b></p>
+					<p class="card-text in-header" style="margin: 0 0 0 0.5em">{{dateCount(boardData[0].boardWithNickDto.boardTimeAuto)}}</p>
 					
 				</div>
 				
@@ -842,22 +842,23 @@
 	    	      console.log(error);
 	    	    });
 	    	},
+	    	
 	    	//dm 읽지 않은 메세지 수 조회
-        async unreadMessageCount() {
-          const countUrl = "${pageContext.request.contextPath}/rest/notice/isChat";
-          try {
-            const resp = await axios.get(countUrl);
-            const unreadCount = resp.data;
-            if (unreadCount > 0) {
-                this.hasUnreadMessages = true;
-            } 
-            else {
-                this.hasUnreadMessages = false;
-            }
-          } catch (error) {
-            console.error("읽지 않은 메세지 수 조회 오류", error);
-          }
-        },
+	        async unreadMessageCount() {
+	          const countUrl = "${pageContext.request.contextPath}/rest/notice/isChat";
+	          try {
+	            const resp = await axios.get(countUrl);
+	            const unreadCount = resp.data;
+	            if (unreadCount > 0) {
+	                this.hasUnreadMessages = true;
+	            } 
+	            else {
+	                this.hasUnreadMessages = false;
+	            }
+	          } catch (error) {
+	            console.error("읽지 않은 메세지 수 조회 오류", error);
+	          }
+	        },
 	         
 	      toggleModal() {
     		if (!this.showModal) {
@@ -870,6 +871,7 @@
     	        this.check();
     	      }
     	    },
+    	    
 	      check() {
 		  //알림확인
 		       axios
@@ -947,12 +949,12 @@
 			},
 
 
-			//7초 뒤 알림 자동 삭제
+			//10초 뒤 알림 자동 삭제
 // 	        cleanupLocalStorage() {
 // 	        	  const storedNotifications = JSON.parse(localStorage.getItem("storedNotifications")) || [];
 
 // 	        	  const expirationDate = new Date();
-// 	        	  expirationDate.setTime(expirationDate.getTime() + 7 * 1000);
+// 	        	  expirationDate.setTime(expirationDate.getTime() + 10 * 1000);
 
 // 	        	  setTimeout(() => {
 // 	        	    const updatedStoredNotifications = storedNotifications.filter((notification) => {
@@ -961,7 +963,7 @@
 // 	        	    });
 
 // 	        	    localStorage.setItem("storedNotifications", JSON.stringify(updatedStoredNotifications));
-// 	        	  }, 7000);
+// 	        	  }, 10000);
 // 	        	},
 
 			/* GPS 얻기 */
@@ -1025,7 +1027,7 @@
 
 	    mounted() {
 	      this.loadNotifications(); // 컴포넌트가 마운트될 때 알림 데이터를 로드
-	      this.intervalId = setInterval(this.loadNotifications, 10000); // 5초마다 알림 데이터를 갱신
+	      this.intervalId = setInterval(this.loadNotifications, 5000); // 5초마다 알림 데이터를 갱신
 	      this.likeListModal = new bootstrap.Modal(this.$refs.likeListModal);
         this.unreadMessageCount(); //dm 알림
 	    },

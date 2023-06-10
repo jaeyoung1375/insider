@@ -58,8 +58,12 @@ public class ReplyRestController {
 	
 	//댓글 삭제
 	@DeleteMapping("/{replyNo}")
-	public void delete(@PathVariable int replyNo) {
+	public void delete(@PathVariable int replyNo, HttpSession session) {
+		//본인인지 확인
+		long memberNo = (long)session.getAttribute("memberNo");
 		ReplyDto replyDto = replyRepo.selectOne(replyNo);
+		if(replyDto.getReplyMemberNo()!=memberNo) return;
+		
 		replyRepo.delete(replyNo);
 		
 		boardRepo.updateReply(replyDto.getReplyOrigin());

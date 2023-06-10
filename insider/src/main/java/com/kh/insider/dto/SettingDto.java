@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class SettingDto {
-	private int memberNo;
+	private long memberNo;
 	//0:완전공개, 1:추천노출x, 2:친구에게만 공개, 3:완전비공개
 	private int settingHide;
 	private int settingDistance;
