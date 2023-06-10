@@ -1449,6 +1449,9 @@
 			replyParent:0,
 			replyContent:"",
 			placeholder:"댓글 입력..",
+			//게시물 작성자 팔로우 리스트
+			followList : [],
+			followerList : [],
 			
 		  
 			
@@ -2157,9 +2160,17 @@
              
       
            
-             //댓글 등록
+           //댓글 등록
              async replyInsert(index) {
              	  const boardNo = this.myBoardList[index].boardWithNickDto.boardNo;
+             	  const memberNo = this.myBoardList[index].boardWithNickDto.memberNo;
+             	  const loginNo = parseInt(this.DmMemberNo);
+             	  
+             	  //세팅값 불러오기
+             	  const response = await axios.get(contextPath+"/rest/member/setting/" + memberNo);
+             	  const set = response.data.settingAllowReply;
+             	  //console.log(set);
+             	  //console.log(memberNo, loginNo);       	  
              	  
              	  const requestData = {
              	    replyOrigin: boardNo,
@@ -2168,34 +2179,138 @@
              	  };
              	  this.replyContent='';
              	  
-             	  try {
+             	  //모든 사람 작성 가능한 경우
+             	  if(set == 0){
              	    const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
-             	    this.replyLoad(index);	    
-             	  } 
-             	  catch (error) {
-             	    console.error(error);
+             	    this.replyLoad(index);	            		  
              	  }
+             	  //내가 팔로우 하는 사람만 작성 가능한 경우
+             	  else if(set == 1){
+             		  //게시물 작성자 팔로우 로드
+             		  await this.loadFollow(memberNo);
+                   	  if(loginNo == memberNo) this.followList.push(loginNo); 
+             		  
+                   	  if(this.followList.includes(loginNo)){
+             			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+                   	      this.replyLoad(index);
+             		  }
+             		  else{
+             			  alert("댓글 사용이 불가능합니다.");
+             		  }
+             	  }
+             	  //팔로워만 댓글 작성 가능한 경우
+             	  else if(set == 2){
+             		  await this.loadFollower(memberNo);
+                   	  if(loginNo == memberNo) this.followerList.push(loginNo); 
+             		  //console.log(this.followerList);
+             		  if(this.followerList.includes(loginNo)){
+             			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+                   	      this.replyLoad(index);
+             		  }
+             		  else{
+             			  alert("댓글 사용이 불가능합니다.");
+             		  }
+             	  }
+             	  else{
+             		  //게시물 작성자 팔로우 로드
+             		  await this.loadFollow(memberNo);
+                   	  if(loginNo == memberNo) this.followList.push(loginNo); 
+             		  //게시물 작성자 팔로워 로드
+                   	  await this.loadFollower(memberNo);
+                   	  if(loginNo == memberNo) this.followerList.push(loginNo); 
+             		  
+                   	  if(this.followList.includes(loginNo) || this.followerList.includes(loginNo)){
+             			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+                   	      this.replyLoad(index);
+             		  }
+             		  else{
+             			  alert("댓글 사용이 불가능합니다.");
+             		  }
+             	  }
+             	   
              },
              
-             //댓글 등록(북마크)
              async replyInsert2(index) {
-             	  const boardNo = this.bookmarkMyPostList[index].boardWithNickDto.boardNo;
-             	  
-             	  const requestData = {
-             	    replyOrigin: boardNo,
-             	    replyContent: this.replyContent,
-             	    replyParent : this.replyParent
-             	  };
-             	  this.replyContent='';
-             	  
-             	  try {
-             	    const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
-             	    this.replyLoad2(index);	    
-             	  } 
-             	  catch (error) {
-             	    console.error(error);
-             	  }
+            	  const boardNo = this.bookmarkMyPostList[index].boardWithNickDto.boardNo;
+            	  const memberNo = this.bookmarkMyPostList[index].boardWithNickDto.memberNo;
+            	  const loginNo = parseInt(this.DmMemberNo);
+            	  
+            	  //세팅값 불러오기
+            	  const response = await axios.get(contextPath+"/rest/member/setting/" + memberNo);
+            	  const set = response.data.settingAllowReply;
+            	  //console.log(set);
+            	  //console.log(memberNo, loginNo);       	  
+            	  
+            	  const requestData = {
+            	    replyOrigin: boardNo,
+            	    replyContent: this.replyContent,
+            	    replyParent : this.replyParent
+            	  };
+            	  this.replyContent='';
+            	  
+            	  //모든 사람 작성 가능한 경우
+            	  if(set == 0){
+            	    const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+            	    this.replyLoad2(index);	            		  
+            	  }
+            	  //내가 팔로우 하는 사람만 작성 가능한 경우
+            	  else if(set == 1){
+            		  //게시물 작성자 팔로우 로드
+            		  await this.loadFollow(memberNo);
+                  	  if(loginNo == memberNo) this.followList.push(loginNo); 
+            		  
+                  	  if(this.followList.includes(loginNo)){
+            			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+                  	      this.replyLoad2(index);
+            		  }
+            		  else{
+            			  alert("댓글 사용이 불가능합니다.");
+            		  }
+            	  }
+            	  //팔로워만 댓글 작성 가능한 경우
+            	  else if(set == 2){
+            		  await this.loadFollower(memberNo);
+                  	  if(loginNo == memberNo) this.followerList.push(loginNo); 
+            		  //console.log(this.followerList);
+            		  if(this.followerList.includes(loginNo)){
+            			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+                  	      this.replyLoad2(index);
+            		  }
+            		  else{
+            			  alert("댓글 사용이 불가능합니다.");
+            		  }
+            	  }
+            	  else{
+            		  //게시물 작성자 팔로우 로드
+            		  await this.loadFollow(memberNo);
+                  	  if(loginNo == memberNo) this.followList.push(loginNo); 
+            		  //게시물 작성자 팔로워 로드
+                  	  await this.loadFollower(memberNo);
+                  	  if(loginNo == memberNo) this.followerList.push(loginNo); 
+            		  
+                  	  if(this.followList.includes(loginNo) || this.followerList.includes(loginNo)){
+            			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+                  	      this.replyLoad2(index);
+            		  }
+            		  else{
+            			  alert("댓글 사용이 불가능합니다.");
+            		  }
+            	  }
+            	   
+            },
+             
+             //댓글 가능 팔로우 체크
+             async loadFollow(memberNo) {
+             	const resp = await axios.post(contextPath + "/rest/follow/getFollow/" + memberNo);
+             	this.followList.push(...resp.data);
              },
+             
+             //댓글 가능 팔로워 체크
+             async loadFollower(memberNo) {
+             	const resp = await axios.post(contextPath + "/rest/follow/getFollower/" + memberNo);
+             	this.followerList.push(...resp.data);
+             },
+             
              
           
      
