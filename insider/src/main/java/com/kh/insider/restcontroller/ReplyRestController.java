@@ -40,8 +40,9 @@ public class ReplyRestController {
 	
 	//댓글 조회
 	@GetMapping("/{replyOrigin}")
-	public List<ReplyDto> list(@PathVariable int replyOrigin) {
-		return forbiddenService.changeForrbiddenReply(replyRepo.selectList(replyOrigin));
+	public List<ReplyDto> list(@PathVariable int replyOrigin, HttpSession session) {
+		long memberNo = (long) session.getAttribute("memberNo");
+		return forbiddenService.changeForrbiddenReply(replyRepo.selectList(replyOrigin, memberNo));
 	}
 	
 	//댓글 등록

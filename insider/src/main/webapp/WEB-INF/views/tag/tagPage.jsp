@@ -5,7 +5,7 @@
 /* 게시물 네모박스 */
 .box {
 	position: relative;
-	width: 30%;
+	width: 32.3%;
 	font-size:1.2em;
 }
 .box::after {
@@ -39,6 +39,8 @@
 	color:white;
 	cursor:default;
 	display:none;
+	min-width:100px;
+	text-align:center;
 }
 .box:hover .content-box{
 	background-color:rgba(34, 34, 34, 0.13);
@@ -148,16 +150,18 @@
 	<!-- 게시물 목록 -->
 	<div class="row">
 		<div class="col d-flex justify-content-center">
-			<div class="row d-flex justify-content-center" style="width:80%">
-				<div class="box m-2" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)"
+			<div class="row d-flex justify-content-start" style="width:80%">
+				<div class="box m-1" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)"
 					@click="detailViewOn(index)">
-					<img class='content-in-list' v-if="board.boardAttachmentList.length>0" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
-					<img class='content-in-list' v-else src="${pageContext.request.contextPath}/static/image/noimage.png">
+					<video class="content-in-list" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
+							style="object-fit:cover" :autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto"></video>
+					<img class='content-in-list' v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video"
+							 :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
 					<div class="content-box"></div>
 					<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
 					<div class="like-comment">
-						<span><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
-						<span class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
+						<span v-if="(memberSetting.watchLike && board.boardWithNickDto.boardLikeValid==0)||board.boardWithNickDto.memberNo==${sessionScope.memberNo}"><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
+						<span v-if="board.boardWithNickDto.boardReplyValid==0" class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
 					</div>
 				</div>
 			</div>
@@ -394,7 +398,7 @@
 			//회원 환경 설정 로드
 	        async loadMemberSetting(){
 				const resp = await axios.get(contextPath+"/rest/member/setting");
-	            this.memberSetting.watchDistance=resp.data.settingDistance;
+	            this.memberSetting.watchLike=resp.data.watchLike;
 	            this.memberSetting.videoAuto=resp.data.videoAuto;
 			},
 			
