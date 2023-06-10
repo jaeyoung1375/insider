@@ -295,7 +295,7 @@ display:none;
                         <div class="p-1" style="height: 40px;">
                             <div class="d-flex">
                                 <div class="p-1"><i :class="{'fa-heart': true, 'like':isLiked[index], 'fa-solid': isLiked[index], 'fa-regular': !isLiked[index]}" @click="likePost(board.boardWithNickDto.boardNo,index)" style="font-size: 32px;"></i>
-                                <i class="fa-regular fa-message mb-1" style="font-size: 30px; margin-left:10px; margin-bottom: 10px"></i>
+                                <i class="fa-regular fa-message mb-1" @click="moveToDmPage(board.boardWithNickDto.memberNo)"style="font-size: 30px; margin-left:10px; margin-bottom: 10px; cursor: pointer;"></i>
                                 </div>
                                 <div class="p-1 flex-grow-1">
                                 <h5><i class="fa-regular fa-bookmark"  @click="bookmarkInsert(board.boardWithNickDto.boardNo)" v-show="bookmarkChecked(board.boardWithNickDto.boardNo)" style="font-size:25px;"></i>
@@ -402,7 +402,7 @@ display:none;
                 <div class="col-9" style="display:flex; justify-content: space-between; margin-left:40px; margin-top:15px;">
                   	 <button class="btn btn-primary" @click="follow(board.boardWithNickDto.memberNo)" style="flex-grow:1; margin-right:10px;" v-if="followCheckIf(board.boardWithNickDto.memberNo)">팔로우</button>
                   	 <button class="btn btn-secondary" @click="unFollow(board.boardWithNickDto.memberNo)" style="flex-grow:1; margin-right:10px;"  v-if="!followCheckIf(board.boardWithNickDto.memberNo)">팔로잉</button>
-                  	 <button class="btn btn-primary" style="width:50%;">메시지 보내기</button>
+                  	 <button class="btn btn-primary" @click="moveToDmPage(board.boardWithNickDto.memberNo)" style="width:50%; cursor:pointer;">메시지 보내기</button>
                  </div> 
                  
           </div> <!-- 팔로우 미리보기 끝 -->
@@ -1318,6 +1318,49 @@ Vue.createApp({
 			window.location.href=contextPath+"/member/"+memberNick;
 		},
 		/*----------------------태그, 닉네임 클릭 시 검색기록 넣고 이동----------------------*/
+
+		/*----------------------DM으로 이동 및 채팅방 생성----------------------*/
+		async moveToDmPage(memberNo){
+		    try {
+		        //본인일 경우, 메인 채팅방으로 이동
+		        if(this.loginMemberNo == memberNo) {
+		            window.location.href = contextPath + "/dm/channel";
+		            return; 
+		        }
+		    	
+		    	//두 회원이 참여한 채팅방 번호 조회
+		        const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.loginMemberNo + "/" + memberNo);
+		        let existingRoomNo = checkResp.data;
+		        console.log("checkResp : ", checkResp);
+		        console.log("existingRoomNo : ", existingRoomNo);
+		        
+		    	//기존의 일대일 채팅방이 없을 경우, 새 채팅방 생성
+		        if (!existingRoomNo) {
+		            const dmRoomVO = await axios.post(contextPath + "/rest/createChatRoom");
+		            const roomNo = dmRoomVO.data.roomNo;
+		            console.log("새 채팅방 번호 : ", roomNo);
+		            console.log("dmRoomVO.data", dmRoomVO.data);
+		
+		            //채팅 유저 저장
+		            const user = {
+		                roomNo: roomNo,
+		                memberList: [memberNo, this.loginMemberNo]
+		            };
+		            await axios.post(contextPath + "/rest/enterUsers", user);
+		            console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
+		            
+		        //생성된 채팅방으로 이동
+		        window.location.href = contextPath + "/dm/channel?room=" + roomNo;
+		        }
+		        //기존의 일대일 채팅방이 있을 경우, 기존 채팅방으로 이동
+		        else {
+		        	window.location.href = contextPath + "/dm/channel?room=" + existingRoomNo;
+		        }
+		    } catch (error) {
+		        console.error("방 생성, 입장, 초대 중 오류가 발생했습니다.", error);
+		    }
+		},
+		/*----------------------DM으로 이동 및 채팅방 생성----------------------*/
 		
 		//북마크
 		async bookmarkInsert(boardNo) {
