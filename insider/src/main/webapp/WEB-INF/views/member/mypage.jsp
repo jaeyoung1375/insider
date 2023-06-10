@@ -149,7 +149,7 @@
 /* 게시물 네모박스 */
 .box {
 	position: relative;
-	width: 30%;
+	width: 32.3%;;
 	font-size:1.2em;
 }
 .box::after {
@@ -183,6 +183,8 @@
 	color:white;
 	cursor:default;
 	display:none;
+	min-width:100px;
+	text-align:center;
 }
 .box:hover .content-box{
 	background-color:rgba(34, 34, 34, 0.13);
@@ -400,19 +402,20 @@
    </div>
    
    
-    	 <div class="row d-flex justify-content-center w-100">
-	    	<div class="box m-2" v-for="(board,index) in myBoardList" :key="index" @click="detailViewOn(index)">
+    	 <div class="row d-flex justify-content-start w-100">
+	    	<div class="box m-1" v-for="(board,index) in myBoardList" :key="index" @click="detailViewOn(index)">
 	    		<video class="content-in-list" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
-							style="object-fit:cover" autoplay muted controls loop></video>
-				<img class="content-in-list" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+board.boardAttachmentList[0].attachmentNo">
+						style="object-fit:cover" :autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto"></video>
+				<img class='content-in-list' v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video"
+						 :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
 			<!-- 쉐도우용 더미 -->
 				<div class="content-box" ></div>
 			<!-- 사진 여러장일 때 -->
     		 	<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
     		<!-- 좋아요, 댓글 개수 -->
-				<div class="like-comment" >
-					<span><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
-					<span class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
+				<div class="like-comment">
+					<span v-if="(MemberSetting.watchLike && board.boardWithNickDto.boardLikeValid==0)||board.boardWithNickDto.memberNo==${sessionScope.memberNo}"><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
+					<span v-if="board.boardWithNickDto.boardReplyValid==0" class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
 				</div>
     		</div>
      
@@ -431,19 +434,20 @@
 		 	</div>
 		</div>
 
-    	 <div class="row d-flex justify-content-center w-100">
-	    	<div class="box m-2" v-for="(bookmark,index) in bookmarkMyPostList" :key="bookmark.boardNo" @click="detailViewOn2(index)">
+    	 <div class="row d-flex justify-content-start w-100">
+	    	<div class="box m-1" v-for="(bookmark,index) in bookmarkMyPostList" :key="bookmark.boardNo" @click="detailViewOn2(index)">
 	    		<video class="content-in-list" :src="'${pageContext.request.contextPath}'+bookmark.boardAttachmentList[0].imageURL" v-if="bookmark.boardAttachmentList[0].video"
-							style="object-fit:cover" autoplay muted controls loop></video>
-				<img class="content-in-list" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+bookmark.boardAttachmentList[0].attachmentNo">
+						style="object-fit:cover" :autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto"></video>
+				<img class='content-in-list' v-if="bookmark.boardAttachmentList.length>0 && !bookmark.boardAttachmentList[0].video"
+						 :src="'${pageContext.request.contextPath}'+bookmark.boardAttachmentList[0].imageURL" >
 			<!-- 쉐도우용 더미 -->
 				<div class="content-box" ></div>
 			<!-- 사진 여러장일 때 -->
     		 	<i class="fa-regular fa-copy pages" v-if="bookmark.boardAttachmentList.length>1"></i>
     		<!-- 좋아요, 댓글 개수 -->
-				<div class="like-comment" >
-					<span><i class="fa-solid fa-heart"></i> {{bookmark.boardWithNickDto.boardLike}}</span> 
-					<span class="ms-3"><i class="fa-solid fa-comment"></i> {{bookmark.boardWithNickDto.boardReply}}</span>
+				<div class="like-comment">
+					<span v-if="(MemberSetting.watchLike && bookmark.boardWithNickDto.boardLikeValid==0)||bookmark.boardWithNickDto.memberNo==${sessionScope.memberNo}"><i class="fa-solid fa-heart"></i> {{bookmark.boardWithNickDto.boardLike}}</span> 
+					<span v-if="bookmark.boardWithNickDto.boardReplyValid==0" class="ms-3"><i class="fa-solid fa-comment"></i> {{bookmark.boardWithNickDto.boardReply}}</span>
 				</div>
     		</div>
     	</div>
@@ -1329,6 +1333,8 @@
 			agreeChecked : false,
 			
 			MemberSetting:{
+    	        //좋아요 수 보기 여부
+	            watchLike:false,
 	            //반경설정
 	            watchDistance:"",
 	            //동영상 자동재생
@@ -1488,6 +1494,7 @@
            //회원 환경 설정 로드
            async loadMemberSetting(){
    			const resp = await axios.get(contextPath+"/rest/member/setting");
+   				this.MemberSetting.watchLike=resp.data.watchLike;
                this.MemberSetting.watchDistance=resp.data.settingDistance;
                this.MemberSetting.videoAuto=resp.data.videoAuto;
    		},

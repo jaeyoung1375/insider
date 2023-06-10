@@ -14,7 +14,11 @@
   	
   	<!-- 댓글 조회 -->
   	<select id="selectList" resultType="ReplyDto">
-  		SELECT * FROM  reply_with_nick where reply_origin=#{replyOrigin} 
+  		SELECT * FROM  reply_with_nick where 
+  		reply_origin=#{replyOrigin}
+  		<if test="memberNo!=null and !memberNo.equals('')">
+  			and reply_member_no not in (select block_no from block where member_no=#{memberNo})
+  		</if> 
   		CONNECT BY PRIOR reply_no = COALESCE(reply_parent, 0) START WITH COALESCE(reply_parent, 0) = 0 order siblings by reply_no ASC
   	</select>
   	

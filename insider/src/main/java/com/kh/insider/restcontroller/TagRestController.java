@@ -21,6 +21,7 @@ import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.TagFollowRepo;
 import com.kh.insider.repo.TagRepo;
 import com.kh.insider.service.BoardSearchService;
+import com.kh.insider.service.ForbiddenService;
 import com.kh.insider.vo.BoardListVO;
 import com.kh.insider.vo.BoardSearchVO;
 
@@ -35,6 +36,8 @@ public class TagRestController {
 	private BoardSearchService boardSearchService;
 	@Autowired
 	private TagFollowRepo tagFollowRepo;
+	@Autowired
+	private ForbiddenService forbiddenService;
 	
 	//사용가능 태그 설정
 	@PutMapping("/")
@@ -56,7 +59,7 @@ public class TagRestController {
 		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
 		boardSearchVO.setBoardCount(15);
 		boardSearchVO.setTagName(tagName);
-		return boardRepo.selectListWithTag(boardSearchVO);
+		return forbiddenService.changeForbiddenWords(boardRepo.selectListWithTag(boardSearchVO));
 	}
 	@GetMapping("/{tagName}")
 	public Map<String, Integer> getHomeData(HttpSession session, @PathVariable String tagName){
