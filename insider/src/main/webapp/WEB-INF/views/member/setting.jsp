@@ -556,6 +556,11 @@
 				</div>
 				<div class="modal-body">
 				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
+				    <div class="row" v-if="blockList.length==0">
+				    	<div class='col'>
+				    		<h6 class="m-0">차단한 계정이 없습니다.</h6>
+				    	</div>
+				    </div>
 					<div class="row" v-for="(block, index) in blockList" :key="index">
 						<div class="col-8">
 							<div class="row">
