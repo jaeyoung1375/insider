@@ -135,6 +135,7 @@ public class MemberServiceImpl implements MemberService{
 	@Override
 	public MemberDto login(String memberEmail, String memberPassword) {
 		MemberDto findMember = memberRepo.findByEmail(memberEmail);
+		if(findMember == null) return null;
 		
 		Map<String, Object> param = new HashMap<>();
 		param.put("memberEmail",memberEmail);

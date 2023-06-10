@@ -338,7 +338,7 @@
             
      <!-- 게시물 시작 -->
      <!-- 비공개 계정 -->
-<div class="position-absolute mt-5 start-50 translate-middle-x media-width" style="display: flex; flex-direction: column; width: 770px; height: 700px;" v-if="(settingHide === 3 && !isOwner) || settingHide === 2 && followCheckIf(${memberDto.memberNo}) && !isOwner">
+<div class="position-absolute mt-5 start-50 translate-middle-x media-width" style="display: flex; flex-direction: column; width: 770px; height: 700px;" v-if="(settingHide === 3 && !isOwner) && settingHide === 2 && followCheckIf(${memberDto.memberNo}) && !isOwner">
  	   <div style="display: flex;flex-direction: column; justify-content: center; align-items: center;">    
    <img src="${pageContext.request.contextPath}/static/image/lock.png" width="200" height="200">
    <h4 class="mt-5 text-center">비공개 계정입니다 사진 및 동영상을 보려면 팔로우하세요.</h4>
@@ -871,7 +871,7 @@
 							</div>
 						</template>
 											<!-- 비공개 계정 || 친구에게만 공개 && 팔로우 목록에 있다면 -->
-						<template v-else-if="hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)">
+						<template v-else-if="(hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)) && ${memberNo} != item.memberNo">
 						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
 							  <div style="width:500px; margin-left:160px;">
 							    <img src="${pageContext.request.contextPath}/static/image/lock.png" width="60" height="60">
@@ -882,7 +882,7 @@
 						</template>
 					   
 					    <template v-else>
-					      <div v-for="post in hoverPostList2" :key="post.id">
+					      <div v-for="(post,index) in hoverPostList2" :key="post.id">
 					        <!-- 게시물 정보 출력 -->
 					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.attachmentNo" width="127" height="150" style="margin-right:3px;">
 					      </div>
@@ -990,7 +990,7 @@
 						</template>
 						
 						<!-- 비공개 계정 || 친구에게만 공개 && 팔로우 목록에 있다면 -->
-						<template v-else-if="hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)">
+						<template v-else-if="(hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)) && ${memberNo} != item.memberNo">
 						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
 							  <div style="width:500px; margin-left:160px;">
 							    <img src="${pageContext.request.contextPath}/static/image/lock.png" width="60" height="60">
@@ -1019,7 +1019,6 @@
                  
           </div> <!-- 팔로우 미리보기 끝 -->
           
-          
 			</div>
 			<i class="fa-solid fa-spinner fa-spin" v-show="followLoading && !followFinish"></i>
       		</div>
@@ -1042,7 +1041,8 @@
           					<p class="modalName" style="margin-left:5px;">게시물 {{item.tagCount}}</p>
 						  </div>
 							  <button class="float-end btn btn-primary" @click="tagFollow(item.tagName)" style="margin-left:auto;" v-show="tagFollowCheckIf(item.tagName)">팔로우</button>	
-							  <button class="float-end btn btn-secondary" @click="tagUnFollow(item.tagName)" style="margin-left:auto;" v-show="!tagFollowCheckIf(item.tagName)">팔로잉</button>					  
+							  <button class="float-end btn btn-secondary" @click="tagUnFollow(item.tagName)" style="margin-left:auto;" v-show="!tagFollowCheckIf(item.tagName) && !${isOwner}">팔로잉</button>					  
+							  <button class="float-end btn btn-secondary" @click="tagUnFollow(item.tagName)" style="margin-left:auto;" v-show="!tagFollowCheckIf(item.tagName) && ${isOwner}">삭제</button>					  
 					</div>
       		  	</div>
       		</div>
@@ -1886,7 +1886,7 @@
              	  console.log("item : "+item.followFollower);
              	  
              	  // settingHide 불러오기 위해서 선언
-             	const resp = await axios.get("/rest/member/setting/"+item.memberNo);
+             	const resp = await axios.get("/rest/member/setting/"+item.followFollower);
              	  const settingHide = resp.data.settingHide;
              	 
              	  
@@ -1954,7 +1954,8 @@
              	},
             async memberSetting(){
              	const resp = await axios.get("/rest/member/setting/" +this.memberNo);
-             	this.settingHide = resp.data.settingHide;           	
+             	this.settingHide = resp.data.settingHide; 
+             	console.log("settingHide :"+this.settingHide);
              },
              
              //댓글 조회
