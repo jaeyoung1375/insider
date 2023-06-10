@@ -486,19 +486,101 @@
 		          <br>
 		          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 		          <span style="position:absolute;right:0;top:10px;">
-		            <button class="btn btn-outline-secondary" style="padding: 0.3rem 0.2rem;font-weight: 100;line-height: 1;font-size:0.8em; margin-right: 0.5em;"data-bs-dismiss="modal" aria-label="Close" >
+		            <span class="modal-click-btn-negative" style="padding: 0.3rem 0.2rem;font-weight: 100;line-height: 1;font-size:0.8em; margin-right: 0.5em;"data-bs-dismiss="modal" aria-label="Close" @click="blockModalShow(member.memberNo)">
 		              차단
-		            </button>
-		            <button class="btn btn-outline-danger" style="padding: 0.3rem 0.2rem;font-weight: 100;line-height: 1;font-size:0.8em;"data-bs-dismiss="modal"  aria-label="Close" >
+		            </span>
+		            <span class="modal-click-btn-neutral" style="padding: 0.3rem 0.2rem;font-weight: 100;line-height: 1;font-size:0.8em;"data-bs-dismiss="modal"  aria-label="Close" @click="showReportMenuModal(member.memberNo)">
 		              신고
-		            </button>
+		            </span>
 		          </span>
 		        </div>
 		      </div>
 		    </div>
 		  </div>
 		</div>
-		
+<!-- 차단 관련 모달 -->
+<!-- ---------------------------------신고 모달-------------------------- -->
+		<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal" style="z-index:9999">
+			<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+				<div class="modal-content" >
+					<div class="modal-header">
+						<h5 class="modal-title" style="font-weight:bold; text-align:center">신고</h5>
+						<button type="button" class="btn-close" @click="hideReportMenuModal" aria-label="Close">
+						<span aria-hidden="true"></span>
+						</button>
+					</div>
+					<div class="modal-body">
+					    <!-- 모달에서 표시할 실질적인 내용 구성 -->
+						<div class="row">
+							<div class="col d-flex p-3">
+								<h5 style="margin:0;">이 게시물을 신고하는 이유</h5>
+							</div>
+						</div>
+						<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo" style="border-top:var(--bs-modal-border-width) solid var(--bs-modal-border-color)">
+							<div class="col d-flex p-2 report-content" @click="reportContent(report.reportListContent)" style="cursor:pointer">
+								<h5 style="margin:0; margin-left:1em">{{report.reportListContent}}</h5>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" @click="hideReportMenuModal">취소</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 차단모달 -->
+		<div class="modal" tabindex="-1" role="dialog" id="blockModal"
+                            data-bs-backdrop="static"
+                            ref="blockModal" @click.self="blockModalHide">
+            <div class="modal-dialog" role="document" style="width:30%;">
+                <div class="modal-content">
+                    <div class="modal-header" style="display:flex; justify-content: center; flex-direction: column;">
+                    	<div class="row">
+                    		<div class="col">
+			                    <h5 class="modal-title" style="text-align:center;">
+		                        ${memberDto.memberNick}님을 차단하시겠어요?
+			                    </h5>
+                    		</div>
+                    	</div>
+                    	<div class="row">
+                    		<div class="col">
+		                        상대방은 Insider에서 회원님의 프로필, 게시물 및 스토리를 찾을 수 없게 됩니다. Insider은 회원님이 차단한 사실을 상대방에게 알리지 않습니다.                     
+                    		</div>
+                    	</div>
+	                     <div class="content" style="font-size:12px; text-align:center;">
+	                     </div>
+                    </div>
+                     <div class="modal-header" style="display:flex; justify-content: center;" >
+                         <button type="button" class="btn" data-bs-dismiss="modal" style="color:red;">취소</button>
+                    </div>
+                   
+                    <div class="modal-header" style="display:flex; justify-content: center;">
+                          <a @click="blockUser">차단</a>
+                    </div>
+                   
+                </div>      
+            </div>
+        </div>
+		<div class="modal" tabindex="-1" role="dialog" id="blockResultModal"
+		                   data-bs-backdrop="static"
+		                   ref="blockResultModal" @click.self="blockResultModalHide">
+			<div class="modal-dialog" role="document" style="width:30%;">
+				<div class="modal-content">
+					<div class="modal-header" style="display:flex; justify-content: center; flex-direction: column;">
+						<h5 class="modal-title" style="text-align:center;">
+						${memberDto.memberNick}님을 차단했습니다.
+						</h5>
+						<div class="content" style="font-size:12px; text-align:center;">
+							<p style="font-size:12px; color:gray;">상대방의 프로필에서 언제든지 차단을 해제할 수 있습니다.</p>                    
+						</div>
+					</div>
+					<div class="model-header" style="text-align:center;">
+						<button type="button" class="btn" data-bs-dismiss="modal" style="color:red;">닫기</button>   
+					</div>
+				</div>
+			</div>
+		</div>
+<!-- 차단 관련 모달 끝 -->
 	</div>
     
 	<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
@@ -558,6 +640,17 @@
    					memberLike:[],
    					
    					roomMenu: null, //뒤로가기
+   					
+   					/*----------------------신고----------------------*/
+   					//추가 메뉴 모달 및 신고 모달
+   					reportMenuModal:null,
+   					//신고 메뉴 리스트
+   					reportContentList:[],
+   					blockModal : null,
+   		            blockResultModal : null,
+   		            blockMemberNo:"",
+   		            reportMemberNo:"",
+   					/*----------------------신고----------------------*/
                 };
             },
             methods:{
@@ -1173,6 +1266,61 @@
 					roomNo = roomMenu;
 					this.openHandler(roomNo);
 				},
+                /*----------------------신고----------------------*/
+                //신고 모달 show, hide
+        		showReportMenuModal(reportMemberNo){
+        			if(this.reportMenuModal==null) return;
+        			this.reportMemberNo = reportMemberNo;
+        			this.reportMenuModal.show();
+        			this.loadReportContent();
+        		},
+        		hideReportMenuModal(){
+        			if(this.reportMenuModal==null) return;
+        			this.reportMenuModal.hide();
+        		},
+        		//신고 목록 불러오기
+        		async loadReportContent(){
+        			const resp = await axios.get(contextPath+"/rest/reportContent/");
+        			this.reportContentList = [...resp.data];
+        		},
+        		//신고
+        		async reportContent(reportContent){
+        			const data={
+        				reportContent:reportContent,
+        				reportTableNo:this.reportMemberNo,
+        				reportTable:'member',
+        				reportMemberNo:this.reportMemberNo,
+        			}
+        			const resp = await axios.post(contextPath+"/rest/report/", data)
+        			this.hideReportMenuModal();
+        		},
+        		//차단
+        		async blockUser(){
+        			const resp = await axios.put(contextPath+"/rest/block/"+this.blockMemberNo);
+        			if(resp.data){
+        				this.blockModalHide();
+        				this.blockResultModalShow();
+        			}
+        		},
+                blockModalShow(blockMemberNo){
+                    if(this.blockModal == null) return;
+                    this.blockMemberNo=blockMemberNo;
+                    this.blockModal.show();      
+                },
+                blockModalHide(){
+                   if(this.blockModal == null) return;
+                    this.blockModal.hide();
+                },
+                blockResultModalShow(){
+                   if(this.blockResultModal == null) return;
+                   this.blockModal.hide();
+                    this.blockResultModal.show(); 
+                },
+                blockResultModalHide(){
+                   if(this.blockResultModal == null) return;
+                    this.blockResultModal.hide(); 
+                },
+        		/*----------------------신고----------------------*/
             },
             watch:{
             	//검색
@@ -1245,6 +1393,10 @@
 				this.initializePageFromQuery();
 				//뒤로가기, 앞으로가기 누르면 이전 쿼리 반환
 				window.addEventListener('popstate', this.initializePageFromQuery);
+				/* 리포트 모달 */
+	            this.reportMenuModal = new bootstrap.Modal(this.$refs.reportMenuModal);
+	            this.blockModal = new bootstrap.Modal(this.$refs.blockModal);
+	            this.blockResultModal = new bootstrap.Modal(this.$refs.blockResultModal);
 	        },
         }).mount("#app");
     </script>

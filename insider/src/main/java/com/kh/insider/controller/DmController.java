@@ -21,7 +21,7 @@ public class DmController {
 	@GetMapping("/channel")
 	public String channel(HttpSession session, Model model) {
 		long memberNo = (Long)session.getAttribute("memberNo");
-		int attach = memberProfileRepo.selectAttachNo(memberNo);
+		Integer attach = memberProfileRepo.selectAttachNo(memberNo);
 		model.addAttribute("attach",attach);
 		return "dm/channel";
 	}

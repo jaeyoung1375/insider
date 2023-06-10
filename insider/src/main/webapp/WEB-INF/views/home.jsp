@@ -52,6 +52,8 @@
         width: 470px;
         height: 480px;
         object-fit: cover;
+        background-color: white;
+
     }
     
     .carousel-inner video {
@@ -161,6 +163,9 @@
 	align-items: center;
 	width: 480px;
 }
+.hide{
+display:none;
+}
 </style>
 
 <script>
@@ -202,20 +207,29 @@
 <div id="app"class="darkmode">
 	<!-- 친구추천 -->
 		<div class="container recommend">
+		
 		<div class="d-flex justify-content-end">
 			<p style="font-size:12px; color:gray;">회원님을 위한 친구추천</p>
 		</div>
 			<div class="d-flex justify-content-flex-start" style="margin-left:17px;">
-		  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style=" padding-right: 10px">
+				<!-- 이전 버튼 -->
+				<div class="button-container" style="display: flex; justify-content: center; align-items: center;">
+					<i class="fa-solid fa-arrow-left"  @click="currentPage--" :class="{'hide' : currentPage === 0}" style="height:24px; weight:24px; margin-left:5px;"></i>
+				</div>
+		  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style=" padding-right: 25px">
 		  <a :href="'${pageContext.request.contextPath}/member/'+ item.memberNick">
 		    <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="65" height="65" style="border-radius:50%;">
 		  </a>
 		    <div class="recommend-nickname d-flex justify-content-center" style="min-width:120%;">
-		      <p style="font-size:11px;">{{ item.memberNick }}</p>
+		      <p style="width:50px; font-size:11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ item.memberNick }}</p>
 		    </div>		    
 		  </div>
+		  		<!-- 다음 버튼 -->
+				<div class="button-container" style="display: flex; justify-content: center; align-items: center;"> 		
+  					<i class="fa-sharp fa-solid fa-arrow-right" @click="currentPage++"  :class="{'hide':currentPage === paginatedRecommendFriends.length - 1}" 
+  					style="height: 24px; weight: 24px; margin-left:20px;"></i>
+				</div>
 		</div>
-
 	</div>
 	<!-- 친구추천  끝-->
 	
@@ -237,7 +251,7 @@
                         <div style="padding: 8px 8px 4px 8px;">
                             <div class="d-flex">
 
-                                <div class="p-2"><a style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><img class="profile rounded-circle" :src="profileUrl(index)" style="object-fit: cover;" @mouseover="profileHover(board.boardWithNickDto)"></a></div>
+                                <div class="p-2"><a style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><img class="profile rounded-circle" :src="profileUrl(index)" style="object-fit: cover; " @mouseover="profileHover(board.boardWithNickDto)"></a></div>
                                 <div class="p-2" style="margin-top: 8px;"><h4><a class="btn btn-none" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a><b style="color: gray;">  · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
 
                                 <div v-if="followCheckIfNew(index)" @click="follow(board.boardWithNickDto.memberNo)" class="p-2 me-5" style="margin-top: 8px;"><h4><b style="font-size: 15px; color:blue; cursor: pointer;">팔로우</b></h4></div>
@@ -252,36 +266,36 @@
                         <div style="padding: 4px 8px 8px 8px;">
                             <div :id="'carouselExampleIndicators'+index" class="carousel slide">
 							  <div class="carousel-indicators">
-							    <button v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#carouselExampleIndicators'+index" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
+							    <button v-if="boardList[index].boardAttachmentList.length > 1" v-for="(attach, index2) in boardList[index].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#carouselExampleIndicators'+index" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
 							  </div>
 							
-							  <template v-for="(attach, index2) in boardList[index].boardAttachmentList">
-								  <div class="carousel-inner">
+							<div class="carousel-inner">
+							  		<template v-for="(attach, index2) in boardList[index].boardAttachmentList">
 								      <div :key="index2" class="carousel-item" :class="{'active':index2==0}">
 								        <video class="content" v-if="attach.video" :src="'${pageContext.request.contextPath}'+ attach.imageURL" style="object-fit: cover" :autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto" @dblclick="likePost(board.boardWithNickDto.boardNo,index)"></video>
 								        <img class="content" v-else :src="'${pageContext.request.contextPath}'+attach.imageURL" @dblclick="likePost(board.boardWithNickDto.boardNo,index)">
 								      </div>
-								  </div>
 							  </template>
+							</div>
 							
-							  <button class="carousel-control-prev" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="prev">
+							  <button v-if="boardList[index].boardAttachmentList.length > 1" class="carousel-control-prev" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="prev">
 							    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
 							    <span class="visually-hidden">Previous</span>
 							  </button>
-							  <button class="carousel-control-next" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="next">
+							  <button v-if="boardList[index].boardAttachmentList.length > 1" class="carousel-control-next" type="button" :data-bs-target="'#carouselExampleIndicators' + index" data-bs-slide="next">
 							    <span class="carousel-control-next-icon" aria-hidden="true"></span>
 							    <span class="visually-hidden">Next</span>
 							  </button>
 							</div>
 
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲사진▲▲▲▲▲▲▲▲▲▲▲▲▲-->
-                        <!--▼▼▼▼▼▼▼▼▼▼▼▼▼좋아요▼▼▼▼▼▼▼▼▼▼▼▼▼-->
+                        <!--▼▼▼▼▼▼▼▼▼▼▼▼▼좋아요 및 DM▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-1" style="height: 40px;">
                             <div class="d-flex">
-                                <div class="p-2"><i :class="{'fa-heart': true, 'like':isLiked[index], 'fa-solid': isLiked[index], 'fa-regular': !isLiked[index]}" @click="likePost(board.boardWithNickDto.boardNo,index)" style="font-size: 32px;"></i></div>
-                                <div class="p-2"><img src="${pageContext.request.contextPath}/static/image/dm.png"></div>
-                                <div class="p-2"><img src="${pageContext.request.contextPath}/static/image/message_ico.png"></div>
-                                <div class="p-2 flex-grow-1">
+                                <div class="p-1"><i :class="{'fa-heart': true, 'like':isLiked[index], 'fa-solid': isLiked[index], 'fa-regular': !isLiked[index]}" @click="likePost(board.boardWithNickDto.boardNo,index)" style="font-size: 32px;"></i>
+                                <i class="fa-regular fa-message mb-1" @click="moveToDmPage(board.boardWithNickDto.memberNo)"style="font-size: 30px; margin-left:10px; margin-bottom: 10px; cursor: pointer;"></i>
+                                </div>
+                                <div class="p-1 flex-grow-1">
                                 <h5><i class="fa-regular fa-bookmark"  @click="bookmarkInsert(board.boardWithNickDto.boardNo)" v-show="bookmarkChecked(board.boardWithNickDto.boardNo)" style="font-size:25px;"></i>
                                 <i class="fa-solid fa-bookmark" @click="bookmarkInsert(board.boardWithNickDto.boardNo)" v-show="!bookmarkChecked(board.boardWithNickDto.boardNo)" style="font-size:25px;"></i></h5>
                                 </div>
@@ -306,16 +320,16 @@
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲멘트▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼댓글 모달창 열기▼▼▼▼▼▼▼▼▼▼▼▼▼-->
              			<div class="p-1">
-             				<h6 @click="detailViewOn(index)" style="cursor: pointer; color:gray;">댓글 보기</h6>             
+             				<h6 @click="detailViewOn(index,board.boardWithNickDto.boardNo)" style="cursor: pointer; color:gray;">댓글 보기</h6>             
              			</div>           
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲댓글 모달창 열기▲▲▲▲▲▲▲▲▲▲▲▲▲-->
                         <!--▼▼▼▼▼▼▼▼▼▼▼▼▼댓글입력창▼▼▼▼▼▼▼▼▼▼▼▼▼-->
                         <div class="p-1" v-if="board.boardWithNickDto.boardReplyValid == 0">
                             <div class="d-flex" >
 <!--                                 <div class="p-2"><img src="/static/image/emoticon.png"></div> -->
-                                <div class="p-1"><input class="form-control" type="text" placeholder="댓글 달기..." v-model="replyContent" :disabled="board.boardWithNickDto.boardReplyValid == 1" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(index),detailViewOn(index)"
+                                <div class="p-1"><input class="form-control" type="text" placeholder="댓글 달기..." v-model="replyContent" :disabled="board.boardWithNickDto.boardReplyValid == 1" @input="replyContent = $event.target.value" @keyup.enter="replyInsert(index),detailViewOn(index,board.boardWithNickDto.boardNo)"
                                                         style="border: 2px solid white; width: 24em;"></div>
-                                <div class="p-2 flex-grow-1"><h5 style="color: dodgerblue; cursor: pointer;" @click="replyInsert(index),detailViewOn(index)">게시</h5></div>
+                                <div class="p-2 flex-grow-1"><h5 style="color: dodgerblue; cursor: pointer;" @click="replyInsert(index),detailViewOn(index,board.boardWithNickDto.boardNo)">게시</h5></div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲댓글입력창▲▲▲▲▲▲▲▲▲▲▲▲▲-->
@@ -326,7 +340,7 @@
          
         
          
-          <div class="profile-preview" v-if="selectedItem === board.boardWithNickDto" @mouseleave="profileLeave">
+          <div class="profile-preview" v-if="selectedItem === board.boardWithNickDto" @mouseleave="profileLeave" style="border-radius:15px; margin-left:70px; margin-bottom:70px;">
                   <!-- 프로필 미리보기 내용 -->
                    	<div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' +board.boardWithNickDto.attachmentNo" width="75" height="75" style="border-radius: 50%;" @mouseleave="profileLeave"> 
@@ -384,9 +398,9 @@
                     	 </div>
                     </div>
                 <div class="col-9" style="display:flex; justify-content: space-between; margin-left:40px; margin-top:15px;">
-                  	 <button class="btn btn-primary" @click="follow(board.boardWithNickDto.memberNo)" style="flex-grow:1;" v-if="followCheckIf(board.boardWithNickDto.memberNo)">팔로우</button>
-                  	 <button class="btn btn-secondary" @click="unFollow(board.boardWithNickDto.memberNo)" style="flex-grow:1;"  v-if="!followCheckIf(board.boardWithNickDto.memberNo)">팔로잉</button>
-                  	 <button class="btn btn-primary" style="width:50%;">메시지 보내기</button>
+                  	 <button class="btn btn-primary" @click="follow(board.boardWithNickDto.memberNo)" style="flex-grow:1; margin-right:10px;" v-if="followCheckIf(board.boardWithNickDto.memberNo)">팔로우</button>
+                  	 <button class="btn btn-secondary" @click="unFollow(board.boardWithNickDto.memberNo)" style="flex-grow:1; margin-right:10px;"  v-if="!followCheckIf(board.boardWithNickDto.memberNo)">팔로잉</button>
+                  	 <button class="btn btn-primary" @click="moveToDmPage(board.boardWithNickDto.memberNo)" style="width:50%; cursor:pointer;">메시지 보내기</button>
                  </div> 
                  
           </div> <!-- 팔로우 미리보기 끝 -->
@@ -396,19 +410,19 @@
 <!--        </div>   -->
 <!--      </div> -->
      
+</div>     
+     
+     
+     
      <div v-if="newListFinish"  style="max-width: 620px;  margin: 10px auto 10px auto;">
      	<img src="${pageContext.request.contextPath}/static/image/check.png" class="justify-content-center align-items-center" style="width: 150px; height: 150px; margin-left: 230px; margin-bottom: 20px;">
      	<h3 class="justify-content-center text-center">모두 확인했습니다</h3>
      	<h6 class="justify-content-center text-center" style="color:gray; ">최근 3일 동안 올라온 게시물을 모두 확인했습니다.</h6>
      	<h6 class="justify-content-center text-center" @click="loadOldList()" style="color: blue; cursor: pointer;">이전 게시물 보기</h6>     	
      </div>
-     
-     
-     
-</div>     
-</div>     
     
  
+</div>     
     
  
     
@@ -423,7 +437,7 @@
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
                 <div class="carousel-indicators">
-                  <button v-for="(attach, index2) in boardList[detailIndex].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
+                  <button v-if="boardList[detailIndex].boardAttachmentList.length > 1" v-for="(attach, index2) in boardList[detailIndex].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
                 </div>
                
                 <div class="carousel-inner">
@@ -436,11 +450,11 @@
                   </div>
                 </div>
                
-                <button class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="prev">
+                <button v-if="boardList[detailIndex].boardAttachmentList.length > 1" class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="prev">
                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Previous</span>
                 </button>
-                <button  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="next">
+                <button v-if="boardList[detailIndex].boardAttachmentList.length > 1"  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="next">
                   <span class="carousel-control-next-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Next</span>
                 </button>
@@ -515,9 +529,6 @@
 						<span class="card-text" style="margin: 0 4px 4px 0; padding-left: 0.5em">
 						    <i :class="{'fa-heart': true, 'like':isLiked[detailIndex], 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}"
 						       @click="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
-						</span>
-						<span class="card-text" style="margin: 0 0 4px 0; padding-left: 0.5em;">
-					    	<i class="fa-regular fa-message mb-1" style="font-size: 25px;"></i>
 						</span>
 					  </div>
 					  <div class="col-1 p-0 flex-grow-1">
@@ -594,7 +605,7 @@
 <!-- ---------------------------------신고 모달-------------------------- -->
 	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal" style="z-index:9999">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
-			<div class="modal-content" >
+			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title" style="font-weight:bold; text-align:center">신고</h5>
 					<button type="button" class="btn-close" @click="hideReportMenuModal" aria-label="Close">
@@ -609,8 +620,8 @@
 						</div>
 					</div>
 					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo" style="border-top:var(--bs-modal-border-width) solid var(--bs-modal-border-color)">
-						<div class="col d-flex p-3 report-content" @click="reportContent(report.reportListContent)" style="cursor:pointer">
-							<h5 style="margin:0; margin-left:1em">{{report.reportListContent}}</h5>
+						<div class="col d-flex p-2 report-content" @click="reportContent(report.reportListContent)" style="cursor:pointer">
+							<h6 style="margin:0; margin-left:1em">{{report.reportListContent}}</h6>
 						</div>
 					</div>
 				</div>
@@ -710,6 +721,7 @@ Vue.createApp({
             //목록을 위한 데이터
             page:1,
             boardList:[],
+            boardNo : 0,
             finish:false,
             
             newListFinish:false, //최근 3일 로드 끝
@@ -817,6 +829,33 @@ Vue.createApp({
     },
     //메소드
     methods:{
+    	//쿼리값 page로 반환
+		initializePageFromQuery() {
+			const queryParams = new URLSearchParams(window.location.search);
+			const boardNo = queryParams.get('boardNo');
+			if(boardNo==null){
+				this.boardNo=0;
+			}
+			else{
+				this.boardNo = boardNo
+				
+			}
+		},
+		
+		//쿼리 업데이트를 위한 page 데이터 변경 및 쿼리 변경 메서드
+		changeBoardNo(boardNo){
+			if(this.boardNo==boardNo) return;
+			this.boardNo=boardNo;
+			const queryParams = new URLSearchParams(window.location.search);
+			queryParams.set('boardNo', this.boardNo);
+			const newURL = `?`+queryParams.toString();
+			//쿼리 히스토리 저장
+			window.history.pushState({ query: queryParams.toString() }, '', newURL);
+		},
+		
+		
+		
+    	
     	//전체 리스트 불러오기
         async loadNewList(){
             if(this.loading == true) return; //로딩중이면
@@ -1145,9 +1184,10 @@ Vue.createApp({
          
         
         //상세보기 모달창 열기
-        detailViewOn(index) {
+        detailViewOn(index,boardNo) {
         	this.detailView = true;
         	this.detailIndex = index;
+        	this.changeBoardNo(boardNo);
         	this.replyLoad(index);
         	document.body.style.overflow = "hidden";
         },
@@ -1155,6 +1195,7 @@ Vue.createApp({
         //상세보기 모달창 닫기
         closeDetail() {
         	this.detailView = false;
+        	this.changeBoardNo(0);
         	this.replyList = [];
         	document.body.style.overflow = "unset";
         },
@@ -1275,6 +1316,49 @@ Vue.createApp({
 			window.location.href=contextPath+"/member/"+memberNick;
 		},
 		/*----------------------태그, 닉네임 클릭 시 검색기록 넣고 이동----------------------*/
+
+		/*----------------------DM으로 이동 및 채팅방 생성----------------------*/
+		async moveToDmPage(memberNo){
+		    try {
+		        //본인일 경우, 메인 채팅방으로 이동
+		        if(this.loginMemberNo == memberNo) {
+		            window.location.href = contextPath + "/dm/channel";
+		            return; 
+		        }
+		    	
+		    	//두 회원이 참여한 채팅방 번호 조회
+		        const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.loginMemberNo + "/" + memberNo);
+		        let existingRoomNo = checkResp.data;
+		        console.log("checkResp : ", checkResp);
+		        console.log("existingRoomNo : ", existingRoomNo);
+		        
+		    	//기존의 일대일 채팅방이 없을 경우, 새 채팅방 생성
+		        if (!existingRoomNo) {
+		            const dmRoomVO = await axios.post(contextPath + "/rest/createChatRoom");
+		            const roomNo = dmRoomVO.data.roomNo;
+		            console.log("새 채팅방 번호 : ", roomNo);
+		            console.log("dmRoomVO.data", dmRoomVO.data);
+		
+		            //채팅 유저 저장
+		            const user = {
+		                roomNo: roomNo,
+		                memberList: [memberNo, this.loginMemberNo]
+		            };
+		            await axios.post(contextPath + "/rest/enterUsers", user);
+		            console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
+		            
+		        //생성된 채팅방으로 이동
+		        window.location.href = contextPath + "/dm/channel?room=" + roomNo;
+		        }
+		        //기존의 일대일 채팅방이 있을 경우, 기존 채팅방으로 이동
+		        else {
+		        	window.location.href = contextPath + "/dm/channel?room=" + existingRoomNo;
+		        }
+		    } catch (error) {
+		        console.error("방 생성, 입장, 초대 중 오류가 발생했습니다.", error);
+		    }
+		},
+		/*----------------------DM으로 이동 및 채팅방 생성----------------------*/
 		
 		//북마크
 		async bookmarkInsert(boardNo) {
@@ -1307,8 +1391,6 @@ Vue.createApp({
 		// 호버
 		 async profileHover(item) {           		
            	  this.selectedItem = item; // 선택
-           	  console.log("닉네임 : " +item.memberNick);
-           	  console.log("멤버번호 : " +item.memberNo);
            	  
         	  // settingHide 불러오기 위해서 선언
              	const resp = await axios.get("/rest/member/setting/"+item.memberNo);
@@ -1437,7 +1519,18 @@ Vue.createApp({
                	this.loadOldList();            	
                 console.log("로드old");
             }
-       }
+       },
+       
+       boardNo(){   	   
+    	   if(this.boardNo==null || this.boardNo == 0){
+    		   this.closeDetail();
+    	   }
+    	   else{
+    		   const index = this.boardList.findIndex(board=>board.boardWithNickDto.boardNo == this.boardNo)
+    		   this.detailViewOn(index, this.boardNo);
+    	   }
+       },
+       
     },
     mounted(){
 
@@ -1455,6 +1548,11 @@ Vue.createApp({
 		this.reportMenuModal = new bootstrap.Modal(this.$refs.reportMenuModal);
 		this.blockModal = new bootstrap.Modal(this.$refs.blockModal);
 		this.likeListModal = new bootstrap.Modal(this.$refs.likeListModal);
+		
+		//쿼리 초기화 및 변화 감지
+		this.initializePageFromQuery();
+		//뒤로가기, 앞으로가기 누르면 이전 쿼리 반환
+		window.addEventListener('popstate', this.initializePageFromQuery);
     },
     updated(){
     	$(".textHide").each(function(){

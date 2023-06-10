@@ -21,16 +21,8 @@ public class MemberRepoImpl implements MemberRepo{
 	@Autowired
 	private SqlSession sqlSession;
 	
-	@Autowired
-	private PasswordEncoder encoder;
-
 	@Override
 	public void join(MemberDto dto) {
-		
-		encoder = new BCryptPasswordEncoder();
-		String encrypt = encoder.encode(dto.getMemberPassword());
-		dto.setMemberPassword(encrypt);
-	
 		sqlSession.insert("member.join",dto);
 	}
 	
