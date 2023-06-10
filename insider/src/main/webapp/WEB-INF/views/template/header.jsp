@@ -177,7 +177,7 @@
 		cursor: pointer;
 	}
 	
-	.fullscreen{
+	.fullscreen.in-header{
 
             position:fixed;
             top: 0;
@@ -189,7 +189,7 @@
 /*             display: none; */
     }
 
-     .fullscreen > .fullscreen-container{
+     .fullscreen > .fullscreen-container.in-header{
          position: absolute;
          left: 50%;
          top: 50%;
@@ -200,11 +200,11 @@
          transform: translate(-50%, -50%);
      }
      
-    .card-scroll{
+    .card-scroll.in-header{
         	overflow-y: auto;
         	-ms-overflow-style: none;
 		}        
-    .card-scroll::-webkit-scrollbar {
+    .card-scroll.in-header::-webkit-scrollbar {
 		    display: none;
 	}
 	
@@ -383,12 +383,12 @@
 			
 <!-- ---------------------------------게시물 상세보기 모달-------------------------- -->
 
-<div v-if="detailView" class="container-fluid fullscreen" @click="closeDetail">
+<div v-if="detailView" class="container-fluid fullscreen in-header" @click="closeDetail">
 	
 	<div class="p-4 mt-2 ms-4 d-flex justify-content-end">
 		<h2 class="btn btn-none" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
 	</div>
-	<div class="row fullscreen-container" @click.stop >
+	<div class="row fullscreen-container in-header" @click.stop >
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
                 <div class="carousel-indicators">
@@ -418,21 +418,21 @@
 		</div>
            
         <div class="col-4" style="padding-left: 0;">
-        	<div class="card bg-light" style="border-radius:0; max-height: 700px">
-           		<div class="card-header">
+        	<div class="card in-header bg-light" style="border-radius:0; max-height: 700px">
+           		<div class="card-header in-header">
 	           		<img class="profile" :src="profileUrl(detailIndex)">
            			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardData[0].boardWithNickDto.memberNick"><b>{{boardData[0].boardWithNickDto.memberNick}}</b></a>
            		</div>
 				
-				<div class="card-body card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
-					<h5 class="card-title"></h5>
-					<p class="card-text" style="margin-left: 0.5em;">{{boardData[0].boardWithNickDto.boardContent}}
+				<div class="card-body in-header card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
+					<h5 class="card-title in-header"></h5>
+					<p class="card-text in-header" style="margin-left: 0.5em;">{{boardData[0].boardWithNickDto.boardContent}}
 					<br v-if="boardData[0].boardTagList.length > 0"><br v-if="boardData[0].boardTagList.length > 0">
                             	<a @click="moveToTagPage(tag.tagName)" v-for="(tag, index3) in boardData[0].boardTagList" :key="index3" style="margin-right: 0.5em; color: blue; cursor: pointer;">\#{{tag.tagName}}</a>
 					</p>
 					
 					
-					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
+					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text in-header" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
 						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="text-decoration:none; position:relative;">
 							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="45" height="45" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
 							<img v-else src="https://via.placeholder.com/45x45?text=profile" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
@@ -461,7 +461,7 @@
 <!-- 						</p> -->
 					</div>
 					
-					<div v-else class="card-text" style="position: relative;">
+					<div v-else class="card-text in-header" style="position: relative;">
 						<b style="margin-left: 0.5em;">첫 댓글을 작성해보세요</b>
 					</div>
 					
@@ -469,8 +469,8 @@
 				</div>
 				<hr style="margin-top: 0; margin-bottom: 0;">
 				
-				<div class="card-body"  style="height:110px; padding-top: 0px; padding-left: 0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
-					<h5 class="card-title"></h5>
+				<div class="card-body in-header"  style="height:110px; padding-top: 0px; padding-left: 0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
+					<h5 class="card-title in-header"></h5>
 					<!-- 북마크 오른쪽 정렬 수정 06/04 재영 -->
 					<!-- <p class="card-text" style="margin: 0 0 4px 0;">
 						
@@ -481,11 +481,11 @@
 					</p> -->
 				  <div class="d-flex row">
 					  <div class="col-10">
-						<span class="card-text" style="margin: 0 4px 4px 0; padding-left: 0.5em">
+						<span class="card-text in-header" style="margin: 0 4px 4px 0; padding-left: 0.5em">
 						    <i :class="{'fa-heart': true, 'like':isLikedOne, 'fa-solid': isLikedOne, 'fa-regular': !isLikedOne}"
 						       @click="likePost(boardData[0].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
 						</span>
-						<span class="card-text" style="margin: 0 0 4px 0; padding-left: 0.5em;">
+						<span class="card-text in-header" style="margin: 0 0 4px 0; padding-left: 0.5em;">
 					    	<i class="fa-regular fa-message mb-1" style="font-size: 25px;"></i>
 						</span>
 					  </div>
@@ -500,8 +500,8 @@
 				  </div>
 					
 					
-					<p class="card-text" style="margin: 0 0 4px 0; cursor: pointer;" @click="showLikeListModal(boardData[0].boardWithNickDto.boardNo)"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCountOne}}개</b></p>
-					<p class="card-text" style="margin: 0 0 0 0.5em">{{dateCount(boardData[0].boardWithNickDto.boardTimeAuto)}}</p>
+					<p class="card-text in-header" style="margin: 0 0 4px 0; cursor: pointer;" @click="showLikeListModal(boardData[0].boardWithNickDto.boardNo)"><b style="margin-left: 0.5em;">좋아요 {{boardLikeCountOne}}개</b></p>
+					<p class="card-text in-header" style="margin: 0 0 0 0.5em">{{dateCount(boardData[0].boardWithNickDto.boardTimeAuto)}}</p>
 					
 				</div>
 				

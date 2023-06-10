@@ -23,9 +23,8 @@ import com.kh.insider.configuration.FileUploadProperties;
 import com.kh.insider.dto.BoardAttachmentDto;
 import com.kh.insider.dto.BoardDto;
 import com.kh.insider.dto.BoardTagDto;
+import com.kh.insider.dto.BoardWithNickDto;
 import com.kh.insider.dto.MemberDto;
-import com.kh.insider.dto.ReportDto;
-import com.kh.insider.dto.ReportResultDto;
 import com.kh.insider.dto.TagDto;
 import com.kh.insider.repo.BoardAttachmentRepo;
 import com.kh.insider.repo.BoardRepo;
@@ -295,44 +294,54 @@ public class BoardController {
     
 	//게시글 삭제하기
 	@GetMapping("/delete")
-	public String delete(@RequestParam int boardNo) {		
-		boardTagRepo.delete(boardNo);
-		boardRepo.delete(boardNo);
-		
-		//리포트가 있으면 찾아서 상태 변경해줌
-		reportService.manageDeleted("board", boardNo);
+	public String delete(@RequestParam int boardNo, HttpSession session) {
+		//본인인지 확인
+		long memberNo = (long)session.getAttribute("memberNo");
+		BoardWithNickDto boardDto = boardRepo.selectOne(boardNo);
+		if(boardDto.getMemberNo()==memberNo) {
+			boardTagRepo.delete(boardNo);
+			boardRepo.delete(boardNo);
+			
+			//리포트가 있으면 찾아서 상태 변경해줌
+			reportService.manageDeleted("board", boardNo);
+		}
 		return "redirect:/";
 	}
 	
 	//게시물 수정
 	@GetMapping("/edit")
-	public String edit(@RequestParam int boardNo, Model model) {
-		model.addAttribute("board", boardRepo.selectOne(boardNo));
-		//model.addAttribute("boardAttach", boardAttachmentRepo.selectList(boardNo));
-		
-		List<BoardTagDto> find = boardTagRepo.selectList(boardNo);
-		List<String> tagList = new ArrayList<>();
-		
-		if(find != null) {
-			for (BoardTagDto tagDto : find) {
-			    String tagName = "#" + tagDto.getTagName();
-			    tagList.add(tagName);
+	public String edit(@RequestParam int boardNo, Model model, HttpSession session) {
+		//본인인지 확인
+		long memberNo = (long)session.getAttribute("memberNo");
+		BoardWithNickDto boardDto = boardRepo.selectOne(boardNo);
+		if(boardDto.getMemberNo()==memberNo) {
+			model.addAttribute("board", boardRepo.selectOne(boardNo));
+			//model.addAttribute("boardAttach", boardAttachmentRepo.selectList(boardNo));
+			
+			List<BoardTagDto> find = boardTagRepo.selectList(boardNo);
+			List<String> tagList = new ArrayList<>();
+			
+			if(find != null) {
+				for (BoardTagDto tagDto : find) {
+					String tagName = "#" + tagDto.getTagName();
+					tagList.add(tagName);
+				}
+				String tagData = String.join(" ", tagList);
+				model.addAttribute("tag", tagData);			
 			}
-			String tagData = String.join(" ", tagList);
-			model.addAttribute("tag", tagData);			
+			else {
+				String empty = "";
+				tagList.add(empty);
+				model.addAttribute("tag", tagList);			
+			}
+			
+			List<BoardAttachmentDto> findImage = boardAttachmentRepo.selectList(boardNo);
+			List<Integer> imageList = new ArrayList<>();
+			for(BoardAttachmentDto attDto : findImage) {
+				imageList.add(attDto.getAttachmentNo());
+			}
+			model.addAttribute("image",imageList);
 		}
-		else {
-			String empty = "";
-			tagList.add(empty);
-			model.addAttribute("tag", tagList);			
-		}
-		
-		List<BoardAttachmentDto> findImage = boardAttachmentRepo.selectList(boardNo);
-		List<Integer> imageList = new ArrayList<>();
-		for(BoardAttachmentDto attDto : findImage) {
-			imageList.add(attDto.getAttachmentNo());
-		}
-		model.addAttribute("image",imageList);
 		
 		return "/board/edit";
 	}
@@ -341,41 +350,46 @@ public class BoardController {
 	public String edit(
 			@ModelAttribute BoardDto boardDto,
 			@ModelAttribute TagDto tagDto,
-			@ModelAttribute BoardTagDto boardTagDto) {
-		boardTagRepo.delete(boardDto.getBoardNo());
-		boardRepo.update(boardDto);
-		
-		// 해시태그 저장
-				if(tagDto.getTagName() != null) {
-					String inputTagName = tagDto.getTagName();
-					String[] array = inputTagName.split("#");
-					List<String> tagList = new ArrayList<>();
-					for(String s : array) {
-						if(s!=null && s.length()>0) {
-							s=s.trim();
-							s=s.replace("#","");
-							if(s.length()>0) {
-								tagList.add(s);
-							}
+			@ModelAttribute BoardTagDto boardTagDto, HttpSession session) {
+		//본인인지 확인
+		long memberNo = (long)session.getAttribute("memberNo");
+		BoardWithNickDto boardNewDto = boardRepo.selectOne(boardDto.getBoardNo());
+		if(boardNewDto.getMemberNo()==memberNo) {
+			boardTagRepo.delete(boardDto.getBoardNo());
+			boardRepo.update(boardDto);
+			
+			// 해시태그 저장
+			if(tagDto.getTagName() != null) {
+				String inputTagName = tagDto.getTagName();
+				String[] array = inputTagName.split("#");
+				List<String> tagList = new ArrayList<>();
+				for(String s : array) {
+					if(s!=null && s.length()>0) {
+						s=s.trim();
+						s=s.replace("#","");
+						if(s.length()>0) {
+							tagList.add(s);
 						}
-					}
-					
-					for(int i = 0; i < tagList.size(); i++) {
-						String tagName = tagList.get(i);
-						TagDto tagDtoFind = tagRepo.selectOne(tagName);
-						log.debug("태그디티오:{}",tagDtoFind);
-						if(tagDtoFind == null) {
-							tagRepo.insert(tagName);
-						}
-							
-						BoardTagDto newBoardTagDto = new BoardTagDto();
-						newBoardTagDto.setBoardTagNo(boardTagDto.getBoardTagNo());
-						newBoardTagDto.setBoardNo(boardDto.getBoardNo());
-						newBoardTagDto.setTagName(tagName);
-						boardTagRepo.insert(newBoardTagDto);
 					}
 				}
-		
+				
+				for(int i = 0; i < tagList.size(); i++) {
+					String tagName = tagList.get(i);
+					TagDto tagDtoFind = tagRepo.selectOne(tagName);
+					log.debug("태그디티오:{}",tagDtoFind);
+					if(tagDtoFind == null) {
+						tagRepo.insert(tagName);
+					}
+					
+					BoardTagDto newBoardTagDto = new BoardTagDto();
+					newBoardTagDto.setBoardTagNo(boardTagDto.getBoardTagNo());
+					newBoardTagDto.setBoardNo(boardDto.getBoardNo());
+					newBoardTagDto.setTagName(tagName);
+					boardTagRepo.insert(newBoardTagDto);
+				}
+			}
+			
+		}
 		return "redirect:/";
 	}
     

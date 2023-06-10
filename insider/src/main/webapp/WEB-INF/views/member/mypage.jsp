@@ -439,9 +439,9 @@
 
     	 <div class="row d-flex justify-content-center w-100">
 	    	<div class="box m-2" v-for="(bookmark,index) in bookmarkMyPostList" :key="bookmark.boardNo" @click="detailViewOn2(index)">
-	    		<video class="content" :src="'${pageContext.request.contextPath}'+bookmark.boardAttachmentList[0].imageURL" v-if="bookmark.boardAttachmentList[0].video"
+	    		<video class="content-in-list" :src="'${pageContext.request.contextPath}'+bookmark.boardAttachmentList[0].imageURL" v-if="bookmark.boardAttachmentList[0].video"
 							style="object-fit:cover" autoplay muted controls loop></video>
-				<img class="content" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+bookmark.boardAttachmentList[0].attachmentNo">
+				<img class="content-in-list" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+bookmark.boardAttachmentList[0].attachmentNo">
 			<!-- 쉐도우용 더미 -->
 				<div class="content-box" ></div>
 			<!-- 사진 여러장일 때 -->
@@ -1147,7 +1147,7 @@
 						</div>
 					</div>
 					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo" style="border-top:var(--bs-modal-border-width) solid var(--bs-modal-border-color)">
-						<div class="col d-flex p-3 report-content" @click="reportContent(report.reportListContent)" style="cursor:pointer">
+						<div class="col d-flex p-2 report-content" @click="reportContent(report.reportListContent)" style="cursor:pointer">
 							<h5 style="margin:0; margin-left:1em">{{report.reportListContent}}</h5>
 						</div>
 					</div>

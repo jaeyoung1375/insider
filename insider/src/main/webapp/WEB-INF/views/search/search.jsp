@@ -221,7 +221,7 @@
 										팔로우 : {{recommand.follow}}
 									</div>
 								</div>
-								<div class="row search-recommand-menu p-3" v-else @click="moveToMemberDetail(recommand.memberNo, recommand.memberNick)">
+								<div class="row search-recommand-menu p-3" v-else @click="moveToMemberDetail(recommand.memberNo, recommand.nick)">
 									<div class="col-2">
 										<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+recommand.imageURL">
 									</div>
