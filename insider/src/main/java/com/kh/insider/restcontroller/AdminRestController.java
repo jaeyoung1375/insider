@@ -2,6 +2,8 @@ package com.kh.insider.restcontroller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -158,7 +160,9 @@ public class AdminRestController {
 		return searchRepo.selectStatsList(searchVO);
 	}
 	@DeleteMapping("/board")
-	public void deleteBoard(@ModelAttribute ReportResultDto reportResultDto) {
+	public void deleteBoard(@ModelAttribute ReportResultDto reportResultDto, HttpSession session) {
+		int memberLevel = (int)session.getAttribute("memberLevel");
+		if(memberLevel==0) return;
 		//태그를 지움
 		boardTagRepo.delete((int)reportResultDto.getReportTableNo());
 		boardRepo.delete((int)reportResultDto.getReportTableNo());
@@ -219,7 +223,9 @@ public class AdminRestController {
 	}
 	//금지어 삭제
 	@DeleteMapping("/forbidden")
-	public void deleteForbidden(@RequestParam String forbiddenWord) {
+	public void deleteForbidden(@RequestParam String forbiddenWord, HttpSession session) {
+		int memberLevel = (int)session.getAttribute("memberLevel");
+		if(memberLevel==0) return;
 		forbiddenRepo.delete(forbiddenWord);
 	}
 }
