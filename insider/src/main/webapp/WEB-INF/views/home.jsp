@@ -841,6 +841,14 @@ Vue.createApp({
 		initializePageFromQuery() {
 			const queryParams = new URLSearchParams(window.location.search);
 			const boardNo = queryParams.get('boardNo');
+			//게시물 보다가 새로고침했을 때 처리(리스트에 없을때)
+			if(this.boardList.length==0) return;
+    		if(this.boardList.length!=0 && boardNo!=0) {
+				const index = this.boardList.findIndex(board=>board.boardWithNickDto.boardNo==boardNo);
+				if(index==-1){
+					return
+				}
+    		}
 			if(boardNo==null){
 				this.boardNo=0;
 			}
