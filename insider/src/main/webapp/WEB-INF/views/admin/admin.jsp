@@ -99,7 +99,7 @@
 	padding:0.4em;
 	padding-right:0.7em;
 	max-height:100%;
-	overflow-y:auto;
+	overflow-y:hidden;
 	overflow-x:hidden;
 }
 .modal-header-custom{
@@ -123,7 +123,7 @@
 }
 
 .modal-body-custom{
-	padding:1em;
+	padding:0.4em;
 	position:sticky; 
 	top:0;
 	max-height:700px;
@@ -527,7 +527,7 @@
 							<option value="board_like asc">좋아요 적은순</option>
 						</select>
 					</div>
-					<div class="col p-0">
+					<div class="col-3 p-0">
 						<button type="button" class="col-6 btn btn-secondary" @click="resetBoardSearchOption">초기화</button>
 						<button type="button" class="col-6 btn btn-primary" @click="getBoardListWithSearchOption">검색</button>
 					</div>
@@ -1208,7 +1208,7 @@
 							<button class="btn btn-primary w-100" @click="insertReportContent">등록</button>
 						</div>
 					</div>
-					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo">
+					<div class="row justify-content-center" v-for="(report, index) in reportContentList" :key="report.reportListNo">
 						<div class="row" v-if="!reportContentListEdit[index]">
 							<div class="col-10 p-2">
 								<h5 class="m-0">{{report.reportListContent}}</h5>
@@ -1253,7 +1253,7 @@
 				<div class="row modal-body-custom">
 					<div class="row mb-3" v-if="suspensionIndex[0]>=0">
 						<div class="row">
-							<div class="col-3 d-flex justify-content-center item-aligns-center">
+							<div class="col-3 d-flex justify-content-end align-items-center">
 								<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+memberList[suspensionIndex[0]].imageURL">
 							</div>
 							<div class="col-9">
@@ -1268,30 +1268,30 @@
 							<div class="col">
 								<div class="row">
 									<div class="row">
-										<div class="col-3" style="text-align:right">
+										<div class="offset-1 col-3" style="text-align:right">
 										정지 횟수 :
 										</div>
-										<div class="col-9 p-0">
+										<div class="col-8 p-0">
 										{{memberList[suspensionIndex[0]].memberSuspensionTimes}}
 										</div>
 									</div>
 								</div>
 								<div class="row">
 									<div class="row">
-										<div class="col-3" style="text-align:right">
+										<div class="offset-1 col-3" style="text-align:right">
 										정지 사유 :
 										</div>
-										<div class="col-9 p-0">
+										<div class="col-8 p-0">
 										{{memberList[suspensionIndex[0]].memberSuspensionContent}}
 										</div>
 									</div>
 								</div>
 								<div class="row">
 									<div class="row">
-										<div class="col-3" style="text-align:right">
+										<div class="offset-1 col-3" style="text-align:right">
 										기간 :
 										</div>
-										<div class="col-9 p-0">
+										<div class="col-8 p-0">
 										{{memberList[suspensionIndex[0]].memberSuspensionDays}}
 										</div>
 									</div>
@@ -1325,20 +1325,20 @@
 						<div class="row mb-4">
 							<div class="col" v-if="memberList[suspensionIndex[0]].memberSuspensionTimes>0">
 								<div class="row">
-									<div class="col-3" style="text-align:right">
+									<div class="offset-1 col-3" style="text-align:right">
 									정지 횟수 :
 									</div>
-									<div class="col-9 p-0">
+									<div class="col-8 p-0">
 									{{memberList[suspensionIndex[0]].memberSuspensionTimes}}
 									</div>
 								</div>
 							</div>
 							<div class="col" v-else>
 								<div class="row">
-									<div class="col-3" style="text-align:right">
+									<div class="offset-1 col-3" style="text-align:right">
 									정지 횟수 :
 									</div>
-									<div class="col-9 p-0">
+									<div class="col-8 p-0">
 									0
 									</div>
 								</div>
@@ -1409,7 +1409,7 @@
 				<div class="row modal-body-custom">
 					<div class="row mb-3" v-if="reportSuspensionIndex[0]>=0">
 						<div class="row">
-							<div class="col-3 d-flex justify-content-center item-aligns-center">
+							<div class="col-3 d-flex justify-content-end align-items-center">
 								<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+reportList[reportSuspensionIndex[0]].imageURL">
 							</div>
 							<div class="col-9">
@@ -1424,30 +1424,30 @@
 							<div class="col">
 								<div class="row">
 									<div class="row">
-										<div class="col-3" style="text-align:right">
+										<div class="offset-1 col-3" style="text-align:right">
 										정지 횟수 :
 										</div>
-										<div class="col-9 p-0">
+										<div class="col-8 p-0">
 										{{reportList[reportSuspensionIndex[0]].memberSuspensionTimes}}
 										</div>
 									</div>
 								</div>
 								<div class="row">
 									<div class="row">
-										<div class="col-3" style="text-align:right">
+										<div class="offset-1 col-3" style="text-align:right">
 										정지 사유 :
 										</div>
-										<div class="col-9 p-0">
+										<div class="col-8 p-0">
 										{{reportList[reportSuspensionIndex[0]].memberSuspensionContent}}
 										</div>
 									</div>
 								</div>
 								<div class="row">
 									<div class="row">
-										<div class="col-3" style="text-align:right">
+										<div class="offset-1 col-3" style="text-align:right">
 										기간 :
 										</div>
-										<div class="col-9 p-0">
+										<div class="col-8 p-0">
 										{{reportList[reportSuspensionIndex[0]].memberSuspensionDays}}
 										</div>
 									</div>
@@ -1481,20 +1481,20 @@
 						<div class="row mb-4">
 							<div class="col" v-if="reportList[reportSuspensionIndex[0]].memberSuspensionTimes>0">
 								<div class="row">
-									<div class="col-3" style="text-align:right">
+									<div class="offset-1 col-3" style="text-align:right">
 									정지 횟수 :
 									</div>
-									<div class="col-9 p-0">
+									<div class="col-8 p-0">
 									{{reportList[reportSuspensionIndex[0]].memberSuspensionTimes}}
 									</div>
 								</div>
 							</div>
 							<div class="col" v-else>
 								<div class="row">
-									<div class="col-3" style="text-align:right">
+									<div class="offset-1 col-3" style="text-align:right">
 									정지 횟수 :
 									</div>
-									<div class="col-9 p-0">
+									<div class="col-8 p-0">
 									0
 									</div>
 								</div>
@@ -1526,21 +1526,21 @@
 				<div class="row modal-footer-custom">
 					<div class="row" v-if="reportSuspensionIndex[1]==0">
 						<div class="offset-3 col-3 p-0">
-							<button type="button" class="btn btn-primary" @click="insertReportSuspension()" :class="{'disabled':reportSuspensionContent[0]=='' || reportSuspensionContent[1]==''}">수정</button>
+							<button type="button" class="btn btn-primary w-100" @click="insertReportSuspension()" :class="{'disabled':reportSuspensionContent[0]=='' || reportSuspensionContent[1]==''}">수정</button>
 						</div>
 						<div class="col-3 p-0">
-							<button type="button" class="btn btn-primary" @click="deleteReportSuspension()">해제</button>
+							<button type="button" class="btn btn-primary w-100" @click="deleteReportSuspension()">해제</button>
 						</div>
 						<div class="col-3 p-0">
-							<button type="button" class="btn btn-secondary" @click="hideReportSuspensionModal">취소</button>
+							<button type="button" class="btn btn-secondary w-100" @click="hideReportSuspensionModal">취소</button>
 						</div>
 					</div>
 					<div class="row" v-else>
 						<div class="offset-6 col-3 p-0">
-							<button type="button" class="btn btn-primary" @click="insertReportSuspension()" :class="{'disabled':reportSuspensionContent[0]=='' || reportSuspensionContent[1]==''}">정지</button>
+							<button type="button" class="btn btn-primary w-100" @click="insertReportSuspension()" :class="{'disabled':reportSuspensionContent[0]=='' || reportSuspensionContent[1]==''}">정지</button>
 						</div>
 						<div class="col-3 p-0">
-							<button type="button" class="btn btn-secondary" @click="hideReportSuspensionModal">취소</button>
+							<button type="button" class="btn btn-secondary w-100" @click="hideReportSuspensionModal">취소</button>
 						</div>
 					</div>
 				</div>
@@ -1565,7 +1565,7 @@
 				<div class="row modal-body-custom">
 				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
 					<div class="row" >
-						<div class="col-3 d-flex justify-content-center item-aligns-center">
+						<div class="col-3 d-flex justify-content-end align-items-center">
 							<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+reportDetailData.imageURL">
 						</div>
 						<div class="col-9">
@@ -1716,12 +1716,11 @@
 				</div>
 				<div class="row modal-body-custom">
 					<div class="row" >
-						<div class="col-3 d-flex justify-content-center item-aligns-center">
+						<div class="col-3 d-flex justify-content-end align-items-center">
 							<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+boardViewContent.boardWithNickDto.imageURL">
 						</div>
-						<div class="col-9">
-							<div class="ms-2" style="font-weight:bold; font-size:1.2em">{{boardViewContent.boardWithNickDto.memberNick}}</div>
-							<div class="ms-2">{{boardViewContent.boardWithNickDto.memberName}}</div>
+						<div class="col-9 d-flex align-items-center">
+							<div class="" style="font-weight:bold; font-size:1.2em">{{boardViewContent.boardWithNickDto.memberNick}}</div>
 						</div>
 					</div>
 					<div class="row p-2">
@@ -1783,12 +1782,17 @@
 					<div class="row">
 						<div class="col">
 							<div class="row m-0 p-0">
-								<div class="col p-2 d-flex justify-content-center item-aligns-center" @click="moveScroll('a')" style="cursor:pointer">
+								<div class="col d-flex justify-content-center align-items-center" @click="moveScroll('a')" style="cursor:pointer; padding:0.4em">
 									a-z
 								</div>
 							</div> 
+							<div class="row m-0 p-0">
+								<div class="col d-flex justify-content-center align-items-center" @click="moveScroll('ㄱ')" style="cursor:pointer; padding:0.4em">
+									ㄱ-ㅎ
+								</div>
+							</div> 
 							<div class="row m-0 p-0" v-for="(word, index) in dictionary" :key="index">
-								<div class="col p-2 d-flex justify-content-center item-aligns-center" @click="moveScroll(word)" style="cursor:pointer">
+								<div class="col d-flex justify-content-center align-items-center" @click="moveScroll(word)" style="cursor:pointer; padding:0.4em">
 									{{word}}
 								</div>
 							</div>
@@ -1811,11 +1815,11 @@
 				</div>
 			</div>
 			<hr class="mt-2">
-			<div class="row m-0 p-0 mt-2 mb-3">
+			<div class="row m-0 p-0 mt-2 mb-3 ">
 				<div class="col">
 					<div class="row">
 						<div class="col">
-							<input class="form-control" type="text" v-model="forbiddenWord">
+							<input class="form-control" type="text" v-model="forbiddenWord" @input="forbiddenWord=$event.target.value">
 						</div>
 					</div>
 					<div class="row mt-2">
@@ -1985,12 +1989,11 @@
 				</div>
 				<div class="row modal-body-custom">
 					<div class="row" >
-						<div class="col-3 d-flex justify-content-center item-aligns-center">
+						<div class="col-3 d-flex justify-content-end align-items-center">
 							<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+boardViewContent.boardWithNickDto.imageURL">
 						</div>
-						<div class="col-9">
+						<div class="col-9 d-flex align-items-center">
 							<div class="ms-2" style="font-weight:bold; font-size:1.2em">{{boardViewContent.boardWithNickDto.memberNick}}</div>
-							<div class="ms-2">{{boardViewContent.boardWithNickDto.memberName}}</div>
 						</div>
 					</div>
 					<div class="row p-2">
@@ -3206,6 +3209,8 @@
 		},
 		created(){
 			//데이터 불러오는 영역
+			this.loadMemberList();
+			this.loadReportContent();
 		},
 		watch:{
 			//감시영역
@@ -3324,7 +3329,10 @@
 				if(this.modal==''){
 					this.hideAllModal();
 				}
-			}
+			},
+			forbiddenWord:_.throttle(function(){
+				this.moveScroll(this.forbiddenWord);
+			}, 500),
 		},
 		mounted(){
 			//쿼리 초기화 및 변화 감지
