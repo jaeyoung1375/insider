@@ -573,13 +573,19 @@ display:none;
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-body p-0">
-					<div class="row p-3" @click="showReportMenuModal">
+					<div class="row p-3">
+						<div class="col d-flex justify-content-start align-items-start">
+							<h5 style="margin:0; cursor:default; padding-left:1em">더보기</h5>
+						</div>
+					</div>
+					<hr class="m-0" v-if="reportBoardData[1] != loginMemberNo">
+					<div class="row p-3" v-if="reportBoardData[1] != loginMemberNo" @click="showReportMenuModal">
 						<div class="col d-flex justify-content-center align-items-center" style="color:#dc3545; cursor:pointer">
 							<h5 style="font-weight:bold; margin:0;">신고</h5>
 						</div>
 					</div>
 					
-					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo">
+					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo && reportBoardData[2] == 'board'">
 					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo && reportBoardData[2] == 'board'" @click="updatePost(reportBoardData[0])">
 						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
 							<h5 style="margin:0;">수정</h5>
