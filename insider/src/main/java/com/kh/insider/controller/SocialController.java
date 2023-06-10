@@ -45,31 +45,36 @@ public class SocialController {
          String memberEmail = profile.kakao_account.getEmail();
          String memberPw = socialLoginService.EncryptCoskey(cosKey);
          MemberDto originalMember = memberRepo.findByEmail(profile.kakao_account.getEmail());
-      
-         if(originalMember == null) {
-            System.out.println("회원가입을 진행합니다..");
-            kakaoUser.setMemberNo(memberNo);
-            kakaoUser.setMemberEmail(memberEmail);                   
-            kakaoUser.setMemberPassword(memberPw);
-                                  
-         }else {
-            System.out.println("기존회원이므로 로그인을 진행합니다.");
-            // 로그인 시각 갱신
-            memberRepo.updateLoginTime(originalMember.getMemberNo());
-            // 회원정보
-            session.setAttribute("memberNo", originalMember.getMemberNo());
-            session.setAttribute("memberLevel", originalMember.getMemberLevel());
-            session.setAttribute("memberNick", originalMember.getMemberNick());
-            // 토큰정보
-            session.setAttribute("access_token",token.getAccess_token());
-            // 리프레시 토큰 정보
-            session.setAttribute("refresh_token",token.getRefresh_token());
-            return "redirect:/";
+         try {	
+        	 if(originalMember == null) {
+        		 
+                 System.out.println("회원가입을 진행합니다..");
+                 kakaoUser.setMemberNo(memberNo);
+                 kakaoUser.setMemberEmail(memberEmail);                   
+                 kakaoUser.setMemberPassword(memberPw);
+                                       
+              }else {
+                 System.out.println("기존회원이므로 로그인을 진행합니다.");
+                 // 로그인 시각 갱신
+                 memberRepo.updateLoginTime(originalMember.getMemberNo());
+                 // 회원정보
+                 session.setAttribute("memberNo", originalMember.getMemberNo());
+                 session.setAttribute("memberLevel", originalMember.getMemberLevel());
+                 session.setAttribute("memberNick", originalMember.getMemberNick());
+                 // 토큰정보
+                 session.setAttribute("access_token",token.getAccess_token());
+                 // 리프레시 토큰 정보
+                 session.setAttribute("refresh_token",token.getRefresh_token());
+                 return "redirect:/";
+              }
+        	 
+         }catch(Exception ex) {
+        	 return "redirect:/error/socialError";
          }
+         
+        
          // addInfo로 넘길 정보
          session.setAttribute("loginUser",kakaoUser);
-//         session.setAttribute("member",token.getAccess_token());
-//         session.setAttribute("refresh_token",token.getRefresh_token());
          
          
          return "redirect:/member/addInfo";

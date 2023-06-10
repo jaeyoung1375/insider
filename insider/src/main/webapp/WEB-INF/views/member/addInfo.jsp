@@ -79,6 +79,47 @@
   padding: 25px;
   cursor: pointer;
 }
+.gender-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gender-button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.gender-button.active {
+  background-color: #3f51b5;
+  color: #fff;
+}
+
+.gender-button:not(.active) {
+  background-color: #fff;
+  color: #3f51b5;
+  border: 1px solid #3f51b5;
+  margin: 0 10px;
+}
+
+@media (max-width: 480px) {
+  .gender-buttons {
+    flex-wrap: wrap;
+  }
+
+  .gender-button {
+    flex: none;
+    width: 50%;
+    margin: 10px 0;
+  }
+
+  .gender-button:not(.active) {
+    margin: 0;
+  }
+}
 
         </style>  
         <div class="container col-lg-3 card p-5 mt-5" id="app">
@@ -110,24 +151,23 @@
 	                <p v-if="showNickWarning" class="nick-warning-message">2~10자 한글, 영문 대소문자, 숫자, 특수문자를 사용하세요.</p>
 	                <p v-if="isNickDuplicated" class="email-warning-message">중복된 닉네임 입니다</p>
 	            </div>
-	            
-	            <div class="row form-floating mb-3">
-	                        <select class="form-select" v-model="gender" name="memberGender">
-	                        
-	                        	<option value="">성별</option>
-	                            <option value="0">남성</option>
-	                            <option value="1">여성</option>
-	                         </select>
-	                </div>
+	         
+	         <!-- 성별 -->   
+	        <div class="gender-buttons">
+			  <button type="button" class="gender-button" :class="{ active: gender === 0 }" data-gender="male" @click="selectGender(0)">남성</button>
+			  <button type="button" class="gender-button" :class="{ active: gender === 1 }" data-gender="female" @click="selectGender(1)">여성</button>
+			</div>
+			<input type="hidden" name="memberGender" :value="gender">
 
  
 
-   <div class="row form-floating mb-3">
+   				<div class="row form-floating mb-3" style="margin-top:20px;">
 	                <input class="form-control" type="text" name="memberTel" placeholder="전화번호" v-model="tel" @blur="validateTel" :class="{'is-valid': !showTelWarning && tel !== '', 'is-invalid': showTelWarning || (tel === '' && showTelWarning)}">
 	                  <label for="floatingInput">전화번호<span style="color:red;">*</span></label>
 	                <p v-if="showTelWarning" class="tel-warning-message">유효한 휴대폰번호를 입력해주세요. (예: 010-1234-5678)</p>
 	            </div>
            <div class ="bir_wrap mb-3">
+           	<label style="font-size:14px;">생년월일</label>
 	                <div class="bir_yy">
 	                    <span class="ps_box">
 	                    <!-- 
@@ -154,12 +194,13 @@
 	                </div>
 	                <input type="hidden" name="memberBirth" v-model="formattedMemberBirth">
 	            </div>
-   			<div class="mb-3 input-container row form-floating">
-   					<div class="input-wrapper">
-	                <input type="text" name="memberPost" class="form-control mb-3" placeholder="우편번호" readonly v-model="post">
-	                <button type="button"  @click="findAddress"><i class="fa-solid fa-magnifying-glass fa-xl"></i></button>
-   					</div>
-	       </div>
+	            <!-- 우편번호 -->
+	   	<div class="input-wrapper mb-3 input-container row form-floating">
+	    	<div class="input-group">
+	      	<input type="text" name="memberPost" class="form-control mb-3" placeholder="우편번호" readonly v-model="post">
+	      	<button type="button" @click="findAddress" style="background-color: white;"><i class="fa-solid fa-magnifying-glass fa-lg" style="vertical-align:1.8em"></i></button>
+	    	</div>
+	  </div>
 	             <div class="row form-floating mb-3">
 	                <input type="text" name="memberBasicAddr" class="form-control" placeholder="기본주소" readonly v-model="basicAddr">
 	                  <label for="floatingInput">기본주소 <span style="color:red;">*</span></label>
@@ -185,7 +226,7 @@
 	                    name : '',     
 	                    nickname : '',
 	                    tel : '',
-	                    gender : '',
+	                    gender : 0,
 	                    post : '',
 	                    basicAddr : '',
 	                    detailAddr : '',
@@ -299,6 +340,9 @@
 	                        this.showTelWarning = true;
 	                    }
 	                    
+	                },
+	                selectGender(gender){
+	                	this.gender = gender;
 	                },
 	                
                        

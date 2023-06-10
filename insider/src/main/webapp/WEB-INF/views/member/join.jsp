@@ -70,11 +70,10 @@
   cursor: pointer;
 }
 .timer {
-	position:absolute;
-	right : 0;
-	bottom : 0;
-	margin-bottom:30px;
-	margin-right:10px;
+		right: 0;
+	bottom: 0;
+	margin-bottom: 40px;
+	margin-right: 10px;
 	
 	
 }
@@ -151,7 +150,7 @@
 	                <p v-if="isNickDuplicated" class="email-warning-message">중복된 닉네임 입니다</p>
 	            </div>
 	            <div class="row form-floating mb-3">
-	                <input class="form-control" type="password" name="memberPassword" placeholder="비밀번호" v-model="password" @blur="validatePassword" :class="{'is-valid' : password != '' && !showPasswordWarning, 'is-invalid' : showPasswordWarning }">
+	                <input class="form-control" type="password" name="memberPassword" placeholder="비밀번호" v-model="password" @blur="validatePassword" :class="{'is-valid' : password != '' && !showPasswordWarning && password.length >=8, 'is-invalid' : showPasswordWarning }">
 	                 <label for="floatingInput">비밀번호<span style="color:red;">*</span></label>
 	                <p v-if="showPasswordWarning" class="password-warning-message">8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요.</p>
 	
@@ -162,7 +161,7 @@
 	                <p v-if="showPasswordCkWarning" class="passwordCk-warning-message">비밀번호가 일치하지 않습니다.</p>
 	            </div>
 	              <div class="row form-floating mb-3">
-	                <input class="form-control" type="text" name="memberTel" v-model="tel" @blur="validateTel" :class="{'is-valid': !showTelWarning && tel !== '', 'is-invalid': showTelWarning || (tel === '' && showTelWarning)}">
+	                <input class="form-control" type="text" name="memberTel" v-model="tel" @blur="validateTel" :class="{'is-valid': !showTelWarning && tel !== '' && tel.length >=10, 'is-invalid': showTelWarning || (tel === '' && showTelWarning)}">
 	                 <label for="floatingInput">전화번호 <span style="color:red;">*</span></label>
 	                <p v-if="showTelWarning" class="tel-warning-message">유효한 휴대폰번호를 입력해주세요. (예: 010-1234-5678)</p>
 	            </div>
@@ -173,10 +172,11 @@
 	            <!-- 1단계 끝 -->
 	            
 	            <!-- 2단계 -->
-	            <div :class="{hide: !stepOneHidden || stepTwoHidden}">
+	           <div :class="{hide: !stepOneHidden || stepTwoHidden}">
 	            
 	            <!-- 생년월일 -->
 	           <div class ="bir_wrap mb-3">
+	           	<label style="font-size:14px;">생년월일</label>
 	                <div class="bir_yy">
 	                    <span class="ps_box">	               
 	                      <select v-model="selectedYear" id="year" class="form-select" @blur="saveMemberBirth">
@@ -201,26 +201,19 @@
 	                <input type="hidden" name="memberBirth" v-model="formattedMemberBirth">
 	            </div>
 	            
-	            
-	          <!--  <div class="mb-3 row">
-	                        <select class="form-select" v-model="gender" name="memberGender">
-	                        	<option value="">성별</option>
-	                            <option value="0">남성</option>
-	                            <option value="1">여성</option>
-	                         </select>
-	           </div> -->
-<div class="gender-buttons">
-  <button type="button" class="gender-button" :class="{ active: gender === 0 }" data-gender="male" @click="selectGender(0)">남성</button>
-  <button type="button" class="gender-button" :class="{ active: gender === 1 }" data-gender="female" @click="selectGender(1)">여성</button>
-</div>
+	    
+			<div class="gender-buttons">
+			  <button type="button" class="gender-button" :class="{ active: gender === 0 }" data-gender="male" @click="selectGender(0)">남성</button>
+			  <button type="button" class="gender-button" :class="{ active: gender === 1 }" data-gender="female" @click="selectGender(1)">여성</button>
+			</div>
 <input type="hidden" name="memberGender" :value="gender">
 
 
-	         <div class="mb-3 input-container">
+	         <div class="mb-3 input-container"  style="margin-top:15px;">
   <div class="input-wrapper">
-    <div class="input-group">
+    <div class="input-group" style="max-height:50px;">
       <input type="text" name="memberPost" class="form-control mb-3" placeholder="우편번호" readonly v-model="post">
-      <button type="button" class="btn btn-primary" @click="findAddress"><i class="fa-solid fa-magnifying-glass fa-lg"></i></button>
+      <button type="button" @click="findAddress" style="margin-bottom:-15px;"><i class="fa-solid fa-magnifying-glass fa-lg" style="vertical-align:1.2em"></i></button>
     </div>
   </div>
 </div>
@@ -251,7 +244,7 @@
 	                 <span class="timer" :class="{'hide': !isDisabled }">
   					{{ Math.floor(count / 60) }}: {{ String(count % 60).padStart(2, '0') }}
   					</span>
-	                 <p v-if="showEmailCodeWarning" class="tel-warning-message">인증번호가 일치하지 않습니다</p>
+	                 <p v-if="showEmailCodeWarning && emailCode != null" class="tel-warning-message">인증번호가 일치하지 않습니다</p>
 	             </div>
 	             
 	             
@@ -286,7 +279,7 @@
 	                    password : '',
 	                    passwordCk : '',
 	                    tel : '',
-	                    gender : "1",
+	                    gender : 0,
 	                    post : '',
 	                    basicAddr : '',
 	                    detailAddr : '',
