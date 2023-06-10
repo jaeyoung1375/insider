@@ -431,11 +431,14 @@ display:none;
      
     
      
-     <div v-if="newListFinish"  style="max-width: 620px;  margin: 10px auto 10px auto;">
+     <div v-if="newListFinish && !oldListFinish"  style="max-width: 620px;  margin: 10px auto 10px auto;">
      	<img src="${pageContext.request.contextPath}/static/image/check.png" class="justify-content-center align-items-center" style="width: 150px; height: 150px; margin-left: 230px; margin-bottom: 20px;">
      	<h3 class="justify-content-center text-center">모두 확인했습니다</h3>
      	<h6 class="justify-content-center text-center" style="color:gray; ">최근 3일 동안 올라온 게시물을 모두 확인했습니다.</h6>
      	<h6 class="justify-content-center text-center" @click="loadOldList()" style="color: blue; cursor: pointer;">이전 게시물 보기</h6>     	
+     </div>
+     
+      <div v-else-if="newListFinish && oldListFinish && finish"  style="max-width: 620px;  margin: 10px auto 10px auto;">	
      </div>
     
  
@@ -752,6 +755,7 @@ Vue.createApp({
             
             newListFinish:false, //최근 3일 로드 끝
             oldListStart:false, // 3일 이후 로드 시작
+            oldListFinish:false,// 3일 이후 로드 끝
             
             //안전장치
             loading:false,
@@ -940,7 +944,10 @@ Vue.createApp({
             this.boardList.push(...resp.data);
             this.page++;
             
-            if(resp.data < 2) this.finish = true; //데이터가 2개 미만이면 더 읽을게 없다
+            if(resp.data < 2) {
+            	this.finish = true; //데이터가 2개 미만이면 더 읽을게 없다
+            	this.oldListFinish = true;
+            }
 
             this.loading = false;
         },
