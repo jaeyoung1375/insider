@@ -27,6 +27,7 @@ import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.SettingRepo;
 import com.kh.insider.repo.TagFollowRepo;
+import com.kh.insider.service.ForbiddenService;
 import com.kh.insider.service.MemberService;
 import com.kh.insider.service.ReportService;
 import com.kh.insider.vo.BoardListVO;
@@ -50,6 +51,8 @@ public class MemberRestController {
 	private ReportService reportService;
 	@Autowired
 	private MemberService memberService;
+	@Autowired
+	private ForbiddenService forbiddenService;
 	
 	
 	//멤버정보 불러오기
@@ -142,21 +145,20 @@ public class MemberRestController {
 	@GetMapping("/page/{page}")
 	public List<BoardListVO> paging(@PathVariable int page, @RequestParam long memberNo){
 		
-		return boardRepo.myPageSelectListPaging(page, memberNo);
+		return forbiddenService.changeForbiddenWords(boardRepo.myPageSelectListPaging(page, memberNo));
 	}
 	
 	@GetMapping("/postList")
 	public List<BoardDto> postList(@RequestParam long memberNo){
 		
 		List<BoardDto> getTotalPost = boardRepo.getTotalMyPost(memberNo);
-		System.out.println(getTotalPost);
-		return getTotalPost;
+		return forbiddenService.changeForbiddenBoard(getTotalPost);
 	}
 	
 	@GetMapping("/bookmarkMyPost")
 	public List<BoardListVO> bookmarkMyPost(HttpSession session){
 		long memberNo = (long) session.getAttribute("memberNo");
-		return boardRepo.bookmarkMyPost(memberNo);
+		return forbiddenService.changeForbiddenWords(boardRepo.bookmarkMyPost(memberNo));
 	}
 	
 	//닉네임 중복 확인
