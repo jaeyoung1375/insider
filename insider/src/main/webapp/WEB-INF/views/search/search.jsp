@@ -164,7 +164,7 @@
 		padding-left: 35px;
 	} 
 </style>
-<div class="container-fluid mt-4" id="app" style="width:55%">
+<div class="container-fluid mt-4" id="app" style="width:55%; min-width:800px">
 	<div class="row">
 		<div class="col p-0">
 		<!-- 검색창 -->
@@ -258,7 +258,7 @@
 				</div>
 			</div>
 			<!-- 게시물 더보기 -->
-			<div v-if="finish && !additionalFinish"  style="max-width: 620px;  margin: 10px auto 10px auto;">
+			<div v-if="finish && !additionalFinish && !additionalButton"  style="max-width: 620px;  margin: 10px auto 10px auto;">
 				<img src="${pageContext.request.contextPath}/static/image/check.png" class="justify-content-center align-items-center" style="width: 150px; height: 150px; margin-left: 230px; margin-bottom: 20px;">
 				<h3 class="justify-content-center text-center">모두 확인했습니다</h3>
 				<h6 class="justify-content-center text-center" style="color:gray; ">{{memberSetting.watchDistance}}km 이내의 게시물을 모두 확인했습니다.</h6>
@@ -333,7 +333,6 @@
 													
 							</a>
 							<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em; margin-left: 3.5px;">{{replyList[index].replyContent}}</p>
-	<!-- 						<p style="padding-left:4.0em;margin-bottom:1px;font-size:0.8em; color:gray;"> -->
 							<div class="row" style="height: 25px">
 								<div class="col-10">
 									<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
@@ -347,9 +346,6 @@
 									<p class="d-flex align-items-center"><i class="fa-solid fa-ellipsis modal-click-btn-neutral" style="display:flex; flex-direction: row-reverse;" @click="showAdditionalMenuModal(reply.replyNo, reply.replyMemberNo, 'reply',index,detailIndex)"></i></p>
 								</div>
 							</div>
-	<!-- 						<p v-if="replyList[index].replyParent == 0"> -->
-	<!-- 							<span @click="showReReply(reply.replyNo, index)" style="cursor:pointer; padding-left:4em; font-size:0.8em; color:gray;">{{replyStatus(index)}}</span> -->
-	<!-- 						</p> -->
 						</div>
 						
 						<div v-else class="card-text" style="position: relative;">
@@ -415,13 +411,19 @@
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-body p-0">
-					<div class="row p-3" @click="showReportMenuModal">
+					<div class="row p-3">
+						<div class="col d-flex justify-content-start align-items-center">
+							<h5 style="margin:0; cursor:default">더보기</h5>
+						</div>
+					</div>
+					<hr class="m-0" v-if="reportBoardData[1] != loginMemberNo">
+					<div class="row p-3" v-if="reportBoardData[1] != loginMemberNo" @click="showReportMenuModal">
 						<div class="col d-flex justify-content-center align-items-center" style="color:#dc3545; cursor:pointer">
 							<h5 style="font-weight:bold; margin:0;">신고</h5>
 						</div>
 					</div>
 					
-					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo">
+					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo && reportBoardData[2] == 'board'">
 					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo && reportBoardData[2] == 'board'" @click="updatePost(reportBoardData[0])">
 						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
 							<h5 style="margin:0;">수정</h5>
@@ -429,12 +431,11 @@
 					</div>
 					
 					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo" >
-					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo" @click="deletePost(reportBoardData[0])">
+					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo" @click="deleteTool">
 						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
 							<h5 style="margin:0;">삭제</h5>
 						</div>
 					</div>
-					
 					
 					<!-- 메뉴 구분선 -->
 					<hr class="m-0">
@@ -631,6 +632,7 @@
 			},
 			async loadAdditionalList(){
 				if(this.additionalLoading||this.additionalFinish||!this.finish) return;
+				this.additionalButton=true;
 				this.additionalLoading=true;
 				const resp = await axios.get(contextPath+"/rest/board/additionalList/"+this.additionalPage);
 				for (const board of resp.data) {

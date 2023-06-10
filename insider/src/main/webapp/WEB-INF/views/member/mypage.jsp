@@ -340,7 +340,7 @@
             
      <!-- 게시물 시작 -->
      <!-- 비공개 계정 -->
-<div class="position-absolute mt-5 start-50 translate-middle-x media-width" style="display: flex; flex-direction: column; width: 770px; height: 700px;" v-if="(settingHide === 3 && !isOwner) || settingHide === 2 && followCheckIf(${memberDto.memberNo}) && !isOwner">
+<div class="position-absolute mt-5 start-50 translate-middle-x media-width" style="display: flex; flex-direction: column; width: 770px; height: 700px;" v-if="(settingHide === 3 && !isOwner) && settingHide === 2 && followCheckIf(${memberDto.memberNo}) && !isOwner">
  	   <div style="display: flex;flex-direction: column; justify-content: center; align-items: center;">    
    <img src="${pageContext.request.contextPath}/static/image/lock.png" width="200" height="200">
    <h4 class="mt-5 text-center">비공개 계정입니다 사진 및 동영상을 보려면 팔로우하세요.</h4>
@@ -367,13 +367,13 @@
    <div class="mypage-tab" v-if="isOwner">
     <ul class="nav nav-tabs" style="width: 100%;">
     <li class="nav-item col-6">
-       <a class="nav-link" :class="{'active': actTab === 'boardTab'}" @click="changeTab2('boardTab')" style="font-size:17px; padding:14px 0;">
+       <a class="nav-link" :class="{'active': actTab === 'boardTab'}" @click="changeTab2('boardTab')" style="font-size:17px; padding:14px 0; cursor:pointer;">
        <i class="fa-solid fa-chess-board"></i>
        게시물
        </a>
     </li>
     <li class="nav-item col-6">
-      <a class="nav-link" :class="{'active': actTab === 'bookmarkTab'}" @click="changeTab2('bookmarkTab')" style="font-size:17px; padding:14px 0;">
+      <a class="nav-link" :class="{'active': actTab === 'bookmarkTab'}" @click="changeTab2('bookmarkTab')" style="font-size:17px; padding:14px 0; cursor:pointer;">
       <i class="fa-solid fa-bookmark"></i>
       저장됨
       </a>
@@ -492,8 +492,15 @@
          <div class="col-4" style="padding-left: 0;">
         	<div class="card bg-light" style="border-radius:0; height: 700px">
            		<div class="card-header">
-	           		<!-- <img class="profile" :src="profileUrl(detailIndex)"> -->
-           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+myBoardList[detailIndex].boardWithNickDto.memberNick"><b>{{myBoardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
+       				<div class="row">
+           				<div class='col-10'>
+			           		<img class="profile" :src="profileUrl">
+		           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+myBoardList[detailIndex].boardWithNickDto.memberNick"><b>{{myBoardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
+           				</div>
+           				<div class="col d-flex justify-content-center align-items-center">
+           					<i class="fa-solid fa-ellipsis modal-click-btn-neutral" style="display:flex; flex-direction: row-reverse; font-size:1.2em" @click="showAdditionalMenuModal(myBoardList[detailIndex].boardWithNickDto.boardNo, myBoardList[detailIndex].boardWithNickDto.memberNo, 'board')"></i>
+           				</div>
+           			</div>
            		</div>
 				
 				<div class="card-body card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
@@ -506,26 +513,26 @@
 					
 					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
 						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="color:black;text-decoration:none; position:relative;">
-							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="42" height="42" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
-							<img v-else src="https://via.placeholder.com/42x42?text=profile" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
+							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="45" height="45" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
+							<img v-else src="https://via.placeholder.com/45x45?text=profile" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
 							
-							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; font-weight: bold;">{{replyList[index].memberNick}}
-							</p>							
+						<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; margin-left: 3.5px; font-weight: bold;">{{replyList[index].memberNick}}</p>
+												
 						</a>
-						<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em;">{{replyList[index].replyContent}}</p>
-<!-- 						<p style="padding-left:4.0em;margin-bottom:1px;font-size:0.8em; color:gray;"> -->
-						<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
-							<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
-							<i :class="{'fa-heart': true, 'like':isReplyLiked[index],'ms-2':true, 'fa-solid': isReplyLiked[index], 'fa-regular': !isReplyLiked[index]}" @click="likeReply(reply.replyNo,index)" style="font-size: 0.9em;"></i>
-							&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-							<i v-if="replyList[index].replyMemberNo == ${memberNo}" @click="replyDelete(index,detailIndex)" class="fa-solid fa-xmark" style="color:red; cursor: pointer;"></i>
-							
-							
-						</p>
-						
-<!-- 						<p v-if="replyList[index].replyParent == 0"> -->
-<!-- 							<span @click="showReReply(reply.replyNo, index)" style="cursor:pointer; padding-left:4em; font-size:0.8em; color:gray;">{{replyStatus(index)}}</span> -->
-<!-- 						</p> -->
+						<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em; margin-left: 3.5px;">{{replyList[index].replyContent}}</p>
+						<div class="row" style="height: 25px">
+							<div class="col-10">
+								<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
+									<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
+									<i :class="{'fa-heart': true, 'like':isReplyLiked[index],'ms-2':true, 'fa-solid': isReplyLiked[index], 'fa-regular': !isReplyLiked[index]}" @click="likeReply(reply.replyNo,index)" style="font-size: 0.9em;"></i>
+									
+								</p>
+							</div>
+						<!-- 댓글 신고창 -->
+							<div class="col-2 p-0 d-flex justify-content-center">
+								<p class="d-flex align-items-center"><i class="fa-solid fa-ellipsis modal-click-btn-neutral" style="display:flex; flex-direction: row-reverse;" @click="showAdditionalMenuModal(reply.replyNo, reply.replyMemberNo, 'reply',index,detailIndex)"></i></p>
+							</div>
+						</div>
 					</div>
 					
 					<div v-else class="card-text" style="position: relative;">
@@ -585,6 +592,8 @@
                
                 <div class="carousel-inner">
                   <div  v-for="(attach, index2) in bookmarkMyPostList[detailIndex2].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
+                  	<video  style="width:700px; height:700px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+attach.imageURL" v-if="attach.video"
+							:autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex2)"></video> 
                    	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex2)" style="width:700px; height:700px;"> 
                   </div>
                 </div>
@@ -603,8 +612,16 @@
 		<div class="col-4" style="padding-left: 0;">
         	<div class="card bg-light" style="border-radius:0; height: 700px">
            		<div class="card-header">
+           		    <div class="row">
+           				<div class='col-10'>
+			           		<img class="profile" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+bookmarkMyPostList[detailIndex2].boardWithNickDto.imageURL">
+		           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick"><b>{{bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick}}</b></a>
+           				</div>
+           				<div class="col d-flex justify-content-center align-items-center">
+           					<i class="fa-solid fa-ellipsis modal-click-btn-neutral" style="display:flex; flex-direction: row-reverse; font-size:1.2em" @click="showAdditionalMenuModal(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo, bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNo, 'board')"></i>
+           				</div>
+           			</div>
 	           		<!-- <img class="profile" :src="profileUrl(detailIndex)"> -->
-           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick"><b>{{bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick}}</b></a>
            		</div>
 				
 				<div class="card-body card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
@@ -617,26 +634,26 @@
 					
 					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
 						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="color:black;text-decoration:none; position:relative;">
-							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="42" height="42" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
-							<img v-else src="https://via.placeholder.com/42x42?text=profile" style="border-radius: 70%;position:absolute; margin-top:5px; margin-left: 4px">
+							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="45" height="45" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
+							<img v-else src="https://via.placeholder.com/45x45?text=profile" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
 							
-							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; font-weight: bold;">{{replyList[index].memberNick}}
-							</p>							
+						<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; margin-left: 3.5px; font-weight: bold;">{{replyList[index].memberNick}}</p>
+												
 						</a>
-						<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em;">{{replyList[index].replyContent}}</p>
-<!-- 						<p style="padding-left:4.0em;margin-bottom:1px;font-size:0.8em; color:gray;"> -->
-						<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount2[index]}}개 &nbsp;
-							<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
-							<i :class="{'fa-heart': true, 'like':isReplyLiked2[index],'ms-2':true, 'fa-solid': isReplyLiked2[index], 'fa-regular': !isReplyLiked2[index]}" @click="likeReply2(reply.replyNo,index)" style="font-size: 0.9em;"></i>
-							&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-							<i v-if="replyList[index].replyMemberNo == ${memberNo}" @click="replyDelete2(index,detailIndex2)" class="fa-solid fa-xmark" style="color:red; cursor: pointer;"></i>
-							
-							
-						</p>
-						
-<!-- 						<p v-if="replyList[index].replyParent == 0"> -->
-<!-- 							<span @click="showReReply(reply.replyNo, index)" style="cursor:pointer; padding-left:4em; font-size:0.8em; color:gray;">{{replyStatus(index)}}</span> -->
-<!-- 						</p> -->
+						<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em; margin-left: 3.5px;">{{replyList[index].replyContent}}</p>
+						<div class="row" style="height: 25px">
+							<div class="col-10">
+								<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
+									<a style="cursor: pointer;" v-if="reply.replyParent==0" @click="reReply(replyList[index].replyNo)">답글 달기</a>  
+									<i :class="{'fa-heart': true, 'like':isReplyLiked[index],'ms-2':true, 'fa-solid': isReplyLiked[index], 'fa-regular': !isReplyLiked[index]}" @click="likeReply(reply.replyNo,index)" style="font-size: 0.9em;"></i>
+									
+								</p>
+							</div>
+						<!-- 댓글 신고창 -->
+							<div class="col-2 p-0 d-flex justify-content-center">
+								<p class="d-flex align-items-center"><i class="fa-solid fa-ellipsis modal-click-btn-neutral" style="display:flex; flex-direction: row-reverse;" @click="showAdditionalMenuModal(reply.replyNo, reply.replyMemberNo, 'reply',index,detailIndex)"></i></p>
+							</div>
+						</div>
 					</div>
 					
 					<div v-else class="card-text" style="position: relative;">
@@ -724,7 +741,7 @@
                     </div>
                      
                        <div class="modal-header" style="display:flex; justify-content: center;">
-                        <div class="row" @click="showReportMenuModal">
+                        <div class="row" @click="showReportMenuModal(${memberDto.memberNo},${memberDto.memberNo},'member')">
                         	<div class="col modal-btn-click-negative d-flex justify-content-center align-items-center">
                         		<h5>신고</h5>
                         	</div>
@@ -831,7 +848,7 @@
                             data-bs-backdrop="static"
                             ref="followerModal" @click.self="followerModalHide">	
             <div class="modal-dialog" role="document">
-                   <div class="modal-content" style="max-width:400px; min-height:300px; max-height:400px;">
+                   <div class="modal-content" style="max-width:400px; min-height:400px; max-height:400px;">
                        <div class="modal-header text-center" style="display:flex; justify-content: center; height:50px;">
 							<h5 class="modal-title">팔로워</h5>
                        </div>
@@ -839,24 +856,28 @@
                      	<div v-for="item in myFollowerList" :key="item.attachmentNo">
                      	 						
                   <!-- 프로필 미리보기 내용 -->
-  					<div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave" style="border-radius:15px; margin-left:70px; margin-bottom:70px;">
+  					<div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave" style="border-radius:15px; margin-left:550px; margin-top:-40px;">
                   <div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" style="border-radius: 50%;"> 
-						  <div>
+						  <div style="margin-left:20px;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
 						    <p class="modalName">{{ item.memberName }}</p>
 						  </div>
 					</div>
                     <hr>
-                    <div class="col-7" style="display: flex; margin-left: 10px;">
+                    <div class="col-7" style="display: flex; margin-left: 45px;">
                     	<div class="col-6">
-                    		<span>게시물 <span style="font-weight: bold;">{{postCounts}}</span></span>
+                    		<span style="color:gray;">게시물</span>
+                    			<p style="font-weight: bold; margin-left:20px;">{{postCounts}}</p>
+                    		
                     	</div>
                     	<div class="col-6">
-                    		<span>팔로워 <span style="font-weight: bold;">{{followerCounts}}</span></span>
+                    		<span style="color:gray;">팔로워</span>
+                    			<p style="font-weight: bold; margin-left:20px;">{{followerCounts}}</p>                   	
                     	</div>
                     	<div class="col-6">
-							<span>팔로우 <span style="font-weight: bold;">{{followCounts}}</span></span>
+							<span style="color:gray;">팔로우</span>
+								<p style="font-weight: bold; margin-left:20px;">{{followCounts}}</p>
                     	</div>
                     </div>
                     <div class="col-6">
@@ -871,7 +892,7 @@
 							</div>
 						</template>
 											<!-- 비공개 계정 || 친구에게만 공개 && 팔로우 목록에 있다면 -->
-						<template v-else-if="hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)">
+						<template v-else-if="(hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)) && ${memberNo} != item.memberNo">
 						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
 							  <div style="width:500px; margin-left:160px;">
 							    <img src="${pageContext.request.contextPath}/static/image/lock.png" width="60" height="60">
@@ -882,7 +903,7 @@
 						</template>
 					   
 					    <template v-else>
-					      <div v-for="post in hoverPostList2" :key="post.id">
+					      <div v-for="(post,index) in hoverPostList2" :key="post.id">
 					        <!-- 게시물 정보 출력 -->
 					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.attachmentNo" width="127" height="150" style="margin-right:3px;">
 					      </div>
@@ -903,7 +924,7 @@
           </div><!-- 팔로워 미리보기 끝 -->
 						  <div style="display: flex; align-items: center;">
 						   <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover(item)" style="border-radius:50%;">
-						   		<div style="display: flex; flex-direction: column; justify-content: flex-start;">
+						   		<div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
   						 	<a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
   						 	<p class="modalName">{{item.memberName}}</p>
   						 		</div>
@@ -945,7 +966,7 @@
         <div v-for="item in myFollowList" :key="item.attachmentNo">
       		 	<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
           			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover2(item)" style="border-radius:50%;">
-						   <div style="display: flex; flex-direction: column; justify-content: flex-start;">
+						   <div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
           					<p class="modalName">{{item.memberName}}</p>
 						  </div>
@@ -953,30 +974,31 @@
           <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-show="!followCheckIf(item.followFollower) && !${isOwner}" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
           <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-show="!followCheckIf(item.followFollower) && ${isOwner}" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">삭제</button>
           </div>
-            <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave" style="border-radius:15px; margin-left:70px; margin-bottom:70px;">
+            <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave" style="border-radius:15px; margin-left:550px; margin-top:-40px;">
                   <!-- 프로필 미리보기 내용 -->
                    	<div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" style="border-radius: 50%;"> 
-						  <div>
+						  <div style="margin-left:20px;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
 						    <p class="modalName">{{ item.memberName }}</p>
 						  </div>
 					</div>
                     <hr>
-                    <div class="col-7" style="display: flex; margin-left: 10px;">
+                    <div class="col-7" style="display: flex; margin-left: 45px;">
                     	<div class="col-6">
-                    		<span>게시물 <span style="font-weight: bold;">{{postCounts}}</span></span>
+                    		<span style="color:gray;">게시물</span>
+                    		<p style="font-weight: bold; margin-left:20px;">{{postCounts}}</p>
                     	</div>
                     	<div class="col-6">
-                    		<span>팔로워 <span style="font-weight: bold;">{{followerCounts}}</span></span>
+                    		<span style="color:gray;">팔로워</span>
+                    			<p style="font-weight: bold; margin-left:20px;">{{followerCounts}}</p>
                     	</div>
                     	<div class="col-6">
-<!--                     		<span>팔로우 <span style="font-weight: bold;">{{getTotalFollowCount(item.memberNick)}}</span></span> -->
-							<span>팔로우 <span style="font-weight: bold;">{{followCounts}}</span></span>
+							<span style="color:gray;">팔로우</span>
+								<p style="font-weight: bold; margin-left:20px;">{{followCounts}}</p>	
                     	</div>
                     </div>
-                    <hr>
-                    <div class="col-6">
+		                    <div class="col-6">
                     	<div style="display:flex;">
                     	<template v-if="hoverPostList.length === 0">
 						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
@@ -988,8 +1010,9 @@
 							</div>
 						</template>
 						
+						
 						<!-- 비공개 계정 || 친구에게만 공개 && 팔로우 목록에 있다면 -->
-						<template v-else-if="hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)">
+						<template v-else-if="(hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)) && ${memberNo} != item.memberNo">
 						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
 							  <div style="width:500px; margin-left:160px;">
 							    <img src="${pageContext.request.contextPath}/static/image/lock.png" width="60" height="60">
@@ -1018,7 +1041,6 @@
                  
           </div> <!-- 팔로우 미리보기 끝 -->
           
-          
 			</div>
 			<i class="fa-solid fa-spinner fa-spin" v-show="followLoading && !followFinish"></i>
       		</div>
@@ -1036,12 +1058,13 @@
       		  		<div v-for="item in hashtagList" key="item.memberNo" v-else>
 					<div  style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll">
           			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60"style="border-radius:50%;">
-						   <div style="display: flex; flex-direction: column; justify-content: flex-start;">
+						   <div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/tag/' + item.tagName" style="margin-left:5px;">{{'#' + item.tagName }}</a>
           					<p class="modalName" style="margin-left:5px;">게시물 {{item.tagCount}}</p>
 						  </div>
 							  <button class="float-end btn btn-primary" @click="tagFollow(item.tagName)" style="margin-left:auto;" v-show="tagFollowCheckIf(item.tagName)">팔로우</button>	
-							  <button class="float-end btn btn-secondary" @click="tagUnFollow(item.tagName)" style="margin-left:auto;" v-show="!tagFollowCheckIf(item.tagName)">팔로잉</button>					  
+							  <button class="float-end btn btn-secondary" @click="tagUnFollow(item.tagName)" style="margin-left:auto;" v-show="!tagFollowCheckIf(item.tagName) && !${isOwner}">팔로잉</button>					  
+							  <button class="float-end btn btn-secondary" @click="tagUnFollow(item.tagName)" style="margin-left:auto;" v-show="!tagFollowCheckIf(item.tagName) && ${isOwner}">삭제</button>					  
 					</div>
       		  	</div>
       		</div>
@@ -1196,7 +1219,115 @@
 		</div>
 	</div>
 	</div>
-
+<!-- ---------------------------------추가 메뉴 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="additionalMenuModal" data-bs-backdrop="static" ref="additionalMenuModal" style="z-index:9999">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content">
+				<div class="modal-body p-0">
+					<div class="row p-3">
+						<div class="col d-flex justify-content-start align-items-start">
+							<h5 style="margin:0; cursor:default; padding-left:1em">더보기</h5>
+						</div>
+					</div>
+					<hr class="m-0" v-if="reportBoardData[1] != ${sessionScope.memberNo}">
+					<div class="row p-3" v-if="reportBoardData[1] != ${sessionScope.memberNo}" @click="showReportMenuModal">
+						<div class="col d-flex justify-content-center align-items-center" style="color:#dc3545; cursor:pointer">
+							<h5 style="font-weight:bold; margin:0;">신고</h5>
+						</div>
+					</div>
+					
+					<hr class="m-0" v-if="reportBoardData[1] == ${sessionScope.memberNo} && reportBoardData[2] == 'board'">
+					<div class="row p-3" v-if="reportBoardData[1] == ${sessionScope.memberNo} && reportBoardData[2] == 'board'" @click="updatePost(reportBoardData[0])">
+						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
+							<h5 style="margin:0;">수정</h5>
+						</div>
+					</div>
+					
+					<hr class="m-0" v-if="reportBoardData[1] == ${sessionScope.memberNo}" >
+					<div class="row p-3" v-if="reportBoardData[1] == ${sessionScope.memberNo}" @click="deleteTool">
+						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
+							<h5 style="margin:0;">삭제</h5>
+						</div>
+					</div>
+					
+					
+					<!-- 메뉴 구분선 -->
+					<hr class="m-0">
+					<div class="row p-3" @click="hideAdditionalMenuModal">
+						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
+							<h5 style="margin:0;">취소</h5>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<!-- ---------------------------------신고 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal" style="z-index:9999">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content" >
+				<div class="modal-header">
+					<h5 class="modal-title" style="font-weight:bold; text-align:center">신고</h5>
+					<button type="button" class="btn-close" @click="hideReportMenuModal" aria-label="Close">
+					<span aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="modal-body">
+				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
+					<div class="row">
+						<div class="col d-flex p-3">
+							<h5 style="margin:0;">이 게시물을 신고하는 이유</h5>
+						</div>
+					</div>
+					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo" style="border-top:var(--bs-modal-border-width) solid var(--bs-modal-border-color)">
+						<div class="col d-flex p-2 report-content" @click="reportContent(report.reportListContent)" style="cursor:pointer">
+							<h5 style="margin:0; margin-left:1em">{{report.reportListContent}}</h5>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" @click="hideReportMenuModal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+<!-- ---------------------------------신고 후 차단 모달-------------------------- -->
+	<div class="modal" tabindex="-1" role="dialog" id="blockModal2" data-bs-backdrop="static" ref="blockModal2" style="z-index:9999">
+		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="row mt-2 mb-2">
+						<div class="col d-flex justify-content-center align-items-center">
+							<i class="fa-regular fa-circle-check" style="color:#198754; font-size:10em"></i>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col d-flex justify-content-center align-items-center">
+							<h5 class="modal-title" style="font-weight:bold; text-align:center">알려주셔서 고맙습니다</h5>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col d-flex justify-content-center align-items-center">
+							<span>회원님의 소중한 의견은 Insider 커뮤니티를</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col d-flex justify-content-center align-items-center">
+							<span> 안전하게 유지하는 데 도움이 됩니다.</span>
+						</div>
+					</div>
+					<div class="row mt-2">
+						<div class="col d-flex p-3 justify-content-center" @click="blockUser" style="color:#dc3545; cursor:pointer" v-if="reportBoardData[3]!=null && reportBoardData[3].length>0">
+							<h5 style="margin:0;">{{reportBoardData[3]}}님 차단</h5>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" @click="hideBlockModal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
         <!-- Modal 창 영역 끝 -->
         
       
@@ -1321,9 +1452,13 @@
 			isFollowing : false, // 해시태그 팔로잉 여부
 			/*----------------------신고----------------------*/
 			//추가 메뉴 모달 및 신고 모달
+			additionalMenuModal:null,
 			reportMenuModal:null,
+			blockModal:null,
+			blockModal2:null,
 			//신고 메뉴 리스트
 			reportContentList:[],
+			reportBoardData:[],
 			/*----------------------신고----------------------*/
 			isLoading : false, // 추천 목록 로딩
 			actTab : 'boardTab', // 초기 선택된 탭은 'boardTab'입니다.
@@ -1888,7 +2023,7 @@
              	  console.log("item : "+item.followFollower);
              	  
              	  // settingHide 불러오기 위해서 선언
-             	const resp = await axios.get("/rest/member/setting/"+item.memberNo);
+             	const resp = await axios.get("/rest/member/setting/"+item.followFollower);
              	  const settingHide = resp.data.settingHide;
              	 
              	  
@@ -1956,7 +2091,8 @@
              	},
             async memberSetting(){
              	const resp = await axios.get("/rest/member/setting/" +this.memberNo);
-             	this.settingHide = resp.data.settingHide;           	
+             	this.settingHide = resp.data.settingHide; 
+             	console.log("settingHide :"+this.settingHide);
              },
              
              //댓글 조회
@@ -2368,9 +2504,12 @@
 					window.location.href=contextPath+"/tag/"+tagName;
 				},
              	
-                /*----------------------신고----------------------*/
+         /*----------------------신고----------------------*/
                 //신고 모달 show, hide
-        		showReportMenuModal(){
+        		showReportMenuModal(boardNo, reportMemberNo, reportTable, index, detailIndex){
+					if(reportTable!=null && reportTable=='member'){
+	    				this.reportBoardData=[boardNo, reportMemberNo, reportTable, index, detailIndex];
+					}
         			if(this.reportMenuModal==null) return;
         			this.reportMenuModal.show();
         			this.myOptionModalHide();
@@ -2380,22 +2519,35 @@
         			if(this.reportMenuModal==null) return;
         			this.reportMenuModal.hide();
         		},
+        		showBlockModal(){
+    				if(this.blockModal2==null) return;
+    				this.blockModal2.show();
+    				this.reportMenuModal.hide();
+    			},
+    			hideBlockModal(){
+    				if(this.blockModal2==null) return;
+    				this.blockModal2.hide();
+    			},
         		//신고 목록 불러오기
         		async loadReportContent(){
         			const resp = await axios.get(contextPath+"/rest/reportContent/");
         			this.reportContentList = [...resp.data];
         		},
         		//신고
-        		async reportContent(reportContent){
-        			const data={
-        				reportContent:reportContent,
-        				reportTableNo:${memberDto.memberNo},
-        				reportTable:'member',
-        				reportMemberNo:${memberDto.memberNo},
-        			}
-        			const resp = await axios.post(contextPath+"/rest/report/", data)
-        			this.hideReportMenuModal();
-        		},
+    			async reportContent(reportContent){
+    				const data={
+    					reportContent:reportContent,
+    					reportTableNo:this.reportBoardData[0],
+    					reportTable:this.reportBoardData[2],
+    					reportMemberNo:this.reportBoardData[1],
+    				}
+    				const resp = await axios.post(contextPath+"/rest/report/", data)
+    				this.hideReportMenuModal();
+    				if(resp.data.length!=0){
+    					this.reportBoardData[3] = resp.data.memberNick;
+    				}
+    				this.showBlockModal();
+    			},
         		//차단
         		async blockUser(){
         			const resp = await axios.put(contextPath+"/rest/block/"+${memberDto.memberNo});
@@ -2404,7 +2556,41 @@
         				this.blockResultModalShow();
         			}
         		},
-        		/*----------------------신고----------------------*/
+        		showAdditionalMenuModal(boardNo, reportMemberNo, reportTable, index, detailIndex){
+    				this.reportBoardData=[boardNo, reportMemberNo, reportTable, index, detailIndex];
+    				if(this.additionalMenuModal==null) return;
+    				this.additionalMenuModal.show();
+    			},
+    			hideAdditionalMenuModal(){
+    				if(this.additionalMenuModal==null) return;
+    				this.additionalMenuModal.hide();
+    			},
+    			//삭제
+    			deleteTool(){
+    				if(this.reportBoardData[2] == 'board'){
+    					this.deletePost(this.reportBoardData[0]);
+    				}
+    				else {
+    					this.replyDelete(this.reportBoardData[3],this.reportBoardData[4]);
+    				}
+    			},
+    			//게시물 수정
+    	        updatePost(boardNo){
+    	        	window.location.href = "${pageContext.request.contextPath}/board/edit?boardNo="+ boardNo;
+    	        },
+    	        
+    	        //게시물 삭제
+    	        deletePost(boardNo){
+    	        	//window.location.href = "${pageContext.request.contextPath}/search";
+    	        	const confirmed = confirm("게시물을 삭제하시겠습니까?");
+    	        	if(confirmed){
+    	        		window.location.href = "${pageContext.request.contextPath}/board/delete?boardNo=" + boardNo;
+    	        	}
+    	        	else{
+    	        		return;
+    	        	}
+    	        },
+      	/*----------------------신고----------------------*/
         		
         		// 추천목록 reload
         		async recommendListReloading(){
@@ -2504,6 +2690,8 @@
             this.modal = new bootstrap.Modal(this.$refs.modal03);
             this.addtionModal = new bootstrap.Modal(this.$refs.addtionModal);
             this.blockModal = new bootstrap.Modal(this.$refs.blockModal);
+            this.blockModal2 = new bootstrap.Modal(this.$refs.blockModal2);
+
             this.blockResultModal = new bootstrap.Modal(this.$refs.blockResultModal);
             this.myOptionModal = new bootstrap.Modal(this.$refs.myOptionModal);
             this.followerModal = new bootstrap.Modal(this.$refs.followerModal);
@@ -2511,7 +2699,7 @@
             this.recommendFriendsAllListModal = new bootstrap.Modal(this.$refs.recommendFriendsAllListModal);
             this.deleteMemberModal = new bootstrap.Modal(this.$refs.deleteMemberModal);
             this.likeListModal = new bootstrap.Modal(this.$refs.likeListModal);
-        
+            this.additionalMenuModal = new bootstrap.Modal(this.$refs.additionalMenuModal);
             window.addEventListener("scroll", _.throttle(()=>{
             
             const height = document.documentElement.scrollHeight - window.innerHeight;

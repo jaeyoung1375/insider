@@ -166,6 +166,14 @@
 .hide{
 display:none;
 }
+.modalNickName{
+	text-decoration: none;
+	color:black;
+	font-weight: bold;
+}
+.modalName{
+	color:gray;
+}
 </style>
 
 <script>
@@ -206,7 +214,7 @@ display:none;
 
 <div id="app"class="darkmode">
 	<!-- 친구추천 -->
-		<div class="container recommend">
+		<div class="container recommend" v-show="recommendFriendsList.length > 0">
 		
 		<div class="d-flex justify-content-end">
 			<p style="font-size:12px; color:gray;">회원님을 위한 친구추천</p>
@@ -347,23 +355,26 @@ display:none;
                    	<div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' +board.boardWithNickDto.attachmentNo" width="75" height="75" style="border-radius: 50%;" @mouseleave="profileLeave"> 
 						  <div>
-						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + board.boardWithNickDto.memberNick">{{ board.boardWithNickDto.memberNick }}</a>
-						    <p class="modalName">{{ board.boardWithNickDto.memberName }}</p>
+						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + board.boardWithNickDto.memberNick" style="margin-left:20px;">{{ board.boardWithNickDto.memberNick }}</a>
 						  </div>
 					</div>
                     <hr>
-                    <div class="col-7" style="display: flex; margin-left: 10px;">
+                    <div class="col-7" style="display: flex; margin-left: 45px;">
                     	<div class="col-6">
-                    		<span>게시물 <span style="font-weight: bold;">{{postCounts}}</span></span>
+                    		<span style="color:gray;">게시물</span>
+                    		<p style="font-weight: bold; margin-left:20px;">{{postCounts}}</p>
                     	</div>
                     	<div class="col-6">
-                    		<span>팔로워 <span style="font-weight: bold;">{{followerCounts}}</span></span>
+                    		<span style="color:gray;">팔로워</span>
+                    		<p style="font-weight: bold; margin-left:20px;">{{followerCounts}}</p>
+                    		
                     	</div>
                     	<div class="col-6">
-							<span>팔로우 <span style="font-weight: bold;">{{followCounts}}</span></span>
+							<span style="color:gray;">팔로우</span>
+							<p style="font-weight: bold; margin-left:20px;">{{followCounts}}</p>
+							
                     	</div>
                     </div> 
-                      <hr>
                     <div class="col-6">
                    
                     	<div style="display:flex;">
@@ -375,10 +386,11 @@ display:none;
 							    <p style="font-size: 12px; margin-top: 0;">{{board.boardWithNickDto.memberNick}}님이 사진과 릴스를 공유하면 여기에 표시됩니다.</p>
 							  </div>
 							</div>
+						
 						</template> 
 						
 						<!--  비공개 계정 || 친구에게만 공개 && 팔로우 목록에 있다면  -->
-					<template v-else-if="hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)">
+					<template v-else-if="(hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)) && ${memberNo} != board.boardWithNickDto.memberNo">
 						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
 							  <div style="width:500px; margin-left:160px;">
 							    <img src="${pageContext.request.contextPath}/static/image/lock.png" width="60" height="60">
@@ -391,14 +403,17 @@ display:none;
 						
 				
 					    <template v-else>
-					      <div v-for="post in hoverPostList" :key="post.id">
+					      <div v-for="(post,index) in hoverPostList" :key="post.id">
 					        <!-- 게시물 정보 출력 -->
 					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.attachmentNo" width="127" height="150" style="margin-right:3px;">
+					        <!--<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.boardAttachmentList[index].imageURL" width="127" height="150" style="margin-right:3px;"> -->
+
 					      </div>
 					    </template>
                     	  
                     	 </div>
                     </div>
+                    
                 <div class="col-9" style="display:flex; justify-content: space-between; margin-left:40px; margin-top:15px;">
                   	 <button class="btn btn-primary" @click="follow(board.boardWithNickDto.memberNo)" style="flex-grow:1; margin-right:10px;" v-if="followCheckIf(board.boardWithNickDto.memberNo)">팔로우</button>
                   	 <button class="btn btn-secondary" @click="unFollow(board.boardWithNickDto.memberNo)" style="flex-grow:1; margin-right:10px;"  v-if="!followCheckIf(board.boardWithNickDto.memberNo)">팔로잉</button>
@@ -414,7 +429,7 @@ display:none;
      
 </div>     
      
-     
+    
      
      <div v-if="newListFinish"  style="max-width: 620px;  margin: 10px auto 10px auto;">
      	<img src="${pageContext.request.contextPath}/static/image/check.png" class="justify-content-center align-items-center" style="width: 150px; height: 150px; margin-left: 230px; margin-bottom: 20px;">
@@ -573,13 +588,19 @@ display:none;
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-body p-0">
-					<div class="row p-3" @click="showReportMenuModal">
+					<div class="row p-3">
+						<div class="col d-flex justify-content-start align-items-start">
+							<h5 style="margin:0; cursor:default; padding-left:1em">더보기</h5>
+						</div>
+					</div>
+					<hr class="m-0" v-if="reportBoardData[1] != loginMemberNo">
+					<div class="row p-3" v-if="reportBoardData[1] != loginMemberNo" @click="showReportMenuModal">
 						<div class="col d-flex justify-content-center align-items-center" style="color:#dc3545; cursor:pointer">
 							<h5 style="font-weight:bold; margin:0;">신고</h5>
 						</div>
 					</div>
 					
-					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo">
+					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo && reportBoardData[2] == 'board'">
 					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo && reportBoardData[2] == 'board'" @click="updatePost(reportBoardData[0])">
 						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
 							<h5 style="margin:0;">수정</h5>
@@ -835,6 +856,14 @@ Vue.createApp({
 		initializePageFromQuery() {
 			const queryParams = new URLSearchParams(window.location.search);
 			const boardNo = queryParams.get('boardNo');
+			//게시물 보다가 새로고침했을 때 처리(리스트에 없을때)
+			if(this.boardList.length==0) return;
+    		if(this.boardList.length!=0 && boardNo!=0) {
+				const index = this.boardList.findIndex(board=>board.boardWithNickDto.boardNo==boardNo);
+				if(index==-1){
+					return
+				}
+    		}
 			if(boardNo==null){
 				this.boardNo=0;
 			}
@@ -1393,7 +1422,7 @@ Vue.createApp({
 		// 호버
 		 async profileHover(item) {           		
            	  this.selectedItem = item; // 선택
-           	  
+           	  console.log("item : "+item);
         	  // settingHide 불러오기 위해서 선언
              	const resp = await axios.get("/rest/member/setting/"+item.memberNo);
              	  const settingHide = resp.data.settingHide;
@@ -1410,11 +1439,7 @@ Vue.createApp({
                	      this.followerCounts = followerCounts; // 프로미스가 해결된 값 저장
                	      this.postCounts = postCounts; // 프로미스가 해결된 값 저장
                	      this.hoverSettingHide = settingHide;
-               	      //this.hoverFollowerCheck = this.followCheckIf(item.memberNo);
-               	      //this.hoverFollowCheck = this.followCheckIf(item.followFollower);
-               	   		//console.log("settingHide : "+this.hoverSettingHide);
-               	   		//console.log("hoverFollowerCheck : " + this.followCheckIf(item.memberNo));
-               	   		//console.log("hoverFollowCheck : " + this.followCheckIf(item.followFollower));
+               	     
                	    })
                	    .catch(error => {
                	      console.error(error);
@@ -1465,6 +1490,7 @@ Vue.createApp({
    	  const newPosts = resp.data.slice(0, 3); // 최대 3개의 게시물만 추출
 
    	  this.hoverPostList.push(...newPosts);
+   	 
    	},
    	
     //팔로우 되있는사람 -> 팔로우 삭제
