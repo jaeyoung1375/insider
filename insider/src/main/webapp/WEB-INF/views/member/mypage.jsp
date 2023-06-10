@@ -458,11 +458,11 @@
 
 <!-- ---------------------------------게시물 상세보기 모달(게시물)-------------------------- -->
 
-<div v-if="detailView" class="container-fluid fullscreen" @click.self="closeDetail">
+<div v-if="detailView" class="container-fluid fullscreen" @click="closeDetail">
 <div class="p-4 mt-2 ms-4 d-flex justify-content-end">
 		<h2 class="btn btn-none" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
 	</div>
-	<div class="row fullscreen-container">
+	<div class="row fullscreen-container" @click.stop>
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
                 <div class="carousel-indicators">
@@ -470,18 +470,18 @@
                 </div>
                
                 <div class="carousel-inner">
-                  <div  v-for="(attach, index2) in myBoardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
+                  <div v-if="myBoardList[detailIndex].boardAttachmentList.length > 1" v-for="(attach, index2) in myBoardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
                   	<video  style="width:700px; height:700px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+attach.imageURL" v-if="attach.video"
 							:autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto"></video> 
                    	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" style="width:700px; height:700px;" v-else> 
                   </div>
                 </div>
                
-                <button class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="prev">
+                <button v-if="myBoardList[detailIndex].boardAttachmentList.length > 1" class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="prev">
                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Previous</span>
                 </button>
-                <button  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="next">
+                <button v-if="myBoardList[detailIndex].boardAttachmentList.length > 1"  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="next">
                   <span class="carousel-control-next-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Next</span>
                 </button> 
@@ -579,15 +579,15 @@
 	</div>
 </div>
 <!-- ---------------------------------게시물 상세보기 모달(북마크)-------------------------- -->
-<div v-if="detailView2" class="container-fluid fullscreen" @click.self="closeDetail2">
+<div v-if="detailView2" class="container-fluid fullscreen" @click="closeDetail2">
 <div class="p-4 mt-2 ms-4 d-flex justify-content-end">
 		<h2 class="btn btn-none" @click="closeDetail2" style="font-size: 30px; color:#FFFFFF;">X</h2>
 	</div>
-	<div class="row fullscreen-container">
+	<div class="row fullscreen-container" @click.stop>
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex2" class="carousel slide">
                 <div class="carousel-indicators">
-                  <button v-for="(attach, index2) in bookmarkMyPostList[detailIndex2].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex2" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
+                  <button v-if="bookmarkMyPostList[detailIndex2].boardAttachmentList.length > 1" v-for="(attach, index2) in bookmarkMyPostList[detailIndex2].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex2" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
                 </div>
                
                 <div class="carousel-inner">
@@ -598,11 +598,11 @@
                   </div>
                 </div>
                
-                <button class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex2" data-bs-slide="prev">
+                <button v-if="bookmarkMyPostList[detailIndex2].boardAttachmentList.length > 1" class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex2" data-bs-slide="prev">
                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Previous</span>
                 </button>
-                <button  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex2" data-bs-slide="next">
+                <button v-if="bookmarkMyPostList[detailIndex2].boardAttachmentList.length > 1"  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex2" data-bs-slide="next">
                   <span class="carousel-control-next-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Next</span>
                 </button> 
@@ -2288,13 +2288,15 @@
              	this.detailView = true;
              	this.detailIndex = index;
              	this.replyLoad(index);
+             	document.body.style.overflow = "hidden";
              },
              
-             //상세보기 모달창 열기
+             //상세보기 모달창 열기(북마크)
              detailViewOn2(index) {
              	this.detailView2 = true;
              	this.detailIndex2 = index;
              	this.replyLoad2(index);
+             	document.body.style.overflow = "hidden";
              },
              
             
@@ -2303,6 +2305,7 @@
              closeDetail() {
              	this.detailView = false;
              	this.replyList = [];
+             	document.body.style.overflow = "unset";
              },
              
 
@@ -2310,6 +2313,7 @@
              closeDetail2() {
              	this.detailView2 = false;
              	this.replyList = [];
+             	document.body.style.overflow = "unset";
              },
              
              //로그인한 회원이 좋아요 눌렀는지 확인

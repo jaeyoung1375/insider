@@ -495,7 +495,7 @@ display:none;
 					
 					
 					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
-						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="text-decoration:none; position:relative;">
+						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="color:black; text-decoration:none; position:relative;">
 							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="45" height="45" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
 							<img v-else src="https://via.placeholder.com/45x45?text=profile" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
 							
@@ -546,6 +546,9 @@ display:none;
 						<span class="card-text" style="margin: 0 4px 4px 0; padding-left: 0.5em">
 						    <i :class="{'fa-heart': true, 'like':isLiked[detailIndex], 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}"
 						       @click="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
+						</span>
+						<span class="card-text" style="margin: 0 0 4px 0; padding-left: 0.5em;">
+								<i class="fa-regular fa-message mb-1" @click="moveToDmPage(boardList[detailIndex].boardWithNickDto.memberNo)" style="font-size: 25px; cursor: pointer;"></i>
 						</span>
 					  </div>
 					  <div class="col-1 p-0 flex-grow-1">
