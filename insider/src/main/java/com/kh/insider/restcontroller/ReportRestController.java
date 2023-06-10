@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.BlockDto;
+import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.dto.ReplyDto;
 import com.kh.insider.dto.ReportDto;
@@ -101,7 +102,9 @@ public class ReportRestController {
 		blockDto.setMemberNo(memberNo);
 		blockDto.setBlockNo(reportDto.getReportMemberNo());
 		if(blockRepo.selectOne(blockDto)==null) {
-			return memberWithProfileRepo.selectOne(reportDto.getReportMemberNo());
+			MemberWithProfileDto memberDto = new MemberWithProfileDto();
+			memberDto.setMemberNick(memberWithProfileRepo.selectOne(reportDto.getReportMemberNo()).getMemberNick());
+			return memberDto;
 		}
 		else {
 			return null;

@@ -8,6 +8,8 @@ import com.kh.insider.vo.UpdateReportContentVO;
 public interface ReplyRepo {
 	void insert(ReplyDto replydto);
 	List<ReplyDto> selectList(int replyOrigin);
+	//차단 댓글 막는용
+	List<ReplyDto> selectList(int replyOrigin, long memberNo);
 	boolean delete(int replyNo);
 	ReplyDto selectOne(int replyNo);
 	void updateLikeCount(int count, int replyNo);

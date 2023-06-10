@@ -27,7 +27,7 @@
 /* 게시물 네모박스 */
 .box {
 	position: relative;
-	width: 30%;
+	width: 32.3%;
 	font-size:1.2em;
 }
 .box::after {
@@ -61,6 +61,8 @@
 	color:white;
 	cursor:default;
 	display:none;
+	min-width:100px;
+	text-align:center;
 }
 .box:hover .content-box{
 	background-color:rgba(34, 34, 34, 0.13);
@@ -162,7 +164,7 @@
 		padding-left: 35px;
 	} 
 </style>
-<div class="container-fluid mt-4" id="app" style="width:55%">
+<div class="container-fluid mt-4" id="app" style="width:55%; min-width:800px">
 	<div class="row">
 		<div class="col p-0">
 		<!-- 검색창 -->
@@ -189,7 +191,7 @@
 									</div>
 									<!-- 삭제 마크 -->
 									<div class="col-1 d-flex justify-content-center align-items-center">
-										<i class="fa-solid fa-xmark" @click="deleteSearched(index)"></i>
+										<i class="fa-solid fa-xmark modal-click-btn-negative" @click="deleteSearched(index)"></i>
 									</div>
 								</div>
 								<div class="row searched-menu p-3" v-else>
@@ -205,7 +207,7 @@
 									</div>
 									<!-- 삭제 마크 -->
 									<div class="col-1 d-flex justify-content-center align-items-center">
-										<i class="fa-solid fa-xmark" @click="deleteSearched(index)"></i>
+										<i class="fa-solid fa-xmark modal-click-btn-negative" @click="deleteSearched(index)"></i>
 									</div>
 								</div>
 							</div>
@@ -221,7 +223,7 @@
 										팔로우 : {{recommand.follow}}
 									</div>
 								</div>
-								<div class="row search-recommand-menu p-3" v-else @click="moveToMemberDetail(recommand.memberNo, recommand.memberNick)">
+								<div class="row search-recommand-menu p-3" v-else @click="moveToMemberDetail(recommand.memberNo, recommand.nick)">
 									<div class="col-2">
 										<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+recommand.imageURL">
 									</div>
@@ -240,24 +242,23 @@
 			</div>
 			
 		<!-- 리스트 -->
-			<div class="row d-flex justify-content-center mt-3">
+			<div class="row d-flex justify-content-start mt-3">
 				<div class="box m-1" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)" 
 						 @click="detailViewOn(index)" >
 					<video class="content-in-list" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
 							style="object-fit:cover" :autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto"></video>
 					<img class='content-in-list' v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video"
 							 :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
-					<img class='content-in-list' v-if="board.boardAttachmentList.length==0" src="${pageContext.request.contextPath}/static/image/noimage.png">
 					<div class="content-box" ></div>
 					<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
-					<div class="like-comment" >
-						<span v-if="memberSetting.watchLike && board.boardWithNickDto.boardLikeValid==0"><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
+					<div class="like-comment">
+						<span v-if="(memberSetting.watchLike && board.boardWithNickDto.boardLikeValid==0)||board.boardWithNickDto.memberNo==${sessionScope.memberNo}"><i class="fa-solid fa-heart"></i> {{board.boardWithNickDto.boardLike}}</span> 
 						<span v-if="board.boardWithNickDto.boardReplyValid==0" class="ms-3"><i class="fa-solid fa-comment"></i> {{board.boardWithNickDto.boardReply}}</span>
 					</div>
 				</div>
 			</div>
 			<!-- 게시물 더보기 -->
-			<div v-if="finish && !additionalFinish"  style="max-width: 620px;  margin: 10px auto 10px auto;">
+			<div v-if="finish && !additionalFinish && !additionalButton"  style="max-width: 620px;  margin: 10px auto 10px auto;">
 				<img src="${pageContext.request.contextPath}/static/image/check.png" class="justify-content-center align-items-center" style="width: 150px; height: 150px; margin-left: 230px; margin-bottom: 20px;">
 				<h3 class="justify-content-center text-center">모두 확인했습니다</h3>
 				<h6 class="justify-content-center text-center" style="color:gray; ">{{memberSetting.watchDistance}}km 이내의 게시물을 모두 확인했습니다.</h6>
@@ -310,7 +311,7 @@
 			           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardList[detailIndex].boardWithNickDto.memberNick"><b>{{boardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
 	           				</div>
 	           				<div class="col d-flex justify-content-center align-items-center">
-	           					<i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:1.2em" @click="showAdditionalMenuModal(boardList[detailIndex].boardWithNickDto.boardNo, boardList[detailIndex].boardWithNickDto.memberNo, 'board')"></i>
+	           					<i class="fa-solid fa-ellipsis modal-click-btn-neutral" style="display:flex; flex-direction: row-reverse; font-size:1.2em" @click="showAdditionalMenuModal(boardList[detailIndex].boardWithNickDto.boardNo, boardList[detailIndex].boardWithNickDto.memberNo, 'board')"></i>
 	           				</div>
 	           			</div>
 	           		</div>
@@ -332,7 +333,6 @@
 													
 							</a>
 							<p style="padding-left:3.5em;margin-bottom:1px;font-size:0.9em; margin-left: 3.5px;">{{replyList[index].replyContent}}</p>
-	<!-- 						<p style="padding-left:4.0em;margin-bottom:1px;font-size:0.8em; color:gray;"> -->
 							<div class="row" style="height: 25px">
 								<div class="col-10">
 									<p style="padding-left:4.0em;margin-bottom:3px;font-size:0.8em; color:gray;">{{dateCount(replyList[index].replyTimeAuto)}} &nbsp; 좋아요 {{replyLikeCount[index]}}개 &nbsp;
@@ -343,12 +343,9 @@
 								</div>
 							<!-- 댓글 신고창 -->
 								<div class="col-2 p-0 d-flex justify-content-center">
-									<p class="d-flex align-items-center"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse;" @click="showAdditionalMenuModal(reply.replyNo, reply.replyMemberNo, 'reply',index,detailIndex)"></i></p>
+									<p class="d-flex align-items-center"><i class="fa-solid fa-ellipsis modal-click-btn-neutral" style="display:flex; flex-direction: row-reverse;" @click="showAdditionalMenuModal(reply.replyNo, reply.replyMemberNo, 'reply',index,detailIndex)"></i></p>
 								</div>
 							</div>
-	<!-- 						<p v-if="replyList[index].replyParent == 0"> -->
-	<!-- 							<span @click="showReReply(reply.replyNo, index)" style="cursor:pointer; padding-left:4em; font-size:0.8em; color:gray;">{{replyStatus(index)}}</span> -->
-	<!-- 						</p> -->
 						</div>
 						
 						<div v-else class="card-text" style="position: relative;">
@@ -414,13 +411,19 @@
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-body p-0">
-					<div class="row p-3" @click="showReportMenuModal">
+					<div class="row p-3">
+						<div class="col d-flex justify-content-start align-items-center">
+							<h5 style="margin:0; cursor:default">더보기</h5>
+						</div>
+					</div>
+					<hr class="m-0" v-if="reportBoardData[1] != loginMemberNo">
+					<div class="row p-3" v-if="reportBoardData[1] != loginMemberNo" @click="showReportMenuModal">
 						<div class="col d-flex justify-content-center align-items-center" style="color:#dc3545; cursor:pointer">
 							<h5 style="font-weight:bold; margin:0;">신고</h5>
 						</div>
 					</div>
 					
-					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo">
+					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo && reportBoardData[2] == 'board'">
 					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo && reportBoardData[2] == 'board'" @click="updatePost(reportBoardData[0])">
 						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
 							<h5 style="margin:0;">수정</h5>
@@ -428,12 +431,11 @@
 					</div>
 					
 					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo" >
-					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo" @click="deletePost(reportBoardData[0])">
+					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo" @click="deleteTool">
 						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
 							<h5 style="margin:0;">삭제</h5>
 						</div>
 					</div>
-					
 					
 					<!-- 메뉴 구분선 -->
 					<hr class="m-0">
@@ -464,7 +466,7 @@
 						</div>
 					</div>
 					<div class="row" v-for="(report, index) in reportContentList" :key="report.reportListNo" style="border-top:var(--bs-modal-border-width) solid var(--bs-modal-border-color)">
-						<div class="col d-flex p-3 report-content" @click="reportContent(report.reportListContent)" style="cursor:pointer">
+						<div class="col d-flex p-2 report-content" @click="reportContent(report.reportListContent)" style="cursor:pointer">
 							<h5 style="margin:0; margin-left:1em">{{report.reportListContent}}</h5>
 						</div>
 					</div>
@@ -630,6 +632,7 @@
 			},
 			async loadAdditionalList(){
 				if(this.additionalLoading||this.additionalFinish||!this.finish) return;
+				this.additionalButton=true;
 				this.additionalLoading=true;
 				const resp = await axios.get(contextPath+"/rest/board/additionalList/"+this.additionalPage);
 				for (const board of resp.data) {

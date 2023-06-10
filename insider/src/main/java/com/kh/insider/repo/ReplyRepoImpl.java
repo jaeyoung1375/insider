@@ -56,5 +56,11 @@ public class ReplyRepoImpl implements ReplyRepo{
 		return sqlSession.selectList("reply.selectListReported", memberNo);
 	}
 
+	@Override
+	public List<ReplyDto> selectList(int replyOrigin, long memberNo) {
+		Map<String, Long> map = Map.of("replyOrigin", (long)replyOrigin, "memberNo", memberNo);
+		return sqlSession.selectList("reply.selectList", map);
+	}
+
 	
 }

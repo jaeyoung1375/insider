@@ -1,6 +1,8 @@
 package com.kh.insider.service;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -17,7 +19,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.kh.insider.dto.CertDto;
+import com.kh.insider.dto.MemberDto;
 import com.kh.insider.repo.CertRepo;
+import com.kh.insider.repo.MemberRepo;
 
 @Repository
 public class MemberServiceImpl implements MemberService{
@@ -32,6 +36,9 @@ public class MemberServiceImpl implements MemberService{
    
    @Autowired
    private PasswordEncoder encoder;
+   
+   @Autowired
+   private MemberRepo memberRepo;
    
    Random random = new Random();
 
@@ -103,6 +110,45 @@ public class MemberServiceImpl implements MemberService{
       return tempPassword.toString();
       
    }
+
+	@Override
+	public void changePassword(MemberDto memberDto) {
+		String encrypt = encoder.encode(memberDto.getMemberPassword());
+		memberDto.setMemberPassword(encrypt);
+		
+		memberRepo.changePassword(memberDto);
+	}
+
+	@Override
+	public void join(MemberDto memberDto) {
+		String encrypt = encoder.encode(memberDto.getMemberPassword());
+		memberDto.setMemberPassword(encrypt);
+		memberRepo.join(memberDto);
+	}
+
+	@Override
+	public boolean checkPassword(String enteredPassword, String encodedPassword) {	
+		System.out.println(encoder.matches(enteredPassword, encodedPassword));
+	    return encoder.matches(enteredPassword, encodedPassword);
+	}
+
+	@Override
+	public MemberDto login(String memberEmail, String memberPassword) {
+		MemberDto findMember = memberRepo.findByEmail(memberEmail);
+		if(findMember == null) return null;
+		
+		Map<String, Object> param = new HashMap<>();
+		param.put("memberEmail",memberEmail);
+		param.put("memberPassword",findMember.getMemberPassword());
+		
+		if(encoder.matches(memberPassword, findMember.getMemberPassword())) {
+			return memberRepo.login(memberEmail, findMember.getMemberPassword());
+		}else {
+			return null;
+		}
+	}
+	
+	
    
 
 }

@@ -14,6 +14,9 @@ public interface DmPrivacyRoomRepo {
 	//채팅방 퇴장
 	void leaveRoom(DmPrivacyRoomDto dmPrivacyRoomDto);
 	
+	//동일한 회원의 일대일 채팅방 확인
+	Integer findRoomByMembers(long inviterNo, long inviteeNo);
+	
 	
 ////////////////////////삭제 예정 /////////////////
 

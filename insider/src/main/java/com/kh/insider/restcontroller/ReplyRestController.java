@@ -40,8 +40,9 @@ public class ReplyRestController {
 	
 	//댓글 조회
 	@GetMapping("/{replyOrigin}")
-	public List<ReplyDto> list(@PathVariable int replyOrigin) {
-		return forbiddenService.changeForrbiddenReply(replyRepo.selectList(replyOrigin));
+	public List<ReplyDto> list(@PathVariable int replyOrigin, HttpSession session) {
+		long memberNo = (long) session.getAttribute("memberNo");
+		return forbiddenService.changeForrbiddenReply(replyRepo.selectList(replyOrigin, memberNo));
 	}
 	
 	//댓글 등록
@@ -58,8 +59,12 @@ public class ReplyRestController {
 	
 	//댓글 삭제
 	@DeleteMapping("/{replyNo}")
-	public void delete(@PathVariable int replyNo) {
+	public void delete(@PathVariable int replyNo, HttpSession session) {
+		//본인인지 확인
+		long memberNo = (long)session.getAttribute("memberNo");
 		ReplyDto replyDto = replyRepo.selectOne(replyNo);
+		if(replyDto.getReplyMemberNo()!=memberNo) return;
+		
 		replyRepo.delete(replyNo);
 		
 		boardRepo.updateReply(replyDto.getReplyOrigin());

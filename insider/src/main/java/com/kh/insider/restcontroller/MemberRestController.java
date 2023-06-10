@@ -27,6 +27,8 @@ import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.SettingRepo;
 import com.kh.insider.repo.TagFollowRepo;
+import com.kh.insider.service.ForbiddenService;
+import com.kh.insider.service.MemberService;
 import com.kh.insider.service.ReportService;
 import com.kh.insider.vo.BoardListVO;
 
@@ -47,6 +49,10 @@ public class MemberRestController {
 	private TagFollowRepo tagFollowRepo;
 	@Autowired
 	private ReportService reportService;
+	@Autowired
+	private MemberService memberService;
+	@Autowired
+	private ForbiddenService forbiddenService;
 	
 	
 	//멤버정보 불러오기
@@ -102,33 +108,25 @@ public class MemberRestController {
 	//비밀번호 확인
 	@PostMapping("/setting/password")
 	public boolean checkPassword(@RequestBody MemberDto checkPasswordDto, HttpSession session) {
-		long memberNo = (Long)session.getAttribute("memberNo");
-		MemberDto memberDto = memberRepo.findByNo(memberNo);
-		return checkPasswordDto.getMemberPassword().equals(memberDto.getMemberPassword());
+	    long memberNo = (Long) session.getAttribute("memberNo");
+	    MemberDto memberDto = memberRepo.findByNo(memberNo);
+	    
+	    String enteredPassword = checkPasswordDto.getMemberPassword();
+	    String encodedPasswordFromDatabase = memberDto.getMemberPassword();
+	    
+	    return memberService.checkPassword(enteredPassword, encodedPasswordFromDatabase);
+	    
 	}
+
 	//비밀번호 변경
 	@PutMapping("/setting/password")
 	public void changePassword(@RequestBody MemberDto memberDto, HttpSession session) {
 		long memberNo = (Long)session.getAttribute("memberNo");
 	    MemberDto existingMember = memberRepo.findByNo(memberNo);
 	    existingMember.setMemberPassword(memberDto.getMemberPassword()); // 새로운 비밀번호 설정
-	    memberRepo.changePassword(existingMember);
+	    memberService.changePassword(existingMember);
 	}
 
-	
-//	// 팔로워 목록 불러오기
-//	@GetMapping("/followerList")
-//	public List<FollowerWithProfileDto> followerList(@RequestParam long memberNo){
-//		List<FollowerWithProfileDto> followerList = followRepo.getFollowerList(memberNo);
-//		return followerList;
-//	}
-//	
-//	// 팔로우 목록 불러오기
-//	@GetMapping("/followList")
-//	public List<FollowWithProfileDto> followList(@RequestParam long memberNo){
-//			List<FollowWithProfileDto> followList = followRepo.getFollowList(memberNo);
-//		return followList;
-//	}
 	
 	// 팔로우 목록 불러오기(무한스크롤)
 		@GetMapping("/followListPaging/{page}")
@@ -147,21 +145,20 @@ public class MemberRestController {
 	@GetMapping("/page/{page}")
 	public List<BoardListVO> paging(@PathVariable int page, @RequestParam long memberNo){
 		
-		return boardRepo.myPageSelectListPaging(page, memberNo);
+		return forbiddenService.changeForbiddenWords(boardRepo.myPageSelectListPaging(page, memberNo));
 	}
 	
 	@GetMapping("/postList")
 	public List<BoardDto> postList(@RequestParam long memberNo){
 		
 		List<BoardDto> getTotalPost = boardRepo.getTotalMyPost(memberNo);
-		System.out.println(getTotalPost);
-		return getTotalPost;
+		return forbiddenService.changeForbiddenBoard(getTotalPost);
 	}
 	
 	@GetMapping("/bookmarkMyPost")
 	public List<BoardListVO> bookmarkMyPost(HttpSession session){
 		long memberNo = (long) session.getAttribute("memberNo");
-		return boardRepo.bookmarkMyPost(memberNo);
+		return forbiddenService.changeForbiddenWords(boardRepo.bookmarkMyPost(memberNo));
 	}
 	
 	//닉네임 중복 확인

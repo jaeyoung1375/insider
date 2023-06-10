@@ -163,6 +163,17 @@
 	align-items: center;
 	width: 480px;
 }
+.hide{
+display:none;
+}
+.modalNickName{
+	text-decoration: none;
+	color:black;
+	font-weight: bold;
+}
+.modalName{
+	color:gray;
+}
 </style>
 
 <script>
@@ -203,11 +214,16 @@
 
 <div id="app"class="darkmode">
 	<!-- 친구추천 -->
-		<div class="container recommend">
+		<div class="container recommend" v-show="recommendFriendsList.length > 0">
+		
 		<div class="d-flex justify-content-end">
 			<p style="font-size:12px; color:gray;">회원님을 위한 친구추천</p>
 		</div>
 			<div class="d-flex justify-content-flex-start" style="margin-left:17px;">
+				<!-- 이전 버튼 -->
+				<div class="button-container" style="display: flex; justify-content: center; align-items: center;">
+					<i class="fa-solid fa-arrow-left"  @click="currentPage--" :class="{'hide' : currentPage === 0}" style="height:24px; weight:24px; margin-left:5px;"></i>
+				</div>
 		  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style=" padding-right: 25px">
 		  <a :href="'${pageContext.request.contextPath}/member/'+ item.memberNick">
 		    <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="65" height="65" style="border-radius:50%;">
@@ -216,8 +232,12 @@
 		      <p style="width:50px; font-size:11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ item.memberNick }}</p>
 		    </div>		    
 		  </div>
+		  		<!-- 다음 버튼 -->
+				<div class="button-container" style="display: flex; justify-content: center; align-items: center;"> 		
+  					<i class="fa-sharp fa-solid fa-arrow-right" @click="currentPage++"  :class="{'hide':currentPage === paginatedRecommendFriends.length - 1}" 
+  					style="height: 24px; weight: 24px; margin-left:20px;"></i>
+				</div>
 		</div>
-
 	</div>
 	<!-- 친구추천  끝-->
 	
@@ -239,14 +259,16 @@
                         <div style="padding: 8px 8px 4px 8px;">
                             <div class="d-flex">
 
-                                <div class="p-2"><a style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><img class="profile rounded-circle" :src="profileUrl(index)" style="object-fit: cover;" @mouseover="profileHover(board.boardWithNickDto)"></a></div>
+                                <div class="p-2"><a style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><img class="profile rounded-circle" :src="profileUrl(index)" style="object-fit: cover; " @mouseover="profileHover(board.boardWithNickDto)"></a></div>
                                 <div class="p-2" style="margin-top: 8px;"><h4><a class="btn btn-none" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a><b style="color: gray;">  · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
 
                                 <div v-if="followCheckIfNew(index)" @click="follow(board.boardWithNickDto.memberNo)" class="p-2 me-5" style="margin-top: 8px;"><h4><b style="font-size: 15px; color:blue; cursor: pointer;">팔로우</b></h4></div>
                                  <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> 
                             <!-- 메뉴 표시 아이콘으로 변경(VO로 변경 시 경로 수정 필요) -->
 
-                                <div class=" p-2 flex-grow-1 me-2" style="margin-top: 14px;"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse; font-size:26px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo, board.boardWithNickDto.memberNo, 'board')"></i></div>
+                                <div class=" p-2 flex-grow-1 me-2 d-flex justify-content-end" style="margin-top: 14px;">
+                                	<i class="fa-solid fa-ellipsis modal-click-btn-neutral" style="display:flex; flex-direction: row-reverse; font-size:26px; cursor:pointer; width:30px" @click="showAdditionalMenuModal(board.boardWithNickDto.boardNo, board.boardWithNickDto.memberNo, 'board')"></i>
+                                </div>
                             </div>
                         </div>
                         <!--▲▲▲▲▲▲▲▲▲▲▲▲▲ID▲▲▲▲▲▲▲▲▲▲▲▲▲-->
@@ -281,7 +303,7 @@
                         <div class="p-1" style="height: 40px;">
                             <div class="d-flex">
                                 <div class="p-1"><i :class="{'fa-heart': true, 'like':isLiked[index], 'fa-solid': isLiked[index], 'fa-regular': !isLiked[index]}" @click="likePost(board.boardWithNickDto.boardNo,index)" style="font-size: 32px;"></i>
-                                <i class="fa-regular fa-message mb-1" style="font-size: 30px; margin-left:10px; margin-bottom: 10px"></i>
+                                <i class="fa-regular fa-message mb-1" @click="moveToDmPage(board.boardWithNickDto.memberNo)"style="font-size: 30px; margin-left:10px; margin-bottom: 10px; cursor: pointer;"></i>
                                 </div>
                                 <div class="p-1 flex-grow-1">
                                 <h5><i class="fa-regular fa-bookmark"  @click="bookmarkInsert(board.boardWithNickDto.boardNo)" v-show="bookmarkChecked(board.boardWithNickDto.boardNo)" style="font-size:25px;"></i>
@@ -328,28 +350,31 @@
          
         
          
-          <div class="profile-preview" v-if="selectedItem === board.boardWithNickDto" @mouseleave="profileLeave">
+          <div class="profile-preview" v-if="selectedItem === board.boardWithNickDto" @mouseleave="profileLeave" style="border-radius:15px; margin-left:70px; margin-bottom:70px;">
                   <!-- 프로필 미리보기 내용 -->
                    	<div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' +board.boardWithNickDto.attachmentNo" width="75" height="75" style="border-radius: 50%;" @mouseleave="profileLeave"> 
 						  <div>
-						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + board.boardWithNickDto.memberNick">{{ board.boardWithNickDto.memberNick }}</a>
-						    <p class="modalName">{{ board.boardWithNickDto.memberName }}</p>
+						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + board.boardWithNickDto.memberNick" style="margin-left:20px;">{{ board.boardWithNickDto.memberNick }}</a>
 						  </div>
 					</div>
                     <hr>
-                    <div class="col-7" style="display: flex; margin-left: 10px;">
+                    <div class="col-7" style="display: flex; margin-left: 45px;">
                     	<div class="col-6">
-                    		<span>게시물 <span style="font-weight: bold;">{{postCounts}}</span></span>
+                    		<span style="color:gray;">게시물</span>
+                    		<p style="font-weight: bold; margin-left:20px;">{{postCounts}}</p>
                     	</div>
                     	<div class="col-6">
-                    		<span>팔로워 <span style="font-weight: bold;">{{followerCounts}}</span></span>
+                    		<span style="color:gray;">팔로워</span>
+                    		<p style="font-weight: bold; margin-left:20px;">{{followerCounts}}</p>
+                    		
                     	</div>
                     	<div class="col-6">
-							<span>팔로우 <span style="font-weight: bold;">{{followCounts}}</span></span>
+							<span style="color:gray;">팔로우</span>
+							<p style="font-weight: bold; margin-left:20px;">{{followCounts}}</p>
+							
                     	</div>
                     </div> 
-                      <hr>
                     <div class="col-6">
                    
                     	<div style="display:flex;">
@@ -361,10 +386,11 @@
 							    <p style="font-size: 12px; margin-top: 0;">{{board.boardWithNickDto.memberNick}}님이 사진과 릴스를 공유하면 여기에 표시됩니다.</p>
 							  </div>
 							</div>
+						
 						</template> 
 						
 						<!--  비공개 계정 || 친구에게만 공개 && 팔로우 목록에 있다면  -->
-					<template v-else-if="hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)">
+					<template v-else-if="(hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)) && ${memberNo} != board.boardWithNickDto.memberNo">
 						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
 							  <div style="width:500px; margin-left:160px;">
 							    <img src="${pageContext.request.contextPath}/static/image/lock.png" width="60" height="60">
@@ -377,18 +403,21 @@
 						
 				
 					    <template v-else>
-					      <div v-for="post in hoverPostList" :key="post.id">
+					      <div v-for="(post,index) in hoverPostList" :key="post.id">
 					        <!-- 게시물 정보 출력 -->
 					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.attachmentNo" width="127" height="150" style="margin-right:3px;">
+					        <!--<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.boardAttachmentList[index].imageURL" width="127" height="150" style="margin-right:3px;"> -->
+
 					      </div>
 					    </template>
                     	  
                     	 </div>
                     </div>
+                    
                 <div class="col-9" style="display:flex; justify-content: space-between; margin-left:40px; margin-top:15px;">
-                  	 <button class="btn btn-primary" @click="follow(board.boardWithNickDto.memberNo)" style="flex-grow:1;" v-if="followCheckIf(board.boardWithNickDto.memberNo)">팔로우</button>
-                  	 <button class="btn btn-secondary" @click="unFollow(board.boardWithNickDto.memberNo)" style="flex-grow:1;"  v-if="!followCheckIf(board.boardWithNickDto.memberNo)">팔로잉</button>
-                  	 <button class="btn btn-primary" style="width:50%;">메시지 보내기</button>
+                  	 <button class="btn btn-primary" @click="follow(board.boardWithNickDto.memberNo)" style="flex-grow:1; margin-right:10px;" v-if="followCheckIf(board.boardWithNickDto.memberNo)">팔로우</button>
+                  	 <button class="btn btn-secondary" @click="unFollow(board.boardWithNickDto.memberNo)" style="flex-grow:1; margin-right:10px;"  v-if="!followCheckIf(board.boardWithNickDto.memberNo)">팔로잉</button>
+                  	 <button class="btn btn-primary" @click="moveToDmPage(board.boardWithNickDto.memberNo)" style="width:50%; cursor:pointer;">메시지 보내기</button>
                  </div> 
                  
           </div> <!-- 팔로우 미리보기 끝 -->
@@ -400,7 +429,7 @@
      
 </div>     
      
-     
+    
      
      <div v-if="newListFinish"  style="max-width: 620px;  margin: 10px auto 10px auto;">
      	<img src="${pageContext.request.contextPath}/static/image/check.png" class="justify-content-center align-items-center" style="width: 150px; height: 150px; margin-left: 230px; margin-bottom: 20px;">
@@ -484,8 +513,8 @@
 								</p>
 							</div>
 						<!-- 댓글 신고창 -->
-							<div class="col-2 p-0 d-flex justify-content-center">
-								<p class="d-flex align-items-center"><i class="fa-solid fa-ellipsis" style="display:flex; flex-direction: row-reverse;" @click="showAdditionalMenuModal(reply.replyNo, reply.replyMemberNo, 'reply',index,detailIndex)"></i></p>
+							<div class="col-2 p-0 d-flex justify-content-center align-items-center">
+								<i class="fa-solid fa-ellipsis modal-click-btn-neutral" style="display:flex; flex-direction: row-reverse; font-size:0.8em" @click="showAdditionalMenuModal(reply.replyNo, reply.replyMemberNo, 'reply',index,detailIndex)"></i>
 							</div>
 						</div>
 						
@@ -559,13 +588,19 @@
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-body p-0">
-					<div class="row p-3" @click="showReportMenuModal">
+					<div class="row p-3">
+						<div class="col d-flex justify-content-start align-items-start">
+							<h5 style="margin:0; cursor:default; padding-left:1em">더보기</h5>
+						</div>
+					</div>
+					<hr class="m-0" v-if="reportBoardData[1] != loginMemberNo">
+					<div class="row p-3" v-if="reportBoardData[1] != loginMemberNo" @click="showReportMenuModal">
 						<div class="col d-flex justify-content-center align-items-center" style="color:#dc3545; cursor:pointer">
 							<h5 style="font-weight:bold; margin:0;">신고</h5>
 						</div>
 					</div>
 					
-					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo">
+					<hr class="m-0" v-if="reportBoardData[1] == loginMemberNo && reportBoardData[2] == 'board'">
 					<div class="row p-3" v-if="reportBoardData[1] == loginMemberNo && reportBoardData[2] == 'board'" @click="updatePost(reportBoardData[0])">
 						<div class="col d-flex justify-content-center align-items-center" style="cursor:pointer">
 							<h5 style="margin:0;">수정</h5>
@@ -821,6 +856,14 @@ Vue.createApp({
 		initializePageFromQuery() {
 			const queryParams = new URLSearchParams(window.location.search);
 			const boardNo = queryParams.get('boardNo');
+			//게시물 보다가 새로고침했을 때 처리(리스트에 없을때)
+			if(this.boardList.length==0) return;
+    		if(this.boardList.length!=0 && boardNo!=0) {
+				const index = this.boardList.findIndex(board=>board.boardWithNickDto.boardNo==boardNo);
+				if(index==-1){
+					return
+				}
+    		}
 			if(boardNo==null){
 				this.boardNo=0;
 			}
@@ -1304,6 +1347,49 @@ Vue.createApp({
 			window.location.href=contextPath+"/member/"+memberNick;
 		},
 		/*----------------------태그, 닉네임 클릭 시 검색기록 넣고 이동----------------------*/
+
+		/*----------------------DM으로 이동 및 채팅방 생성----------------------*/
+		async moveToDmPage(memberNo){
+		    try {
+		        //본인일 경우, 메인 채팅방으로 이동
+		        if(this.loginMemberNo == memberNo) {
+		            window.location.href = contextPath + "/dm/channel";
+		            return; 
+		        }
+		    	
+		    	//두 회원이 참여한 채팅방 번호 조회
+		        const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.loginMemberNo + "/" + memberNo);
+		        let existingRoomNo = checkResp.data;
+		        console.log("checkResp : ", checkResp);
+		        console.log("existingRoomNo : ", existingRoomNo);
+		        
+		    	//기존의 일대일 채팅방이 없을 경우, 새 채팅방 생성
+		        if (!existingRoomNo) {
+		            const dmRoomVO = await axios.post(contextPath + "/rest/createChatRoom");
+		            const roomNo = dmRoomVO.data.roomNo;
+		            console.log("새 채팅방 번호 : ", roomNo);
+		            console.log("dmRoomVO.data", dmRoomVO.data);
+		
+		            //채팅 유저 저장
+		            const user = {
+		                roomNo: roomNo,
+		                memberList: [memberNo, this.loginMemberNo]
+		            };
+		            await axios.post(contextPath + "/rest/enterUsers", user);
+		            console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
+		            
+		        //생성된 채팅방으로 이동
+		        window.location.href = contextPath + "/dm/channel?room=" + roomNo;
+		        }
+		        //기존의 일대일 채팅방이 있을 경우, 기존 채팅방으로 이동
+		        else {
+		        	window.location.href = contextPath + "/dm/channel?room=" + existingRoomNo;
+		        }
+		    } catch (error) {
+		        console.error("방 생성, 입장, 초대 중 오류가 발생했습니다.", error);
+		    }
+		},
+		/*----------------------DM으로 이동 및 채팅방 생성----------------------*/
 		
 		//북마크
 		async bookmarkInsert(boardNo) {
@@ -1336,9 +1422,7 @@ Vue.createApp({
 		// 호버
 		 async profileHover(item) {           		
            	  this.selectedItem = item; // 선택
-           	  console.log("닉네임 : " +item.memberNick);
-           	  console.log("멤버번호 : " +item.memberNo);
-           	  
+           	  console.log("item : "+item);
         	  // settingHide 불러오기 위해서 선언
              	const resp = await axios.get("/rest/member/setting/"+item.memberNo);
              	  const settingHide = resp.data.settingHide;
@@ -1355,11 +1439,7 @@ Vue.createApp({
                	      this.followerCounts = followerCounts; // 프로미스가 해결된 값 저장
                	      this.postCounts = postCounts; // 프로미스가 해결된 값 저장
                	      this.hoverSettingHide = settingHide;
-               	      //this.hoverFollowerCheck = this.followCheckIf(item.memberNo);
-               	      //this.hoverFollowCheck = this.followCheckIf(item.followFollower);
-               	   		//console.log("settingHide : "+this.hoverSettingHide);
-               	   		//console.log("hoverFollowerCheck : " + this.followCheckIf(item.memberNo));
-               	   		//console.log("hoverFollowCheck : " + this.followCheckIf(item.followFollower));
+               	     
                	    })
                	    .catch(error => {
                	      console.error(error);
@@ -1410,6 +1490,7 @@ Vue.createApp({
    	  const newPosts = resp.data.slice(0, 3); // 최대 3개의 게시물만 추출
 
    	  this.hoverPostList.push(...newPosts);
+   	 
    	},
    	
     //팔로우 되있는사람 -> 팔로우 삭제
