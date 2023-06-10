@@ -2238,8 +2238,8 @@
             	  //세팅값 불러오기
             	  const response = await axios.get(contextPath+"/rest/member/setting/" + memberNo);
             	  const set = response.data.settingAllowReply;
-            	  //console.log(set);
-            	  //console.log(memberNo, loginNo);       	  
+            	  console.log(set);
+            	  console.log(memberNo, loginNo);       	  
             	  
             	  const requestData = {
             	    replyOrigin: boardNo,
@@ -2258,10 +2258,11 @@
             		  //게시물 작성자 팔로우 로드
             		  await this.loadFollow(memberNo);
                   	  if(loginNo == memberNo) this.followList.push(loginNo); 
-            		  
+            		  console.log(this.followList);
                   	  if(this.followList.includes(loginNo)){
             			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
                   	      this.replyLoad2(index);
+                  	      this.followList = [];
             		  }
             		  else{
             			  alert("댓글 사용이 불가능합니다.");
@@ -2275,6 +2276,7 @@
             		  if(this.followerList.includes(loginNo)){
             			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
                   	      this.replyLoad2(index);
+                  	      this.followerList = [];
             		  }
             		  else{
             			  alert("댓글 사용이 불가능합니다.");
@@ -2291,6 +2293,8 @@
                   	  if(this.followList.includes(loginNo) || this.followerList.includes(loginNo)){
             			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
                   	      this.replyLoad2(index);
+                  	      this.followList = [];
+                  	      this.followerList = [];
             		  }
             		  else{
             			  alert("댓글 사용이 불가능합니다.");

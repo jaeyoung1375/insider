@@ -1157,6 +1157,7 @@ Vue.createApp({
               	  if(this.followList.includes(loginNo)){
         			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
               	      this.replyLoad(index);
+              	      this.followList = [];
         		  }
         		  else{
         			  alert("댓글 사용이 불가능합니다.");
@@ -1170,6 +1171,7 @@ Vue.createApp({
         		  if(this.followerList.includes(loginNo)){
         			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
               	      this.replyLoad(index);
+            	      this.followerList = [];
         		  }
         		  else{
         			  alert("댓글 사용이 불가능합니다.");
@@ -1186,6 +1188,8 @@ Vue.createApp({
               	  if(this.followList.includes(loginNo) || this.followerList.includes(loginNo)){
         			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
               	      this.replyLoad(index);
+              	      this.followList = [];
+            	      this.followerList = [];
         		  }
         		  else{
         			  alert("댓글 사용이 불가능합니다.");
