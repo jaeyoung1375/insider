@@ -166,6 +166,14 @@
 .hide{
 display:none;
 }
+.modalNickName{
+	text-decoration: none;
+	color:black;
+	font-weight: bold;
+}
+.modalName{
+	color:gray;
+}
 </style>
 
 <script>
@@ -206,7 +214,7 @@ display:none;
 
 <div id="app"class="darkmode">
 	<!-- 친구추천 -->
-		<div class="container recommend">
+		<div class="container recommend" v-show="recommendFriendsList.length > 0">
 		
 		<div class="d-flex justify-content-end">
 			<p style="font-size:12px; color:gray;">회원님을 위한 친구추천</p>
@@ -345,23 +353,26 @@ display:none;
                    	<div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' +board.boardWithNickDto.attachmentNo" width="75" height="75" style="border-radius: 50%;" @mouseleave="profileLeave"> 
 						  <div>
-						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + board.boardWithNickDto.memberNick">{{ board.boardWithNickDto.memberNick }}</a>
-						    <p class="modalName">{{ board.boardWithNickDto.memberName }}</p>
+						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + board.boardWithNickDto.memberNick" style="margin-left:20px;">{{ board.boardWithNickDto.memberNick }}</a>
 						  </div>
 					</div>
                     <hr>
-                    <div class="col-7" style="display: flex; margin-left: 10px;">
+                    <div class="col-7" style="display: flex; margin-left: 45px;">
                     	<div class="col-6">
-                    		<span>게시물 <span style="font-weight: bold;">{{postCounts}}</span></span>
+                    		<span style="color:gray;">게시물</span>
+                    		<p style="font-weight: bold; margin-left:20px;">{{postCounts}}</p>
                     	</div>
                     	<div class="col-6">
-                    		<span>팔로워 <span style="font-weight: bold;">{{followerCounts}}</span></span>
+                    		<span style="color:gray;">팔로워</span>
+                    		<p style="font-weight: bold; margin-left:20px;">{{followerCounts}}</p>
+                    		
                     	</div>
                     	<div class="col-6">
-							<span>팔로우 <span style="font-weight: bold;">{{followCounts}}</span></span>
+							<span style="color:gray;">팔로우</span>
+							<p style="font-weight: bold; margin-left:20px;">{{followCounts}}</p>
+							
                     	</div>
                     </div> 
-                      <hr>
                     <div class="col-6">
                    
                     	<div style="display:flex;">

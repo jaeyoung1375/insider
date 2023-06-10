@@ -365,13 +365,13 @@
    <div class="mypage-tab" v-if="isOwner">
     <ul class="nav nav-tabs" style="width: 100%;">
     <li class="nav-item col-6">
-       <a class="nav-link" :class="{'active': actTab === 'boardTab'}" @click="changeTab2('boardTab')" style="font-size:17px; padding:14px 0;">
+       <a class="nav-link" :class="{'active': actTab === 'boardTab'}" @click="changeTab2('boardTab')" style="font-size:17px; padding:14px 0; cursor:pointer;">
        <i class="fa-solid fa-chess-board"></i>
        게시물
        </a>
     </li>
     <li class="nav-item col-6">
-      <a class="nav-link" :class="{'active': actTab === 'bookmarkTab'}" @click="changeTab2('bookmarkTab')" style="font-size:17px; padding:14px 0;">
+      <a class="nav-link" :class="{'active': actTab === 'bookmarkTab'}" @click="changeTab2('bookmarkTab')" style="font-size:17px; padding:14px 0; cursor:pointer;">
       <i class="fa-solid fa-bookmark"></i>
       저장됨
       </a>
@@ -827,7 +827,7 @@
                             data-bs-backdrop="static"
                             ref="followerModal" @click.self="followerModalHide">	
             <div class="modal-dialog" role="document">
-                   <div class="modal-content" style="max-width:400px; min-height:300px; max-height:400px;">
+                   <div class="modal-content" style="max-width:400px; min-height:400px; max-height:400px;">
                        <div class="modal-header text-center" style="display:flex; justify-content: center; height:50px;">
 							<h5 class="modal-title">팔로워</h5>
                        </div>
@@ -835,24 +835,28 @@
                      	<div v-for="item in myFollowerList" :key="item.attachmentNo">
                      	 						
                   <!-- 프로필 미리보기 내용 -->
-  					<div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave" style="border-radius:15px; margin-left:70px; margin-bottom:70px;">
+  					<div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave" style="border-radius:15px; margin-left:550px; margin-top:-40px;">
                   <div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" style="border-radius: 50%;"> 
-						  <div>
+						  <div style="margin-left:20px;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
 						    <p class="modalName">{{ item.memberName }}</p>
 						  </div>
 					</div>
                     <hr>
-                    <div class="col-7" style="display: flex; margin-left: 10px;">
+                    <div class="col-7" style="display: flex; margin-left: 45px;">
                     	<div class="col-6">
-                    		<span>게시물 <span style="font-weight: bold;">{{postCounts}}</span></span>
+                    		<span style="color:gray;">게시물</span>
+                    			<p style="font-weight: bold; margin-left:20px;">{{postCounts}}</p>
+                    		
                     	</div>
                     	<div class="col-6">
-                    		<span>팔로워 <span style="font-weight: bold;">{{followerCounts}}</span></span>
+                    		<span style="color:gray;">팔로워</span>
+                    			<p style="font-weight: bold; margin-left:20px;">{{followerCounts}}</p>                   	
                     	</div>
                     	<div class="col-6">
-							<span>팔로우 <span style="font-weight: bold;">{{followCounts}}</span></span>
+							<span style="color:gray;">팔로우</span>
+								<p style="font-weight: bold; margin-left:20px;">{{followCounts}}</p>
                     	</div>
                     </div>
                     <div class="col-6">
@@ -899,7 +903,7 @@
           </div><!-- 팔로워 미리보기 끝 -->
 						  <div style="display: flex; align-items: center;">
 						   <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover(item)" style="border-radius:50%;">
-						   		<div style="display: flex; flex-direction: column; justify-content: flex-start;">
+						   		<div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
   						 	<a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
   						 	<p class="modalName">{{item.memberName}}</p>
   						 		</div>
@@ -941,7 +945,7 @@
         <div v-for="item in myFollowList" :key="item.attachmentNo">
       		 	<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
           			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover2(item)" style="border-radius:50%;">
-						   <div style="display: flex; flex-direction: column; justify-content: flex-start;">
+						   <div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
           					<p class="modalName">{{item.memberName}}</p>
 						  </div>
@@ -949,30 +953,31 @@
           <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-show="!followCheckIf(item.followFollower) && !${isOwner}" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
           <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-show="!followCheckIf(item.followFollower) && ${isOwner}" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">삭제</button>
           </div>
-            <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave" style="border-radius:15px; margin-left:70px; margin-bottom:70px;">
+            <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave" style="border-radius:15px; margin-left:550px; margin-top:-40px;">
                   <!-- 프로필 미리보기 내용 -->
                    	<div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" style="border-radius: 50%;"> 
-						  <div>
+						  <div style="margin-left:20px;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
 						    <p class="modalName">{{ item.memberName }}</p>
 						  </div>
 					</div>
                     <hr>
-                    <div class="col-7" style="display: flex; margin-left: 10px;">
+                    <div class="col-7" style="display: flex; margin-left: 45px;">
                     	<div class="col-6">
-                    		<span>게시물 <span style="font-weight: bold;">{{postCounts}}</span></span>
+                    		<span style="color:gray;">게시물</span>
+                    		<p style="font-weight: bold; margin-left:20px;">{{postCounts}}</p>
                     	</div>
                     	<div class="col-6">
-                    		<span>팔로워 <span style="font-weight: bold;">{{followerCounts}}</span></span>
+                    		<span style="color:gray;">팔로워</span>
+                    			<p style="font-weight: bold; margin-left:20px;">{{followerCounts}}</p>
                     	</div>
                     	<div class="col-6">
-<!--                     		<span>팔로우 <span style="font-weight: bold;">{{getTotalFollowCount(item.memberNick)}}</span></span> -->
-							<span>팔로우 <span style="font-weight: bold;">{{followCounts}}</span></span>
+							<span style="color:gray;">팔로우</span>
+								<p style="font-weight: bold; margin-left:20px;">{{followCounts}}</p>	
                     	</div>
                     </div>
-                    <hr>
-                    <div class="col-6">
+		                    <div class="col-6">
                     	<div style="display:flex;">
                     	<template v-if="hoverPostList.length === 0">
 						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
@@ -1032,7 +1037,7 @@
       		  		<div v-for="item in hashtagList" key="item.memberNo" v-else>
 					<div  style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll">
           			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60"style="border-radius:50%;">
-						   <div style="display: flex; flex-direction: column; justify-content: flex-start;">
+						   <div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/tag/' + item.tagName" style="margin-left:5px;">{{'#' + item.tagName }}</a>
           					<p class="modalName" style="margin-left:5px;">게시물 {{item.tagCount}}</p>
 						  </div>
