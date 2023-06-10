@@ -112,17 +112,6 @@
   		margin: 0 0 4px;
 	}
 	
-.nav-tabs {
-  background-color: transparent;
-  border: none;
-  margin-bottom: 20px;
-  position: relative;
-}
-
-.nav-tabs .nav-item {
-  position: relative;
-}
-
 .nav-tabs .nav-link {
   color: #333;
   font-size: 17px;
@@ -136,14 +125,15 @@
   color: #000;
   border: none;
   background-color: transparent;
+  font-weight: bold;
 }
 
 .nav-tabs .nav-link:before {
   content: "";
   position: absolute;
-  top: -2px; /* 변경된 부분 */
-  left: 50%;
-  width: 0;
+  bottom: 0; /* 변경: 선의 위치를 하단에 표시 */
+  left: 0;
+  width: 100%;
   height: 2px;
   background-color: #ccc;
   visibility: hidden;
@@ -151,12 +141,11 @@
 }
 
 .nav-tabs .nav-link.active:before,
-.nav-tabs .nav-link:hover:before{
-
+.nav-tabs .nav-link:hover:before {
   visibility: visible;
-  width: 100%;
-  transform: translateX(-50%);
+  background-color: #c0c0c0;
 }
+
 /* 게시물 네모박스 */
 .box {
 	position: relative;
@@ -206,6 +195,11 @@
 	margin-left:260px;
 	margin-top:30px;
 }
+
+
+
+
+
 </style>
 
       <div id="app" class="container-fluid" style="width:1300px;">
@@ -226,7 +220,7 @@
             <div class="col-4" style=" width:40%; margin-left:70px;">   
                <div class="col-7" style="display:flex;">
                   <div class="col-6" style="width:60%;">
-                  <a href="#" class="btn btn-default" @click="showModal">${memberDto.memberNick}</a>    
+                  <a href="#" class="btn btn-default" @click="showModal" style="font-size:20px;">${memberDto.memberNick}</a>    
            </div>
               <c:choose>
               <c:when test="${isOwner}"> <!-- 본인 프로필 이라면 -->
@@ -265,12 +259,12 @@
                            <span style="font-weight: bold;">${postCounts}</span>
                         </span>
                      </div>
-                     <div class="col-5" @click="followerModalShow">
+                     <div class="col-5" @click="followerModalShow" style="cursor:pointer;">
                         <span>팔로워
                         <span style="font-weight: bold;">{{totalFollowerCnt}}</span>
                          </span>
                      </div>
-                     <div class="col-5" @click="followModalShow">
+                     <div class="col-5" @click="followModalShow" style="cursor:pointer;">
                         <span>팔로우
                         <span style="font-weight: bold;">{{totalFollowCnt}}</span>
                          </span>
@@ -288,7 +282,7 @@
             </div>
             <!-- 친구 추천 목록 -->
     
-            <div  style="display: flex; flex-direction: column; width: 830px; height:280px; background-color: white; border:1px solid gray; margin: 0 auto; margin-top:12px;" v-if="recommendFriends">
+            <div  style="display: flex; flex-direction: column; width: 830px; height:280px; background-color: white; border:1px solid gray; margin: 0 auto; margin-top:12px; border:none;" v-if="recommendFriends">
         		<div class="recommend-id" style="display:flex; justify-content: space-between;">
         			<span style="color:gray; font-weight: bold;">추천계정</span>
         			<a class="" style="text-decoration: none; font-weight: bold;" @click="recommendFriendsAllListModalShow">모두 보기</a>
@@ -310,7 +304,7 @@
 				</div>
 
 			  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style="display:flex;">
-			    <div class="card" style="width: 150px; height: 170px; margin-left: 30px;">
+			    <div class="card" style="width: 170px; height: 185px; margin-left: 30px;">
 			      <div class="ms-auto" style="margin-right:8px;">
 			      	<span @click="deleteRecommendFriend(item.memberNo)">x</span>
 			      </div>
@@ -330,7 +324,7 @@
 			      </div>
 			    </div>
 			  </div>
-		<div class="button-container" style="display: flex; justify-content: center; align-items: center; ">
+		<div class="button-container" style="display: flex; justify-content: center; align-items: center;">
   		
   			<i class="fa-sharp fa-solid fa-arrow-right" @click="currentPage++"  :class="{'hide':currentPage === paginatedRecommendFriends.length - 1}" 
   			style="height: 24px; weight: 24px; margin-left:20px;"></i>
@@ -834,14 +828,14 @@
                             ref="followerModal" @click.self="followerModalHide">	
             <div class="modal-dialog" role="document">
                    <div class="modal-content" style="max-width:400px; min-height:300px; max-height:400px;">
-                       <div class="modal-header text-center" style="display:flex; justify-content: center;">
+                       <div class="modal-header text-center" style="display:flex; justify-content: center; height:50px;">
 							<h5 class="modal-title">팔로워</h5>
                        </div>
-                       <div class="modal-body" style="overflow-y: scroll; max-height:300px;"  @scroll="handleScroll2">
+                       <div class="modal-body" style="overflow-y: scroll; max-height:300px;"  @scroll="handleScroll2" @mouseleave="profileLeave">
                      	<div v-for="item in myFollowerList" :key="item.attachmentNo">
                      	 						
                   <!-- 프로필 미리보기 내용 -->
-  					<div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave">
+  					<div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave" style="border-radius:15px; margin-left:70px; margin-bottom:70px;">
                   <div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" style="border-radius: 50%;"> 
 						  <div>
@@ -928,10 +922,10 @@
                             ref="followModal" @click.self="followModalHide">
              <div class="modal-dialog" role="document">
     <div class="modal-content" style="max-width:400px; min-height:200px; max-height:400px;">
-      <div class="modal-header text-center" style="display:flex; justify-content: center;">
+      <div class="modal-header text-center" style="display:flex; justify-content: center; height:50px;">
         <h5 class="modal-title" >팔로잉</h5>
       </div>
- 		<div class="modal-header text-center" style="display:flex; justify-content: center;">
+ 		<div class="modal-header text-center" style="display:flex; justify-content: center; height:50px;">
   <ul class="nav nav-tabs" style="width: 100%;">
     <li class="nav-item col-6">
        <a class="nav-link" :class="{'active': activeTab === 'peopleTab'}" @click="changeTab('peopleTab')" style="font-size:17px; padding:14px 0;">사람</a>
@@ -941,7 +935,7 @@
       </li>
   </ul>
 </div>
-      <div class="modal-body" style="overflow-y: scroll; max-height:300px;"  @scroll="handleScroll">
+      <div class="modal-body" style="overflow-y: scroll; max-height:300px;"  @scroll="handleScroll" @mouseleave="profileLeave">
       		<div v-if="activeTab === 'peopleTab'">
       		
         <div v-for="item in myFollowList" :key="item.attachmentNo">
@@ -955,7 +949,7 @@
           <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-show="!followCheckIf(item.followFollower) && !${isOwner}" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
           <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-show="!followCheckIf(item.followFollower) && ${isOwner}" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">삭제</button>
           </div>
-            <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave">
+            <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave" style="border-radius:15px; margin-left:70px; margin-bottom:70px;">
                   <!-- 프로필 미리보기 내용 -->
                    	<div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" style="border-radius: 50%;"> 
@@ -1051,6 +1045,7 @@
  
     
     </div>
+		<button type="button" class="btn btn-default" data-bs-dismiss="modal" style="color:red;">취소</button>
   </div>
 </div> 
 </div>
@@ -1339,6 +1334,7 @@
 	            //동영상 자동재생
 	            videoAuto:false,
             },
+            slideOffset: 0, // 슬라이드 오프셋 값
          };
       },
       computed: {
@@ -1492,8 +1488,8 @@
            //회원 환경 설정 로드
            async loadMemberSetting(){
    			const resp = await axios.get(contextPath+"/rest/member/setting");
-               this.memberSetting.watchDistance=resp.data.settingDistance;
-               this.memberSetting.videoAuto=resp.data.videoAuto;
+               this.MemberSetting.watchDistance=resp.data.settingDistance;
+               this.MemberSetting.videoAuto=resp.data.videoAuto;
    		},
               
              //프로필 사진 변경 누르면 실행
@@ -1854,7 +1850,6 @@
            	},
            async profileHover(item) {           		
            	  this.selectedItem = item; // 선택한 항목의 정보 저장
-           	  
            	  // settingHide 불러오기 위해서 선언
            	const resp = await axios.get("/rest/member/setting/"+item.memberNo);
            	  const settingHide = resp.data.settingHide;
@@ -1883,6 +1878,7 @@
            	
             async profileHover2(item) {           		
              	  this.selectedItem = item; // 선택한 항목의 정보 저장
+             	  console.log("item : "+item.followFollower);
              	  
              	  // settingHide 불러오기 위해서 선언
              	const resp = await axios.get("/rest/member/setting/"+item.memberNo);
@@ -2460,6 +2456,8 @@
         			const resp = await axios.post("/rest/member/deleteMember");	
         				location.href="/member/login";	
         		},	
+        		
+        		
       		},
    		
       created() {

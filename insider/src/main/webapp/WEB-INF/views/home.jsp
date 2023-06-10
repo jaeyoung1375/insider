@@ -163,6 +163,9 @@
 	align-items: center;
 	width: 480px;
 }
+.hide{
+display:none;
+}
 </style>
 
 <script>
@@ -204,10 +207,15 @@
 <div id="app"class="darkmode">
 	<!-- 친구추천 -->
 		<div class="container recommend">
+		
 		<div class="d-flex justify-content-end">
 			<p style="font-size:12px; color:gray;">회원님을 위한 친구추천</p>
 		</div>
 			<div class="d-flex justify-content-flex-start" style="margin-left:17px;">
+				<!-- 이전 버튼 -->
+				<div class="button-container" style="display: flex; justify-content: center; align-items: center;">
+					<i class="fa-solid fa-arrow-left"  @click="currentPage--" :class="{'hide' : currentPage === 0}" style="height:24px; weight:24px; margin-left:5px;"></i>
+				</div>
 		  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style=" padding-right: 25px">
 		  <a :href="'${pageContext.request.contextPath}/member/'+ item.memberNick">
 		    <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="65" height="65" style="border-radius:50%;">
@@ -216,8 +224,12 @@
 		      <p style="width:50px; font-size:11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ item.memberNick }}</p>
 		    </div>		    
 		  </div>
+		  		<!-- 다음 버튼 -->
+				<div class="button-container" style="display: flex; justify-content: center; align-items: center;"> 		
+  					<i class="fa-sharp fa-solid fa-arrow-right" @click="currentPage++"  :class="{'hide':currentPage === paginatedRecommendFriends.length - 1}" 
+  					style="height: 24px; weight: 24px; margin-left:20px;"></i>
+				</div>
 		</div>
-
 	</div>
 	<!-- 친구추천  끝-->
 	
@@ -239,7 +251,7 @@
                         <div style="padding: 8px 8px 4px 8px;">
                             <div class="d-flex">
 
-                                <div class="p-2"><a style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><img class="profile rounded-circle" :src="profileUrl(index)" style="object-fit: cover;" @mouseover="profileHover(board.boardWithNickDto)"></a></div>
+                                <div class="p-2"><a style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><img class="profile rounded-circle" :src="profileUrl(index)" style="object-fit: cover; " @mouseover="profileHover(board.boardWithNickDto)"></a></div>
                                 <div class="p-2" style="margin-top: 8px;"><h4><a class="btn btn-none" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a><b style="color: gray;">  · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
 
                                 <div v-if="followCheckIfNew(index)" @click="follow(board.boardWithNickDto.memberNo)" class="p-2 me-5" style="margin-top: 8px;"><h4><b style="font-size: 15px; color:blue; cursor: pointer;">팔로우</b></h4></div>
@@ -328,7 +340,7 @@
          
         
          
-          <div class="profile-preview" v-if="selectedItem === board.boardWithNickDto" @mouseleave="profileLeave">
+          <div class="profile-preview" v-if="selectedItem === board.boardWithNickDto" @mouseleave="profileLeave" style="border-radius:15px; margin-left:70px; margin-bottom:70px;">
                   <!-- 프로필 미리보기 내용 -->
                    	<div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' +board.boardWithNickDto.attachmentNo" width="75" height="75" style="border-radius: 50%;" @mouseleave="profileLeave"> 
@@ -386,8 +398,8 @@
                     	 </div>
                     </div>
                 <div class="col-9" style="display:flex; justify-content: space-between; margin-left:40px; margin-top:15px;">
-                  	 <button class="btn btn-primary" @click="follow(board.boardWithNickDto.memberNo)" style="flex-grow:1;" v-if="followCheckIf(board.boardWithNickDto.memberNo)">팔로우</button>
-                  	 <button class="btn btn-secondary" @click="unFollow(board.boardWithNickDto.memberNo)" style="flex-grow:1;"  v-if="!followCheckIf(board.boardWithNickDto.memberNo)">팔로잉</button>
+                  	 <button class="btn btn-primary" @click="follow(board.boardWithNickDto.memberNo)" style="flex-grow:1; margin-right:10px;" v-if="followCheckIf(board.boardWithNickDto.memberNo)">팔로우</button>
+                  	 <button class="btn btn-secondary" @click="unFollow(board.boardWithNickDto.memberNo)" style="flex-grow:1; margin-right:10px;"  v-if="!followCheckIf(board.boardWithNickDto.memberNo)">팔로잉</button>
                   	 <button class="btn btn-primary" style="width:50%;">메시지 보내기</button>
                  </div> 
                  
@@ -1336,8 +1348,6 @@ Vue.createApp({
 		// 호버
 		 async profileHover(item) {           		
            	  this.selectedItem = item; // 선택
-           	  console.log("닉네임 : " +item.memberNick);
-           	  console.log("멤버번호 : " +item.memberNo);
            	  
         	  // settingHide 불러오기 위해서 선언
              	const resp = await axios.get("/rest/member/setting/"+item.memberNo);

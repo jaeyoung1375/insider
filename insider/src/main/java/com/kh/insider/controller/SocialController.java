@@ -57,10 +57,11 @@ public class SocialController {
             // 로그인 시각 갱신
             memberRepo.updateLoginTime(originalMember.getMemberNo());
             // 회원정보
-            session.setAttribute("socialUser",originalMember);
             session.setAttribute("memberNo", originalMember.getMemberNo());
+            session.setAttribute("memberLevel", originalMember.getMemberLevel());
+            session.setAttribute("memberNick", originalMember.getMemberNick());
             // 토큰정보
-            session.setAttribute("member",token.getAccess_token());
+            session.setAttribute("access_token",token.getAccess_token());
             // 리프레시 토큰 정보
             session.setAttribute("refresh_token",token.getRefresh_token());
             return "redirect:/";
