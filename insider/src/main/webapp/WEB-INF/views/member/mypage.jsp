@@ -614,7 +614,7 @@
            		<div class="card-header">
            		    <div class="row">
            				<div class='col-10'>
-			           		<img class="profile" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+bookmarkMyPostList[detailIndex2].boardWithNickDto.imageURL">
+			           		<img class="profile" :src="'${pageContext.request.contextPath}'+bookmarkMyPostList[detailIndex2].boardWithNickDto.imageURL">
 		           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick"><b>{{bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick}}</b></a>
            				</div>
            				<div class="col d-flex justify-content-center align-items-center">
@@ -701,8 +701,9 @@
 
   
       <!-- Modal 창 영역 -->
+<!-- 이 계정 정보 -->
                    <div class="modal" tabindex="-1" role="dialog" id="modal03" data-bs-backdrop="static" ref="modal03" @click.self="hideModal">
-            		 <div class="modal-dialog" role="document">
+            		 <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
                 		<div class="modal-content">
                    		 	<div class="modal-header" style="display:flex; justify-content: center;">
                         		<h5 class="modal-title" style="text-align:center;">
@@ -721,7 +722,7 @@
 			                      <i class="fa-solid fa-location-dot"></i>&nbsp;&nbsp;
 			                      <h5>계정 기본 위치</h5>
 		                      </div>
-                      <p style="font-size:12px; color:gray;">한국</p>
+                      <p style="font-size:12px; color:gray;">{{location}}</p>
                    		</div>   
                         	</h5>
                     	</div>   
@@ -730,31 +731,40 @@
             		</div>
         		</div>
         
-        
+<!--    이 계정 정보 모달     -->
           <div class="modal" tabindex="-1" role="dialog" id="myOptionModal"
                             data-bs-backdrop="static"
                             ref="addtionModal" @click.self="hideModal2">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
                 <div class="modal-content">
-                    <div class="modal-header" style="display:flex; justify-content: center;">
-                        <a href="#" class="btn btn-default block" style="color:red;"  @click="blockModalShow">차단</a>
-                    </div>
+	                <div class="modal-body p-0">
+						<div class="row p-3">
+							<div class="col d-flex justify-content-center align-items-center">
+								<h5 class="modal-click-btn-negative" style="margin:0;" @click="blockModalShow">차단</h5>
+							</div>
+						</div>
+						<hr class="m-0">
+						<div class="row p-3" >
+							<div class="col d-flex justify-content-center align-items-center">
+								<h5 style="margin:0; cursor:pointer" @click="showReportMenuModal(${memberDto.memberNo},${memberDto.memberNo},'member')">신고</h5>
+							</div>
+						</div>
+						<hr class="m-0">
+						<div class="row p-3" >
+							<div class="col d-flex justify-content-center align-items-center">
+								<h5 style="margin:0; cursor:pointer" @click="accountView">이 계정 정보</h5>
+							</div>
+						</div>
+						<hr class="m-0">
+						<div class="row p-3" >
+							<div class="col d-flex justify-content-center align-items-center">
+								<h5 class="modal-click-btn-neutral" style="margin:0;" @click="hideModal2">취소</h5>
+							</div>
+						</div>
+					</div>
                      
-                       <div class="modal-header" style="display:flex; justify-content: center;">
-                        <div class="row" @click="showReportMenuModal(${memberDto.memberNo},${memberDto.memberNo},'member')">
-                        	<div class="col modal-btn-click-negative d-flex justify-content-center align-items-center">
-                        		<h5>신고</h5>
-                        	</div>
-                        </div>
 
-                    </div>
-                        <div class="modal-header" style="display:flex; justify-content: center;">
-                          <a @click="accountView">이 계정 정보</a>
-                    </div>
                    
-                 
-                        <button type="button" class="btn"
-                                data-bs-dismiss="modal">취소</button>
                    
                 </div>      
             </div>
@@ -764,7 +774,7 @@
           <div class="modal" tabindex="-1" role="dialog" id="blockModal"
                             data-bs-backdrop="static"
                             ref="blockModal" @click.self="blockModalHide">
-            <div class="modal-dialog" role="document" style="width:30%;">
+            <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%; width:30%">
                 <div class="modal-content">
                     <div class="modal-header" style="display:flex; justify-content: center; flex-direction: column;">
                     	<div class="row">
@@ -782,13 +792,13 @@
 	                     <div class="content" style="font-size:12px; text-align:center;">
 	                     </div>
                     </div>
-                     <div class="modal-header" style="display:flex; justify-content: center;" >
-                         <button type="button" class="btn" data-bs-dismiss="modal" style="color:red;">취소</button>
+                    <div class="modal-header align-items-center" style="display:flex; justify-content: center;">
+                          <h6 @click="blockUser" class="modal-click-btn-negative">차단</h6>
+                    </div>
+                     <div class="modal-header align-items-center" style="display:flex; justify-content: center;" >
+                         <h6 class="modal-click-btn-neutral" @click="blockModalHide" >취소</h6>
                     </div>
                    
-                    <div class="modal-header" style="display:flex; justify-content: center;">
-                          <a @click="blockUser">차단</a>
-                    </div>
                    
                 </div>      
             </div>
@@ -797,7 +807,7 @@
          <div class="modal" tabindex="-1" role="dialog" id="blockResultModal"
                             data-bs-backdrop="static"
                             ref="blockResultModal" @click.self="blockResultModalHide">
-            <div class="modal-dialog" role="document" style="width:30%;">
+            <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%; width:30%">
                 <div class="modal-content">
                     <div class="modal-header" style="display:flex; justify-content: center; flex-direction: column;">
                      <h5 class="modal-title" style="text-align:center;">
@@ -808,7 +818,7 @@
                      </div>
                      </div>
                      <div class="model-header" style="text-align:center;">
-                     <button type="button" class="btn" data-bs-dismiss="modal" style="color:red;">닫기</button>   
+                     <button type="button" class="btn btn-default" data-bs-dismiss="modal" style="color:red;">닫기</button>   
                      </div>
                      
             </div>
@@ -816,33 +826,47 @@
       
         </div>
         
-        
+<!--   옵션 모달    -->
           <div class="modal" tabindex="-1" role="dialog" id="myOptionModal"
                             data-bs-backdrop="static"
                             ref="myOptionModal" @click.self="myOptionModalHide">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
                    <div class="modal-content">
-                        <div class="modal-header" style="display:flex; justify-content: center;">
-                          <a href="/member/setting" class="nomal">설정 및 개인정보</a>
-                       </div>
-                        <div class="modal-header" style="display:flex; justify-content: center;">
-                          <a href="/member/setting?page=2" class="nomal">알림</a>
-                       </div>
-                    
-                        <div class="modal-header" style="display:flex; justify-content: center;">
-                          <a href="/member/logout" class="nomal">로그아웃</a>
-                       </div>
-                        <div class="modal-header" style="display:flex; justify-content: center;">
-                          <a class="nomal" @click="deleteMemberModalShow">회원탈퇴</a>
-                       </div>
-         
-                        <button type="button" class="btn"
-                                data-bs-dismiss="modal" style="color:red;">취소</button>
-                   
+	                 <div class="modal-body p-0">
+						<div class="row p-3">
+							<div class="col d-flex justify-content-start align-items-center">
+								<a href="/member/setting" class="nomal"><h5 style="margin:0; cursor:default">설정 및 개인정보</h5></a>
+							</div>
+						</div>
+						<hr class="m-0">
+						<div class="row p-3" >
+							<div class="col d-flex justify-content-center align-items-center">
+								<a href="/member/setting?page=2" class="nomal"><h5 style="margin:0;">알림</h5></a>
+							</div>
+						</div>
+						<hr class="m-0">
+						<div class="row p-3" >
+							<div class="col d-flex justify-content-center align-items-center">
+								<a href="/member/logout" class="nomal"><h5 style="margin:0;">로그아웃</h5></a>
+							</div>
+						</div>
+						<hr class="m-0">
+						<div class="row p-3" >
+							<div class="col d-flex justify-content-center align-items-center">
+								<a class="nomal" @click="deleteMemberModalShow"><h5 class="modal-click-btn-negative" style="margin:0;">회원탈퇴</h5></a>
+							</div>
+						</div>
+						<hr class="m-0">
+						<div class="row p-3" >
+							<div class="col d-flex justify-content-center align-items-center">
+								<a class="nomal" @click="myOptionModalHide"><h5 class="modal-click-btn-neutral" style="margin:0;">취소</h5></a>
+							</div>
+						</div>
+					</div>
                 </div>      
             </div>
         </div>
-        
+<!--   팔로워 모달    --> 
         
           <div class="modal" tabindex="-1" role="dialog" id="followerModal"
                             data-bs-backdrop="static"
@@ -1329,7 +1353,8 @@
       
       
 
-
+<!-- 카카오맵 CDN -->
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e45b9604d6c5aa25785459639db6e025&libraries=services"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/vue@next"></script>
       <script>
@@ -1470,6 +1495,7 @@
 	            videoAuto:false,
             },
             slideOffset: 0, // 슬라이드 오프셋 값
+            location:"",//지역
          };
       },
       computed: {
@@ -2643,7 +2669,23 @@
         				location.href="/member/login";	
         		},	
         		
-        		
+            	//주소 알아오는 메소드
+            	searchAddrFromCoords(callback) {
+        		    // 좌표로 행정동 주소 정보를 요청합니다
+        		    this.geocoder = new kakao.maps.services.Geocoder();
+        		    this.geocoder.coord2RegionCode(${memberDto.memberLon}, ${memberDto.memberLat}, callback);
+        		},
+        		displayCenterInfo(result, status) {
+        		    if (status === kakao.maps.services.Status.OK) {
+        		        for(var i = 0; i < result.length; i++) {
+        		            // 행정동의 region_type 값은 'H' 이므로
+        		            if (result[i].region_type === 'H') {
+        		                this.location = result[i].address_name;
+        		                break;
+        		            }
+        		        }
+        		    }    
+        		},
       		},
    		
       created() {
@@ -2665,6 +2707,7 @@
     	    .catch((error) => {
     	      console.error("Error occurred during initialization: ", error);
     	    });
+    	  this.searchAddrFromCoords(this.displayCenterInfo);
     	},
       watch:{
     	// percent가 변하면 percent의 값을 읽어와서 80% 이상인지 판정
