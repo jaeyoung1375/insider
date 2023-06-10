@@ -1010,6 +1010,7 @@
 							</div>
 						</template>
 						
+						
 						<!-- 비공개 계정 || 친구에게만 공개 && 팔로우 목록에 있다면 -->
 						<template v-else-if="(hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)) && ${memberNo} != item.memberNo">
 						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
