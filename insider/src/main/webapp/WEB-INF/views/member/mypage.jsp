@@ -793,10 +793,10 @@
 	                     </div>
                     </div>
                     <div class="modal-header align-items-center" style="display:flex; justify-content: center;">
-                          <h6 @click="blockUser" class="modal-click-btn-negative">차단</h6>
+                          <h6 @click="blockUser" class="modal-click-btn-negative m-0">차단</h6>
                     </div>
                      <div class="modal-header align-items-center" style="display:flex; justify-content: center;" >
-                         <h6 class="modal-click-btn-neutral" @click="blockModalHide" >취소</h6>
+                         <h6 class="modal-click-btn-neutral m-0" @click="blockModalHide" >취소</h6>
                     </div>
                    
                    
@@ -804,14 +804,14 @@
             </div>
         </div>
         
-         <div class="modal" tabindex="-1" role="dialog" id="blockResultModal"
+         <div class="modal" tabindex="-1" role="dialog" id="blockResultModal" style="z-index:9999"
                             data-bs-backdrop="static"
                             ref="blockResultModal" @click.self="blockResultModalHide">
             <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%; width:30%">
                 <div class="modal-content">
                     <div class="modal-header" style="display:flex; justify-content: center; flex-direction: column;">
                      <h5 class="modal-title" style="text-align:center;">
-                        ${memberDto.memberNick}님을 차단했습니다.
+                       {{reportBoardData[5]}}님을 차단했습니다.
                      </h5>
                      <div class="content" style="font-size:12px; text-align:center;">
                         <p style="font-size:12px; color:gray;">상대방의 프로필에서 언제든지 차단을 해제할 수 있습니다.</p>                    
@@ -1170,7 +1170,7 @@
 <!-- 팔로우 모달 목록 끝 -->
 <!-- 차단 관련 모달 -->
 <!-- ---------------------------------신고 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal" style="z-index:9999">
+	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal" style="z-index:8888">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content" >
 				<div class="modal-header">
@@ -1238,7 +1238,7 @@
 	</div>
 	</div>
 <!-- ---------------------------------추가 메뉴 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="additionalMenuModal" data-bs-backdrop="static" ref="additionalMenuModal" style="z-index:9999">
+	<div class="modal" tabindex="-1" role="dialog" id="additionalMenuModal" data-bs-backdrop="static" ref="additionalMenuModal" style="z-index:7777">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-body p-0">
@@ -1281,7 +1281,7 @@
 		</div>
 	</div>
 <!-- ---------------------------------신고 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal" style="z-index:9999">
+	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal" style="z-index:8888">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content" >
 				<div class="modal-header">
@@ -1310,7 +1310,7 @@
 		</div>
 	</div>
 <!-- ---------------------------------신고 후 차단 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="blockModal2" data-bs-backdrop="static" ref="blockModal2" style="z-index:9999">
+	<div class="modal" tabindex="-1" role="dialog" id="blockModal2" data-bs-backdrop="static" ref="blockModal2" style="z-index:8888">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-body">
@@ -1335,8 +1335,8 @@
 						</div>
 					</div>
 					<div class="row mt-2">
-						<div class="col d-flex p-3 justify-content-center" @click="blockUser" style="color:#dc3545; cursor:pointer" v-if="reportBoardData[3]!=null && reportBoardData[3].length>0">
-							<h5 style="margin:0;">{{reportBoardData[3]}}님 차단</h5>
+						<div class="col d-flex p-3 justify-content-center" @click="blockUser" style="color:#dc3545; cursor:pointer" v-if="reportBoardData[5]!=null && reportBoardData[5].length>0">
+							<h5 style="margin:0;">{{reportBoardData[5]}}님 차단</h5>
 						</div>
 					</div>
 				</div>
@@ -1571,6 +1571,8 @@
                   this.addtionModal.hide();
               },
               blockModalShow(){
+            	  this.reportBoardData[5]="${memberDto.memberNick}";
+            	  this.reportBoardData[1]=${memberDto.memberNo};
                   if(this.blockModal == null) return;
                   this.addtionModal.hide();
                    this.blockModal.show();      
@@ -2563,16 +2565,20 @@
     				const resp = await axios.post(contextPath+"/rest/report/", data)
     				this.hideReportMenuModal();
     				if(resp.data.length!=0){
-    					this.reportBoardData[3] = resp.data.memberNick;
+    					this.reportBoardData[5] = resp.data.memberNick;
     				}
     				this.showBlockModal();
     			},
         		//차단
         		async blockUser(){
-        			const resp = await axios.put(contextPath+"/rest/block/"+${memberDto.memberNo});
+        			const resp = await axios.put(contextPath+"/rest/block/"+this.reportBoardData[1]);
         			if(resp.data){
+        				this.hideBlockModal();
         				this.blockModalHide();
         				this.blockResultModalShow();
+        			}
+        			else{
+        				this.blockModalHide();
         			}
         		},
         		showAdditionalMenuModal(boardNo, reportMemberNo, reportTable, index, detailIndex){
@@ -2684,7 +2690,7 @@
         		                break;
         		            }
         		        }
-        		    }    
+        		    }
         		},
       		},
    		
