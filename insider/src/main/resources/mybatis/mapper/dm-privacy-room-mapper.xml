@@ -20,6 +20,14 @@
 	<delete id="leaveRoom">
 		delete dm_privacy_room where inviter_no = #{inviterNo} and room_no = #{roomNo}
 	</delete>
+	
+	<!-- 동일한 회원의 일대일 채팅방 확인 -->
+	<select id="findRoomByMembers" parameterType="map" resultType="int">
+        SELECT room_no
+        FROM dm_privacy_room
+        WHERE inviter_no = #{inviterNo} AND invitee_no = #{inviteeNo}
+        OR inviter_no = #{inviteeNo} AND invitee_no = #{inviterNo}
+    </select>
 
     
 	<!-- //////////////////////// 삭제 예정 ///////////////// -->

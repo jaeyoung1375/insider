@@ -244,7 +244,7 @@
 					 <button class="btn btn-secondary" @click="unFollow(${memberDto.memberNo})" v-else>팔로잉</button>
                </div>
                <div class="col-5"  style=" width:50%;">
-               		<button class="btn btn-secondary">메시지 보내기</button>
+               		<button class="btn btn-secondary" @click="moveToDmPage(${memberDto.memberNo})" style="cursor: pointer;">메시지 보내기</button>
                </div>
                
                <div class="col-5" style="width:40%;">
@@ -551,7 +551,7 @@
 								<i :class="{'fa-heart': true, 'like':isLiked[detailIndex],'ms-2':true, 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}" @click="likePost(myBoardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
 							</span>
 							<span class="card-text" style="margin: 0 0 4px 0; padding-left: 0.5em;">
-								<i class="fa-regular fa-message mb-1" style="font-size: 25px; "></i>
+								<i class="fa-regular fa-message mb-1" @click="moveToDmPage(${memberDto.memberNo})" style="font-size: 25px; cursor: pointer;"></i>
 							</span>
 						</div>
 						
@@ -916,7 +916,7 @@
                   
           
                   	 <button class="float-end btn btn-primary" @click="follow(item.memberNo)" v-if="followCheckIf(item.memberNo)" :class="{'hide' : item.memberNo == ${memberNo}}" style="flex-grow:1;">팔로우</button>
-                  	 <button class="btn btn-primary" v-if="!followCheckIf(item.memberNo) && item.memberNo != ${memberNo}" style="width:50%;">메시지 보내기</button>
+                  	 <button class="btn btn-primary" v-if="!followCheckIf(item.memberNo) && item.memberNo != ${memberNo}" @click="moveToDmPage(item.memberNo)" style="width:50%;cursor:pointer;">메시지 보내기</button>
           			 <button class="float-end btn btn-secondary" @click="myUnFollower(item.memberNo)" v-if="!followCheckIf(item.memberNo) && ${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}" style="width:50%; margin-left:20px;">팔로잉</button>					  
 					 <button class="float-end btn btn-secondary unfollow-button" @click="unFollower(item.memberNo)" v-if="!followCheckIf(item.memberNo) && !${isOwner}" :class="{'hide' : item.memberNo == ${memberNo}}" style="width:50%; margin-left:20px;">팔로잉</button>
                    
@@ -1035,7 +1035,7 @@
                     </div>
                     <div class="col-9" style="display:flex; justify-content: space-between; margin-left:40px; margin-top:15px;">
                   	 <button class="btn btn-primary" @click="follow(item.followFollower)" v-if="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="flex-grow:1;">팔로우</button>
-                  	 <button class="btn btn-primary" v-if="!followCheckIf(item.followFollower) && item.followFollower != ${memberNo}" style="width:50%;">메시지 보내기</button>
+                  	 <button class="btn btn-primary" v-if="!followCheckIf(item.followFollower) && item.followFollower != ${memberNo}" @click="moveToDmPage(item.followFollower)"style="width:50%;cursor:pointer;">메시지 보내기</button>
           			<button class="btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-if="!followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="width:50%; margin-left:20px;" >팔로잉</button>
                  </div>
                  
@@ -1388,6 +1388,7 @@
             hoverPostList : [],
             hoverPostList2 : [],
             reportBoardNo:"",  
+            DmMemberNo:"${sessionScope.memberNo}",
             memberNo : "${memberDto.memberNo}",
             memberNick : "${memberDto.memberNick}",
             attachmentNo : "${memberDto.attachmentNo}",
@@ -2650,6 +2651,44 @@
         				location.href="/member/login";	
         		},	
         		
+        		/*----------------------DM으로 이동 및 채팅방 생성----------------------*/
+        		async moveToDmPage(inviteeNo){
+        		    try {
+        		    	//본인일 경우, 메인 채팅방으로 이동
+        		        if(this.DmMemberNo == inviteeNo) {
+        		        	window.location.href = contextPath + "/dm/channel";
+        		            return; 
+        		        }
+        		    	//두 회원이 참여한 채팅방 번호 조회
+        		        const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.DmMemberNo + "/" + inviteeNo);
+        		        let existingRoomNo = checkResp.data;
+        		        
+        		    	//기존의 일대일 채팅방이 없을 경우, 새 채팅방 생성
+        		        if (!existingRoomNo) {
+        		            const dmRoomVO = await axios.post(contextPath + "/rest/createChatRoom");
+        		            const roomNo = dmRoomVO.data.roomNo;
+        		
+        		            //채팅 유저 저장
+        		            const user = {
+        		                roomNo: roomNo,
+        		                memberList: [inviteeNo, this.DmMemberNo]
+        		            };
+        		            await axios.post(contextPath + "/rest/enterUsers", user);
+        		            console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
+        		            
+        		            //생성된 채팅방으로 이동
+        			        window.location.href = contextPath + "/dm/channel?room=" + roomNo;
+        			        }
+        			        //기존의 일대일 채팅방이 있을 경우, 기존 채팅방으로 이동
+        			        else {
+        			        	window.location.href = contextPath + "/dm/channel?room=" + existingRoomNo;
+        			        }
+        		    } catch (error) {
+        		        console.error("방 생성, 입장, 초대 중 오류가 발생했습니다.", error);
+        		    }
+        		},
+        		/*----------------------DM으로 이동 및 채팅방 생성----------------------*/
+
         		
       		},
    		
