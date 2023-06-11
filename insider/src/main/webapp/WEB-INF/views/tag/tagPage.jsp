@@ -180,7 +180,7 @@
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
                 <div class="carousel-indicators">
-                  <button v-for="(attach, index2) in boardList[detailIndex].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
+                  <button v-if="boardList[detailIndex].boardAttachmentList.length > 1" v-for="(attach, index2) in boardList[detailIndex].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
                 </div>
                
                 <div class="carousel-inner">
@@ -193,11 +193,11 @@
                   </div>
                 </div>
                
-                <button class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="prev">
+                <button v-if="boardList[detailIndex].boardAttachmentList.length > 1" class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="prev">
                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Previous</span>
                 </button>
-                <button  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="next">
+                <button v-if="boardList[detailIndex].boardAttachmentList.length > 1" class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="next">
                   <span class="carousel-control-next-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Next</span>
                 </button>
@@ -444,6 +444,10 @@
 				replyParent:0,
 				replyContent:"",
 				placeholder:"댓글 입력..",
+				//게시물 작성자 팔로우 리스트
+				followList : [],
+				followerList : [],
+				loginMemberNo:"${sessionScope.memberNo}", // 로그인한 세션 값
 
 				//게시물 댓글 좋아요 기능 전용 변수
 				replyLikeCount : [], // 댓글 좋아요 수 저장 변수
@@ -604,9 +608,16 @@
 	        	this.replyList=[...resp.data];
 	        },
 	        
-	        //댓글 등록
 	        async replyInsert(index) {
 	        	  const boardNo = this.boardList[index].boardWithNickDto.boardNo;
+	        	  const memberNo = this.boardList[index].boardWithNickDto.memberNo;
+	        	  const loginNo = parseInt(this.loginMemberNo);
+	        	  
+	        	  //세팅값 불러오기
+	        	  const response = await axios.get(contextPath+"/rest/member/setting/" + memberNo);
+	        	  const set = response.data.settingAllowReply;
+	        	  //console.log(set);
+	        	  //console.log(memberNo, loginNo);       	  
 	        	  
 	        	  const requestData = {
 	        	    replyOrigin: boardNo,
@@ -615,13 +626,71 @@
 	        	  };
 	        	  this.replyContent='';
 	        	  
-	        	  try {
+	        	  //모든 사람 작성 가능한 경우
+	        	  if(set == 0){
 	        	    const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
-	        	    this.replyLoad(index);	    
-	        	  } 
-	        	  catch (error) {
-	        	    console.error(error);
+	        	    this.replyLoad(index);	            		  
 	        	  }
+	        	  //내가 팔로우 하는 사람만 작성 가능한 경우
+	        	  else if(set == 1){
+	        		  //게시물 작성자 팔로우 로드
+	        		  await this.loadFollow(memberNo);
+	              	  if(loginNo == memberNo) this.followList.push(loginNo); 
+	        		  
+	              	  if(this.followList.includes(loginNo)){
+	        			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+	              	      this.replyLoad(index);  
+	              	      this.followList = [];
+	        		  }
+	        		  else{
+	        			  alert("댓글 사용이 불가능합니다.");
+	        		  }
+	        	  }
+	        	  //팔로워만 댓글 작성 가능한 경우
+	        	  else if(set == 2){
+	        		  await this.loadFollower(memberNo);
+	              	  if(loginNo == memberNo) this.followerList.push(loginNo); 
+	        		  //console.log(this.followerList);
+	        		  if(this.followerList.includes(loginNo)){
+	        			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+	              	      this.replyLoad(index);
+                	      this.followerList = [];
+	        		  }
+	        		  else{
+	        			  alert("댓글 사용이 불가능합니다.");
+	        		  }
+	        	  }
+	        	  else{
+	        		  //게시물 작성자 팔로우 로드
+	        		  await this.loadFollow(memberNo);
+	              	  if(loginNo == memberNo) this.followList.push(loginNo); 
+	        		  //게시물 작성자 팔로워 로드
+	              	  await this.loadFollower(memberNo);
+	              	  if(loginNo == memberNo) this.followerList.push(loginNo); 
+	        		  
+	              	  if(this.followList.includes(loginNo) || this.followerList.includes(loginNo)){
+	        			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+	              	      this.replyLoad(index);
+	              	      this.followList = [];
+                	      this.followerList = [];
+	        		  }
+	        		  else{
+	        			  alert("댓글 사용이 불가능합니다.");
+	        		  }
+	        	  }
+	        	   
+	        },
+	        
+	        //댓글 가능 팔로우 체크
+	        async loadFollow(memberNo) {
+	        	const resp = await axios.post(contextPath + "/rest/follow/getFollow/" + memberNo);
+	        	this.followList.push(...resp.data);
+	        },
+	        
+	        //댓글 가능 팔로워 체크
+	        async loadFollower(memberNo) {
+	        	const resp = await axios.post(contextPath + "/rest/follow/getFollower/" + memberNo);
+	        	this.followerList.push(...resp.data);
 	        },
 	        
 	        //댓글 삭제
