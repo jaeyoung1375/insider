@@ -39,18 +39,6 @@ public class TagRestController {
 	@Autowired
 	private ForbiddenService forbiddenService;
 	
-	//사용가능 태그 설정
-	@PutMapping("/")
-	public int changeAvailable(@RequestBody TagDto tagDto) {
-		TagDto oldTagDto = tagRepo.selectOne(tagDto.getTagName());
-		int available = oldTagDto.getTagAvailable();
-		int newAvailable=0;
-		if(available==0) {
-			newAvailable=1;
-		}
-		tagDto.setTagAvailable(newAvailable);
-		return tagRepo.updateAvailable(tagDto);
-	}
 	
 	@GetMapping("/list/{tagName}")
 	public List<BoardListVO> selectTagBoardList(@PathVariable String tagName, @RequestParam(required=false, defaultValue="1") int page, HttpSession session){

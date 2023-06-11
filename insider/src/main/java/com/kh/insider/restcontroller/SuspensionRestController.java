@@ -23,24 +23,10 @@ public class SuspensionRestController {
 	@Autowired
 	private MemberWithProfileRepo memberWithProfileRepo;
 	
-	@PostMapping("/")
-	public MemberWithSuspensionDto insert(@RequestBody MemberSuspensionDto  memberSuspensionDto) {
-		if(memberSuspensionRepo.selectOne(memberSuspensionDto.getMemberNo())==null) {
-			memberSuspensionRepo.insert(memberSuspensionDto);
-		}
-		else {
-			memberSuspensionRepo.addSuspension(memberSuspensionDto);
-		}
-		return memberWithProfileRepo.suspensionSelectOne(memberSuspensionDto.getMemberNo());
-	}
+
 	@GetMapping("/{memberNo}")
 	public MemberSuspensionDto selectOne(@PathVariable long memberNo) {
 		return memberSuspensionRepo.selectOne(memberNo);
 	}
-	@PutMapping("/")
-	public MemberWithSuspensionDto removeSuspension(@RequestBody MemberSuspensionDto memberSuspensionDto) {
-		long memberNo = memberSuspensionDto.getMemberNo();
-		memberSuspensionRepo.removeSuspension(memberNo);
-		return memberWithProfileRepo.suspensionSelectOne(memberNo);
-	}
+
 }

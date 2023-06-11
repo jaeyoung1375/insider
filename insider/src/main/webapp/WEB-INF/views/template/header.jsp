@@ -1051,7 +1051,6 @@
 				memberGpsLat = position.coords.latitude;
 				memberGpsLon = position.coords.longitude;
 				this.setGpsToMember();
-				console.log("새 gps : "+memberGpsLat+" "+memberGpsLon)
 			},
 			showError(error) {
 				// 위치 정보 가져오기 실패 시 처리할 로직(기존꺼 불러옴)

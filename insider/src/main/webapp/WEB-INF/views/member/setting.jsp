@@ -867,38 +867,6 @@
 					},
 				}).open();
 			},
-			/*------------------------GPS 찾기------------------------*/
-			getGps(){
-				if (navigator.geolocation) {
-					navigator.geolocation.getCurrentPosition(this.showGps, this.showError);
-				} 
-				else {
-				// 브라우저가 Geolocation을 지원하지 않는 경우 처리할 로직
-					console.log("Geolocation is not supported by this browser.");
-				}
-			},
-			showGps(position){
-				// 위치 정보 가져오기 성공 시 처리할 로직
-				this.member.memberLat = position.coords.latitude;
-				this.member.memberLon = position.coords.longitude;
-			},
-			showError(error) {
-				// 위치 정보 가져오기 실패 시 처리할 로직
-				switch (error.code) {
-					case error.PERMISSION_DENIED:
-						console.log("User denied the request for Geolocation.");
-						break;
-					case error.POSITION_UNAVAILABLE:
-						console.log("Location information is unavailable.");
-						break;
-					case error.TIMEOUT:
-						console.log("The request to get user location timed out.");
-						break;
-					case error.UNKNOWN_ERROR:
-						console.log("An unknown error occurred.");
-						break;
-				}
-			},
 			/*------------------------카카오맵 표시------------------------*/
 			settingMap(){
 				this.mapContainer = this.$refs.map;
@@ -1021,7 +989,6 @@
 			//세팅데이터 로드
 			this.loadMember();
 			this.loadSetting();
-			this.getGps();
 		},
 		mounted(){
 			//모달 선언

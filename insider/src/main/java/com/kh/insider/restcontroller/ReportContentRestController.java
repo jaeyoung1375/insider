@@ -24,27 +24,11 @@ public class ReportContentRestController {
 
 	@Autowired
 	private ReportListRepo reportListRepo;
-	@Autowired
-	private ReportRepo reportRepo;
-	@Autowired
-	private MemberSuspensionRepo memberSuspensionRepo;
 	
-	@PostMapping("/")
-	public void insert(@RequestBody ReportListDto reportListDto) {
-		reportListRepo.insert(reportListDto);
-	}
+
 	@GetMapping("/")
 	public List<ReportListDto> selectList(){
 		return reportListRepo.selectList();
 	}
-	@DeleteMapping("/{reportListNo}")
-	public void delete(@PathVariable int reportListNo) {
-		reportListRepo.delete(reportListNo);
-	}
-	@PutMapping("/")
-	public void update(@RequestBody UpdateReportContentVO updateReportContentVO) {
-		memberSuspensionRepo.updateReportContent(updateReportContentVO);
-		reportListRepo.update(updateReportContentVO);
-		reportRepo.updateReportContent(updateReportContentVO);
-	}
+
 }
