@@ -324,7 +324,7 @@
 					        <div class="input-wrapper" style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 5px;">
 						        <div class="row justify-content-between" style="margin-top:10px;margin-bottom:10px;padding-left:calc(var(--bs-gutter-x) * .5);padding-right:calc(var(--bs-gutter-x) * .5);height:38px;">
 							        <!-- 입력창 -->
-							        <input type="text" v-model="text" v-on:input="text=$event.target.value" class="dm-input" placeholder="메세지 입력" style="border-radius: 3rem;width:75%;"@keyup.enter="sendMessage"spellcheck="false">
+							        <input type="text" v-model="text" v-on:input="text=$event.target.value" class="dm-input" placeholder="메세지 입력" style="border-radius: 3rem;width:75%;cursor:pointer;"@keyup.enter="sendMessage"spellcheck="false">
 							        <label for="fileDm" style="display: contents;">
 										<i class="fa-solid fa-image" style="font-size: xx-large;color: #4b6584;padding-top: 3px;cursor:pointer;"></i>
 									</label>

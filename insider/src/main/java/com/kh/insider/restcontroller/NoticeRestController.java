@@ -9,10 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import com.kh.insider.dto.MemberDto;
+import com.kh.insider.dto.DmUserDto;
+import com.kh.insider.repo.DmUserRepo;
 import com.kh.insider.service.NoticeService;
 import com.kh.insider.service.NoticeServiceImpl;
 import com.kh.insider.vo.NoticeVO;
@@ -29,6 +30,9 @@ public class NoticeRestController {
 	
 	@Autowired
 	private NoticeServiceImpl noticeServiceImpl;
+	
+	@Autowired
+	private DmUserRepo dmUserRepo;
 	
 	
 	@GetMapping("/")
@@ -75,12 +79,18 @@ public class NoticeRestController {
 		noticeService.check(memberNo);
 	}
 	
-	
-	//dm 알림
-	@GetMapping("/isChat")
-	public int isDm(HttpSession session) {
+	//dm 회원이 참여중인 채팅방 조회
+	@GetMapping("/enteredRoomNo")
+	public List<Integer> enteredRoomNo(HttpSession session) {
 		long memberNo = (Long)session.getAttribute("memberNo");
-		return noticeServiceImpl.isDm(memberNo);
+		return dmUserRepo.getEnteredRoomNo(memberNo);
 	}
+	
+	//dm 각 채팅방에서 읽지 않은 메세지 수
+    @GetMapping("/unreadMessageCount")
+    public List<DmUserDto> unreadDmCount(HttpSession session, @RequestParam int roomNo) {
+    	long memberNo = (Long) session.getAttribute("memberNo");
+    	return dmUserRepo.getUnreadMessageNum(memberNo, roomNo);
+    }
 	
 }

@@ -42,8 +42,6 @@
 		    LEFT JOIN dm_message dm ON lm.last_message_no = dm.message_no
 		    INNER JOIN member m ON du.member_no = m.member_no 
 		    LEFT JOIN member_profile mp ON du.member_no = mp.member_no
-		WHERE
-		    m.member_no NOT IN (SELECT block_no FROM block WHERE member_no = #{memberNo})
 		ORDER BY 
 		    dm.message_no DESC
 	</select>
