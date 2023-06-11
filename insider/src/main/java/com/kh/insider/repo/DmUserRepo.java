@@ -35,4 +35,8 @@ public interface DmUserRepo {
 	//읽지 않은 메세지 수 수정
 	void updateUnReadDm(DmUserDto dmUserDto);
 	
+	//특정 회원이 입장해 있는 모든 채팅방 조회
+	List<Integer> getEnteredRoomNo(long memberNo);
+	
+	
 }
