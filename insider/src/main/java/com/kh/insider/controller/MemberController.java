@@ -6,7 +6,6 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,11 +21,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.insider.dto.CertDto;
 import com.kh.insider.dto.MemberDto;
+import com.kh.insider.dto.MemberSuspensionDto;
 import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.CertRepo;
 import com.kh.insider.repo.FollowRepo;
 import com.kh.insider.repo.MemberRepo;
+import com.kh.insider.repo.MemberSuspensionRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.SettingRepo;
 import com.kh.insider.service.MemberService;
@@ -66,6 +67,8 @@ public class MemberController {
    
    @Autowired
    private SocialLoginService socialLoginService;
+   @Autowired
+   private MemberSuspensionRepo memberSuspensionRepo;
    
    @GetMapping("/join")
    public String join() {
@@ -95,8 +98,20 @@ public class MemberController {
       attr.addFlashAttribute("result",result);
       return "redirect:login";
    }
+   
+   //정지상태 유저 처리
+   MemberSuspensionDto suspensionDto = memberSuspensionRepo.selectOne(findMember.getMemberNo());
+   if(suspensionDto!=null) {
+	   java.util.Date currentDate = new java.util.Date();
+	   java.sql.Date currentSqlDate = new java.sql.Date(currentDate.getTime());
+	   //정지상태라면
+	   if(currentSqlDate.before(suspensionDto.getMemberSuspensionLiftDate())) {
+		   attr.addAttribute("memberNo",findMember.getMemberNo());
+		   return "redirect:suspension";
+	   }
+   }
+   
    session.setAttribute("memberNo",findMember.getMemberNo());
-   session.setAttribute("socialUser", findMember);
    memberRepo.updateLoginTime(findMember.getMemberNo());
    
    session.setAttribute("memberLevel",findMember.getMemberLevel());
@@ -110,6 +125,8 @@ public class MemberController {
       session.removeAttribute("socialUser");
       session.removeAttribute("memberLevel");
       session.removeAttribute("memberNick");
+      session.removeAttribute("access_token");
+      session.removeAttribute("refresh_token");
       
       return "redirect:/";
    }
@@ -249,21 +266,17 @@ public class MemberController {
 	   memberRepo.changePassword(member);
    }
  
-//   @GetMapping("/facebook/auth")
-//   @ResponseBody
-//   public String facebookLogin(String code, FacebookResponseVO response) throws URISyntaxException{
-//      
-//      response = socialLoginService.facebookTokenCreate(code);
-//      FacebookProfileVO profile = socialLoginService.facebookLogin(code, response);
-//      System.out.println(profile);
-//      
-//      return profile.toString();
-//   }
+
    
 //   환경설정 페이지
    @GetMapping("/setting")
    public String setting() {
       return"member/setting";
    }
-
+   @GetMapping("/suspension")
+   public String suspension(@RequestParam long memberNo, Model model) {
+	   MemberSuspensionDto suspensionDto = memberSuspensionRepo.selectOne(memberNo);
+	   model.addAttribute("suspensionDto", suspensionDto);
+	   return"member/suspension";
+   }
 }

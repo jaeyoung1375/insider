@@ -97,7 +97,7 @@ public class BoardRepoImpl implements BoardRepo {
 
 
 	@Override
-	public List<BoardDto> getTotalMyPost(long memberNo) {
+	public List<BoardListVO> getTotalMyPost(long memberNo) {
 		return sqlSession.selectList("board.getTotalMyPost2",memberNo);
 	}
 	

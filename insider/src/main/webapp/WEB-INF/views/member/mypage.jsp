@@ -404,7 +404,7 @@
    
     	 <div class="row d-flex justify-content-start w-100">
 	    	<div class="box m-1" v-for="(board,index) in myBoardList" :key="index" @click="detailViewOn(index)">
-	    		<video class="content-in-list" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
+	    		<video class="content-in-list" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList.length>0 && board.boardAttachmentList[0].video"
 						style="object-fit:cover" :autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto"></video>
 				<img class='content-in-list' v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video"
 						 :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
@@ -436,7 +436,7 @@
 
     	 <div class="row d-flex justify-content-start w-100">
 	    	<div class="box m-1" v-for="(bookmark,index) in bookmarkMyPostList" :key="bookmark.boardNo" @click="detailViewOn2(index)">
-	    		<video class="content-in-list" :src="'${pageContext.request.contextPath}'+bookmark.boardAttachmentList[0].imageURL" v-if="bookmark.boardAttachmentList[0].video"
+	    		<video class="content-in-list" :src="'${pageContext.request.contextPath}'+bookmark.boardAttachmentList[0].imageURL" v-if="bookmark.boardAttachmentList.length>0 && bookmark.boardAttachmentList[0].video"
 						style="object-fit:cover" :autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto"></video>
 				<img class='content-in-list' v-if="bookmark.boardAttachmentList.length>0 && !bookmark.boardAttachmentList[0].video"
 						 :src="'${pageContext.request.contextPath}'+bookmark.boardAttachmentList[0].imageURL" >
@@ -871,7 +871,7 @@
           <div class="modal" tabindex="-1" role="dialog" id="followerModal"
                             data-bs-backdrop="static"
                             ref="followerModal" @click.self="followerModalHide">	
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
                    <div class="modal-content" style="max-width:400px; min-height:400px; max-height:400px;">
                        <div class="modal-header text-center" style="display:flex; justify-content: center; height:50px;">
 							<h5 class="modal-title">팔로워</h5>
@@ -916,7 +916,7 @@
 							</div>
 						</template>
 											<!-- 비공개 계정 || 친구에게만 공개 && 팔로우 목록에 있다면 -->
-						<template v-else-if="(hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)) && ${memberNo} != item.memberNo">
+						<template v-else-if="(hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)) && followCheckIf(item.memberNo)">
 						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
 							  <div style="width:500px; margin-left:160px;">
 							    <img src="${pageContext.request.contextPath}/static/image/lock.png" width="60" height="60">
@@ -927,9 +927,11 @@
 						</template>
 					   
 					    <template v-else>
-					      <div v-for="(post,index) in hoverPostList2" :key="post.id">
+					      <div v-for="(post,index) in hoverPostList2" :key="index">
 					        <!-- 게시물 정보 출력 -->
-					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.attachmentNo" width="127" height="150" style="margin-right:3px;">
+					        	<video  style="width:127px; height:150px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+post.boardAttachmentList[0].imageURL"
+							:autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto" v-if="post.boardAttachmentList[0].video"></video>
+					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' +post.boardAttachmentList[0].attachmentNo" width="127" height="150" style="margin-right:3px;" v-else>
 					      </div>
 					    </template>
                     	  
@@ -969,7 +971,7 @@
           <div class="modal" tabindex="-1" role="dialog" id="followModal"
                             data-bs-backdrop="static"
                             ref="followModal" @click.self="followModalHide">
-             <div class="modal-dialog" role="document">
+             <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
     <div class="modal-content" style="max-width:400px; min-height:200px; max-height:400px;">
       <div class="modal-header text-center" style="display:flex; justify-content: center; height:50px;">
         <h5 class="modal-title" >팔로잉</h5>
@@ -1036,7 +1038,7 @@
 						
 						
 						<!-- 비공개 계정 || 친구에게만 공개 && 팔로우 목록에 있다면 -->
-						<template v-else-if="(hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)) && ${memberNo} != item.memberNo">
+						<template v-else-if="(hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)) && followCheckIf(item.followFollower)">
 						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
 							  <div style="width:500px; margin-left:160px;">
 							    <img src="${pageContext.request.contextPath}/static/image/lock.png" width="60" height="60">
@@ -1049,9 +1051,11 @@
 						
 					   
 					    <template v-else>
-					      <div v-for="post in hoverPostList" :key="post.id">
+					      <div v-for="(post,index) in hoverPostList" :key="index">
 					        <!-- 게시물 정보 출력 -->
-					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.attachmentNo" width="127" height="150" style="margin-right:3px;">
+					        	<video  style="width:127px; height:150px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+post.boardAttachmentList[0].imageURL"
+							:autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto" v-if="post.boardAttachmentList[0].video"></video>
+					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.boardAttachmentList[0].attachmentNo" width="127" height="150" style="margin-right:3px;" v-else>
 					      </div>
 					    </template>
                     	  
@@ -1906,6 +1910,14 @@
 		        this.myFollowList.push(item);
 		      }
 		    }
+		    
+			 // 로그인 유저 첫줄에 출력
+		    const memberNo = ${memberNo};
+		    const memberNoIndex = this.myFollowList.findIndex(followerItem => followerItem.followFollower === memberNo);
+		    if (memberNoIndex !== -1) {
+		      const existingItem = this.myFollowList.splice(memberNoIndex, 1)[0];
+		      this.myFollowList.unshift(existingItem);
+		    }
 		
 		    this.followPage++;
 		
@@ -1946,6 +1958,14 @@
 		        this.myFollowerList.push(item);
 		      }
 		    }
+		    // 로그인 유저 첫줄에 출력
+		    const memberNo = ${memberNo};
+		    const memberNoIndex = this.myFollowerList.findIndex(followerItem => followerItem.memberNo === memberNo);
+		    if (memberNoIndex !== -1) {
+		      const existingItem = this.myFollowerList.splice(memberNoIndex, 1)[0];
+		      this.myFollowerList.unshift(existingItem);
+		    }
+		    
 		
 		    this.followerPage++;
 	
@@ -1958,7 +1978,7 @@
 		    console.error("Error occurred during followerListPaging: ", error);
 		  }
 		  
-		  this.followerLoading = false;
+		  this.followerLoading	 = false;
 		},
 		
            	
@@ -2044,6 +2064,7 @@
            	      this.hoverSettingHide = settingHide;
            	      this.hoverFollowerCheck = this.followCheckIf(item.memberNo);
            	      this.hoverFollowCheck = this.followCheckIf(item.followFollower);
+           	  	  
            	    })
            	    .catch(error => {
            	      console.error(error);
