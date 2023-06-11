@@ -405,9 +405,9 @@ display:none;
                     </div>
                     
                 <div class="col-9" style="display:flex; justify-content: space-between; margin-left:40px; margin-top:15px;">
-                  	 <button class="btn btn-primary" @click="follow(board.boardWithNickDto.memberNo)" style="flex-grow:1; margin-right:10px;" v-if="followCheckIf(board.boardWithNickDto.memberNo)">팔로우</button>
-                  	 <button class="btn btn-secondary" @click="unFollow(board.boardWithNickDto.memberNo)" style="flex-grow:1; margin-right:10px;"  v-if="!followCheckIf(board.boardWithNickDto.memberNo)">팔로잉</button>
-                  	 <button class="btn btn-primary" @click="moveToDmPage(board.boardWithNickDto.memberNo)" style="width:50%; cursor:pointer;">메시지 보내기</button>
+                  	 <button class="btn btn-primary" @click="follow(board.boardWithNickDto.memberNo)" style="flex-grow:1; margin-right:10px;" v-if="followCheckIf(board.boardWithNickDto.memberNo) && board.boardWithNickDto.memberNo != ${memberNo}">팔로우</button>
+                  	 <button class="btn btn-secondary" @click="unFollow(board.boardWithNickDto.memberNo)" style="flex-grow:1; margin-right:10px;"  v-if="!followCheckIf(board.boardWithNickDto.memberNo) && board.boardWithNickDto.memberNo != ${memberNo}">팔로잉</button>
+                  	 <button class="btn btn-primary" @click="moveToDmPage(board.boardWithNickDto.memberNo)" style="width:50%; cursor:pointer;" v-if="!followCheckIf(board.boardWithNickDto.memberNo) && board.boardWithNickDto.memberNo != ${memberNo}">메시지 보내기</button>
                  </div> 
                  
           </div> <!-- 팔로우 미리보기 끝 -->
