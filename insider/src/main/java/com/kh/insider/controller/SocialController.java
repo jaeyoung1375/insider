@@ -113,17 +113,16 @@ public class SocialController {
          // 회원정보
          // 로그인 시각 갱신
          memberRepo.updateLoginTime(originalMember.getMemberNo());
-         session.setAttribute("socialUser",originalMember);
          session.setAttribute("memberNo", originalMember.getMemberNo());
+         session.setAttribute("memberLevel", originalMember.getMemberLevel());
+         session.setAttribute("memberNick", originalMember.getMemberNick());
          // 토큰정보
-         session.setAttribute("member",response.getAccess_token());
+         session.setAttribute("access_token",response.getAccess_token());
          session.setAttribute("refresh_token",response.getRefresh_token());
          return "redirect:/";
       }
       // addInfo로 넘길 정보
       session.setAttribute("loginUser",googleUser);
-      session.setAttribute("member",response.getAccess_token());
-      session.setAttribute("refresh_token",response.getRefresh_token());
       
 
       return "redirect:/member/addInfo";

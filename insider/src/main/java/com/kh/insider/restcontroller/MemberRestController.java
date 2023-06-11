@@ -1,5 +1,6 @@
 package com.kh.insider.restcontroller;
 
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -30,6 +31,7 @@ import com.kh.insider.repo.TagFollowRepo;
 import com.kh.insider.service.ForbiddenService;
 import com.kh.insider.service.MemberService;
 import com.kh.insider.service.ReportService;
+import com.kh.insider.service.SocialLoginService;
 import com.kh.insider.vo.BoardListVO;
 
 @RestController
@@ -53,6 +55,8 @@ public class MemberRestController {
 	private MemberService memberService;
 	@Autowired
 	private ForbiddenService forbiddenService;
+	@Autowired
+	private SocialLoginService socialLoginService;
 	
 	
 	//멤버정보 불러오기
@@ -149,10 +153,11 @@ public class MemberRestController {
 	}
 	
 	@GetMapping("/postList")
-	public List<BoardDto> postList(@RequestParam long memberNo){
+	public List<BoardListVO> postList(@RequestParam long memberNo){
 		
-		List<BoardDto> getTotalPost = boardRepo.getTotalMyPost(memberNo);
-		return forbiddenService.changeForbiddenBoard(getTotalPost);
+		List<BoardListVO> getTotalPost = boardRepo.getTotalMyPost(memberNo);
+//		return forbiddenService.changeForbiddenBoard(getTotalPost);
+		return getTotalPost;
 	}
 	
 	@GetMapping("/bookmarkMyPost")
@@ -189,9 +194,10 @@ public class MemberRestController {
 	
 	// 회원탈퇴
 	@PostMapping("/deleteMember")
-	public String deleteMember(HttpSession session) {
+	public String deleteMember(HttpSession session) throws URISyntaxException {
 		long memberNo = (long) session.getAttribute("memberNo");
-		memberRepo.deleteMember(memberNo);
+		socialLoginService.kakaoDelete(memberNo);
+		
 		session.removeAttribute("memberNo");
 		session.removeAttribute("socialUser");
 		session.removeAttribute("memberLevel");

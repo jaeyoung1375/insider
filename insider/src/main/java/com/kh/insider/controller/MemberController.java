@@ -96,7 +96,6 @@ public class MemberController {
       return "redirect:login";
    }
    session.setAttribute("memberNo",findMember.getMemberNo());
-   session.setAttribute("socialUser", findMember);
    memberRepo.updateLoginTime(findMember.getMemberNo());
    
    session.setAttribute("memberLevel",findMember.getMemberLevel());
@@ -110,6 +109,8 @@ public class MemberController {
       session.removeAttribute("socialUser");
       session.removeAttribute("memberLevel");
       session.removeAttribute("memberNick");
+      session.removeAttribute("access_token");
+      session.removeAttribute("refresh_token");
       
       return "redirect:/";
    }
@@ -249,16 +250,7 @@ public class MemberController {
 	   memberRepo.changePassword(member);
    }
  
-//   @GetMapping("/facebook/auth")
-//   @ResponseBody
-//   public String facebookLogin(String code, FacebookResponseVO response) throws URISyntaxException{
-//      
-//      response = socialLoginService.facebookTokenCreate(code);
-//      FacebookProfileVO profile = socialLoginService.facebookLogin(code, response);
-//      System.out.println(profile);
-//      
-//      return profile.toString();
-//   }
+
    
 //   환경설정 페이지
    @GetMapping("/setting")
