@@ -105,7 +105,7 @@
 	    padding: 0 0.5em;
 	}
 	.message-wrapper > .message > .message-content > .content-wrapper > .content-header {
-	    font-size: 0.90em;
+	    font-size: 0.85em;
 	    padding-right: 0.3em;
 	    padding-left: 0.3em;
 	    color: #3c6382;
@@ -119,7 +119,7 @@
 	}
 	.message-wrapper > .message > .message-content > .content-wrapper > .content-body > .message-wrapper {
 	    background-color: rgba(239, 239, 239);
-	    font-size: 0.85em;
+	    font-size: 0.8em;
 	    border-radius: 1.5em;
 	    max-width: 500px;
 	    word-break: break-all;
@@ -158,7 +158,7 @@
 	
 	.message-wrapper > .message.my > .message-content > .content-wrapper > .content-header {
 	    text-align: right;
-	    padding-right: 0.9em;
+	    padding-right: 0.85em;
 	}
 	.message-wrapper > .message.my > .message-content > .content-wrapper > .content-body {
 	    flex-direction: row-reverse;
@@ -190,7 +190,7 @@
 	}
 	.dateShow {
 	    color:  gray;
-	    font-size: 0.78em;
+	    font-size: 0.73em;
 	    text-align: center;
 	    display: block;
 	}
@@ -233,7 +233,7 @@
 					<!-- 채팅방 이름 -->
 					<div class="card col-8" style="border-radius:0;border-left:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
 						<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo">
-							<div v-if="this.roomNo != null">
+							<div v-if="roomNo != null">
 								<div v-if="this.roomNo === room.roomNo">
 									<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"
 										width="45" height="45" class="profile rounded-circle" style="position:absolute; top:0.75em; left:1.3em;" >
@@ -293,7 +293,7 @@
 									</div>
 									<div class="message-content">
 						                <div class="profile-wrapper" v-if="!checkMyMessage(index)">
-						                	<img v-if="message.profileNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+message.profileNo"class="profile rounded-circle"v-if="!checkSameTime(index)">
+						                	<img v-if="message.profileNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+message.profileNo"class="profile rounded-circle"v-if="!checkSameTime(index)" style="width:40px; height:40px;">
 	                                		<img v-else src="https://via.placeholder.com/100x100?text=P" width="100%" v-if="!checkSameTime(index)">
 						                </div>
 						                <div class="content-wrapper">
@@ -309,7 +309,6 @@
 								                	<div class="time-wrapper" v-if="calculateDisplay(index)">{{timeFormat(message.time)}}</div>
 								                </div>
 							                	<i class="fa-solid fa-x fa-xs" @click="showDeleteMsgModal(index)" style="padding-bottom: 0.51em; padding-right: 0.6em; padding-left: 0.7em; color: #ced6e0; cursor:pointer;"></i>
-							                	<i class="fa-solid fa-trash fa-xs" style="padding-bottom: 0.51em; padding-right: 0.51em; padding-left: 0.51em; color: #ced6e0; cursor:pointer;"></i>
 							                	<i class="fa-solid fa-heart fa-xs" :class="{'fa-solid':memberLike[index]==1, 'fa-regular':memberLike[index]==0}" @click="dmLike(message.messageNo, index)"
 							                		style="padding-bottom: 0.51em; padding-right: 0.5em; padding-left: 0.5em; color: #c23616; cursor:pointer;"></i>
 							                </div>
@@ -570,7 +569,9 @@
                     	</div>
                     	<div class="row">
                     		<div class="col">
-		                        상대방은 Insider에서 회원님의 프로필, 게시물 및 스토리를 찾을 수 없게 됩니다. Insider은 회원님이 차단한 사실을 상대방에게 알리지 않습니다.                     
+		                        - 상대방은 Insider에서 회원님의 프로필, 게시물 및 스토리를 찾을 수 없게 됩니다. <br>
+		                        - Insider은 회원님이 차단한 사실을 상대방에게 알리지 않습니다. <br>
+		                        - 회원님의 채팅방 목록에서 상대방과의 채팅방이 삭제됩니다.                     
                     		</div>
                     	</div>
 	                     <div class="content" style="font-size:12px; text-align:center;">
