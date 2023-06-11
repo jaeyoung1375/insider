@@ -25,6 +25,7 @@ import com.kh.insider.dto.DmUserDto;
 import com.kh.insider.repo.DmMemberInfoRepo;
 import com.kh.insider.repo.DmMemberListRepo;
 import com.kh.insider.repo.DmMessageNickRepo;
+import com.kh.insider.repo.DmPrivacyRoomRepo;
 import com.kh.insider.repo.DmRoomRepo;
 import com.kh.insider.repo.DmRoomUserProfileRepo;
 import com.kh.insider.repo.DmUserRepo;
@@ -57,6 +58,9 @@ public class DmRestController {
 	
 	@Autowired
 	private DmMemberInfoRepo dmMemberInfoRepo;
+	
+	@Autowired
+	private DmPrivacyRoomRepo dmPrivacyRoomRepo;
 	
 
 	//메세지 리스트
@@ -207,7 +211,14 @@ public class DmRestController {
     @DeleteMapping("/deleteRoomRename")
     public void deleteRename(HttpSession session, @RequestParam int roomNo) {
     	long memberNo = (Long) session.getAttribute("memberNo");
+    	if(memberNo==0) return;
     	dmServiceImpl.deleteRename(roomNo, memberNo);
+    }
+    
+    //동일한 회원의 일대일 채팅방 확인
+    @PostMapping("/findPrivacyRoom/{inviterNo}/{inviteeNo}")
+    public Integer findRoomByMembers(@PathVariable int inviterNo, @PathVariable int inviteeNo) {
+        return dmPrivacyRoomRepo.findRoomByMembers(inviterNo, inviteeNo);
     }
     
 }
