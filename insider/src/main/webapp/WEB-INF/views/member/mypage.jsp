@@ -1903,6 +1903,14 @@
 		        this.myFollowList.push(item);
 		      }
 		    }
+		    
+			 // 로그인 유저 첫줄에 출력
+		    const memberNo = ${memberNo};
+		    const memberNoIndex = this.myFollowList.findIndex(followerItem => followerItem.followFollower === memberNo);
+		    if (memberNoIndex !== -1) {
+		      const existingItem = this.myFollowList.splice(memberNoIndex, 1)[0];
+		      this.myFollowList.unshift(existingItem);
+		    }
 		
 		    this.followPage++;
 		
@@ -1943,6 +1951,14 @@
 		        this.myFollowerList.push(item);
 		      }
 		    }
+		    // 로그인 유저 첫줄에 출력
+		    const memberNo = ${memberNo};
+		    const memberNoIndex = this.myFollowerList.findIndex(followerItem => followerItem.memberNo === memberNo);
+		    if (memberNoIndex !== -1) {
+		      const existingItem = this.myFollowerList.splice(memberNoIndex, 1)[0];
+		      this.myFollowerList.unshift(existingItem);
+		    }
+		    
 		
 		    this.followerPage++;
 	
@@ -1955,7 +1971,7 @@
 		    console.error("Error occurred during followerListPaging: ", error);
 		  }
 		  
-		  this.followerLoading = false;
+		  this.followerLoading	 = false;
 		},
 		
            	
