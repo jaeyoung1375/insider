@@ -226,7 +226,7 @@
 						</span>
 						<span v-else style="position:absolute; top:21px; right:0; margin-right:15px;">
 							<i class="fa-regular fa-pen-to-square fa-lg" style="margin-right: 15px; cursor:pointer;" @click="fetchFollowerList(); showCreateRoomModal();"></i>
-							<i class="fa-solid fa-user-plus fa-lg" style="cursor:pointer;" @click="fetchFollowerList();  showInviteModal();"></i>
+							<i class="fa-solid fa-user-plus fa-lg" style="cursor:pointer;" @click="InviteFollowerList();  showInviteModal();"></i>
 						</span>
 					</div>
 					
@@ -392,11 +392,11 @@
 		      </div>
 		      <div class="modal-body" style="width:300px; max-height: 400px; overflow-y: auto;">
 		        <div style="margin-bottom:10px;">
-		          <input type="text" placeholder="검색" v-model="keyword" class="form-control me-sm-2" @input="keyword = $event.target.value">
+		          <input type="text" placeholder="검색" v-model="keywordInvite" class="form-control me-sm-2" @input="keywordInvite = $event.target.value">
 		        </div>
-		        <div v-if="searchDmList.length==0" >
-			        <div v-for="(member,index) in dmMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
-			          <img v-if="dmMemberList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
+		        <div v-if="searchInviteDmList.length==0" >
+			        <div v-for="(member,index) in dmInviteMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
+			          <img v-if="dmInviteMemberList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
 			          <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
 			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
@@ -406,9 +406,9 @@
 			          </span>
 			        </div>
 		        </div>
-		        <div v-if="searchDmList.length>0">
-			        <div v-for="(member,index) in searchDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
-			          <img v-if="searchDmList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
+		        <div v-if="searchInviteDmList.length>0">
+			        <div v-for="(member,index) in searchInviteDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
+			          <img v-if="searchInviteDmList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
 			          <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
 			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
@@ -628,6 +628,7 @@
                     memberNo:"${sessionScope.memberNo}",
                     socket:null,//웹소켓 연결 객체
                     dmMemberList:[],//팔로워 회원 목록
+                    dmInviteMemberList:[],
 
                     //modal 제어
                     createRoomModal:null, 
@@ -637,8 +638,11 @@
                     //차단한 회원을 제외한 전체 회원 검색
                     searchDmList:[],
                     keyword:"",
+                    searchInviteDmList:[],
+                    keywordInvite: "",
                     
                     dmRoomList: [], //채팅방 목록
+                    dmInviteRoomList:[],
                     isRoomJoin:false,
                     
                     //채팅방 참가자 시간 정보 리스트
@@ -766,6 +770,7 @@
                     if(this.createRoomModal == null) return;
                     this.selectedMembers = []; 
                     this.dmMemberList = [];
+                    this.fetchUsersByRoomNo();
                     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
                     checkboxes.forEach(checkbox => (checkbox.checked = false));
                     this.createRoomModal.show();
@@ -789,7 +794,8 @@
 				showInviteModal(){
                     if(this.inviteModal == null) return;
                     this.selectedMembers = []; 
-                    this.dmMemberList = [];
+                    this.dmInviteMemberList = [];
+                    this.fetchUsersByRoomNo();
                     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
                     checkboxes.forEach(checkbox => (checkbox.checked = false));
                     this.inviteModal.show();
@@ -960,8 +966,10 @@
             	   const url = "${pageContext.request.contextPath}/rest/dmMemberList";
             	    try {
             	      const resp = await axios.get(url);
+            	      const memberNosInRoom = this.membersInRoomList.map(member => member.memberNo);
+				      const filteredMembers = resp.data.filter(member => !memberNosInRoom.includes(member.memberNo));
             	      this.dmMemberList.splice(0);
-	                  this.dmMemberList.push(...resp.data);
+	                  this.dmMemberList.push(...filteredMembers);
             	    } 
             	    catch (error) {
             	      console.error(error);
@@ -973,11 +981,41 @@
 				    try {
 				        const resp = await axios.get(url, {
 				            params: {
-				                keyword: this.keyword
+				                keyword: this.keyword,
+				                roomNo: this.roomNo
 				            }
 				        });
 				        this.searchDmList.splice(0);
 	                    this.searchDmList.push(...resp.data);
+				    } catch (error) {
+				        console.error(error);
+				    }
+				},						
+               //초대 - 팔로우 회원 목록
+               async InviteFollowerList() {
+            	   const url = "${pageContext.request.contextPath}/rest/dmInviteMemberList";
+            	    try {
+            	      const resp = await axios.get(url);
+            	      const memberNosInRoom = this.membersInRoomList.map(member => member.memberNo);
+				      const filteredMembers = resp.data.filter(member => !memberNosInRoom.includes(member.memberNo));
+            	      this.dmInviteMemberList.splice(0);
+	                  this.dmInviteMemberList.push(...filteredMembers);
+            	    } 
+            	    catch (error) {
+            	      console.error(error);
+            	    }
+            	},
+                //초대 - 차단한 회원을 제외한 전체 회원 검색
+				async InviteDmSearch() {
+				    const url = "${pageContext.request.contextPath}/rest/dmInviteMemberSearch";
+				    try {
+				        const resp = await axios.get(url, {
+				            params: {
+				            	keyword: this.keywordInvite,
+				            }
+				        });
+				        this.searchInviteDmList.splice(0);
+	                    this.searchInviteDmList.push(...resp.data);
 				    } catch (error) {
 				        console.error(error);
 				    }
@@ -1247,7 +1285,7 @@
 				},
 				//변경된 채팅방 이름 삭제
 				async deleteRoomRename() {
-				    const deleteUrl = `${pageContext.request.contextPath}/rest/deleteRoomRename`;
+				    const deleteUrl = "${pageContext.request.contextPath}/rest/deleteRoomRename";
 				    try {
 				        await axios.delete(deleteUrl, {params:{roomNo:this.roomNo}});
 				    } catch (error) {
@@ -1360,6 +1398,14 @@
         			}
         			this.chooseDmSearch();
         		}, 200),
+				//초대 검색        		
+        	    keywordInvite:_.throttle(function(){ 
+        	        if(this.keywordInvite=="") {
+        	            this.searchInviteDmList = [];
+        	            return;
+        	        }
+        	        this.InviteDmSearch();
+        	    }, 200),
         		//메세지 읽음 표시
         		/* userTimeList:{
         			deep:true,
@@ -1419,8 +1465,8 @@
 			        this.searchDmList = [];
 			    });
 			    $('#inviteModal').off('hidden.bs.modal').on('hidden.bs.modal', () => {
-			    	this.keyword = '';
-			        this.searchDmList = [];
+			        this.keywordInvite = '';
+			        this.searchInviteDmList = [];
 			    });
 				//쿼리 초기화 및 변화 감지
 				this.initializePageFromQuery();

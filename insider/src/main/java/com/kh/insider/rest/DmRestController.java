@@ -100,9 +100,27 @@ public class DmRestController {
 	@GetMapping("/dmMemberSearch")
 	public List<DmMemberListDto> dmMemberSearch(
 				HttpSession session,
+				@RequestParam int roomNo,
 				@RequestParam String keyword){
 		long memberNo = (Long) session.getAttribute("memberNo");
-		return dmMemberListRepo.dmMemberSearch(memberNo, keyword);
+		return dmMemberListRepo.dmMemberSearch(memberNo, roomNo, keyword);
+	}
+	
+	//초대 : 팔로워 회원 목록
+	@GetMapping("/dmInviteMemberList")
+	public List<DmMemberListDto> followInviteMemberList(HttpSession session) {
+		long memberNo = (Long) session.getAttribute("memberNo");
+		return dmMemberListRepo.InvitechooseDm(memberNo);
+	}
+	
+	//초대 : 차단한 회원을 제외한 전체 회원 목록
+	@GetMapping("/dmInviteMemberSearch")
+	public List<DmMemberListDto> dmInviteMemberSearch(
+			HttpSession session,
+			@RequestParam int roomNo,
+			@RequestParam String keyword){
+		long memberNo = (Long) session.getAttribute("memberNo");
+		return dmMemberListRepo.dmInviteMemberSearch(memberNo, roomNo, keyword);
 	}
 	
 	//로그인 회원이 참여중인 채팅방 목록
