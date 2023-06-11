@@ -176,7 +176,7 @@
 							<div class="col form-group has-search p-0 m-0">
 								<span class="fa-solid fa-search form-control-feedback"></span>
 								<input type="text" class="form-control rounded  w-100 m-0" placeholder="검색" v-model="searchInput" @blur="hideAllList"  @focus="searchInputChanged" 
-									@input="searchInputChanged" ref="searchInput" style="height:3em">
+									@input="searchInputChanged" ref="searchInput" style="height:3em" @keyup.enter="inputEnter">
 							</div>
 						</div>
 					<!-- 검색기록 -->
@@ -732,7 +732,24 @@
 					this.searchedListShow=true;
 				},150);
 			},
-			
+			inputEnter(){
+				if(this.recommandListShow){
+					if(this.recommandList[0].nick==null){
+						this.moveToTagDetail(this.recommandList[0].name);
+					}
+					else{
+						this.moveToMemberDetail(this.recommandList[0].memberNo,this.recommandList[0].nick);
+					}
+				}
+				if(this.searchedListShow){
+					if(this.searchedList[0].memberNick==null){
+						this.moveToTagDetail(this.searchedList[0].searchTagName);
+					}
+					else{
+						this.moveToMemberDetail(this.searchedList[0].memberNo,this.searchedList[0].memberNick);
+					}
+				}
+			},
 			/* --------------------------상세보기-------------------------- */
 			 //상세보기 모달창 열기(더블클릭 이벤트 방지)
 	        detailViewOn(index) {

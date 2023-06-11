@@ -201,13 +201,13 @@
 							<span>이름</span>
 						</div>
 						<div class="col-4 p-0">
-							<input class="form-control" v-model="memberSearchOption.memberName">
+							<input class="form-control" v-model="memberSearchOption.memberName" @keyup.enter="getListWithSearchOption">
 						</div>
 						<div class="col-2 d-flex align-items-center">
 							<span>닉네임</span>
 						</div>
 						<div class="col-4 p-0">
-							<input class="form-control" v-model="memberSearchOption.memberNick">
+							<input class="form-control" v-model="memberSearchOption.memberNick" @keyup.enter="getListWithSearchOption">
 						</div>
 					</div>
 					<div class="row">
@@ -215,13 +215,13 @@
 							<span>이메일</span>
 						</div>
 						<div class="col-4 p-0">
-							<input class="form-control" v-model="memberSearchOption.memberEmail">
+							<input class="form-control" v-model="memberSearchOption.memberEmail" @keyup.enter="getListWithSearchOption">
 						</div>
 						<div class="col-2 d-flex align-items-center">
 							<span>로그인 기록</span>
 						</div>
 						<div class="col-4 p-0">
-							<select class="form-control" v-model="memberSearchOption.searchLoginDays">
+							<select class="form-control" v-model="memberSearchOption.searchLoginDays" @keyup.enter="getListWithSearchOption">
 								<option value="">선택</option>
 								<option value="1">1일전</option>
 								<option value="7">7일전</option>
@@ -235,13 +235,13 @@
 							<span>주소</span>
 						</div>
 						<div class="col-4 p-0">
-							<input class="form-control" v-model="memberSearchOption.memberAddress">
+							<input class="form-control" v-model="memberSearchOption.memberAddress" @keyup.enter="getListWithSearchOption">
 						</div>
 						<div class="col-2 d-flex align-items-center">
 							<span>성별</span>
 						</div>
 						<div class="col-4 p-0">
-							<select class="form-control" v-model="memberSearchOption.memberGender">
+							<select class="form-control" v-model="memberSearchOption.memberGender" @keyup.enter="getListWithSearchOption">
 								<option value="">선택</option>
 								<option value="0">남성</option>
 								<option value="1">여성</option>
@@ -255,13 +255,13 @@
 						<div class="col-4 p-0">
 							<div class="row">
 								<div class="col-5">
-									<input class="form-control" v-model="memberSearchOption.memberMinFollow">
+									<input class="form-control" v-model="memberSearchOption.memberMinFollow" @keyup.enter="getListWithSearchOption">
 								</div>
 								<div class="col-2 d-flex align-items-center justify-content-center">
 									<span>~</span>
 								</div>
 								<div class="col-5">
-									<input class="form-control" v-model="memberSearchOption.memberMaxFollow">
+									<input class="form-control" v-model="memberSearchOption.memberMaxFollow" @keyup.enter="getListWithSearchOption">
 								</div>
 							</div>
 						</div>
@@ -271,13 +271,13 @@
 						<div class="col-4 p-0">
 							<div class="row">
 								<div class="col-5">
-									<input class="form-control" v-model="memberSearchOption.memberMinReport">
+									<input class="form-control" v-model="memberSearchOption.memberMinReport" @keyup.enter="getListWithSearchOption">
 								</div>
 								<div class="col-2 d-flex align-items-center justify-content-center">
 									<span>~</span>
 								</div>
 								<div class="col-5">
-									<input class="form-control" v-model="memberSearchOption.memberMaxReport">
+									<input class="form-control" v-model="memberSearchOption.memberMaxReport" @keyup.enter="getListWithSearchOption">
 								</div>
 							</div>
 						</div>
@@ -289,13 +289,13 @@
 						<div class="col-6 p-0">
 							<div class="row">
 								<div class="col-5">
-									<input type="date" class="form-control" v-model="memberSearchOption.memberBeginBirth">
+									<input type="date" class="form-control" v-model="memberSearchOption.memberBeginBirth" @keyup.enter="getListWithSearchOption">
 								</div>
 								<div class="col-2 d-flex align-items-center justify-content-center">
 									<span>~</span>
 								</div>
 								<div class="col-5">
-									<input type="date" class="form-control" v-model="memberSearchOption.memberEndBirth">
+									<input type="date" class="form-control" v-model="memberSearchOption.memberEndBirth" @keyup.enter="getListWithSearchOption">
 								</div>
 							</div>
 						</div>
@@ -305,7 +305,7 @@
 									<span>정지여부</span>
 								</div>
 								<div class="col-6 p-0">
-									<select class="form-control" v-model="memberSearchOption.memberSuspensionStatus">
+									<select class="form-control" v-model="memberSearchOption.memberSuspensionStatus" @keyup.enter="getListWithSearchOption">
 										<option value="">전체</option>
 										<option value="0">정지</option>
 										<option value="1">일반</option>
@@ -319,21 +319,21 @@
 							<span>정렬 순서</span>
 						</div>
 						<div class="col p-0">
-							<select class="form-control" v-model="memberOrderList[0]">
+							<select class="form-control" v-model="memberOrderList[0]" @keyup.enter="getListWithSearchOption">
 								<option value="" selected>팔로워(선택)</option>
 								<option value="member_follow asc">팔로워 적은순</option>
 								<option value="member_follow desc">팔로워 많은순</option>
 							</select>
 						</div>
 						<div class="col p-0">
-							<select class="form-control" v-model="memberOrderList[1]">
+							<select class="form-control" v-model="memberOrderList[1]" @keyup.enter="getListWithSearchOption">
 								<option value="" selected>신고수(선택)</option>
 								<option value="member_report asc">신고수 적은순</option>
 								<option value="member_report desc">신고수 많은순</option>
 							</select>
 						</div>
 						<div class="col p-0">
-							<select class="form-control" v-model="memberOrderList[2]">
+							<select class="form-control" v-model="memberOrderList[2]" @keyup.enter="getListWithSearchOption">
 								<option value="" selected>로그인(선택)</option>
 								<option value="member_login desc">최근 접속자</option>
 								<option value="member_login asc">접속 기간 긴 순</option>
@@ -365,7 +365,7 @@
 								<tr v-for="(member, index) in memberList" :key="member.memberNo">
 									<td><img class="rounded-circle" :src="'${pageContext.request.contextPath}'+member.imageURL" width="50" height="50"></td>
 									<td style="vertical-align:middle">{{member.memberName}}</td>
-									<td style="vertical-align:middle">{{member.memberNick}}</td>
+									<td style="vertical-align:middle" class="modal-click-btn-neutral" @click="moveToMemberDetail(member.memberNick)">{{member.memberNick}}</td>
 									<td style="vertical-align:middle">{{member.memberEmail}}</td>
 									<td style="vertical-align:middle; text-align:center">{{member.memberFollow}}</td>
 									<td style="vertical-align:middle; text-align:center">{{member.memberReport}}</td>
@@ -424,13 +424,13 @@
 					<div class="col-4 p-0">
 						<div class="row">
 							<div class="col-5">
-								<input class="form-control" v-model="boardSearchOption.boardMinReport">
+								<input class="form-control" v-model="boardSearchOption.boardMinReport" @keyup.enter="getBoardListWithSearchOption">
 							</div>
 							<div class="col-2 d-flex align-items-center justify-content-center">
 								<span>~</span>
 							</div>
 							<div class="col-5">
-								<input class="form-control" v-model="boardSearchOption.boardMaxReport">
+								<input class="form-control" v-model="boardSearchOption.boardMaxReport" @keyup.enter="getBoardListWithSearchOption">
 							</div>
 						</div>
 					</div>
@@ -440,13 +440,13 @@
 					<div class="col-4 p-0">
 						<div class="row">
 							<div class="col-5">
-								<input class="form-control" v-model="boardSearchOption.boardMinLike">
+								<input class="form-control" v-model="boardSearchOption.boardMinLike" @keyup.enter="getBoardListWithSearchOption">
 							</div>
 							<div class="col-2 d-flex align-items-center justify-content-center">
 								<span>~</span>
 							</div>
 							<div class="col-5">
-								<input class="form-control" v-model="boardSearchOption.boardMaxLike">
+								<input class="form-control" v-model="boardSearchOption.boardMaxLike" @keyup.enter="getBoardListWithSearchOption">
 							</div>
 						</div>
 					</div>
@@ -458,13 +458,13 @@
 					<div class="col-6 p-0">
 						<div class="row">
 							<div class="col-5">
-								<input type="date" class="form-control" v-model="boardSearchOption.boardTimeBegin">
+								<input type="date" class="form-control" v-model="boardSearchOption.boardTimeBegin" @keyup.enter="getBoardListWithSearchOption">
 							</div>
 							<div class="col-2 d-flex align-items-center justify-content-center">
 								<span>~</span>
 							</div>
 							<div class="col-5">
-								<input type="date" class="form-control" v-model="boardSearchOption.boardTimeEnd">
+								<input type="date" class="form-control" v-model="boardSearchOption.boardTimeEnd" @keyup.enter="getBoardListWithSearchOption">
 							</div>
 						</div>
 					</div>
@@ -488,7 +488,7 @@
 						<span>내용</span>
 					</div>
 					<div class="col-8 p-0">
-						<input type="text" class="form-control" v-model="boardSearchOption.boardContent">
+						<input type="text" class="form-control" v-model="boardSearchOption.boardContent" @keyup.enter="getBoardListWithSearchOption">
 					</div>
 					<div class="col-2 d-flex align-items-center justify-content-center">
 						<span class="modal-click-btn" @click="clickForbiddenModal">금지어 관리</span>
@@ -499,7 +499,7 @@
 						<span>태그</span>
 					</div>
 					<div class="col-10 p-0">
-						<input type="text" class="form-control" v-model="boardSearchOption.tag" placeholder="#태그">
+						<input type="text" class="form-control" v-model="boardSearchOption.tag" placeholder="#태그" @keyup.enter="getBoardListWithSearchOption">
 					</div>
 				</div>
 				<div class="row">
@@ -583,13 +583,13 @@
 					<div class="col-4 p-0">
 						<div class="row">
 							<div class="col-5">
-								<input class="form-control" v-model="boardSearchOption.tagMinFollow">
+								<input class="form-control" v-model="boardSearchOption.tagMinFollow" @keyup.enter="getTagListWithSearchOption">
 							</div>
 							<div class="col-2 d-flex align-items-center justify-content-center">
 								<span>~</span>
 							</div>
 							<div class="col-5">
-								<input class="form-control" v-model="boardSearchOption.tagMaxFollow">
+								<input class="form-control" v-model="boardSearchOption.tagMaxFollow" @keyup.enter="getTagListWithSearchOption">
 							</div>
 						</div>
 					</div>
@@ -599,13 +599,13 @@
 					<div class="col-4 p-0">
 						<div class="row">
 							<div class="col-5">
-								<input class="form-control" v-model="boardSearchOption.tagMinCount">
+								<input class="form-control" v-model="boardSearchOption.tagMinCount" @keyup.enter="getTagListWithSearchOption">
 							</div>
 							<div class="col-2 d-flex align-items-center justify-content-center">
 								<span>~</span>
 							</div>
 							<div class="col-5">
-								<input class="form-control" v-model="boardSearchOption.tagMaxCount">
+								<input class="form-control" v-model="boardSearchOption.tagMaxCount" @keyup.enter="getTagListWithSearchOption">
 							</div>
 						</div>
 					</div>
@@ -614,31 +614,31 @@
 					<div class="col-2 d-flex align-items-center">
 						<span>사용가능여부</span>
 					</div>
-					<div class="col-2 p-0">
+					<div class="col p-0">
 						<select class="form-control" v-model="boardSearchOption.tagAvailable">
 							<option value="">전체</option>
 							<option value="1">사용가능</option>
 							<option value="0">사용불가</option>
 						</select>
 					</div>
-					<div class="col-2 d-flex align-items-center">
+					<div class="col d-flex align-items-center">
 						<span>정렬 순서</span>
 					</div>
-					<div class="col p-0">
+					<div class="col-2 p-0">
 						<select class="form-control" v-model="tagOrderList[1]">
 							<option value="" selected>태그수(선택)</option>
 							<option value="count desc">태그 많은순</option>
 							<option value="count asc">태그 적은순</option>
 						</select>
 					</div>
-					<div class="col p-0">
+					<div class="col-2 p-0">
 						<select class="form-control" v-model="tagOrderList[0]">
 							<option value="" selected>팔로우(선택)</option>
 							<option value="tag_follow desc">팔로우 많은순</option>
 							<option value="tag_follow asc">팔로우 적은순</option>
 						</select>
 					</div>
-					<div class="col p-0">
+					<div class="col-3 p-0">
 						<button type="button" class="col-6 btn btn-secondary" @click="resetTagSearchOption">초기화</button>
 						<button type="button" class="col-6 btn btn-primary" @click="getTagListWithSearchOption">검색</button>
 					</div>
@@ -734,13 +734,13 @@
 							<span>이름</span>
 						</div>
 						<div class="col-4 p-0">
-							<input class="form-control" v-model="reportSearchOption.memberName">
+							<input class="form-control" v-model="reportSearchOption.memberName" @keyup.enter="getReportListWithSearchOption">
 						</div>
 						<div class="col-2 d-flex align-items-center">
 							<span>닉네임</span>
 						</div>
 						<div class="col-4 p-0">
-							<input class="form-control" v-model="reportSearchOption.memberNick">
+							<input class="form-control" v-model="reportSearchOption.memberNick" @keyup.enter="getReportListWithSearchOption">
 						</div>
 					</div>
 					<div class="row">
@@ -750,13 +750,13 @@
 						<div class="col-4 p-0">
 							<div class="row">
 								<div class="col-5">
-									<input class="form-control" v-model="reportSearchOption.reportMinCount">
+									<input class="form-control" v-model="reportSearchOption.reportMinCount" @keyup.enter="getReportListWithSearchOption">
 								</div>
 								<div class="col-2 d-flex align-items-center justify-content-center">
 									<span>~</span>
 								</div>
 								<div class="col-5">
-									<input class="form-control" v-model="reportSearchOption.reportMaxCount">
+									<input class="form-control" v-model="reportSearchOption.reportMaxCount" @keyup.enter="getReportListWithSearchOption">
 								</div>
 							</div>
 						</div>
@@ -766,13 +766,13 @@
 						<div class="col-4 p-0">
 							<div class="row">
 								<div class="col-5">
-									<input class="form-control" v-model="reportSearchOption.reportMinManagedCount">
+									<input class="form-control" v-model="reportSearchOption.reportMinManagedCount" @keyup.enter="getReportListWithSearchOption">
 								</div>
 								<div class="col-2 d-flex align-items-center justify-content-center">
 									<span>~</span>
 								</div>
 								<div class="col-5">
-									<input class="form-control" v-model="reportSearchOption.reportMaxManagedCount">
+									<input class="form-control" v-model="reportSearchOption.reportMaxManagedCount" @keyup.enter="getReportListWithSearchOption">
 								</div>
 							</div>
 						</div>
@@ -832,7 +832,7 @@
 							</thead>
 							<tbody>
 								<tr v-for="(report, index) in reportList" :key="index">
-									<td>
+									<td style="cursor:pointer" @click="moveToMemberDetail(report.memberNick)">
 										<div class="row">
 											<div class="col-3">
 												<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+report.imageURL">
@@ -1055,13 +1055,13 @@
 								<span>기간설정 </span>
 							</div>
 							<div class="col-4">
-								<input class="form-control" type="date" v-model="boardTagSearch.startDate">
+								<input class="form-control" type="date" v-model="boardTagSearch.startDate" @keyup.enter="getBoardTagStats(true)">
 							</div>
 							<div class="col-1 d-flex align-items-center justify-content-center">
 								<span> 부터 </span>
 							</div>
 							<div class="col-4">
-								<input class="form-control" type="date" v-model="boardTagSearch.endDate">
+								<input class="form-control" type="date" v-model="boardTagSearch.endDate" @keyup.enter="getBoardTagStats(true)">
 							</div>
 							<div class="col-1 d-flex align-items-center">
 								<span> 까지</span>
@@ -1110,13 +1110,13 @@
 					<div class="col-6 p-0 m-0">
 						<div class="row p-0 m-0">
 							<div class="col-5 p-0">
-								<input class="form-control" type="date" v-model="searchStatsSearch.memberBeginBirth">
+								<input class="form-control" type="date" v-model="searchStatsSearch.memberBeginBirth" @keyup.enter="getSearchTagStats(true)">
 							</div>
 							<div class="col-2 d-flex align-items-center justify-content-center">
 								<span> ~ </span>
 							</div>
 							<div class="col-5 p-0">
-								<input class="form-control" type="date" v-model="searchStatsSearch.memberEndBirth">
+								<input class="form-control" type="date" v-model="searchStatsSearch.memberEndBirth" @keyup.enter="getSearchTagStats(true)">
 							</div>
 						</div>
 					</div>
@@ -1128,13 +1128,13 @@
 								<span>기간설정 </span>
 							</div>
 							<div class="col-4">
-								<input class="form-control" type="date" v-model="searchStatsSearch.searchBeginDate">
+								<input class="form-control" type="date" v-model="searchStatsSearch.searchBeginDate" @keyup.enter="getSearchTagStats(true)">
 							</div>
 							<div class="col-1 d-flex align-items-center justify-content-center">
 								<span> 부터 </span>
 							</div>
 							<div class="col-4">
-								<input class="form-control" type="date" v-model="searchStatsSearch.searchEndDate">
+								<input class="form-control" type="date" v-model="searchStatsSearch.searchEndDate" @keyup.enter="getSearchTagStats(true)">
 							</div>
 							<div class="col-1 d-flex align-items-center">
 								<span> 까지</span>
@@ -1202,7 +1202,7 @@
 				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
 					<div class="row mb-3">
 						<div class="col-10 m-0 p-0">
-							<input class="form-control rounded" placeholder="신규 내용 추가" type="text" v-model="newReportContent">
+							<input class="form-control rounded" placeholder="신규 내용 추가" type="text" v-model="newReportContent" @keyup.enter="insertReportContent">
 						</div>
 						<div class="col p-0 m-0">
 							<button class="btn btn-primary w-100" @click="insertReportContent">등록</button>
@@ -1220,7 +1220,7 @@
 						</div>
 						<div class="row d-flex justify-content-center p-0" v-if="reportContentListEdit[index]">
 							<div class="col-10">
-								<input class="form-control" v-model="reportContentListSub[index].reportListContent">
+								<input class="form-control" v-model="reportContentListSub[index].reportListContent" @keyup.enter="updateReportContent(index, report.reportListNo)">
 							</div>
 							<div class="col d-flex align-items-center p-1">
 								<i class="fa-solid fa-xmark modal-click-btn-negative" @click="hideReportContentEdit(index)" style="font-size:1.2em"></i>
@@ -1252,7 +1252,7 @@
 				</div>
 				<div class="row modal-body-custom">
 					<div class="row mb-3" v-if="suspensionIndex[0]>=0">
-						<div class="row">
+						<div class="row" style="cursor:pointer" @click="moveToMemberDetail(memberList[suspensionIndex[0]].memberNick)">
 							<div class="col-3 d-flex justify-content-end align-items-center">
 								<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+memberList[suspensionIndex[0]].imageURL">
 							</div>
@@ -1408,7 +1408,7 @@
 				</div>
 				<div class="row modal-body-custom">
 					<div class="row mb-3" v-if="reportSuspensionIndex[0]>=0">
-						<div class="row">
+						<div class="row" style="cursor:pointer" @click="moveToMemberDetail(reportList[reportSuspensionIndex[0]].memberNick)">
 							<div class="col-3 d-flex justify-content-end align-items-center">
 								<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+reportList[reportSuspensionIndex[0]].imageURL">
 							</div>
@@ -1564,7 +1564,7 @@
 				</div>
 				<div class="row modal-body-custom">
 				    <!-- 모달에서 표시할 실질적인 내용 구성 -->
-					<div class="row" >
+					<div class="row" style="cursor:pointer" @click="moveToMemberDetail(reportDetailData.memberNick)">
 						<div class="col-3 d-flex justify-content-end align-items-center">
 							<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+reportDetailData.imageURL">
 						</div>
@@ -1619,7 +1619,7 @@
 									태그
 								</div>
 								<div class="col">
-									<span v-for="(tag,index) in reportDetailContent.boardTagList" :key="index">\#{{tag.tagName}}&nbsp</span>
+									<span v-for="(tag,index) in reportDetailContent.boardTagList" :key="index" style="cursor:pointer" @click="moveToTagDetail(tag.tagName)">\#{{tag.tagName}}&nbsp</span>
 								</div>
 							</div>
 						</div>
@@ -1715,7 +1715,7 @@
 					</div>
 				</div>
 				<div class="row modal-body-custom">
-					<div class="row" >
+					<div class="row"  style="cursor:pointer" @click="moveToMemberDetail(boardViewContent.boardWithNickDto.memberNick)">
 						<div class="col-3 d-flex justify-content-end align-items-center">
 							<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+boardViewContent.boardWithNickDto.imageURL">
 						</div>
@@ -1745,7 +1745,7 @@
 									태그
 								</div>
 								<div class="col">
-									<span v-for="(tag,index) in boardViewContent.boardTagList" :key="index">\#{{tag.tagName}}&nbsp</span>
+									<span v-for="(tag,index) in boardViewContent.boardTagList" :key="index"  style="cursor:pointer" @click="moveToTagDetail(tag.tagName)">\#{{tag.tagName}}&nbsp</span>
 								</div>
 							</div>
 							<div class="row mt-3">
@@ -1819,12 +1819,11 @@
 				<div class="col">
 					<div class="row">
 						<div class="col">
-							<input class="form-control" type="text" v-model="forbiddenWord" @input="forbiddenWord=$event.target.value">
+							<input class="form-control" placeholder="금지어 입력" type="text" v-model="forbiddenWord" @input="forbiddenWord=$event.target.value" @keyup.enter="addForbiddenWord">
 						</div>
 					</div>
 					<div class="row mt-2">
 						<div class="col d-flex justify-content-end">
-							<button type="button" class="btn btn-secondary m-0 w-25" @click="searchForbiddenList">검색</button>
 							<button type="button" class="btn btn-primary m-0 w-25" @click="addForbiddenWord">입력</button>
 							<button type="button" class="btn btn-secondary m-0 w-25" @click="hideForbiddenModal">닫기</button>
 						</div>
@@ -1988,7 +1987,7 @@
 					</div>
 				</div>
 				<div class="row modal-body-custom">
-					<div class="row" >
+					<div class="row"  style="cursor:pointer" @click="moveToMemberDetail(boardViewContent.boardWithNickDto.memberNick)">
 						<div class="col-3 d-flex justify-content-end align-items-center">
 							<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+boardViewContent.boardWithNickDto.imageURL">
 						</div>
@@ -2305,6 +2304,12 @@
 				}
 			},
 			/*------------------------------ 메뉴바 끝 ------------------------------*/
+			moveToMemberDetail(searchMemberNick){
+				window.location.href=contextPath+"/member/"+searchMemberNick;
+			},
+			moveToTagDetail(searchTagName){
+				window.location.href=contextPath+"/tag/"+searchTagName;
+			},
 			/*------------------------------ 회원관리 시작 ------------------------------*/
 			//회원 리스트 출력
 			async loadMemberList(){

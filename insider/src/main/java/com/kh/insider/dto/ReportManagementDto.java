@@ -24,7 +24,7 @@ public class ReportManagementDto {
 	private String memberSuspensionContent;
 	
 	public String getImageURL() {
-		if(attachmentNo == null) return "https://via.placeholder.com/150x150";
+		if(attachmentNo == null) return "/static/image/user.jpg";
 		else return "/rest/attachment/download/"+attachmentNo;
 	}
 }

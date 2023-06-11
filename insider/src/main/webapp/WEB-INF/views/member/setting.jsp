@@ -45,7 +45,7 @@
 	background-color:white
 }
 </style>
-<div class="container-fluid mt-4" id="app" style="width:60%; min-width:900px">
+<div class="container-fluid mt-4" id="app" style="width:60%; min-width:1000px">
 	<div class="row">
 	<!-- 좌측 사이드 메뉴바 -->
 		<div class="col-3">
@@ -111,7 +111,7 @@
 					</div>
 					<div class="row mb-3">
 						<div class="col">
-							<input class="form-control" v-model="member.memberBirth">
+							<input class="form-control" v-model="memberBirthTemp">
 						</div>
 					</div>
 					<div class="row">
@@ -121,7 +121,7 @@
 					</div>
 					<div class="row mb-3">
 						<div class="col">
-							<input class="form-control" v-model="member.memberTel">
+							<input class="form-control" v-model="memberTelTemp">
 						</div>
 					</div>
 					<div class="row">
@@ -647,6 +647,8 @@
 					memberBirth:"",
 					attachmentNo:"",
 				},
+				memberTelTemp:"",
+				memberBirthTemp:"",
 				setting:{
 					memberNo:"",
 					settingHide:"",
@@ -737,6 +739,8 @@
 			async loadMember(){
 				const resp = await axios.get(contextPath+"/rest/member/"+memberNo);
 				Object.assign(this.member, resp.data);
+				this.memberBirthTemp = this.member.memberBirth;
+				this.memberTelTemp = this.member.memberTel;
 			},
 			
 			//프로필 사진 변경 누르면 실행
