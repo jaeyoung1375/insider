@@ -17,11 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.insider.dto.BlockWithProfileDto;
 import com.kh.insider.dto.DmMemberInfoDto;
 import com.kh.insider.dto.DmMemberListDto;
 import com.kh.insider.dto.DmRoomDto;
 import com.kh.insider.dto.DmRoomRenameDto;
 import com.kh.insider.dto.DmUserDto;
+import com.kh.insider.repo.BlockRepo;
 import com.kh.insider.repo.DmMemberInfoRepo;
 import com.kh.insider.repo.DmMemberListRepo;
 import com.kh.insider.repo.DmMessageNickRepo;
@@ -61,6 +63,9 @@ public class DmRestController {
 	
 	@Autowired
 	private DmPrivacyRoomRepo dmPrivacyRoomRepo;
+	
+	@Autowired
+	private BlockRepo blockRepo;
 	
 
 	//메세지 리스트
@@ -121,7 +126,7 @@ public class DmRestController {
 	    dmRoomVO.setRoomName(memberNick);
 		return dmRoomVO;
 	}
-	
+
 	//회원 입장
 	@PostMapping("/enterUsers")
 	public void enterUsersInRoom(@RequestBody DmRoomVO dmRoomVO) {
@@ -219,6 +224,18 @@ public class DmRestController {
     @PostMapping("/findPrivacyRoom/{inviterNo}/{inviteeNo}")
     public Integer findRoomByMembers(@PathVariable int inviterNo, @PathVariable int inviteeNo) {
         return dmPrivacyRoomRepo.findRoomByMembers(inviterNo, inviteeNo);
+    }
+    
+    // 로그인한 회원이 차단한 회원 목록 - 채팅방 생성 차단
+    @GetMapping("/blockList/{memberNo}")
+    public List<BlockWithProfileDto> getBlockList(@PathVariable long memberNo) {
+        return blockRepo.getBlockList(memberNo);
+    }
+
+    // 로그인한 회원이 차단당한 회원 목록 - 채팅방 생성 차단
+    @GetMapping("/blockedList/{memberNo}")
+    public List<BlockWithProfileDto> getBlockedList(@PathVariable long memberNo) {
+        return blockRepo.getBlockedList(memberNo);
     }
     
 }
