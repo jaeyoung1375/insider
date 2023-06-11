@@ -404,7 +404,7 @@
    
     	 <div class="row d-flex justify-content-start w-100">
 	    	<div class="box m-1" v-for="(board,index) in myBoardList" :key="index" @click="detailViewOn(index)">
-	    		<video class="content-in-list" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
+	    		<video class="content-in-list" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList.length>0 && board.boardAttachmentList[0].video"
 						style="object-fit:cover" :autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto"></video>
 				<img class='content-in-list' v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video"
 						 :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
@@ -436,7 +436,7 @@
 
     	 <div class="row d-flex justify-content-start w-100">
 	    	<div class="box m-1" v-for="(bookmark,index) in bookmarkMyPostList" :key="bookmark.boardNo" @click="detailViewOn2(index)">
-	    		<video class="content-in-list" :src="'${pageContext.request.contextPath}'+bookmark.boardAttachmentList[0].imageURL" v-if="bookmark.boardAttachmentList[0].video"
+	    		<video class="content-in-list" :src="'${pageContext.request.contextPath}'+bookmark.boardAttachmentList[0].imageURL" v-if="bookmark.boardAttachmentList.length>0 && bookmark.boardAttachmentList[0].video"
 						style="object-fit:cover" :autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto"></video>
 				<img class='content-in-list' v-if="bookmark.boardAttachmentList.length>0 && !bookmark.boardAttachmentList[0].video"
 						 :src="'${pageContext.request.contextPath}'+bookmark.boardAttachmentList[0].imageURL" >

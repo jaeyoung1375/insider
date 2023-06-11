@@ -6,7 +6,6 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,11 +21,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.insider.dto.CertDto;
 import com.kh.insider.dto.MemberDto;
+import com.kh.insider.dto.MemberSuspensionDto;
 import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.CertRepo;
 import com.kh.insider.repo.FollowRepo;
 import com.kh.insider.repo.MemberRepo;
+import com.kh.insider.repo.MemberSuspensionRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.SettingRepo;
 import com.kh.insider.service.MemberService;
@@ -66,6 +67,8 @@ public class MemberController {
    
    @Autowired
    private SocialLoginService socialLoginService;
+   @Autowired
+   private MemberSuspensionRepo memberSuspensionRepo;
    
    @GetMapping("/join")
    public String join() {
@@ -95,6 +98,17 @@ public class MemberController {
       attr.addFlashAttribute("result",result);
       return "redirect:login";
    }
+   MemberSuspensionDto suspensionDto = memberSuspensionRepo.selectOne(findMember.getMemberNo());
+   if(suspensionDto!=null) {
+	   java.util.Date currentDate = new java.util.Date();
+	   java.sql.Date currentSqlDate = new java.sql.Date(currentDate.getTime());
+	   //정지상태라면
+	   if(currentSqlDate.before(suspensionDto.getMemberSuspensionLiftDate())) {
+		   attr.addAttribute("suspensionDto",suspensionDto);
+		   return "redirect:suspension";
+	   }
+   }
+   
    session.setAttribute("memberNo",findMember.getMemberNo());
    memberRepo.updateLoginTime(findMember.getMemberNo());
    
@@ -257,5 +271,8 @@ public class MemberController {
    public String setting() {
       return"member/setting";
    }
-
+   @GetMapping("/suspension")
+   public String suspension(@ModelAttribute MemberSuspensionDto suspensionDto) {
+	   return"member/suspension";
+   }
 }

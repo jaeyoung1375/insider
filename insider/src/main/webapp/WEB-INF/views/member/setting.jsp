@@ -45,7 +45,7 @@
 	background-color:white
 }
 </style>
-<div class="container-fluid mt-4" id="app" style="width:60%; min-width:900px">
+<div class="container-fluid mt-4" id="app" style="width:60%; min-width:1000px">
 	<div class="row">
 	<!-- 좌측 사이드 메뉴바 -->
 		<div class="col-3">
@@ -111,7 +111,8 @@
 					</div>
 					<div class="row mb-3">
 						<div class="col">
-							<input class="form-control" v-model="member.memberBirth">
+							<input class="form-control" v-model="memberBirthTemp" @blur="memberBirthChange" :class="{'is-invalid':!birthValid}">
+							<div class="invalid-feedback">yyyy-mm-dd 형태로 입력해주세요</div>
 						</div>
 					</div>
 					<div class="row">
@@ -121,7 +122,8 @@
 					</div>
 					<div class="row mb-3">
 						<div class="col">
-							<input class="form-control" v-model="member.memberTel">
+							<input class="form-control" v-model="memberTelTemp" @blur="memberTelChange":class="{'is-invalid':!telValid}">
+							<div class="invalid-feedback">올바른 형태의 휴대폰 번호를 입력하세요</div>
 						</div>
 					</div>
 					<div class="row">
@@ -647,6 +649,10 @@
 					memberBirth:"",
 					attachmentNo:"",
 				},
+				memberTelTemp:"",
+				memberBirthTemp:"",
+				birthValid:true,
+				telValid:true,
 				setting:{
 					memberNo:"",
 					settingHide:"",
@@ -737,6 +743,8 @@
 			async loadMember(){
 				const resp = await axios.get(contextPath+"/rest/member/"+memberNo);
 				Object.assign(this.member, resp.data);
+				this.memberBirthTemp = this.member.memberBirth;
+				this.memberTelTemp = this.member.memberTel;
 			},
 			
 			//프로필 사진 변경 누르면 실행
@@ -984,6 +992,29 @@
 				const resp = await axios.put(contextPath+"/rest/member/", data)
 				this.member.memberNick=this.changeMemberNick;
 				this.hideChangeMemberNickModal();
+			},
+			memberBirthChange(){
+				const birthRegex = /^(((19|20)([2468][048]|[13579][26]|04|08)|2000)-((([0][13578]|[1][02])-([0][1-9]|[1][0-9]|[2][0-9]|[3][01]))|(([0][469]|[1][1])-([0][1-9]|[1][0-9]|[2][0-9]|30))|([0][2]-([0][1-9]|[1][0-9]|[2][0-9]))))|(((19|20)([02468][1235679]|[13579][01345789])|1900)-((([0][13578]|[1][02])-([0][1-9]|[1][0-9]|[2][0-9]|[3][01]))|(([0][469]|[1][1])-([0][1-9]|[1][0-9]|[2][0-9]|30))|([0][2]-([0][1-9]|[1][0-9]|[2][0-8]))))$/;
+				if(birthRegex.test(this.memberBirthTemp)){
+					this.member.memberBirth=this.memberBirthTemp;
+					this.birthValid=true;
+				}
+				else{
+					this.memberBirthTemp=this.member.memberBirth;
+					this.birthValid=false;
+				}
+			},
+			memberTelChange(){
+				const telRegex = /^01[016-9][1-9][0-9]{6,7}$/;
+				const telRegex2 = /^01[016-9]-[1-9][0-9]{2,3}-[0-9]{4}$/;
+				if(telRegex.test(this.memberTelTemp) || telRegex2.test(this.memberTelTemp)){
+					this.member.memberTel=this.memberTelTemp;
+					this.telValid=true;
+				}
+				else{
+					this.memberTelTemp=this.member.memberTel;
+					this.telValid=false;
+				}
 			},
 		},
 		created(){
