@@ -516,8 +516,8 @@
 	</select>
 	
 	<!-- 추후 코드 수정 예정 -5/26 재영 -->
-	<select id="getTotalMyPost2" resultType="boardDto">
-	select A.*, B.attachment_no from board A inner join board_attachment B on A.board_no = B.board_no where member_no = #{memberNo}
+	<select id="getTotalMyPost2" resultMap="boardListVO">
+	select * from board where member_no = #{memberNo} order by board_no desc
 	</select>
 	
 	<select id="bookmarkMyPost" resultMap="boardListVO">
