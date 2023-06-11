@@ -2448,7 +2448,7 @@
 			},
 			async changeTagAvailable(tagName, index){
 				const data={tagName:tagName}
-				const resp = await axios.put(contextPath+"/rest/tag/", data)
+				const resp = await axios.put(contextPath+"/rest/admin/tag", data)
 				this.tagList[index].tagAvailable=resp.data;
 			},
 			clickBoardViewModal(index){
@@ -2525,7 +2525,7 @@
 				this.changeModal("");
 			},
 			async insertReportContent(){
-				const resp = await axios.post(contextPath+"/rest/reportContent/", {reportListContent:this.newReportContent});
+				const resp = await axios.post(contextPath+"/rest/admin/reportContent/", {reportListContent:this.newReportContent});
 				this.newReportContent="";
 				this.loadReportContent();
 			},
@@ -2535,7 +2535,7 @@
 				this.reportContentListSub = _.cloneDeep(this.reportContentList);
 			},
 			async deleteReportContent(no){
-				const resp = await axios.delete(contextPath+"/rest/reportContent/"+no);
+				const resp = await axios.delete(contextPath+"/rest/admin/reportContent/"+no);
 				this.loadReportContent();
 			},
 			async updateReportContent(index, no){
@@ -2544,7 +2544,7 @@
 					reportListContentAfter:this.reportContentListSub[index].reportListContent,
 					reportListContentBefore:this.reportContentList[index].reportListContent,
 				};
-				const resp = await axios.put(contextPath+"/rest/reportContent/", data);
+				const resp = await axios.put(contextPath+"/rest/admin/reportContent/", data);
 				this.hideReportContentEdit(index);
 				this.loadReportContent();
 			},
@@ -2553,7 +2553,7 @@
 				this.reportContentListSub[index].reportListContent = this.reportContentList[index].reportListContent; 
 			},
 			async loadReportList(){
-				const resp = await axios.get(contextPath+"/rest/report/", {params:this.reportSearchOption});
+				const resp = await axios.get(contextPath+"/rest/admin/report/", {params:this.reportSearchOption});
 				this.reportListBefore=[...resp.data.reportList];
 				this.reportSearchPagination=resp.data.paginationVO;
 				this.reportList=_.cloneDeep(this.reportListBefore);
@@ -2589,7 +2589,7 @@
 			//신고 검색 버튼 클릭시
 			async getReportListWithSearchOption(){
 				this.reportSearchOption.page=1;
-				const resp = await axios.get(contextPath+"/rest/report/", {params:this.reportSearchOption});
+				const resp = await axios.get(contextPath+"/rest/admin/report/", {params:this.reportSearchOption});
 				this.reportListBefore=[...resp.data.reportList];
 				this.reportSearchPagination=resp.data.paginationVO;
 				this.reportList=_.cloneDeep(this.reportListBefore);
@@ -3036,7 +3036,7 @@
 					memberSuspensionDays:this.suspensionContent[0],
 					memberSuspensionContent:this.suspensionContent[1]
 				};
-				const resp = await axios.post(contextPath+"/rest/suspension/", data);
+				const resp = await axios.post(contextPath+"/rest/admin/suspension/", data);
 				this.memberList[this.suspensionIndex[0]]=resp.data;
 				this.hideSuspensionModal();
 			},
@@ -3044,7 +3044,7 @@
 				let data={
 						memberNo:this.memberList[this.suspensionIndex[0]].memberNo,
 				}
-				const resp = await axios.put(contextPath+"/rest/suspension/", data);
+				const resp = await axios.put(contextPath+"/rest/admin/suspension/", data);
 				this.memberList[this.suspensionIndex[0]]=resp.data;
 				this.hideSuspensionModal();
 			},
@@ -3073,7 +3073,7 @@
 					memberSuspensionDays:this.reportSuspensionContent[0],
 					memberSuspensionContent:this.reportSuspensionContent[1]
 				};
-				const resp = await axios.post(contextPath+"/rest/suspension/", data);
+				const resp = await axios.post(contextPath+"/rest/admin/suspension/", data);
 				this.loadReportList();
 				this.hideReportSuspensionModal();
 			},
@@ -3081,7 +3081,7 @@
 				let data={
 						memberNo:this.reportList[this.reportSuspensionIndex[0]].reportMemberNo,
 				}
-				const resp = await axios.put(contextPath+"/rest/suspension/", data);
+				const resp = await axios.put(contextPath+"/rest/admin/suspension/", data);
 				this.loadReportList();
 				this.hideReportSuspensionModal();
 			},
@@ -3104,7 +3104,7 @@
 				this.changeModal("");
 			},
 			async loadDetailCount(){
-				const resp = await axios.get(contextPath+"/rest/report/detail?reportTable="+this.reportDetailData.reportTable+
+				const resp = await axios.get(contextPath+"/rest/admin/report/detail?reportTable="+this.reportDetailData.reportTable+
 						"&reportTableNo="+this.reportDetailData.reportTableNo+"&memberNo="+this.reportDetailData.reportMemberNo);
 				this.reportDetailCountList = [...resp.data.reportDetailCountVO];
 				//게시글 신고일 경우
@@ -3177,7 +3177,7 @@
 				this.showReportedReplyDetailModal();
 			},
  			async showReportedReplyDetailModal(){
-				const resp = await axios.get(contextPath+"/rest/report/detail/"+this.reportedReplyDetailModalReportNo);
+				const resp = await axios.get(contextPath+"/rest/admin/report/detail/"+this.reportedReplyDetailModalReportNo);
 				this.reportedReplyDetailList=[...resp.data];
 				this.reportedReplyDetailIndex=this.reportedReplyDetailList.findIndex(content=>content.replyNo==this.reportDetailContent.replyList[this.reportedReplyDetailModalIndex].replyNo);
 				this.reportedReplyDetailModal=true;
