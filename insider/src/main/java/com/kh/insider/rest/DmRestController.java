@@ -107,7 +107,6 @@ public class DmRestController {
 		return dmMemberInfoRepo.dmMemberList(memberNo);
 	}	
 	
-	
 	//채팅방 생성
 	@PostMapping("/createChatRoom")
 	public DmRoomVO createRoom(HttpSession session) {
