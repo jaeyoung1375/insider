@@ -537,10 +537,9 @@
 			<!-- 게시물 출력 -->
 				<div class="row d-flex justify-content-center">
 					<div class="box" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @click="clickBoardViewModal(index)">
-						<video class="content" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
+						<video class="content" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList.length>0 && board.boardAttachmentList[0].video"
 							style="object-fit:cover" autoplay loop muted controls></video>
-						<img class='content' v-if="!board.boardAttachmentList[0].video" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
-						<img class='content' v-if="board.boardAttachmentList.length==0" src="${pageContext.request.contextPath}/static/image/noimage.png">
+						<img class='content' v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
 						<div class="content-box"></div>
 						<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
 					</div>
@@ -1850,10 +1849,9 @@
 				<div class="row modal-body-custom" v-if="reportDetailData.reportTable=='member'">
 					<div class="row d-flex justify-content-center">
 						<div class="box w-25" v-for="(board, index) in reportDetailContent.boardList" :key="board.boardWithNickDto.boardNo" @click="clickReportedBoardDetailModal(index)">
-							<video class="content" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
+							<video class="content" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList.length>0 && board.boardAttachmentList[0].video"
 									style="object-fit:cover" muted controls></video>
-							<img class='content' v-if="!board.boardAttachmentList[0].video" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
-							<img class='content' v-if="board.boardAttachmentList.length==0" src="${pageContext.request.contextPath}/static/image/noimage.png">
+							<img class='content' v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
 							<div class="content-box"></div>
 							<i class="fa-regular fa-copy pages" v-if="board.boardAttachmentList.length>1"></i>
 						</div>
