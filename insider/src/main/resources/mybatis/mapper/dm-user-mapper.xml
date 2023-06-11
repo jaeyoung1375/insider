@@ -71,5 +71,12 @@
 		where member_no = #{memberNo} and room_no = #{roomNo}
 	</update>
 	
+	<!-- 특정 회원이 입장해 있는 모든 채팅방 조회 -->
+	<select id="getEnteredRoomNo" resultType="integer">
+	    SELECT room_no
+	    FROM dm_user
+	    WHERE member_no = #{memberNo}
+	</select>
+	
 	
 </mapper>
