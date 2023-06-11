@@ -217,7 +217,7 @@ public class SocialLoginServiceImpl implements SocialLoginService {
 	}
 
 	@Override
-	public void kakaoDelete(String accessToken) throws URISyntaxException{
+	public void kakaoDelete(long memberNo) throws URISyntaxException{
 		
 		  URI uri = new URI("https://kapi.kakao.com/v1/user/unlink");
 			
@@ -227,7 +227,9 @@ public class SocialLoginServiceImpl implements SocialLoginService {
 	      headers.add("Authorization","KakaoAK  "+"19ed9f4c278a576b0b9e2f7268c4e11d");
 	      headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 	      
-	   	 
+	      MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+	      body.add("target_id_type", "user_id");
+	      body.add("target_id", Long.toString(memberNo));
 	      
 	      // Header + Body를 하나의 오브젝트에 담기
 	      HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);

@@ -45,7 +45,7 @@ GoogleLoginProperties googleProperties = context.getBean(GoogleLoginProperties.c
                 <div class="mb-3 row">
                     <p v-if="showEmptyWarning" class="email-warning-message">아이디 혹은 비밀번호를 입력해주세요</p>
                      <p v-if="${result == 0} && !showEmptyWarning">아이디 혹은 비밀번호를 일치하지 않습니다 </p>   
-                </div>
+                </div>	
                 <div class="row mb-3">
                     <button class="btn btn-primary" type="submit">로그인</button>
                 </div> 

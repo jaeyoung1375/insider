@@ -259,7 +259,7 @@ display:none;
                         <div style="padding: 8px 8px 4px 8px;">
                             <div class="d-flex">
 
-                                <div class="p-2"><a style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><img class="profile rounded-circle" :src="profileUrl(index)" style="object-fit: cover; " @mouseover="profileHover(board.boardWithNickDto)"></a></div>
+                                <div class="p-2"><a style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><img class="profile rounded-circle" :src="profileUrl(index)" style="object-fit: cover; " @mouseover="profileHover(board)"></a></div>
                                 <div class="p-2" style="margin-top: 8px;"><h4><a class="btn btn-none" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a><b style="color: gray;">  · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
 
                                 <div v-if="followCheckIfNew(index)" @click="follow(board.boardWithNickDto.memberNo)" class="p-2 me-5" style="margin-top: 8px;"><h4><b style="font-size: 15px; color:blue; cursor: pointer;">팔로우</b></h4></div>
@@ -350,7 +350,7 @@ display:none;
          
         
          
-          <div class="profile-preview" v-if="selectedItem === board.boardWithNickDto" @mouseleave="profileLeave" style="border-radius:15px; margin-left:70px; margin-bottom:70px;">
+          <div class="profile-preview" v-if="selectedItem === board" @mouseleave="profileLeave" style="border-radius:15px; margin-left:70px; margin-bottom:70px;">
                   <!-- 프로필 미리보기 내용 -->
                    	<div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' +board.boardWithNickDto.attachmentNo" width="75" height="75" style="border-radius: 50%;" @mouseleave="profileLeave"> 
@@ -389,25 +389,15 @@ display:none;
 						
 						</template> 
 						
-						<!--  비공개 계정 || 친구에게만 공개 && 팔로우 목록에 있다면  -->
-					<template v-else-if="(hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)) && ${memberNo} != board.boardWithNickDto.memberNo">
-						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
-							  <div style="width:500px; margin-left:160px;">
-							    <img src="${pageContext.request.contextPath}/static/image/lock.png" width="60" height="60">
-   								<h6 style="white-space: nowrap; margin-bottom: 5px;">비공개 계정입니다 <br>
-   								사진 및 동영상을 보려면 팔로우하세요.</h6>
-							  </div>
-							</div>
-						</template> 
-						
-						
+				
 				
 					    <template v-else>
-					      <div v-for="(post,index) in hoverPostList" :key="post.id">
+					      <div v-for="(post,index) in hoverPostList" :key="index">
 					        <!-- 게시물 정보 출력 -->
-					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.attachmentNo" width="127" height="150" style="margin-right:3px;">
-					        <!--<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.boardAttachmentList[index].imageURL" width="127" height="150" style="margin-right:3px;"> -->
-
+					         	<video  style="width:127px; height:150px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+post.boardAttachmentList[0].imageURL"
+							:autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto" v-if="post.boardAttachmentList[0].video"></video>
+					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.boardAttachmentList[0].attachmentNo" width="127" height="150" style="margin-right:3px;" v-else>
+						
 					      </div>
 					    </template>
                     	  
@@ -824,6 +814,7 @@ Vue.createApp({
 	         totalFollowerCnt: 0,
 	         hoverPostList : [],
 	         hoverSettingHide : null,
+	         hoverFollowCheck : false,
 	         
 	         // 친구추천
 			recommendFriendsList : [], // 친구 추천목록 리스트
@@ -1504,16 +1495,16 @@ Vue.createApp({
 		// 호버
 		 async profileHover(item) {           		
            	  this.selectedItem = item; // 선택
-           	  console.log("item : "+item);
+           	  console.log("item : "+item.boardAttachmentList);
         	  // settingHide 불러오기 위해서 선언
-             	const resp = await axios.get("/rest/member/setting/"+item.memberNo);
+             	const resp = await axios.get("/rest/member/setting/"+item.boardWithNickDto.memberNo);
              	  const settingHide = resp.data.settingHide;
            	  
         	  Promise.all([
-            	 this.getTotalFollowCount(item.memberNo), // 팔로우 수 가져오기
-               	 this.getTotalFollowerCount(item.memberNo), // 팔로워 수 가져오기
-               	 this.getTotalPostCount(item.memberNo), // 게시물 수 가져오기 
-               	 this.boardList2(item.memberNo), // 게시물 목록 가져오기
+            	 this.getTotalFollowCount(item.boardWithNickDto.memberNo), // 팔로우 수 가져오기
+               	 this.getTotalFollowerCount(item.boardWithNickDto.memberNo), // 팔로워 수 가져오기
+               	 this.getTotalPostCount(item.boardWithNickDto.memberNo), // 게시물 수 가져오기 
+               	 this.boardList2(item.boardWithNickDto.memberNo), // 게시물 목록 가져오기
               
               
             	  ]).then(([followCounts,followerCounts,postCounts]) => {
@@ -1521,6 +1512,7 @@ Vue.createApp({
                	      this.followerCounts = followerCounts; // 프로미스가 해결된 값 저장
                	      this.postCounts = postCounts; // 프로미스가 해결된 값 저장
                	      this.hoverSettingHide = settingHide;
+               	   	  this.hoverFollowCheck = this.followCheckIf(item.boardWithNickDto.memberNo);
                	     
                	    })
                	    .catch(error => {

@@ -70,7 +70,8 @@
   cursor: pointer;
 }
 .timer {
-		right: 0;
+	position:absolute;
+	right: 0;
 	bottom: 0;
 	margin-bottom: 40px;
 	margin-right: 10px;
@@ -203,8 +204,8 @@
 	            
 	    
 			<div class="gender-buttons">
-			  <button type="button" class="gender-button" :class="{ active: gender === 0 }" data-gender="male" @click="selectGender(0)">남성</button>
-			  <button type="button" class="gender-button" :class="{ active: gender === 1 }" data-gender="female" @click="selectGender(1)">여성</button>
+			  <button type="button" class="gender-button" :class="{ active: gender === '0' }" data-gender="male" @click="selectGender(0)">남성</button>
+			  <button type="button" class="gender-button" :class="{ active: gender === '1' }" data-gender="female" @click="selectGender(1)">여성</button>
 			</div>
 <input type="hidden" name="memberGender" :value="gender">
 
@@ -279,7 +280,7 @@
 	                    password : '',
 	                    passwordCk : '',
 	                    tel : '',
-	                    gender : 0,
+	                    gender : '0',
 	                    post : '',
 	                    basicAddr : '',
 	                    detailAddr : '',
