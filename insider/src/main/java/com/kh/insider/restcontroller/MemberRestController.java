@@ -156,9 +156,7 @@ public class MemberRestController {
 	public List<BoardListVO> postList(@RequestParam long memberNo){
 		
 		List<BoardListVO> getTotalPost = boardRepo.getTotalMyPost(memberNo);
-//		return forbiddenService.changeForbiddenBoard(getTotalPost);
-		
-		return getTotalPost;
+		return forbiddenService.changeForbiddenWords(getTotalPost);
 	}
 	
 	@GetMapping("/bookmarkMyPost")

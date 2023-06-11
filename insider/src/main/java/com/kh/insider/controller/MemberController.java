@@ -98,13 +98,15 @@ public class MemberController {
       attr.addFlashAttribute("result",result);
       return "redirect:login";
    }
+   
+   //정지상태 유저 처리
    MemberSuspensionDto suspensionDto = memberSuspensionRepo.selectOne(findMember.getMemberNo());
    if(suspensionDto!=null) {
 	   java.util.Date currentDate = new java.util.Date();
 	   java.sql.Date currentSqlDate = new java.sql.Date(currentDate.getTime());
 	   //정지상태라면
 	   if(currentSqlDate.before(suspensionDto.getMemberSuspensionLiftDate())) {
-		   attr.addAttribute("suspensionDto",suspensionDto);
+		   attr.addAttribute("memberNo",findMember.getMemberNo());
 		   return "redirect:suspension";
 	   }
    }
@@ -272,7 +274,9 @@ public class MemberController {
       return"member/setting";
    }
    @GetMapping("/suspension")
-   public String suspension(@ModelAttribute MemberSuspensionDto suspensionDto) {
+   public String suspension(@RequestParam long memberNo, Model model) {
+	   MemberSuspensionDto suspensionDto = memberSuspensionRepo.selectOne(memberNo);
+	   model.addAttribute("suspensionDto", suspensionDto);
 	   return"member/suspension";
    }
 }
