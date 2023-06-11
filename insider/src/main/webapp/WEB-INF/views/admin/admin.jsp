@@ -2869,7 +2869,7 @@
 						labels: this.boardTagList.tagName,
 						datasets: [
 							{
-								label: "생성 개수",
+								label: "개수",
 								data: this.boardTagList.count,
 								borderWidth: 1,
 								backgroundColor: [
@@ -2930,7 +2930,7 @@
 						labels: this.searchNickList.name,
 						datasets: [
 							{
-								label: "생성 개수",
+								label: "건",
 								data: this.searchNickList.count,
 								borderWidth: 1,
 								backgroundColor: [
@@ -2974,7 +2974,7 @@
 						labels: this.searchTagList.name,
 						datasets: [
 							{
-								label: "생성 개수",
+								label: "건",
 								data: this.searchTagList.count,
 								borderWidth: 1,
 								backgroundColor: [
@@ -2995,11 +2995,11 @@
 			},
 			//차트 좌우버튼 클릭시
 			searchTagStatsPrev(){
-				this.searchStatsSearch.tagPage++;
+				this.searchStatsSearch.tagPage--;
 				this.getSearchTagStats();
 			},
 			searchTagStatsNext(){
-				this.searchStatsSearch.tagPage--;
+				this.searchStatsSearch.tagPage++;
 				this.getSearchTagStats();
 			},
 			searchNickStatsPrev(){
