@@ -154,8 +154,8 @@
 	         
 	         <!-- 성별 -->   
 	        <div class="gender-buttons">
-			  <button type="button" class="gender-button" :class="{ active: gender === 0 }" data-gender="male" @click="selectGender(0)">남성</button>
-			  <button type="button" class="gender-button" :class="{ active: gender === 1 }" data-gender="female" @click="selectGender(1)">여성</button>
+			  <button type="button" class="gender-button" :class="{ active: gender === '0' }" data-gender="male" @click="selectGender(0)">남성</button>
+			  <button type="button" class="gender-button" :class="{ active: gender === '1' }" data-gender="female" @click="selectGender(1)">여성</button>
 			</div>
 			<input type="hidden" name="memberGender" :value="gender">
 
@@ -226,7 +226,7 @@
 	                    name : '',     
 	                    nickname : '',
 	                    tel : '',
-	                    gender : 0,
+	                    gender : '0',
 	                    post : '',
 	                    basicAddr : '',
 	                    detailAddr : '',
@@ -296,11 +296,7 @@
 	       
 	              
 	             },
-	              
-	          
-
-	              
-	              
+	                            
 	            methods:{
 	
 	            	saveMemberBirth() {

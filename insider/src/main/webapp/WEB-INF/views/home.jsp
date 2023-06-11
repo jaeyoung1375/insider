@@ -259,7 +259,7 @@ display:none;
                         <div style="padding: 8px 8px 4px 8px;">
                             <div class="d-flex">
 
-                                <div class="p-2"><a style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><img class="profile rounded-circle" :src="profileUrl(index)" style="object-fit: cover; " @mouseover="profileHover(board.boardWithNickDto)"></a></div>
+                                <div class="p-2"><a style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><img class="profile rounded-circle" :src="profileUrl(index)" style="object-fit: cover; " @mouseover="profileHover(board)"></a></div>
                                 <div class="p-2" style="margin-top: 8px;"><h4><a class="btn btn-none" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a><b style="color: gray;">  · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
 
                                 <div v-if="followCheckIfNew(index)" @click="follow(board.boardWithNickDto.memberNo)" class="p-2 me-5" style="margin-top: 8px;"><h4><b style="font-size: 15px; color:blue; cursor: pointer;">팔로우</b></h4></div>
@@ -350,7 +350,7 @@ display:none;
          
         
          
-          <div class="profile-preview" v-if="selectedItem === board.boardWithNickDto" @mouseleave="profileLeave" style="border-radius:15px; margin-left:70px; margin-bottom:70px;">
+          <div class="profile-preview" v-if="selectedItem === board" @mouseleave="profileLeave" style="border-radius:15px; margin-left:70px; margin-bottom:70px;">
                   <!-- 프로필 미리보기 내용 -->
                    	<div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' +board.boardWithNickDto.attachmentNo" width="75" height="75" style="border-radius: 50%;" @mouseleave="profileLeave"> 
@@ -389,25 +389,15 @@ display:none;
 						
 						</template> 
 						
-						<!--  비공개 계정 || 친구에게만 공개 && 팔로우 목록에 있다면  -->
-					<template v-else-if="(hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)) && ${memberNo} != board.boardWithNickDto.memberNo">
-						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
-							  <div style="width:500px; margin-left:160px;">
-							    <img src="${pageContext.request.contextPath}/static/image/lock.png" width="60" height="60">
-   								<h6 style="white-space: nowrap; margin-bottom: 5px;">비공개 계정입니다 <br>
-   								사진 및 동영상을 보려면 팔로우하세요.</h6>
-							  </div>
-							</div>
-						</template> 
-						
-						
+				
 				
 					    <template v-else>
-					      <div v-for="(post,index) in hoverPostList" :key="post.id">
+					      <div v-for="(post,index) in hoverPostList" :key="index">
 					        <!-- 게시물 정보 출력 -->
-					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.attachmentNo" width="127" height="150" style="margin-right:3px;">
-					        <!--<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.boardAttachmentList[index].imageURL" width="127" height="150" style="margin-right:3px;"> -->
-
+					         	<video  style="width:127px; height:150px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+post.boardAttachmentList[0].imageURL"
+							:autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto" v-if="post.boardAttachmentList[0].video"></video>
+					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.boardAttachmentList[0].attachmentNo" width="127" height="150" style="margin-right:3px;" v-else>
+						
 					      </div>
 					    </template>
                     	  
@@ -431,11 +421,14 @@ display:none;
      
     
      
-     <div v-if="newListFinish"  style="max-width: 620px;  margin: 10px auto 10px auto;">
+     <div v-if="newListFinish && !oldListFinish"  style="max-width: 620px;  margin: 10px auto 10px auto;">
      	<img src="${pageContext.request.contextPath}/static/image/check.png" class="justify-content-center align-items-center" style="width: 150px; height: 150px; margin-left: 230px; margin-bottom: 20px;">
      	<h3 class="justify-content-center text-center">모두 확인했습니다</h3>
      	<h6 class="justify-content-center text-center" style="color:gray; ">최근 3일 동안 올라온 게시물을 모두 확인했습니다.</h6>
      	<h6 class="justify-content-center text-center" @click="loadOldList()" style="color: blue; cursor: pointer;">이전 게시물 보기</h6>     	
+     </div>
+     
+      <div v-else-if="newListFinish && oldListFinish && finish"  style="max-width: 620px;  margin: 10px auto 10px auto;">	
      </div>
     
  
@@ -495,7 +488,7 @@ display:none;
 					
 					
 					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
-						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="text-decoration:none; position:relative;">
+						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="color:black; text-decoration:none; position:relative;">
 							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="45" height="45" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
 							<img v-else src="https://via.placeholder.com/45x45?text=profile" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
 							
@@ -546,6 +539,9 @@ display:none;
 						<span class="card-text" style="margin: 0 4px 4px 0; padding-left: 0.5em">
 						    <i :class="{'fa-heart': true, 'like':isLiked[detailIndex], 'fa-solid': isLiked[detailIndex], 'fa-regular': !isLiked[detailIndex]}"
 						       @click="likePost(boardList[detailIndex].boardWithNickDto.boardNo,detailIndex)" style="font-size: 27px;"></i>
+						</span>
+						<span class="card-text" style="margin: 0 0 4px 0; padding-left: 0.5em;">
+								<i class="fa-regular fa-message mb-1" @click="moveToDmPage(boardList[detailIndex].boardWithNickDto.memberNo)" style="font-size: 25px; cursor: pointer;"></i>
 						</span>
 					  </div>
 					  <div class="col-1 p-0 flex-grow-1">
@@ -749,6 +745,7 @@ Vue.createApp({
             
             newListFinish:false, //최근 3일 로드 끝
             oldListStart:false, // 3일 이후 로드 시작
+            oldListFinish:false,// 3일 이후 로드 끝
             
             //안전장치
             loading:false,
@@ -786,6 +783,8 @@ Vue.createApp({
 	            watchDistance:"",
 	            //동영상 자동재생
 	            videoAuto:false,
+	            //댓글 가능 여부
+	            allowReply:0,
             },
 			
 			//상세보기 및 댓글
@@ -795,8 +794,10 @@ Vue.createApp({
 			replyParent:0,
 			replyContent:"",
 			placeholder:"댓글 입력..",
-// 			boardModal:null,
-
+			//게시물 작성자 팔로우 리스트
+			followList : [],
+			followerList : [],
+			
 			//북마크
 			bookmarkCheck : [],
 			
@@ -813,6 +814,7 @@ Vue.createApp({
 	         totalFollowerCnt: 0,
 	         hoverPostList : [],
 	         hoverSettingHide : null,
+	         hoverFollowCheck : false,
 	         
 	         // 친구추천
 			recommendFriendsList : [], // 친구 추천목록 리스트
@@ -937,7 +939,10 @@ Vue.createApp({
             this.boardList.push(...resp.data);
             this.page++;
             
-            if(resp.data < 2) this.finish = true; //데이터가 2개 미만이면 더 읽을게 없다
+            if(resp.data < 2) {
+            	this.finish = true; //데이터가 2개 미만이면 더 읽을게 없다
+            	this.oldListFinish = true;
+            }
 
             this.loading = false;
         },
@@ -954,6 +959,7 @@ Vue.createApp({
         //회원 환경 설정 로드
         async loadMemberSetting(){
 			const resp = await axios.get(contextPath+"/rest/member/setting");
+            this.memberSetting.allowReply=resp.data.settingAllowReply;
             this.memberSetting.watchDistance=resp.data.settingDistance;
             this.memberSetting.videoAuto=resp.data.videoAuto;
 		},
@@ -1112,6 +1118,14 @@ Vue.createApp({
         //댓글 등록
         async replyInsert(index) {
         	  const boardNo = this.boardList[index].boardWithNickDto.boardNo;
+        	  const memberNo = this.boardList[index].boardWithNickDto.memberNo;
+        	  const loginNo = parseInt(this.loginMemberNo);
+        	  
+        	  //세팅값 불러오기
+        	  const response = await axios.get(contextPath+"/rest/member/setting/" + memberNo);
+        	  const set = response.data.settingAllowReply;
+        	  //console.log(set);
+        	  //console.log(memberNo, loginNo);       	  
         	  
         	  const requestData = {
         	    replyOrigin: boardNo,
@@ -1120,14 +1134,73 @@ Vue.createApp({
         	  };
         	  this.replyContent='';
         	  
-        	  try {
+        	  //모든 사람 작성 가능한 경우
+        	  if(set == 0){
         	    const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
-        	    this.replyLoad(index);	    
-        	  } 
-        	  catch (error) {
-        	    console.error(error);
+        	    this.replyLoad(index);	            		  
         	  }
+        	  //내가 팔로우 하는 사람만 작성 가능한 경우
+        	  else if(set == 1){
+        		  //게시물 작성자 팔로우 로드
+        		  await this.loadFollow(memberNo);
+              	  if(loginNo == memberNo) this.followList.push(loginNo); 
+        		  
+              	  if(this.followList.includes(loginNo)){
+        			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+              	      this.replyLoad(index);
+              	      this.followList = [];
+        		  }
+        		  else{
+        			  alert("댓글 사용이 불가능합니다.");
+        		  }
+        	  }
+        	  //팔로워만 댓글 작성 가능한 경우
+        	  else if(set == 2){
+        		  await this.loadFollower(memberNo);
+              	  if(loginNo == memberNo) this.followerList.push(loginNo); 
+        		  //console.log(this.followerList);
+        		  if(this.followerList.includes(loginNo)){
+        			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+              	      this.replyLoad(index);
+            	      this.followerList = [];
+        		  }
+        		  else{
+        			  alert("댓글 사용이 불가능합니다.");
+        		  }
+        	  }
+        	  else{
+        		  //게시물 작성자 팔로우 로드
+        		  await this.loadFollow(memberNo);
+              	  if(loginNo == memberNo) this.followList.push(loginNo); 
+        		  //게시물 작성자 팔로워 로드
+              	  await this.loadFollower(memberNo);
+              	  if(loginNo == memberNo) this.followerList.push(loginNo); 
+        		  
+              	  if(this.followList.includes(loginNo) || this.followerList.includes(loginNo)){
+        			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+              	      this.replyLoad(index);
+              	      this.followList = [];
+            	      this.followerList = [];
+        		  }
+        		  else{
+        			  alert("댓글 사용이 불가능합니다.");
+        		  }
+        	  }
+        	   
         },
+        
+        //댓글 가능 팔로우 체크
+        async loadFollow(memberNo) {
+        	const resp = await axios.post(contextPath + "/rest/follow/getFollow/" + memberNo);
+        	this.followList.push(...resp.data);
+        },
+        
+        //댓글 가능 팔로워 체크
+        async loadFollower(memberNo) {
+        	const resp = await axios.post(contextPath + "/rest/follow/getFollower/" + memberNo);
+        	this.followerList.push(...resp.data);
+        },
+        
         
         //댓글 삭제
         async replyDelete(index,index2) {
@@ -1422,16 +1495,16 @@ Vue.createApp({
 		// 호버
 		 async profileHover(item) {           		
            	  this.selectedItem = item; // 선택
-           	  console.log("item : "+item);
+           	  console.log("item : "+item.boardAttachmentList);
         	  // settingHide 불러오기 위해서 선언
-             	const resp = await axios.get("/rest/member/setting/"+item.memberNo);
+             	const resp = await axios.get("/rest/member/setting/"+item.boardWithNickDto.memberNo);
              	  const settingHide = resp.data.settingHide;
            	  
         	  Promise.all([
-            	 this.getTotalFollowCount(item.memberNo), // 팔로우 수 가져오기
-               	 this.getTotalFollowerCount(item.memberNo), // 팔로워 수 가져오기
-               	 this.getTotalPostCount(item.memberNo), // 게시물 수 가져오기 
-               	 this.boardList2(item.memberNo), // 게시물 목록 가져오기
+            	 this.getTotalFollowCount(item.boardWithNickDto.memberNo), // 팔로우 수 가져오기
+               	 this.getTotalFollowerCount(item.boardWithNickDto.memberNo), // 팔로워 수 가져오기
+               	 this.getTotalPostCount(item.boardWithNickDto.memberNo), // 게시물 수 가져오기 
+               	 this.boardList2(item.boardWithNickDto.memberNo), // 게시물 목록 가져오기
               
               
             	  ]).then(([followCounts,followerCounts,postCounts]) => {
@@ -1439,6 +1512,7 @@ Vue.createApp({
                	      this.followerCounts = followerCounts; // 프로미스가 해결된 값 저장
                	      this.postCounts = postCounts; // 프로미스가 해결된 값 저장
                	      this.hoverSettingHide = settingHide;
+               	   	  this.hoverFollowCheck = this.followCheckIf(item.boardWithNickDto.memberNo);
                	     
                	    })
                	    .catch(error => {

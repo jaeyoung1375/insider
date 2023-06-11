@@ -84,8 +84,13 @@ public class FollowRepoImpl implements FollowRepo {
 	}
 
 	@Override
-	public List<Long> check(long memberNo) {
+	public List<Long> checkFollow(long memberNo) {
 		return sqlSession.selectList("follow.getFollowNo",memberNo);
+	}
+
+	@Override
+	public List<Long> checkFollower(long memberNo) {
+		return sqlSession.selectList("follow.getFollowerNo",memberNo);
 	}
 
 

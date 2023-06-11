@@ -404,7 +404,7 @@
    
     	 <div class="row d-flex justify-content-start w-100">
 	    	<div class="box m-1" v-for="(board,index) in myBoardList" :key="index" @click="detailViewOn(index)">
-	    		<video class="content-in-list" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
+	    		<video class="content-in-list" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList.length>0 && board.boardAttachmentList[0].video"
 						style="object-fit:cover" :autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto"></video>
 				<img class='content-in-list' v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video"
 						 :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
@@ -436,7 +436,7 @@
 
     	 <div class="row d-flex justify-content-start w-100">
 	    	<div class="box m-1" v-for="(bookmark,index) in bookmarkMyPostList" :key="bookmark.boardNo" @click="detailViewOn2(index)">
-	    		<video class="content-in-list" :src="'${pageContext.request.contextPath}'+bookmark.boardAttachmentList[0].imageURL" v-if="bookmark.boardAttachmentList[0].video"
+	    		<video class="content-in-list" :src="'${pageContext.request.contextPath}'+bookmark.boardAttachmentList[0].imageURL" v-if="bookmark.boardAttachmentList.length>0 && bookmark.boardAttachmentList[0].video"
 						style="object-fit:cover" :autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto"></video>
 				<img class='content-in-list' v-if="bookmark.boardAttachmentList.length>0 && !bookmark.boardAttachmentList[0].video"
 						 :src="'${pageContext.request.contextPath}'+bookmark.boardAttachmentList[0].imageURL" >
@@ -458,11 +458,11 @@
 
 <!-- ---------------------------------게시물 상세보기 모달(게시물)-------------------------- -->
 
-<div v-if="detailView" class="container-fluid fullscreen" @click.self="closeDetail">
+<div v-if="detailView" class="container-fluid fullscreen" @click="closeDetail">
 <div class="p-4 mt-2 ms-4 d-flex justify-content-end">
 		<h2 class="btn btn-none" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
 	</div>
-	<div class="row fullscreen-container">
+	<div class="row fullscreen-container" @click.stop>
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
                 <div class="carousel-indicators">
@@ -470,18 +470,18 @@
                 </div>
                
                 <div class="carousel-inner">
-                  <div  v-for="(attach, index2) in myBoardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
+                  <div v-if="myBoardList[detailIndex].boardAttachmentList.length > 1" v-for="(attach, index2) in myBoardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
                   	<video  style="width:700px; height:700px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+attach.imageURL" v-if="attach.video"
 							:autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto"></video> 
                    	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" style="width:700px; height:700px;" v-else> 
                   </div>
                 </div>
                
-                <button class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="prev">
+                <button v-if="myBoardList[detailIndex].boardAttachmentList.length > 1" class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="prev">
                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Previous</span>
                 </button>
-                <button  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="next">
+                <button v-if="myBoardList[detailIndex].boardAttachmentList.length > 1"  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="next">
                   <span class="carousel-control-next-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Next</span>
                 </button> 
@@ -579,15 +579,15 @@
 	</div>
 </div>
 <!-- ---------------------------------게시물 상세보기 모달(북마크)-------------------------- -->
-<div v-if="detailView2" class="container-fluid fullscreen" @click.self="closeDetail2">
+<div v-if="detailView2" class="container-fluid fullscreen" @click="closeDetail2">
 <div class="p-4 mt-2 ms-4 d-flex justify-content-end">
 		<h2 class="btn btn-none" @click="closeDetail2" style="font-size: 30px; color:#FFFFFF;">X</h2>
 	</div>
-	<div class="row fullscreen-container">
+	<div class="row fullscreen-container" @click.stop>
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex2" class="carousel slide">
                 <div class="carousel-indicators">
-                  <button v-for="(attach, index2) in bookmarkMyPostList[detailIndex2].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex2" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
+                  <button v-if="bookmarkMyPostList[detailIndex2].boardAttachmentList.length > 1" v-for="(attach, index2) in bookmarkMyPostList[detailIndex2].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex2" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
                 </div>
                
                 <div class="carousel-inner">
@@ -598,11 +598,11 @@
                   </div>
                 </div>
                
-                <button class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex2" data-bs-slide="prev">
+                <button v-if="bookmarkMyPostList[detailIndex2].boardAttachmentList.length > 1" class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex2" data-bs-slide="prev">
                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Previous</span>
                 </button>
-                <button  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex2" data-bs-slide="next">
+                <button v-if="bookmarkMyPostList[detailIndex2].boardAttachmentList.length > 1"  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex2" data-bs-slide="next">
                   <span class="carousel-control-next-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Next</span>
                 </button> 
@@ -614,7 +614,7 @@
            		<div class="card-header">
            		    <div class="row">
            				<div class='col-10'>
-			           		<img class="profile" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+bookmarkMyPostList[detailIndex2].boardWithNickDto.imageURL">
+			           		<img class="profile" :src="'${pageContext.request.contextPath}'+bookmarkMyPostList[detailIndex2].boardWithNickDto.imageURL">
 		           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick"><b>{{bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick}}</b></a>
            				</div>
            				<div class="col d-flex justify-content-center align-items-center">
@@ -701,8 +701,9 @@
 
   
       <!-- Modal 창 영역 -->
+<!-- 이 계정 정보 -->
                    <div class="modal" tabindex="-1" role="dialog" id="modal03" data-bs-backdrop="static" ref="modal03" @click.self="hideModal">
-            		 <div class="modal-dialog" role="document">
+            		 <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
                 		<div class="modal-content">
                    		 	<div class="modal-header" style="display:flex; justify-content: center;">
                         		<h5 class="modal-title" style="text-align:center;">
@@ -721,7 +722,7 @@
 			                      <i class="fa-solid fa-location-dot"></i>&nbsp;&nbsp;
 			                      <h5>계정 기본 위치</h5>
 		                      </div>
-                      <p style="font-size:12px; color:gray;">한국</p>
+                      <p style="font-size:12px; color:gray;">{{location}}</p>
                    		</div>   
                         	</h5>
                     	</div>   
@@ -730,31 +731,40 @@
             		</div>
         		</div>
         
-        
+<!--    이 계정 정보 모달     -->
           <div class="modal" tabindex="-1" role="dialog" id="myOptionModal"
                             data-bs-backdrop="static"
                             ref="addtionModal" @click.self="hideModal2">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
                 <div class="modal-content">
-                    <div class="modal-header" style="display:flex; justify-content: center;">
-                        <a href="#" class="btn btn-default block" style="color:red;"  @click="blockModalShow">차단</a>
-                    </div>
+	                <div class="modal-body p-0">
+						<div class="row p-3">
+							<div class="col d-flex justify-content-center align-items-center">
+								<h5 class="modal-click-btn-negative" style="margin:0;" @click="blockModalShow">차단</h5>
+							</div>
+						</div>
+						<hr class="m-0">
+						<div class="row p-3" >
+							<div class="col d-flex justify-content-center align-items-center">
+								<h5 style="margin:0; cursor:pointer" @click="showReportMenuModal(${memberDto.memberNo},${memberDto.memberNo},'member')">신고</h5>
+							</div>
+						</div>
+						<hr class="m-0">
+						<div class="row p-3" >
+							<div class="col d-flex justify-content-center align-items-center">
+								<h5 style="margin:0; cursor:pointer" @click="accountView">이 계정 정보</h5>
+							</div>
+						</div>
+						<hr class="m-0">
+						<div class="row p-3" >
+							<div class="col d-flex justify-content-center align-items-center">
+								<h5 class="modal-click-btn-neutral" style="margin:0;" @click="hideModal2">취소</h5>
+							</div>
+						</div>
+					</div>
                      
-                       <div class="modal-header" style="display:flex; justify-content: center;">
-                        <div class="row" @click="showReportMenuModal(${memberDto.memberNo},${memberDto.memberNo},'member')">
-                        	<div class="col modal-btn-click-negative d-flex justify-content-center align-items-center">
-                        		<h5>신고</h5>
-                        	</div>
-                        </div>
 
-                    </div>
-                        <div class="modal-header" style="display:flex; justify-content: center;">
-                          <a @click="accountView">이 계정 정보</a>
-                    </div>
                    
-                 
-                        <button type="button" class="btn"
-                                data-bs-dismiss="modal">취소</button>
                    
                 </div>      
             </div>
@@ -764,7 +774,7 @@
           <div class="modal" tabindex="-1" role="dialog" id="blockModal"
                             data-bs-backdrop="static"
                             ref="blockModal" @click.self="blockModalHide">
-            <div class="modal-dialog" role="document" style="width:30%;">
+            <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%; width:30%">
                 <div class="modal-content">
                     <div class="modal-header" style="display:flex; justify-content: center; flex-direction: column;">
                     	<div class="row">
@@ -782,33 +792,33 @@
 	                     <div class="content" style="font-size:12px; text-align:center;">
 	                     </div>
                     </div>
-                     <div class="modal-header" style="display:flex; justify-content: center;" >
-                         <button type="button" class="btn" data-bs-dismiss="modal" style="color:red;">취소</button>
+                    <div class="modal-header align-items-center" style="display:flex; justify-content: center;">
+                          <h6 @click="blockUser" class="modal-click-btn-negative m-0">차단</h6>
+                    </div>
+                     <div class="modal-header align-items-center" style="display:flex; justify-content: center;" >
+                         <h6 class="modal-click-btn-neutral m-0" @click="blockModalHide" >취소</h6>
                     </div>
                    
-                    <div class="modal-header" style="display:flex; justify-content: center;">
-                          <a @click="blockUser">차단</a>
-                    </div>
                    
                 </div>      
             </div>
         </div>
         
-         <div class="modal" tabindex="-1" role="dialog" id="blockResultModal"
+         <div class="modal" tabindex="-1" role="dialog" id="blockResultModal" style="z-index:9999"
                             data-bs-backdrop="static"
                             ref="blockResultModal" @click.self="blockResultModalHide">
-            <div class="modal-dialog" role="document" style="width:30%;">
+            <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%; width:30%">
                 <div class="modal-content">
                     <div class="modal-header" style="display:flex; justify-content: center; flex-direction: column;">
                      <h5 class="modal-title" style="text-align:center;">
-                        ${memberDto.memberNick}님을 차단했습니다.
+                       {{reportBoardData[5]}}님을 차단했습니다.
                      </h5>
                      <div class="content" style="font-size:12px; text-align:center;">
                         <p style="font-size:12px; color:gray;">상대방의 프로필에서 언제든지 차단을 해제할 수 있습니다.</p>                    
                      </div>
                      </div>
                      <div class="model-header" style="text-align:center;">
-                     <button type="button" class="btn" data-bs-dismiss="modal" style="color:red;">닫기</button>   
+                     <button type="button" class="btn btn-default" data-bs-dismiss="modal" style="color:red;">닫기</button>   
                      </div>
                      
             </div>
@@ -816,38 +826,52 @@
       
         </div>
         
-        
+<!--   옵션 모달    -->
           <div class="modal" tabindex="-1" role="dialog" id="myOptionModal"
                             data-bs-backdrop="static"
                             ref="myOptionModal" @click.self="myOptionModalHide">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
                    <div class="modal-content">
-                        <div class="modal-header" style="display:flex; justify-content: center;">
-                          <a href="/member/setting" class="nomal">설정 및 개인정보</a>
-                       </div>
-                        <div class="modal-header" style="display:flex; justify-content: center;">
-                          <a href="/member/setting?page=2" class="nomal">알림</a>
-                       </div>
-                    
-                        <div class="modal-header" style="display:flex; justify-content: center;">
-                          <a href="/member/logout" class="nomal">로그아웃</a>
-                       </div>
-                        <div class="modal-header" style="display:flex; justify-content: center;">
-                          <a class="nomal" @click="deleteMemberModalShow">회원탈퇴</a>
-                       </div>
-         
-                        <button type="button" class="btn"
-                                data-bs-dismiss="modal" style="color:red;">취소</button>
-                   
+	                 <div class="modal-body p-0">
+						<div class="row p-3">
+							<div class="col d-flex justify-content-start align-items-center">
+								<a href="/member/setting" class="nomal"><h5 style="margin:0; cursor:default">설정 및 개인정보</h5></a>
+							</div>
+						</div>
+						<hr class="m-0">
+						<div class="row p-3" >
+							<div class="col d-flex justify-content-center align-items-center">
+								<a href="/member/setting?page=2" class="nomal"><h5 style="margin:0;">알림</h5></a>
+							</div>
+						</div>
+						<hr class="m-0">
+						<div class="row p-3" >
+							<div class="col d-flex justify-content-center align-items-center">
+								<a href="/member/logout" class="nomal"><h5 style="margin:0;">로그아웃</h5></a>
+							</div>
+						</div>
+						<hr class="m-0">
+						<div class="row p-3" >
+							<div class="col d-flex justify-content-center align-items-center">
+								<a class="nomal" @click="deleteMemberModalShow"><h5 class="modal-click-btn-negative" style="margin:0;">회원탈퇴</h5></a>
+							</div>
+						</div>
+						<hr class="m-0">
+						<div class="row p-3" >
+							<div class="col d-flex justify-content-center align-items-center">
+								<a class="nomal" @click="myOptionModalHide"><h5 class="modal-click-btn-neutral" style="margin:0;">취소</h5></a>
+							</div>
+						</div>
+					</div>
                 </div>      
             </div>
         </div>
-        
+<!--   팔로워 모달    --> 
         
           <div class="modal" tabindex="-1" role="dialog" id="followerModal"
                             data-bs-backdrop="static"
                             ref="followerModal" @click.self="followerModalHide">	
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
                    <div class="modal-content" style="max-width:400px; min-height:400px; max-height:400px;">
                        <div class="modal-header text-center" style="display:flex; justify-content: center; height:50px;">
 							<h5 class="modal-title">팔로워</h5>
@@ -892,7 +916,7 @@
 							</div>
 						</template>
 											<!-- 비공개 계정 || 친구에게만 공개 && 팔로우 목록에 있다면 -->
-						<template v-else-if="(hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)) && ${memberNo} != item.memberNo">
+						<template v-else-if="(hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)) && followCheckIf(item.memberNo)">
 						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
 							  <div style="width:500px; margin-left:160px;">
 							    <img src="${pageContext.request.contextPath}/static/image/lock.png" width="60" height="60">
@@ -903,9 +927,11 @@
 						</template>
 					   
 					    <template v-else>
-					      <div v-for="(post,index) in hoverPostList2" :key="post.id">
+					      <div v-for="(post,index) in hoverPostList2" :key="index">
 					        <!-- 게시물 정보 출력 -->
-					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.attachmentNo" width="127" height="150" style="margin-right:3px;">
+					        	<video  style="width:127px; height:150px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+post.boardAttachmentList[0].imageURL"
+							:autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto" v-if="post.boardAttachmentList[0].video"></video>
+					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' +post.boardAttachmentList[0].attachmentNo" width="127" height="150" style="margin-right:3px;" v-else>
 					      </div>
 					    </template>
                     	  
@@ -945,7 +971,7 @@
           <div class="modal" tabindex="-1" role="dialog" id="followModal"
                             data-bs-backdrop="static"
                             ref="followModal" @click.self="followModalHide">
-             <div class="modal-dialog" role="document">
+             <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
     <div class="modal-content" style="max-width:400px; min-height:200px; max-height:400px;">
       <div class="modal-header text-center" style="display:flex; justify-content: center; height:50px;">
         <h5 class="modal-title" >팔로잉</h5>
@@ -1012,7 +1038,7 @@
 						
 						
 						<!-- 비공개 계정 || 친구에게만 공개 && 팔로우 목록에 있다면 -->
-						<template v-else-if="(hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)) && ${memberNo} != item.memberNo">
+						<template v-else-if="(hoverSettingHide === 3 || (hoverSettingHide === 2 && hoverFollowerCheck == true)) && followCheckIf(item.followFollower)">
 						  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 150px; text-align: center;">
 							  <div style="width:500px; margin-left:160px;">
 							    <img src="${pageContext.request.contextPath}/static/image/lock.png" width="60" height="60">
@@ -1025,9 +1051,11 @@
 						
 					   
 					    <template v-else>
-					      <div v-for="post in hoverPostList" :key="post.id">
+					      <div v-for="(post,index) in hoverPostList" :key="index">
 					        <!-- 게시물 정보 출력 -->
-					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.attachmentNo" width="127" height="150" style="margin-right:3px;">
+					        	<video  style="width:127px; height:150px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+post.boardAttachmentList[0].imageURL"
+							:autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto" v-if="post.boardAttachmentList[0].video"></video>
+					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.boardAttachmentList[0].attachmentNo" width="127" height="150" style="margin-right:3px;" v-else>
 					      </div>
 					    </template>
                     	  
@@ -1152,7 +1180,7 @@
 <!-- 팔로우 모달 목록 끝 -->
 <!-- 차단 관련 모달 -->
 <!-- ---------------------------------신고 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal" style="z-index:9999">
+	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal" style="z-index:8888">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content" >
 				<div class="modal-header">
@@ -1220,7 +1248,7 @@
 	</div>
 	</div>
 <!-- ---------------------------------추가 메뉴 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="additionalMenuModal" data-bs-backdrop="static" ref="additionalMenuModal" style="z-index:9999">
+	<div class="modal" tabindex="-1" role="dialog" id="additionalMenuModal" data-bs-backdrop="static" ref="additionalMenuModal" style="z-index:7777">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-body p-0">
@@ -1263,7 +1291,7 @@
 		</div>
 	</div>
 <!-- ---------------------------------신고 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal" style="z-index:9999">
+	<div class="modal" tabindex="-1" role="dialog" id="reportMenuModal" data-bs-backdrop="static" ref="reportMenuModal" style="z-index:8888">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content" >
 				<div class="modal-header">
@@ -1292,7 +1320,7 @@
 		</div>
 	</div>
 <!-- ---------------------------------신고 후 차단 모달-------------------------- -->
-	<div class="modal" tabindex="-1" role="dialog" id="blockModal2" data-bs-backdrop="static" ref="blockModal2" style="z-index:9999">
+	<div class="modal" tabindex="-1" role="dialog" id="blockModal2" data-bs-backdrop="static" ref="blockModal2" style="z-index:8888">
 		<div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
 			<div class="modal-content">
 				<div class="modal-body">
@@ -1317,8 +1345,8 @@
 						</div>
 					</div>
 					<div class="row mt-2">
-						<div class="col d-flex p-3 justify-content-center" @click="blockUser" style="color:#dc3545; cursor:pointer" v-if="reportBoardData[3]!=null && reportBoardData[3].length>0">
-							<h5 style="margin:0;">{{reportBoardData[3]}}님 차단</h5>
+						<div class="col d-flex p-3 justify-content-center" @click="blockUser" style="color:#dc3545; cursor:pointer" v-if="reportBoardData[5]!=null && reportBoardData[5].length>0">
+							<h5 style="margin:0;">{{reportBoardData[5]}}님 차단</h5>
 						</div>
 					</div>
 				</div>
@@ -1335,7 +1363,8 @@
       
       
 
-
+<!-- 카카오맵 CDN -->
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e45b9604d6c5aa25785459639db6e025&libraries=services"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/vue@next"></script>
       <script>
@@ -1424,6 +1453,9 @@
 			replyParent:0,
 			replyContent:"",
 			placeholder:"댓글 입력..",
+			//게시물 작성자 팔로우 리스트
+			followList : [],
+			followerList : [],
 			
 		  
 			
@@ -1477,6 +1509,7 @@
 	            videoAuto:false,
             },
             slideOffset: 0, // 슬라이드 오프셋 값
+            location:"",//지역
          };
       },
       computed: {
@@ -1552,6 +1585,8 @@
                   this.addtionModal.hide();
               },
               blockModalShow(){
+            	  this.reportBoardData[5]="${memberDto.memberNick}";
+            	  this.reportBoardData[1]=${memberDto.memberNo};
                   if(this.blockModal == null) return;
                   this.addtionModal.hide();
                    this.blockModal.show();      
@@ -1875,6 +1910,14 @@
 		        this.myFollowList.push(item);
 		      }
 		    }
+		    
+			 // 로그인 유저 첫줄에 출력
+		    const memberNo = ${memberNo};
+		    const memberNoIndex = this.myFollowList.findIndex(followerItem => followerItem.followFollower === memberNo);
+		    if (memberNoIndex !== -1) {
+		      const existingItem = this.myFollowList.splice(memberNoIndex, 1)[0];
+		      this.myFollowList.unshift(existingItem);
+		    }
 		
 		    this.followPage++;
 		
@@ -1915,6 +1958,14 @@
 		        this.myFollowerList.push(item);
 		      }
 		    }
+		    // 로그인 유저 첫줄에 출력
+		    const memberNo = ${memberNo};
+		    const memberNoIndex = this.myFollowerList.findIndex(followerItem => followerItem.memberNo === memberNo);
+		    if (memberNoIndex !== -1) {
+		      const existingItem = this.myFollowerList.splice(memberNoIndex, 1)[0];
+		      this.myFollowerList.unshift(existingItem);
+		    }
+		    
 		
 		    this.followerPage++;
 	
@@ -1927,7 +1978,7 @@
 		    console.error("Error occurred during followerListPaging: ", error);
 		  }
 		  
-		  this.followerLoading = false;
+		  this.followerLoading	 = false;
 		},
 		
            	
@@ -2013,6 +2064,7 @@
            	      this.hoverSettingHide = settingHide;
            	      this.hoverFollowerCheck = this.followCheckIf(item.memberNo);
            	      this.hoverFollowCheck = this.followCheckIf(item.followFollower);
+           	  	  
            	    })
            	    .catch(error => {
            	      console.error(error);
@@ -2129,9 +2181,17 @@
              
       
            
-             //댓글 등록
+           //댓글 등록
              async replyInsert(index) {
              	  const boardNo = this.myBoardList[index].boardWithNickDto.boardNo;
+             	  const memberNo = this.myBoardList[index].boardWithNickDto.memberNo;
+             	  const loginNo = parseInt(this.DmMemberNo);
+             	  
+             	  //세팅값 불러오기
+             	  const response = await axios.get(contextPath+"/rest/member/setting/" + memberNo);
+             	  const set = response.data.settingAllowReply;
+             	  //console.log(set);
+             	  //console.log(memberNo, loginNo);       	  
              	  
              	  const requestData = {
              	    replyOrigin: boardNo,
@@ -2140,34 +2200,142 @@
              	  };
              	  this.replyContent='';
              	  
-             	  try {
+             	  //모든 사람 작성 가능한 경우
+             	  if(set == 0){
              	    const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
-             	    this.replyLoad(index);	    
-             	  } 
-             	  catch (error) {
-             	    console.error(error);
+             	    this.replyLoad(index);	            		  
              	  }
+             	  //내가 팔로우 하는 사람만 작성 가능한 경우
+             	  else if(set == 1){
+             		  //게시물 작성자 팔로우 로드
+             		  await this.loadFollow(memberNo);
+                   	  if(loginNo == memberNo) this.followList.push(loginNo); 
+             		  
+                   	  if(this.followList.includes(loginNo)){
+             			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+                   	      this.replyLoad(index);
+             		  }
+             		  else{
+             			  alert("댓글 사용이 불가능합니다.");
+             		  }
+             	  }
+             	  //팔로워만 댓글 작성 가능한 경우
+             	  else if(set == 2){
+             		  await this.loadFollower(memberNo);
+                   	  if(loginNo == memberNo) this.followerList.push(loginNo); 
+             		  //console.log(this.followerList);
+             		  if(this.followerList.includes(loginNo)){
+             			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+                   	      this.replyLoad(index);
+             		  }
+             		  else{
+             			  alert("댓글 사용이 불가능합니다.");
+             		  }
+             	  }
+             	  else{
+             		  //게시물 작성자 팔로우 로드
+             		  await this.loadFollow(memberNo);
+                   	  if(loginNo == memberNo) this.followList.push(loginNo); 
+             		  //게시물 작성자 팔로워 로드
+                   	  await this.loadFollower(memberNo);
+                   	  if(loginNo == memberNo) this.followerList.push(loginNo); 
+             		  
+                   	  if(this.followList.includes(loginNo) || this.followerList.includes(loginNo)){
+             			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+                   	      this.replyLoad(index);
+             		  }
+             		  else{
+             			  alert("댓글 사용이 불가능합니다.");
+             		  }
+             	  }
+             	   
              },
              
-             //댓글 등록(북마크)
              async replyInsert2(index) {
-             	  const boardNo = this.bookmarkMyPostList[index].boardWithNickDto.boardNo;
-             	  
-             	  const requestData = {
-             	    replyOrigin: boardNo,
-             	    replyContent: this.replyContent,
-             	    replyParent : this.replyParent
-             	  };
-             	  this.replyContent='';
-             	  
-             	  try {
-             	    const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
-             	    this.replyLoad2(index);	    
-             	  } 
-             	  catch (error) {
-             	    console.error(error);
-             	  }
+            	  const boardNo = this.bookmarkMyPostList[index].boardWithNickDto.boardNo;
+            	  const memberNo = this.bookmarkMyPostList[index].boardWithNickDto.memberNo;
+            	  const loginNo = parseInt(this.DmMemberNo);
+            	  
+            	  //세팅값 불러오기
+            	  const response = await axios.get(contextPath+"/rest/member/setting/" + memberNo);
+            	  const set = response.data.settingAllowReply;
+            	  console.log(set);
+            	  console.log(memberNo, loginNo);       	  
+            	  
+            	  const requestData = {
+            	    replyOrigin: boardNo,
+            	    replyContent: this.replyContent,
+            	    replyParent : this.replyParent
+            	  };
+            	  this.replyContent='';
+            	  
+            	  //모든 사람 작성 가능한 경우
+            	  if(set == 0){
+            	    const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+            	    this.replyLoad2(index);	            		  
+            	  }
+            	  //내가 팔로우 하는 사람만 작성 가능한 경우
+            	  else if(set == 1){
+            		  //게시물 작성자 팔로우 로드
+            		  await this.loadFollow(memberNo);
+                  	  if(loginNo == memberNo) this.followList.push(loginNo); 
+            		  console.log(this.followList);
+                  	  if(this.followList.includes(loginNo)){
+            			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+                  	      this.replyLoad2(index);
+                  	      this.followList = [];
+            		  }
+            		  else{
+            			  alert("댓글 사용이 불가능합니다.");
+            		  }
+            	  }
+            	  //팔로워만 댓글 작성 가능한 경우
+            	  else if(set == 2){
+            		  await this.loadFollower(memberNo);
+                  	  if(loginNo == memberNo) this.followerList.push(loginNo); 
+            		  //console.log(this.followerList);
+            		  if(this.followerList.includes(loginNo)){
+            			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+                  	      this.replyLoad2(index);
+                  	      this.followerList = [];
+            		  }
+            		  else{
+            			  alert("댓글 사용이 불가능합니다.");
+            		  }
+            	  }
+            	  else{
+            		  //게시물 작성자 팔로우 로드
+            		  await this.loadFollow(memberNo);
+                  	  if(loginNo == memberNo) this.followList.push(loginNo); 
+            		  //게시물 작성자 팔로워 로드
+                  	  await this.loadFollower(memberNo);
+                  	  if(loginNo == memberNo) this.followerList.push(loginNo); 
+            		  
+                  	  if(this.followList.includes(loginNo) || this.followerList.includes(loginNo)){
+            			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+                  	      this.replyLoad2(index);
+                  	      this.followList = [];
+                  	      this.followerList = [];
+            		  }
+            		  else{
+            			  alert("댓글 사용이 불가능합니다.");
+            		  }
+            	  }
+            	   
+            },
+             
+             //댓글 가능 팔로우 체크
+             async loadFollow(memberNo) {
+             	const resp = await axios.post(contextPath + "/rest/follow/getFollow/" + memberNo);
+             	this.followList.push(...resp.data);
              },
+             
+             //댓글 가능 팔로워 체크
+             async loadFollower(memberNo) {
+             	const resp = await axios.post(contextPath + "/rest/follow/getFollower/" + memberNo);
+             	this.followerList.push(...resp.data);
+             },
+             
              
           
      
@@ -2260,13 +2428,15 @@
              	this.detailView = true;
              	this.detailIndex = index;
              	this.replyLoad(index);
+             	document.body.style.overflow = "hidden";
              },
              
-             //상세보기 모달창 열기
+             //상세보기 모달창 열기(북마크)
              detailViewOn2(index) {
              	this.detailView2 = true;
              	this.detailIndex2 = index;
              	this.replyLoad2(index);
+             	document.body.style.overflow = "hidden";
              },
              
             
@@ -2275,6 +2445,7 @@
              closeDetail() {
              	this.detailView = false;
              	this.replyList = [];
+             	document.body.style.overflow = "unset";
              },
              
 
@@ -2282,6 +2453,7 @@
              closeDetail2() {
              	this.detailView2 = false;
              	this.replyList = [];
+             	document.body.style.overflow = "unset";
              },
              
              //로그인한 회원이 좋아요 눌렀는지 확인
@@ -2545,16 +2717,20 @@
     				const resp = await axios.post(contextPath+"/rest/report/", data)
     				this.hideReportMenuModal();
     				if(resp.data.length!=0){
-    					this.reportBoardData[3] = resp.data.memberNick;
+    					this.reportBoardData[5] = resp.data.memberNick;
     				}
     				this.showBlockModal();
     			},
         		//차단
         		async blockUser(){
-        			const resp = await axios.put(contextPath+"/rest/block/"+${memberDto.memberNo});
+        			const resp = await axios.put(contextPath+"/rest/block/"+this.reportBoardData[1]);
         			if(resp.data){
+        				this.hideBlockModal();
         				this.blockModalHide();
         				this.blockResultModalShow();
+        			}
+        			else{
+        				this.blockModalHide();
         			}
         		},
         		showAdditionalMenuModal(boardNo, reportMemberNo, reportTable, index, detailIndex){
@@ -2651,6 +2827,23 @@
         				location.href="/member/login";	
         		},	
         		
+            	//주소 알아오는 메소드
+            	searchAddrFromCoords(callback) {
+        		    // 좌표로 행정동 주소 정보를 요청합니다
+        		    this.geocoder = new kakao.maps.services.Geocoder();
+        		    this.geocoder.coord2RegionCode(${memberDto.memberLon}, ${memberDto.memberLat}, callback);
+        		},
+        		displayCenterInfo(result, status) {
+        		    if (status === kakao.maps.services.Status.OK) {
+        		        for(var i = 0; i < result.length; i++) {
+        		            // 행정동의 region_type 값은 'H' 이므로
+        		            if (result[i].region_type === 'H') {
+        		                this.location = result[i].address_name;
+        		                break;
+        		            }
+        		        }
+        		    }
+        		},
         		/*----------------------DM으로 이동 및 채팅방 생성----------------------*/
         		async moveToDmPage(inviteeNo){
         		    try {
@@ -2711,6 +2904,7 @@
     	    .catch((error) => {
     	      console.error("Error occurred during initialization: ", error);
     	    });
+    	  this.searchAddrFromCoords(this.displayCenterInfo);
     	},
       watch:{
     	// percent가 변하면 percent의 값을 읽어와서 80% 이상인지 판정

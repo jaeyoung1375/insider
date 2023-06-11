@@ -1,8 +1,6 @@
 package com.kh.insider.restcontroller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -170,11 +168,21 @@ public class FollowRestController {
 //	}
 	
 	@PostMapping("/check")
-	public List<Long> followcheck(
+	public List<Long> followcheckHome(
 			HttpSession session) {
 		long memberNo = (Long)session.getAttribute("memberNo");
 		
-		 return followRepo.check(memberNo);
+		 return followRepo.checkFollow(memberNo);
+	}
+	
+	@PostMapping("/getFollow/{memberNo}")
+	public List<Long> followCheck(@PathVariable long memberNo){
+		return followRepo.checkFollow(memberNo);
+	}
+	
+	@PostMapping("/getFollower/{memberNo}")
+	public List<Long> followerCheck(@PathVariable long memberNo){
+		return followRepo.checkFollower(memberNo);
 	}
 	
 	@PostMapping("/hashTagCheck")

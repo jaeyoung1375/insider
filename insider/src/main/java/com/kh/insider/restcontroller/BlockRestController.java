@@ -29,9 +29,15 @@ public class BlockRestController {
 		BlockDto blockDto = new BlockDto();
 		blockDto.setMemberNo(memberNo);
 		blockDto.setBlockNo(blockNo);
+		BlockDto checkDto = blockRepo.selectOne(blockDto);
+		if(checkDto==null) {
+			blockRepo.insert(blockDto);
+			return true;
+		}
+		else {
+			return false;
+		}
 		
-		blockRepo.insert(blockDto);
-		return true;
 	}
 	@GetMapping("/")
 	public List<BlockWithProfileDto> blockList(HttpSession session) {

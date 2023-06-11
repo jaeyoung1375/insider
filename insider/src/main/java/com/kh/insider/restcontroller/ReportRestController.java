@@ -110,49 +110,4 @@ public class ReportRestController {
 			return null;
 		}
 	}
-	
-	@GetMapping("/")
-	public ReportResponseVO selectList(@ModelAttribute ReportSearchVO vo){
-		//전체 게시물 수 반환
-		int count = reportManagementRepo.selectCount(vo);
-		vo.setCount(count);
-		ReportResponseVO responseVO = new ReportResponseVO();
-		responseVO.setReportList(reportManagementRepo.selectList(vo));
-		
-		PaginationVO paginationVO = new PaginationVO();
-		paginationVO.setCount(count);
-		paginationVO.setPage(vo.getPage());
-		paginationVO.setSize(vo.getSize());
-		
-		responseVO.setPaginationVO(paginationVO);
-		return responseVO;
-	}
-	@GetMapping("/detail")
-	public ReportDetailVO selectReportDetailCount(@ModelAttribute ReportDto reportDto){
-		ReportDetailVO reportDetailVO = new ReportDetailVO();
-		reportDetailVO.setReportDetailCountVO(reportRepo.selectDetailCount(reportDto));
-		
-		switch(reportDto.getReportTable()) {
-		case "board":
-			reportDetailVO.setBoardListVO(boardRepo.selectOneBoard((int)reportDto.getReportTableNo()));
-			break;
-		case "member":
-			ReportMemberDetailVO reportMemberDetailVO = new ReportMemberDetailVO();
-			reportMemberDetailVO.setBoardList(boardRepo.selectListReported(reportDto.getMemberNo()));
-			reportMemberDetailVO.setReplyList(replyRepo.selectListReported(reportDto.getMemberNo()));
-			reportDetailVO.setMemberVO(reportMemberDetailVO);
-			break;
-		case "reply":
-			ReplyDto replyDto = replyRepo.selectOne((int)reportDto.getReportTableNo());
-			reportDetailVO.setReplyList(replyRepo.selectList(replyDto.getReplyOrigin()));
-			break;
-		}
-		return reportDetailVO;
-	}
-	//reply no로 리스트 반환
-	@GetMapping("/detail/{replyNo}")
-	public List<ReplyDto> selectReplyList(@PathVariable int replyNo){
-		ReplyDto replyDto = replyRepo.selectOne(replyNo);
-		return replyRepo.selectList(replyDto.getReplyOrigin());
-	}
 }
