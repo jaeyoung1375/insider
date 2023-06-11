@@ -294,7 +294,7 @@
 									          	<img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
 									          	{{ notification.memberNick }} 님이
 									          	</a>
-									          	<a class="nav-link" @click="loadBoard(notification.boardNo),detailViewOn(index)">
+									          	<a class="nav-link" @click="loadBoard(notification.boardNo),detailViewOn(index)" style="cursor: pointer;">
 									          	<p v-if="notification.type == 1">게시글을 좋아요 하였습니다.</p>
 									          	<p v-if="notification.type == 2">게시글에 댓글을 달았습니다.</p>
 									          	<p v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</p>
@@ -315,7 +315,7 @@
 											      <img class="rounded-circle" width="50" height="50" :src="'${pageContext.request.contextPath}'+notification.imageURL">
 											      {{ notification.memberNick }} 님이
 											    </a>
-										        <a class="nav-link"  @click="loadBoard(notification.boardNo),detailViewOn(index)">
+										        <a class="nav-link"  @click="loadBoard(notification.boardNo),detailViewOn(index)" style="cursor: pointer;">
 									          	<span v-if="notification.type == 1">게시글을 좋아요 하였습니다.</span>
 									          	<span v-if="notification.type == 2">게시글에 댓글을 달았습니다.</span>
 									          	<span v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</span>
@@ -392,11 +392,11 @@
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
                 <div class="carousel-indicators">
-                  <button v-for="(attach, index2) in boardData[0].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
+                  <button v-if="boardData[0].boardAttachmentList.length > 1"  v-for="(attach, index2) in boardData[0].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
                 </div>
                
                 <div class="carousel-inner">
-                  <div  v-for="(attach, index2) in boardData[0].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
+                  <div v-for="(attach, index2) in boardData[0].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
                    	<video  style="width:700px; height:700px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+attach.imageURL" v-if="attach.video"
 							:autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto" 
 							@dblclick="likePost(boardData[0].boardWithNickDto.boardNo,detailIndex)" ></video>
@@ -405,11 +405,11 @@
                   </div>
                 </div>
                
-                <button class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="prev">
+                <button v-if="boardData[0].boardAttachmentList.length > 1" class="carousel-control-prev" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="prev">
                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Previous</span>
                 </button>
-                <button  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="next">
+                <button v-if="boardData[0].boardAttachmentList.length > 1"  class="carousel-control-next" type="button" :data-bs-target="'#detailCarousel' + detailIndex" data-bs-slide="next">
                   <span class="carousel-control-next-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Next</span>
                 </button>
@@ -433,7 +433,7 @@
 					
 					
 					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text in-header" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
-						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="text-decoration:none; position:relative;">
+						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="color:black; text-decoration:none; position:relative;">
 							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="45" height="45" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
 							<img v-else src="https://via.placeholder.com/45x45?text=profile" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
 							
@@ -572,6 +572,7 @@
 	        intervalId: null,
 	        storedNotifications: [],
 	        memberNick : "${socialUser.memberNick}",
+	        loginMemberNo:"${sessionScope.memberNo}", // 로그인한 세션 값
 	        
           //dm 읽지 않은 메세지 수
           hasUnreadMessages: false,
@@ -584,6 +585,9 @@
 			replyParent:0,
 			replyContent:"",
 			placeholder:"댓글 입력..",
+	      	//게시물 작성자 팔로우 리스트
+			followList : [],
+			followerList : [],
 	      	//게시물 좋아요 기능 전용 변수
 			boardLikeCountOne:0, // 좋아요 수를 저장할 변수
             isLikedOne : false, // 로그인 회원이 좋아요 체크 여부
@@ -708,9 +712,17 @@
 	        	this.replyList=[...resp.data];
 	        },
 	        
-	        //댓글 등록
-	        async replyInsert() {
+	      //댓글 등록
+	        async replyInsert(index) {
 	        	  const boardNo = this.boardData[0].boardWithNickDto.boardNo;
+	        	  const memberNo = this.boardData[0].boardWithNickDto.memberNo;
+	        	  const loginNo = parseInt(this.loginMemberNo);
+	        	  
+	        	  //세팅값 불러오기
+	        	  const response = await axios.get(contextPath+"/rest/member/setting/" + memberNo);
+	        	  const set = response.data.settingAllowReply;
+	        	  //console.log(set);
+	        	  //console.log(memberNo, loginNo);       	  
 	        	  
 	        	  const requestData = {
 	        	    replyOrigin: boardNo,
@@ -719,13 +731,71 @@
 	        	  };
 	        	  this.replyContent='';
 	        	  
-	        	  try {
+	        	  //모든 사람 작성 가능한 경우
+	        	  if(set == 0){
 	        	    const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
-	        	    this.replyLoad(boardNo);	    
-	        	  } 
-	        	  catch (error) {
-	        	    console.error();
+	        	    this.replyLoad(boardNo);	            		  
 	        	  }
+	        	  //내가 팔로우 하는 사람만 작성 가능한 경우
+	        	  else if(set == 1){
+	        		  //게시물 작성자 팔로우 로드
+	        		  await this.loadFollow(memberNo);
+	              	  if(loginNo == memberNo) this.followList.push(loginNo); 
+	        		  
+	              	  if(this.followList.includes(loginNo)){
+	        			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+	              	      this.replyLoad(boardNo); 
+	              	      this.followList = [];
+	        		  }
+	        		  else{
+	        			  alert("댓글 사용이 불가능합니다.");
+	        		  }
+	        	  }
+	        	  //팔로워만 댓글 작성 가능한 경우
+	        	  else if(set == 2){
+	        		  await this.loadFollower(memberNo);
+	              	  if(loginNo == memberNo) this.followerList.push(loginNo); 
+	        		  //console.log(this.followerList);
+	        		  if(this.followerList.includes(loginNo)){
+	        			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+	              	      this.replyLoad(boardNo);
+                	      this.followerList = [];
+	        		  }
+	        		  else{
+	        			  alert("댓글 사용이 불가능합니다.");
+	        		  }
+	        	  }
+	        	  else{
+	        		  //게시물 작성자 팔로우 로드
+	        		  await this.loadFollow(memberNo);
+	              	  if(loginNo == memberNo) this.followList.push(loginNo); 
+	        		  //게시물 작성자 팔로워 로드
+	              	  await this.loadFollower(memberNo);
+	              	  if(loginNo == memberNo) this.followerList.push(loginNo); 
+	        		  
+	              	  if(this.followList.includes(loginNo) || this.followerList.includes(loginNo)){
+	        			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
+	              	      this.replyLoad(boardNo);
+	              	      this.followList = [];
+                	      this.followerList = [];
+	        		  }
+	        		  else{
+	        			  alert("댓글 사용이 불가능합니다.");
+	        		  }
+	        	  }
+	        	   
+	        },
+	        
+	        //댓글 가능 팔로우 체크
+	        async loadFollow(memberNo) {
+	        	const resp = await axios.post(contextPath + "/rest/follow/getFollow/" + memberNo);
+	        	this.followList.push(...resp.data);
+	        },
+	        
+	        //댓글 가능 팔로워 체크
+	        async loadFollower(memberNo) {
+	        	const resp = await axios.post(contextPath + "/rest/follow/getFollower/" + memberNo);
+	        	this.followerList.push(...resp.data);
 	        },
 	        
 	        //댓글 삭제
