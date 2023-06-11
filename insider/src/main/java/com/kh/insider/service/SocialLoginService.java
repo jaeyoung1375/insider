@@ -18,7 +18,7 @@ public interface SocialLoginService {
 	public KakaoProfileVO kakaoLogin(String code, KakaoResponseVO oAuthToken) throws URISyntaxException;
 	
 	// 카카오 서비스 탈퇴
-	public void kakaoDelete(String accessToken) throws URISyntaxException;
+	public void kakaoDelete(long memberNo) throws URISyntaxException;
 	
 	// 구글 토큰 발급
 	public GoogleResponseVO googleTokenCreate(String code) throws URISyntaxException;

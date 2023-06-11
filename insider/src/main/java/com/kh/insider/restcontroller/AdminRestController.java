@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,14 +17,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.ForbiddenDto;
+import com.kh.insider.dto.MemberSuspensionDto;
+import com.kh.insider.dto.MemberWithSuspensionDto;
+import com.kh.insider.dto.ReplyDto;
+import com.kh.insider.dto.ReportDto;
+import com.kh.insider.dto.ReportListDto;
 import com.kh.insider.dto.ReportResultDto;
+import com.kh.insider.dto.TagDto;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.BoardTagRepo;
 import com.kh.insider.repo.ForbiddenRepo;
 import com.kh.insider.repo.MemberRepo;
 import com.kh.insider.repo.MemberStatsRepo;
+import com.kh.insider.repo.MemberSuspensionRepo;
 import com.kh.insider.repo.MemberWithProfileRepo;
 import com.kh.insider.repo.ReplyRepo;
+import com.kh.insider.repo.ReportListRepo;
+import com.kh.insider.repo.ReportManagementRepo;
 import com.kh.insider.repo.ReportRepo;
 import com.kh.insider.repo.ReportResultRepo;
 import com.kh.insider.repo.SearchRepo;
@@ -40,8 +50,13 @@ import com.kh.insider.vo.MemberStatsSearchVO;
 import com.kh.insider.vo.MemberWithProfileResponseVO;
 import com.kh.insider.vo.MemberWithProfileSearchVO;
 import com.kh.insider.vo.PaginationVO;
+import com.kh.insider.vo.ReportDetailVO;
+import com.kh.insider.vo.ReportMemberDetailVO;
+import com.kh.insider.vo.ReportResponseVO;
+import com.kh.insider.vo.ReportSearchVO;
 import com.kh.insider.vo.SearchStatsSearchVO;
 import com.kh.insider.vo.SearchStatsVO;
+import com.kh.insider.vo.UpdateReportContentVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -71,6 +86,12 @@ public class AdminRestController {
 	private MemberRepo memberRepo;
 	@Autowired
 	private ReplyRepo replyRepo;
+	@Autowired
+	private ReportListRepo reportListRepo;
+	@Autowired
+	private MemberSuspensionRepo memberSuspensionRepo;
+	@Autowired
+	private ReportManagementRepo reportManagementRepo;
 	
 	//관리자페이지 리스트 출력
 	@GetMapping("/board/list")
@@ -227,5 +248,96 @@ public class AdminRestController {
 		int memberLevel = (int)session.getAttribute("memberLevel");
 		if(memberLevel==0) return;
 		forbiddenRepo.delete(forbiddenWord);
+	}
+	
+	//사용가능 태그 설정
+	@PutMapping("/tag")
+	public int changeAvailable(@RequestBody TagDto tagDto) {
+		TagDto oldTagDto = tagRepo.selectOne(tagDto.getTagName());
+		int available = oldTagDto.getTagAvailable();
+		int newAvailable=0;
+		if(available==0) {
+			newAvailable=1;
+		}
+		tagDto.setTagAvailable(newAvailable);
+		return tagRepo.updateAvailable(tagDto);
+	}
+	//리포트 리스트 입력, 수정, 삭제
+	@DeleteMapping("/reportContent/{reportListNo}")
+	public void delete(@PathVariable int reportListNo) {
+		reportListRepo.delete(reportListNo);
+	}
+	@PostMapping("/reportContent/")
+	public void insert(@RequestBody ReportListDto reportListDto) {
+		reportListRepo.insert(reportListDto);
+	}
+	@PutMapping("/reportContent/")
+	public void update(@RequestBody UpdateReportContentVO updateReportContentVO) {
+		memberSuspensionRepo.updateReportContent(updateReportContentVO);
+		reportListRepo.update(updateReportContentVO);
+		reportRepo.updateReportContent(updateReportContentVO);
+	}
+	//신고 관리
+	@GetMapping("/report/")
+	public ReportResponseVO selectList(@ModelAttribute ReportSearchVO vo){
+		//전체 게시물 수 반환
+		int count = reportManagementRepo.selectCount(vo);
+		vo.setCount(count);
+		ReportResponseVO responseVO = new ReportResponseVO();
+		responseVO.setReportList(reportManagementRepo.selectList(vo));
+		
+		PaginationVO paginationVO = new PaginationVO();
+		paginationVO.setCount(count);
+		paginationVO.setPage(vo.getPage());
+		paginationVO.setSize(vo.getSize());
+		
+		responseVO.setPaginationVO(paginationVO);
+		return responseVO;
+	}
+	
+	@GetMapping("/report/detail")
+	public ReportDetailVO selectReportDetailCount(@ModelAttribute ReportDto reportDto){
+		ReportDetailVO reportDetailVO = new ReportDetailVO();
+		reportDetailVO.setReportDetailCountVO(reportRepo.selectDetailCount(reportDto));
+		
+		switch(reportDto.getReportTable()) {
+		case "board":
+			reportDetailVO.setBoardListVO(boardRepo.selectOneBoard((int)reportDto.getReportTableNo()));
+			break;
+		case "member":
+			ReportMemberDetailVO reportMemberDetailVO = new ReportMemberDetailVO();
+			reportMemberDetailVO.setBoardList(boardRepo.selectListReported(reportDto.getMemberNo()));
+			reportMemberDetailVO.setReplyList(replyRepo.selectListReported(reportDto.getMemberNo()));
+			reportDetailVO.setMemberVO(reportMemberDetailVO);
+			break;
+		case "reply":
+			ReplyDto replyDto = replyRepo.selectOne((int)reportDto.getReportTableNo());
+			reportDetailVO.setReplyList(replyRepo.selectList(replyDto.getReplyOrigin()));
+			break;
+		}
+		return reportDetailVO;
+	}
+	//정지 관리
+	@PostMapping("/suspension/")
+	public MemberWithSuspensionDto insert(@RequestBody MemberSuspensionDto  memberSuspensionDto) {
+		if(memberSuspensionRepo.selectOne(memberSuspensionDto.getMemberNo())==null) {
+			memberSuspensionRepo.insert(memberSuspensionDto);
+		}
+		else {
+			memberSuspensionRepo.addSuspension(memberSuspensionDto);
+		}
+		return memberWithProfileRepo.suspensionSelectOne(memberSuspensionDto.getMemberNo());
+	}
+	@PutMapping("/suspension/")
+	public MemberWithSuspensionDto removeSuspension(@RequestBody MemberSuspensionDto memberSuspensionDto) {
+		long memberNo = memberSuspensionDto.getMemberNo();
+		memberSuspensionRepo.removeSuspension(memberNo);
+		return memberWithProfileRepo.suspensionSelectOne(memberNo);
+	}
+	//reply no로 리스트 반환
+	@GetMapping("/report/detail/{replyNo}")
+	public List<ReplyDto> selectReplyList(@PathVariable int replyNo){
+		ReplyDto replyDto = replyRepo.selectOne(replyNo);
+		return replyRepo.selectList(replyDto.getReplyOrigin());
 	}
 }

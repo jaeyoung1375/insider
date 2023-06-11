@@ -32,6 +32,7 @@ public class InterceptorConfiguration implements WebMvcConfigurer {
 //						"/member/nickCheck",
 //						"/member/sendMail",
 //						"/member/passwordChange",
+//						"/member/suspension",
 //						"/static/**"
 //						);
 		//Admin 인터셉터

@@ -153,7 +153,7 @@
 			<div class="row d-flex justify-content-start" style="width:90%">
 				<div class="box m-1" v-for="(board, index) in boardList" :key="board.boardWithNickDto.boardNo" @dblclick="doubleClick(board.boardWithNickDto.boardNo, index)"
 					@click="detailViewOn(index)">
-					<video class="content-in-list" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList[0].video"
+					<video class="content-in-list" :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" v-if="board.boardAttachmentList.length>0 && board.boardAttachmentList[0].video"
 							style="object-fit:cover" :autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto"></video>
 					<img class='content-in-list' v-if="board.boardAttachmentList.length>0 && !board.boardAttachmentList[0].video"
 							 :src="'${pageContext.request.contextPath}'+board.boardAttachmentList[0].imageURL" >
