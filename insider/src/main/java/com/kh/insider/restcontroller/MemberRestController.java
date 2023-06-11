@@ -157,6 +157,7 @@ public class MemberRestController {
 		
 		List<BoardListVO> getTotalPost = boardRepo.getTotalMyPost(memberNo);
 //		return forbiddenService.changeForbiddenBoard(getTotalPost);
+		
 		return getTotalPost;
 	}
 	
