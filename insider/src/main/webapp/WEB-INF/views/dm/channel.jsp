@@ -349,7 +349,7 @@
 		      </div>
 		      <div class="modal-body" style="width:300px; max-height: 400px; overflow-y: auto;">
 		        <div style="margin-bottom:10px;">
-		          <input type="text" placeholder="검색" v-model="keyword" class="form-control me-sm-2" @input="keyword = $event.target.value">
+		          <input type="text" placeholder="검색" v-model="keyword" class="form-control me-sm-2">
 		        </div>
 		        <div v-if="searchDmList.length==0" >
 			        <div v-for="(member,index) in dmMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">

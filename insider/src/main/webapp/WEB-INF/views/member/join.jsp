@@ -130,7 +130,7 @@
 	    
 	   		<!-- 1단계 -->
 	            <div class="text-center mb-3">         	
-			         	<a href="/" class="logo"><img src="/static/image/logo.png" width="50" height="50" class="me-3">insider</a>
+			         	<a href="/" class="logo"><img src="/static/image/insider2.png" style="width:200px; height:80px;" ></a>
 	                </div>
 	        <div :class="{hide:stepOneHidden}">
 	            <div class="row form-floating mb-3"> 

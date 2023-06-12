@@ -2567,10 +2567,8 @@
 					this.socket.send(JSON.stringify(joinData))
 				};
 				this.socket.onclose= ()=>{
-					console.log("연결종료")
 				};
 				this.socket.onerror= ()=>{
-					console.log("연결종료")
 				};
 				//메세지를 수신하면 수신된 메세지로 태그를 만들어서 추가
 				this.socket.onmessage=(e)=>{
@@ -3067,7 +3065,6 @@
 				this.changeModal("");
 			},
 			async insertReportSuspension(days, contents){
-				console.log("실행")
 				let data={
 					memberNo:this.reportList[this.reportSuspensionIndex[0]].reportMemberNo,
 					memberSuspensionDays:this.reportSuspensionContent[0],
