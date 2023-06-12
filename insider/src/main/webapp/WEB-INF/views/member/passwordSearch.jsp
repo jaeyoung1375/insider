@@ -141,8 +141,7 @@
 	     				this.num = response.data;
 	     				// num을 다른메서드에서 쓰기 위함
 	     				this.emailVerifyCode();
-	     				
-	     				
+	
 	     			
 	                },
 	                emailVerifyCode(){
@@ -173,20 +172,14 @@
    	                 const tokenArray = new Uint8Array(16);
    	                 window.crypto.getRandomValues(tokenArray);
    	                 const token = Array.from(tokenArray, byte => byte.toString(16).padStart(2, '0')).join('');
-   	                 
-   	           	 
+   	 
    	              const resetPasswordUrl = '/member/resetPassword?token=' + encodeURIComponent(token) + '&email=' + encodeURIComponent(this.encryptedEmail);
    	              // 토큰과 이메일을 매개변수로 사용하여 비밀번호 재설정 URL 생성
 
    	              return resetPasswordUrl;
    	                },
-   	                
-   	           
-   	          
-   	             validateEmail(){
-   	           
-   	                	
-   	                	
+   	                    
+   	             validateEmail(){        	
    	                    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
    	                    if (emailRegex.test(this.email)) {

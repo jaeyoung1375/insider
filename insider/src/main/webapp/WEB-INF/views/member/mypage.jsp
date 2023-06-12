@@ -197,6 +197,13 @@
 	margin-left:260px;
 	margin-top:30px;
 }
+.truncate{
+display: inline-block;
+  max-width: 150px; /* Adjust the max-width value as needed */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 
 
@@ -211,19 +218,20 @@
             <div class="col-4 text-center">
                <c:choose>
                <c:when test="${isOwner}">
-                <img style="border-radius: 70%;" :src="profileUrl" width = "150" height="150" @click="openFileInput" class="image-margin">
+                <img :src="profileUrl" width = "150" height="150" @click="openFileInput" class="image-margin rounded-circle">
              		<input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*" style="display: none;">
                 </c:when>       
                 <c:otherwise> 
-                  <img style="border-radius: 70%;" width="150" height="150" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attachmentNo" class="image-margin" v-if="attachmentNo > 0">
-                  <img src="${pageContext.request.contextPath}/static/image/user.jpg"  width="150" height="150" style="border-radius: 70%;" class="image-margin" v-else>
+                  <img width="150" height="150" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attachmentNo" class="image-margin rounded-circle" v-if="attachmentNo > 0">
+                  <img src="${pageContext.request.contextPath}/static/image/user.jpg"  width="150" height="150" class="image-margin rounded-circle" v-else>
                 </c:otherwise>
                 </c:choose>           
             </div>
             <div class="col-4" style=" width:40%; margin-left:70px;">   
                <div class="col-7" style="display:flex;">
                   <div class="col-6" style="width:60%;">
-                  <a href="#" class="btn btn-default" @click="showModal" style="font-size:20px;">${memberDto.memberNick}</a>    
+                  <a href="#" class="btn btn-default" @click="showModal" style="font-size:20px;">
+                  <span class="truncate">${memberDto.memberNick}</span></a>    
            </div>
               <c:choose>
               <c:when test="${isOwner}"> <!-- 본인 프로필 이라면 -->
@@ -316,8 +324,8 @@
 			      	<span @click="deleteRecommendFriend(item.memberNo)">x</span>
 			      </div>
 			      <div class="profile d-flex justify-content-center align-items-start" style="text-align: center; margin-left:60px;">
-					  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="54" height="54" style="border-radius:50%;" v-if="item.attachmentNo > 0">
-					  <img src="${pageContext.request.contextPath}/static/image/user.jpg" width="54" height="54" style="border-radious:50%;" v-else>
+					  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="54" height="54"  v-if="item.attachmentNo > 0" class="rounded-circle">
+					  <img src="${pageContext.request.contextPath}/static/image/user.jpg" width="54" height="54" class="rounded-circle" v-else>
 				  </div>
 			      <div class="recommend-nickname d-flex justify-content-center align-items-start" style="margin-top:10px;">
 			        {{ item.memberNick }}
@@ -712,7 +720,7 @@
                 		<div class="modal-content">
                    		 	<div class="modal-header" style="display:flex; justify-content: center;">
                         		<h5 class="modal-title" style="text-align:center;">
-                            <img style="border-radius: 70%;" :src="profileUrl" width = "150" height="150">
+                            <img :src="profileUrl" width = "150" height="150" class="rounded-circle">
                       			<div class="nickname">${memberDto.memberNick}</div>   
                    			<div class="content" style="text-align:left;">
                       				<p style="font-size: 12px; color:gray;">신뢰할 수 있는 커뮤니티를 유지하기 위해 Insider 계정에 대한 정보가 표시됩니다</p>
@@ -887,10 +895,12 @@
                   <!-- 프로필 미리보기 내용 -->
   					<div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave" style="border-radius:15px; margin-left:550px; margin-top:-40px;">
                   <div style="display: flex; align-items: center;">
-						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" style="border-radius: 50%;"> 
+						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" class="rounded-circle"> 
 						  <div style="margin-left:20px;">
-						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
-						    <p class="modalName">{{ item.memberName }}</p>
+						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">
+						    <span class="truncate">{{ item.memberNick }}</span></a>
+						    <p class="modalName">
+						    <span class="truncate">{{ item.memberName }}</span></p>
 						  </div>
 					</div>
                     <hr>
@@ -997,11 +1007,13 @@
       		
         <div v-for="item in myFollowList" :key="item.attachmentNo">
       		 	<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
-          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover2(item)" style="border-radius:50%;" v-if="item.attachmentNo > 0 ">
-          			<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" v-else style="border-radius:50%;">
+          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover2(item)" v-if="item.attachmentNo > 0 " class="rounded-circle">
+          			<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" v-else class="rounded-circle">
 						   <div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
-						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
-          					<p class="modalName">{{item.memberName}}</p>
+						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">
+						    <span class="truncate">{{ item.memberNick }}</span></a>
+          					<p class="modalName">
+          					<span class="truncate">{{item.memberName}}</span></p>
 						  </div>
           <button class="float-end btn btn-primary" @click="follow(item.followFollower)" v-show="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto; ">팔로우</button>
           <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-show="!followCheckIf(item.followFollower) && !${isOwner}" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
@@ -1010,7 +1022,7 @@
             <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave" style="border-radius:15px; margin-left:550px; margin-top:-40px;">
                   <!-- 프로필 미리보기 내용 -->
                    	<div style="display: flex; align-items: center;">
-						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" style="border-radius: 50%;"> 
+						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" class="rounded-circle"> 
 						  <div style="margin-left:20px;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
 						    <p class="modalName">{{ item.memberName }}</p>
@@ -1092,8 +1104,8 @@
 					<!-- 해시태그 목록이 있을 때 -->
       		  		<div v-for="item in hashtagList" key="item.memberNo" v-else>
 					<div  style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll">
-          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60"style="border-radius:50%;" v-if="item.attachmentNo > 0">
-          			<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" style="border-radius:50%;" v-else>
+          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" v-if="item.attachmentNo > 0" class="rounded-circle">
+          			<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" class="rounded-circle"  v-else >
 						   <div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/tag/' + item.tagName" style="margin-left:5px;">{{'#' + item.tagName }}</a>
           					<p class="modalName" style="margin-left:5px;">게시물 {{item.tagCount}}</p>
@@ -1125,8 +1137,8 @@
         <div v-for="item in recommendFriendsList" :key="item.attachmentNo">
      
           	<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
-          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60"  style="border-radius:50%;" v-if="item.attachmentNo > 0">
-          			<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" style="border-radius:50%;" v-else>
+          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" v-if="item.attachmentNo > 0" class="rounded-circle">
+          			<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" v-else class="rounded-circle">
 						   <div style="display: flex; flex-direction: column; justify-content: flex-start;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
           					<p class="modalName">{{item.memberName}}</p>

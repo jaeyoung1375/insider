@@ -217,10 +217,10 @@ public class MemberRestController {
 	
 	// 회원탈퇴
 	@PostMapping("/deleteMember")
-	public String deleteMember(HttpSession session) throws URISyntaxException {
+	public void deleteMember(HttpSession session) throws URISyntaxException {
 		long memberNo = (long) session.getAttribute("memberNo");
-		socialLoginService.kakaoDelete(memberNo);
-		
+	
+		memberRepo.deleteMember(memberNo);
 		session.removeAttribute("memberNo");
 		session.removeAttribute("socialUser");
 		session.removeAttribute("memberLevel");
@@ -228,7 +228,6 @@ public class MemberRestController {
 		
 		//리포트가 있으면 찾아서 상태 변경해줌
 		reportService.manageDeleted("member", memberNo);
-		return "redirect:/member/login";
 		
 	}
 	//닉네임불러오기
