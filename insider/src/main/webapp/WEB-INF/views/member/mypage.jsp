@@ -780,12 +780,12 @@
                     	<div class="row">
                     		<div class="col">
 			                    <h5 class="modal-title" style="text-align:center;">
-		                        ${memberDto.memberNick}님을 차단하시겠어요?
+		                        <span style="font-weight: bold;">${memberDto.memberNick}</span>님을 차단하시겠어요?
 			                    </h5>
                     		</div>
                     	</div>
                     	<div class="row">
-                    		<div class="col">
+                    		<div class="col" style="max-width:80%; margin: auto; margin-top : 15px;">
 		                        상대방은 Insider에서 회원님의 프로필, 게시물 및 스토리를 찾을 수 없게 됩니다. Insider은 회원님이 차단한 사실을 상대방에게 알리지 않습니다.                     
                     		</div>
                     	</div>
@@ -835,7 +835,7 @@
 	                 <div class="modal-body p-0">
 						<div class="row p-3">
 							<div class="col d-flex justify-content-start align-items-center">
-								<a href="/member/setting" class="nomal"><h5 style="margin:0; cursor:default">설정 및 개인정보</h5></a>
+								<a class="nomal"><h5 style="margin:0; cursor:default">설정 및 개인정보</h5></a>
 							</div>
 						</div>
 						<hr class="m-0">
@@ -1689,6 +1689,7 @@
             const resp = await axios.post(contextPath+"/rest/attachment/upload/profile", formData);
             this.member.attachmentNo = resp.data;
          },
+         
          
          //팔로우
          async follow(followNo) {
