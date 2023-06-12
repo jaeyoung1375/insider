@@ -346,10 +346,10 @@
 	 			</if>
 	 			<choose>
 		 			<when test="followExist">
-			 			 or (
+			 			 and (
 			 			 <!-- 내꺼 가져오기 -->
 			 			 <![CDATA[
-				            (member_no = #{loginMemberNo} and board_time <= SYSDATE - 3) 
+				            (member_no = #{loginMemberNo} and board_time < SYSDATE - 3) 
 				            ]]>
 				         <!-- 팔로우 가져오기 -->
 				            or 
@@ -358,7 +358,7 @@
 				                #{followDto.followFollower}
 				              </foreach>
 				               <![CDATA[
-				              and board_time <= SYSDATE - 3)
+				              and board_time < SYSDATE - 3)
 				              ]]>
 				         )
 		 			</when>
@@ -376,7 +376,7 @@
 					            </foreach>
 				            	)
 				               <![CDATA[
-				              and board_time <= SYSDATE - 3)
+				              and board_time < SYSDATE - 3)
 				              ]]>
 	 				</when>
 	 				<otherwise>
@@ -388,9 +388,7 @@
 	 					#{blockDto.blockNo}
 	 				</foreach>
 	 			</if>
-	 			<if test="1==1">
-	 				and member_no in(select member_no from setting where setting_hide=0)
-	 			</if>
+	 			
 	 		</where>
 	 		order by board_no desc
 	 	<include refid="topNfooter"></include>	
@@ -456,6 +454,9 @@
 						)
 					) > #{settingDistance}
 					]]>
+	 			</if>
+	 			<if test="1==1">
+	 				and member_no in(select member_no from setting where setting_hide=0)
 	 			</if>
 	 		</where>
 	 		order by board_no desc

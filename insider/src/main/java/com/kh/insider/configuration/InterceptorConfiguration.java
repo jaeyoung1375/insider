@@ -42,8 +42,11 @@
 //						"/kakao/login",
 //						"/google/login"
 //						);
-//		//Admin 인터셉터
-//		registry.addInterceptor(adminInterceptor)
-//				.addPathPatterns("/admin/**");
-//	}
-//}
+
+
+		//Admin 인터셉터
+		registry.addInterceptor(adminInterceptor)
+				.addPathPatterns("/admin/**","/rest/admin/**");
+	}
+}
+

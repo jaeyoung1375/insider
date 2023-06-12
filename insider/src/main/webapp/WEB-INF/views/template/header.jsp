@@ -158,6 +158,7 @@
         width: 470px;
         height: 480px;
         object-fit: cover;
+        background-color: white;
     }
     
     .carousel-inner video {
@@ -259,7 +260,7 @@
 					<div class="row ps-5 pe-5" style="max-width:1200px">
 						<div class="col-4">
 							<a href="${pageContext.request.contextPath}/" class="logo d-flex align-items-center" style="color:inherit;">
-								<img class="me-2" src="${pageContext.request.contextPath}/static/image/insider.png" width="300"height="80">
+								<img class="ms-4" src="${pageContext.request.contextPath}/static/image/insider2.png" width="230" height="80">
 							</a>
 						</div>
 						<div class="col d-flex align-items-center justify-content-end">
@@ -366,7 +367,7 @@
 		            	</div>
 		        	</div>
 				</c:if> --%>
-				<div class="dropdown" :class="{'show':sideMenu}">
+<%-- 				<div class="dropdown" :class="{'show':sideMenu}">
 					<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @click="showSideMenu()">
 						<i class="fa-solid fa-bars"></i>
 					</button>
@@ -379,7 +380,7 @@
 						</c:if>
 						<a class="dropdown-item" href="${pageContext.request.contextPath}/member/logout">로그아웃</a>
 					</div>
-				</div>
+				</div> --%>
 			</aside>
 			
 			
@@ -388,7 +389,7 @@
 <div v-if="detailView" class="container-fluid fullscreen in-header" @click="closeDetail">
 	
 	<div class="p-4 mt-2 ms-4 d-flex justify-content-end">
-		<h2 class="btn btn-none" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
+		<h2 class="btn btn-default" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
 	</div>
 	<div class="row fullscreen-container in-header" @click.stop >
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
@@ -423,7 +424,7 @@
         	<div class="card in-header bg-light" style="border-radius:0; max-height: 700px">
            		<div class="card-header in-header">
 	           		<img class="profile" :src="profileUrl(detailIndex)">
-           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardData[0].boardWithNickDto.memberNick"><b>{{boardData[0].boardWithNickDto.memberNick}}</b></a>
+           			<a class="btn btn-default" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardData[0].boardWithNickDto.memberNick"><b>{{boardData[0].boardWithNickDto.memberNick}}</b></a>
            		</div>
 				
 				<div class="card-body in-header card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
@@ -576,11 +577,10 @@
 	        memberNick : "${socialUser.memberNick}",
 	        loginMemberNo:"${sessionScope.memberNo}", // 로그인한 세션 값
 	        
-          //dm 읽지 않은 메세지 수
+          //dm 읽지 않은 메세지 확인
           hasUnreadMessages: false,
-          //dm 채팅방 번호
-          roomNo: [],
-          unreadMessage: [],
+          //dm 읽지 않은 메세지 수
+          unreadMessages: null,
           
 	      	//상세보기 및 댓글
 			detailView:false,
@@ -682,11 +682,8 @@
 	        
 	        //좋아요 리스트
 	        async likeListLoad(boardNo) {
-	        	//console.log(boardNo);
 	        	const resp = await axios.get("${pageContext.request.contextPath}/rest/board/like/list/" + boardNo);
-	        	//console.log(resp);
 	        	this.likeList = [...resp.data];
-	        	//console.log(this.likeList);
 	        },
 	        
 	        //댓글 좋아요
@@ -726,8 +723,6 @@
 	        	  //세팅값 불러오기
 	        	  const response = await axios.get(contextPath+"/rest/member/setting/" + memberNo);
 	        	  const set = response.data.settingAllowReply;
-	        	  //console.log(set);
-	        	  //console.log(memberNo, loginNo);       	  
 	        	  
 	        	  const requestData = {
 	        	    replyOrigin: boardNo,
@@ -760,7 +755,6 @@
 	        	  else if(set == 2){
 	        		  await this.loadFollower(memberNo);
 	              	  if(loginNo == memberNo) this.followerList.push(loginNo); 
-	        		  //console.log(this.followerList);
 	        		  if(this.followerList.includes(loginNo)){
 	        			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
 	              	      this.replyLoad(boardNo);
@@ -875,7 +869,6 @@
 			    }
 			  }
 			
-			  console.log("북마크: " + this.bookmarkCheck.map(item => item.boardNo));
 			},
 			
 			bookmarkChecked(boardNo){
@@ -885,7 +878,6 @@
 			async bookmarkList(){
 				const resp = await axios.get("/rest/bookmark/selectOne");
 				this.bookmarkCheck.push(...resp.data);
-				console.log("북마크 리스트 : "+this.bookmarkCheck.map(item => item.boardNo));
 			},
 	      
 	      loadNotifications() {
@@ -893,7 +885,6 @@
 	    	    .get("${pageContext.request.contextPath}/rest/notice/")
 	    	    .then((response) => {
 	    	      const result = response.data;
-	    	      console.log("result", result);
 	    	      if (result.length > 0) {
 	    	        // 알림이 있을 경우 처리 로직
 	    	        this.notifications = result;
@@ -920,24 +911,20 @@
 	    	
 	    	//dm 읽지 않은 메세지 수 알림
 			async unreadMessageCount() {
-				  try {
-				    const memberNo = this.loginMemberNo;
-				    const roomNoUrl = "${pageContext.request.contextPath}/rest/notice/enteredRoomNo";
-				    const roomNoResp = await axios.get(roomNoUrl);
-				    const roomNoList = roomNoResp.data;
-				    
-				    const unreadDmCountUrl = "${pageContext.request.contextPath}/rest/notice/unreadMessageCount";
-				    const unreadMessageList = await Promise.all(roomNoList.map(async (roomNo) => {
-				      const unreadMessageResp = await axios.get(unreadDmCountUrl, { params: { roomNo, memberNo } });
-				      return unreadMessageResp.data;
-				    }));
-			
-				    const hasUnreadMessages = unreadMessageList.some(count => count > 0);
-				    this.hasUnreadMessages = hasUnreadMessages;
-				  } catch (error) {
-				    this.hasUnreadMessages = false;
-				  }
+				try {
+					const dmUrl = "${pageContext.request.contextPath}/rest/notice/isChat";
+					const resp = await axios.get(dmUrl);
+					this.unreadMessages = resp.data;
+					if(this.unreadMessages > 0) {
+						this.hasUnreadMessages = true;
+					}
+					else {
+						this.hasUnreadMessages = false;
+					}
+				} catch (error) {
+				}
 			},
+
 
 	      toggleModal() {
     		if (!this.showModal) {
@@ -1052,7 +1039,6 @@
 				} 
 				else {
 				// 브라우저가 Geolocation을 지원하지 않는 경우 처리할 로직
-					console.log("Geolocation is not supported by this browser.");
 				}
 			},
 			showGps(position){
@@ -1065,19 +1051,15 @@
 				// 위치 정보 가져오기 실패 시 처리할 로직(기존꺼 불러옴)
 				switch (error.code) {
 					case error.PERMISSION_DENIED:
-						console.log("User denied the request for Geolocation.");
 						this.getGpsFromMember();
 						break;
 					case error.POSITION_UNAVAILABLE:
-						console.log("Location information is unavailable.");
 						this.getGpsFromMember();
 						break;
 					case error.TIMEOUT:
-						console.log("The request to get user location timed out.");
 						this.getGpsFromMember();
 						break;
 					case error.UNKNOWN_ERROR:
-						console.log("An unknown error occurred.");
 						this.getGpsFromMember();
 						break;
 				}
