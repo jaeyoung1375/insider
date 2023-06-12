@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.insider.dto.BoardDto;
+import com.kh.insider.dto.BoardLikeDto;
 import com.kh.insider.dto.FollowWithProfileDto;
 import com.kh.insider.dto.MemberDto;
 import com.kh.insider.dto.MemberProfileDto;
 import com.kh.insider.dto.MemberWithProfileDto;
 import com.kh.insider.dto.SettingDto;
 import com.kh.insider.dto.TagFollowDto;
+import com.kh.insider.repo.BoardLikeRepo;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.FollowRepo;
 import com.kh.insider.repo.MemberRepo;
@@ -49,6 +51,8 @@ public class MemberRestController {
 	private BoardRepo boardRepo;
 	@Autowired
 	private TagFollowRepo tagFollowRepo;
+	@Autowired
+	private BoardLikeRepo boardLikeRepo;
 	@Autowired
 	private ReportService reportService;
 	@Autowired
@@ -147,9 +151,18 @@ public class MemberRestController {
 				
 	// 마이페이지 게시물 목록(무한스크롤)
 	@GetMapping("/page/{page}")
-	public List<BoardListVO> paging(@PathVariable int page, @RequestParam long memberNo){
+	public List<BoardListVO> paging(@PathVariable int page, @RequestParam long memberNo, HttpSession session){
+		List<BoardListVO> boardList = boardRepo.myPageSelectListPaging(page, memberNo);
+		long loginNo=(Long)session.getAttribute("memberNo");
+		//좋아요 체크
+		BoardLikeDto boardLikeDto = new BoardLikeDto();
+		for(BoardListVO board:boardList) {
+			boardLikeDto.setMemberNo(loginNo);
+			boardLikeDto.setBoardNo(board.getBoardWithNickDto().getBoardNo());
+			board.setCheck(boardLikeRepo.check(boardLikeDto));
+		}
 		
-		return forbiddenService.changeForbiddenWords(boardRepo.myPageSelectListPaging(page, memberNo));
+		return forbiddenService.changeForbiddenWords(boardList);
 	}
 	
 	@GetMapping("/postList")
@@ -162,7 +175,15 @@ public class MemberRestController {
 	@GetMapping("/bookmarkMyPost")
 	public List<BoardListVO> bookmarkMyPost(HttpSession session){
 		long memberNo = (long) session.getAttribute("memberNo");
-		return forbiddenService.changeForbiddenWords(boardRepo.bookmarkMyPost(memberNo));
+		List<BoardListVO> boardList = boardRepo.bookmarkMyPost(memberNo);
+		//좋아요 체크
+		BoardLikeDto boardLikeDto = new BoardLikeDto();
+		for(BoardListVO board:boardList) {
+			boardLikeDto.setMemberNo(memberNo);
+			boardLikeDto.setBoardNo(board.getBoardWithNickDto().getBoardNo());
+			board.setCheck(boardLikeRepo.check(boardLikeDto));
+		}
+		return forbiddenService.changeForbiddenWords(boardList);
 	}
 	
 	//닉네임 중복 확인

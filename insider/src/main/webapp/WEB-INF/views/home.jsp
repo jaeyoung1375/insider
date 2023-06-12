@@ -932,7 +932,8 @@ Vue.createApp({
            
             
             for (const board of resp.data) {
-            	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+            	//this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+            	this.isLiked.push(board.check);
             	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
               }
 
