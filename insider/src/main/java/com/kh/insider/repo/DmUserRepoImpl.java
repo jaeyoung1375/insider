@@ -61,11 +61,11 @@ public class DmUserRepoImpl implements DmUserRepo {
 	}
 
 	@Override
-	public List<DmUserDto> getUnreadMessageNum(long memberNo, int roomNo) {
+	public long getUnreadMessageNum(long memberNo, int roomNo) {
 	    Map<String, Object> params = new HashMap<>();
 	    params.put("memberNo", memberNo);
 	    params.put("roomNo", roomNo);
-	    return sqlSession.selectList("dmUser.getUnreadMessageNum", params);
+	    return sqlSession.selectOne("dmUser.getUnreadMessageNum", params);
 	}
 	
 	@Override
