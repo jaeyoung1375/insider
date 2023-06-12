@@ -13,5 +13,8 @@ public interface BlockRepo {
 	
 	//사용자가 차단한 리스트를 반환
 	List<BlockWithProfileDto> getBlockList(long memberNo);
+	//사용자가 차단 당한 리스트를 반환
+	List<BlockWithProfileDto> getBlockedList(long memberNo);
+	
 	void delete(BlockDto blockDto);
 }

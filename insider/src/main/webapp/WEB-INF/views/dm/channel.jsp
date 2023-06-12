@@ -13,6 +13,32 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
 
 <style>
+	.dm-input {
+		color: #0a3d62; 
+	    border: 1.5px solid #ced4da;
+	    opacity:1; 
+	    text-decoration: none;
+	}
+	.dm-input:focus {
+	    opacity: 1;
+	    border-color: #4b6584;
+	    outline: none;
+	}
+	.btn-send:disabled {
+	  	border: 1.5px solid #ced4da;
+		opacity:0.5; 
+		color: #0a3d62; 
+		backgorund-color:white;
+	}
+	.dm-btn{
+		color: #0a3d62; 
+	    border: 1.5px solid #ced4da;
+	}
+	.dm-btn:hover{
+		opacity: 1;
+		color: #0a3d62;
+		font-weight: bold;
+	}
     .card-scroll{
        	overflow-y: auto;
        	-ms-overflow-style: none;
@@ -79,7 +105,7 @@
 	    padding: 0 0.5em;
 	}
 	.message-wrapper > .message > .message-content > .content-wrapper > .content-header {
-	    font-size: 0.90em;
+	    font-size: 0.85em;
 	    padding-right: 0.3em;
 	    padding-left: 0.3em;
 	    color: #3c6382;
@@ -93,7 +119,7 @@
 	}
 	.message-wrapper > .message > .message-content > .content-wrapper > .content-body > .message-wrapper {
 	    background-color: rgba(239, 239, 239);
-	    font-size: 0.85em;
+	    font-size: 0.8em;
 	    border-radius: 1.5em;
 	    max-width: 500px;
 	    word-break: break-all;
@@ -132,7 +158,7 @@
 	
 	.message-wrapper > .message.my > .message-content > .content-wrapper > .content-header {
 	    text-align: right;
-	    padding-right: 0.9em;
+	    padding-right: 0.85em;
 	}
 	.message-wrapper > .message.my > .message-content > .content-wrapper > .content-body {
 	    flex-direction: row-reverse;
@@ -164,7 +190,7 @@
 	}
 	.dateShow {
 	    color:  gray;
-	    font-size: 0.78em;
+	    font-size: 0.73em;
 	    text-align: center;
 	    display: block;
 	}
@@ -181,7 +207,7 @@
 
 	<div id="app">
 	
-		<div class="container-fluid">
+		<div class="container-fluid d-flex justify-content-center align-items-center">
 			<div class="row">
 				<div class="row mt-3" style="width:1000px;margin-bottom:0;margin-left:355px; margin-right:0px;height:70px;">
 					<!-- 로그인한 회원 프로필 -->
@@ -200,7 +226,7 @@
 						</span>
 						<span v-else style="position:absolute; top:21px; right:0; margin-right:15px;">
 							<i class="fa-regular fa-pen-to-square fa-lg" style="margin-right: 15px; cursor:pointer;" @click="fetchFollowerList(); showCreateRoomModal();"></i>
-							<i class="fa-solid fa-user-plus fa-lg" style="cursor:pointer;" @click="fetchFollowerList();  showInviteModal();"></i>
+							<i class="fa-solid fa-user-plus fa-lg" style="cursor:pointer;" @click="InviteFollowerList();  showInviteModal();"></i>
 						</span>
 					</div>
 					
@@ -267,7 +293,7 @@
 									</div>
 									<div class="message-content">
 						                <div class="profile-wrapper" v-if="!checkMyMessage(index)">
-						                	<img v-if="message.profileNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+message.profileNo"class="profile rounded-circle"v-if="!checkSameTime(index)">
+						                	<img v-if="message.profileNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+message.profileNo"class="profile rounded-circle"v-if="!checkSameTime(index)" style="width:40px; height:40px;">
 	                                		<img v-else src="https://via.placeholder.com/100x100?text=P" width="100%" v-if="!checkSameTime(index)">
 						                </div>
 						                <div class="content-wrapper">
@@ -283,7 +309,6 @@
 								                	<div class="time-wrapper" v-if="calculateDisplay(index)">{{timeFormat(message.time)}}</div>
 								                </div>
 							                	<i class="fa-solid fa-x fa-xs" @click="showDeleteMsgModal(index)" style="padding-bottom: 0.51em; padding-right: 0.6em; padding-left: 0.7em; color: #ced6e0; cursor:pointer;"></i>
-							                	<i class="fa-solid fa-trash fa-xs" style="padding-bottom: 0.51em; padding-right: 0.51em; padding-left: 0.51em; color: #ced6e0; cursor:pointer;"></i>
 							                	<i class="fa-solid fa-heart fa-xs" :class="{'fa-solid':memberLike[index]==1, 'fa-regular':memberLike[index]==0}" @click="dmLike(message.messageNo, index)"
 							                		style="padding-bottom: 0.51em; padding-right: 0.5em; padding-left: 0.5em; color: #c23616; cursor:pointer;"></i>
 							                </div>
@@ -298,12 +323,12 @@
 					        <div class="input-wrapper" style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 5px;">
 						        <div class="row justify-content-between" style="margin-top:10px;margin-bottom:10px;padding-left:calc(var(--bs-gutter-x) * .5);padding-right:calc(var(--bs-gutter-x) * .5);height:38px;">
 							        <!-- 입력창 -->
-							        <input type="text" v-model="text" v-on:input="text=$event.target.value" placeholder="메세지 입력" style="border-radius: 3rem;width:75%;"@keyup.enter="sendMessage">
+							        <input type="text" v-model="text" v-on:input="text=$event.target.value" class="dm-input" placeholder="메세지 입력" style="border-radius: 3rem;width:75%;cursor:pointer;"@keyup.enter="sendMessage"spellcheck="false">
 							        <label for="fileDm" style="display: contents;">
-										<i class="fa-solid fa-image" style="font-size: xx-large;color: #eb6864;padding-top: 3px;"></i>
+										<i class="fa-solid fa-image" style="font-size: xx-large;color: #4b6584;padding-top: 3px;cursor:pointer;"></i>
 									</label>
-							        	<input type="file" name="fileDm" id="fileDm" @input="sendPicture()" style="display:none;" accept=".png, .jpg, .gif" ref="fileInput">
-							        <button @click="sendMessage" style="border-radius: 3rem; width:15%;">전송</button>
+							        <input type="file" name="fileDm" id="fileDm" @input="sendPicture()" style="display:none;cursor:pointer;" accept=".png, .jpg, .jpeg, .gif" ref="fileInput">
+							        <input type="button" class="btn-send btn btn-outline-light dm-btn col-2" style="border-radius: 3rem;" value="전송" @click="sendMessage" :disabled="isInputEmpty">
 						        </div>
 					        </div>
 						</div>
@@ -317,12 +342,12 @@
 		<!-- 회원 목록을 모달창으로 불러오기 - 채팅방 생성 -->
 		<div class="modal fade" tabindex="-1" id="memberListModal" data-bs-backdrop="static" ref="memberListModal">
 		  <div class="modal-dialog modal-dialog-scrollable" style="width:400px; margin: 0; position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);">
-		    <div class="modal-content" style="align-content: center;flex-wrap: wrap;">
+		    <div class="modal-content" style="align-content: center;flex-wrap: wrap; min-height: 300px;">
 		      <div class="modal-header" style="width:300px;">
 		        <h4 class="modal-title" id="memberListModalLabel" style="font-weight: bold; color: #222f3e;">메세지 보내기</h4>
-		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		        <button type="button" class="btn-close btn-default" data-bs-dismiss="modal" aria-label="Close"></button>
 		      </div>
-		      <div class="modal-body" style="width:300px;">
+		      <div class="modal-body" style="width:300px; max-height: 400px; overflow-y: auto;">
 		        <div style="margin-bottom:10px;">
 		          <input type="text" placeholder="검색" v-model="keyword" class="form-control me-sm-2" @input="keyword = $event.target.value">
 		        </div>
@@ -350,7 +375,7 @@
 		      	</div>
 		      </div>
 		      <div class="modal-footer" style="width:300px;">
-		      	<button class="btn btn-outline-primary" @click="createRoomAndInvite" :disabled="selectedMembers.length === 0"
+		      	<button class="btn btn-outline-primary btn-default" @click="createRoomAndInvite" :disabled="selectedMembers.length === 0"
         			data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">채팅</button>
 		      </div>
 		    </div>
@@ -360,18 +385,18 @@
 		<!-- 회원 목록을 모달창으로 불러오기 - 초대 -->
 		<div class="modal fade" tabindex="-1" id="inviteModal" data-bs-backdrop="static" ref="inviteModal">
 		  <div class="modal-dialog modal-dialog-scrollable" style="width:400px; margin: 0; position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);">
-		    <div class="modal-content" style="align-content: center;flex-wrap: wrap;">
+		    <div class="modal-content" style="align-content: center;flex-wrap: wrap; min-height: 300px;">
 		      <div class="modal-header" style="width:300px;">
 		        <h4 class="modal-title" id="memberListModalLabel" style="font-weight: bold; color: #222f3e;">회원 초대</h4>
-		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		        <button type="button" class="btn-close btn-default" data-bs-dismiss="modal" aria-label="Close"></button>
 		      </div>
-		      <div class="modal-body" style="width:300px;">
+		      <div class="modal-body" style="width:300px; max-height: 400px; overflow-y: auto;">
 		        <div style="margin-bottom:10px;">
-		          <input type="text" placeholder="검색" v-model="keyword" class="form-control me-sm-2" @input="keyword = $event.target.value">
+		          <input type="text" placeholder="검색" v-model="keywordInvite" class="form-control me-sm-2" @input="keywordInvite = $event.target.value">
 		        </div>
-		        <div v-if="searchDmList.length==0" >
-			        <div v-for="(member,index) in dmMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
-			          <img v-if="dmMemberList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
+		        <div v-if="searchInviteDmList.length==0" >
+			        <div v-for="(member,index) in dmInviteMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
+			          <img v-if="dmInviteMemberList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
 			          <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
 			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
@@ -381,9 +406,9 @@
 			          </span>
 			        </div>
 		        </div>
-		        <div v-if="searchDmList.length>0">
-			        <div v-for="(member,index) in searchDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
-			          <img v-if="searchDmList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
+		        <div v-if="searchInviteDmList.length>0">
+			        <div v-for="(member,index) in searchInviteDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
+			          <img v-if="searchInviteDmList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
 			          <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
 			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
@@ -395,7 +420,7 @@
 		      	</div>
 		      </div>
 		      <div class="modal-footer" style="width:300px;">
-		      	<button class="btn btn-outline-danger" @click="inviteRoom" :disabled="selectedMembers.length === 0"
+		      	<button class="btn btn-outline-danger btn-default" @click="inviteRoom" :disabled="selectedMembers.length === 0"
         			data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">초대</button>
 		      </div>
 		    </div>
@@ -414,10 +439,10 @@
 					다른 사람의 채팅방에는 메시지가 계속 표시됩니다.
 		      </div>
 		      <div class="modal-footer btn-center">
-		        <button type="button" class="btn" @click="leaveTheRoom" data-bs-dismiss="modal" aria-label="Close" style="color:red; margin-right: 10.8em; height: 2em;">나가기</button>
+		        <button type="button" class="btn btn-default" @click="leaveTheRoom" data-bs-dismiss="modal" aria-label="Close" style="color:red; margin-right: 10.8em; height: 2em;">나가기</button>
 		      </div>
 		      <div class="modal-footer btn-center">
-		        <button type="button" class="btn" data-bs-dismiss="modal" style="margin-right: 11.3em; height: 2em;">취소</button>
+		        <button type="button" class="btn btn-default" data-bs-dismiss="modal" style="margin-right: 11.3em; height: 2em;">취소</button>
 		      </div>
 		    </div>
 		  </div>
@@ -436,17 +461,17 @@
 		      <span>{{roomNameLen}} / 49</span>
 		      </div>
 		      <div class="modal-footer btn-center">
-		        <button type="button" class="btn" @click="changeRoomName" data-bs-dismiss="modal" aria-label="Close" 
+		        <button type="button" class="btn btn-default" @click="changeRoomName" data-bs-dismiss="modal" aria-label="Close" 
 		        	:disabled="!roomName" style="color:#0652DD; margin-right: 11em; height: 2em;">수정</button>
 		      </div>
 		      <div class="modal-footer btn-center">
-		        <button type="button" class="btn" data-bs-dismiss="modal" @click="hideRoomNameModal" style="margin-right: 11em; height: 2em;">취소</button>
+		        <button type="button" class="btn btn-default" data-bs-dismiss="modal" @click="hideRoomNameModal" style="margin-right: 11em; height: 2em;">취소</button>
 		      </div>
 		    </div>
 		  </div>
 		</div>
 		
-		<!-- 나에게만 메세지 삭제 - messageNo를 가져 오지 못해 사용 불가 -->
+		<!-- 나에게만 메세지 삭제  -->
 		<div class="modal fade" id="deleteMsgModal" tabindex="-1" data-bs-backdrop="static"  ref="deleteMsgModal" aria-hidden="true">
 		  <div class="modal-dialog modal-dialog-centered" style="width:450px;">
 		    <div class="modal-content">
@@ -458,10 +483,10 @@
 					다른 사람의 채팅방에는 메시지가 계속 표시됩니다.
 		      </div>
 		      <div class="modal-footer btn-center">
-		        <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close" @click="deleteMessage(index)" style="color:red; margin-right: 11em; height: 2em;">삭제</button>
+		        <button type="button" class="btn btn-default" data-bs-dismiss="modal" aria-label="Close" @click="deleteMessage(index)" style="color:red; margin-right: 11em; height: 2em;">삭제</button>
 		      </div>
 		      <div class="modal-footer btn-center">
-		        <button type="button" class="btn" data-bs-dismiss="modal" style="margin-right: 11em; height: 2em;">취소</button>
+		        <button type="button" class="btn btn-default" data-bs-dismiss="modal" style="margin-right: 11em; height: 2em;">취소</button>
 		      </div>
 		    </div>
 		  </div>
@@ -470,13 +495,13 @@
 		
 		<!-- 채팅방에 참여 중인 회원 -->
 		<div class="modal fade" tabindex="-1" id="membersInRoomModal" data-bs-backdrop="static" ref="membersInRoomModal">
-		  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down" style="width:400px; margin: 0; position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);">
-		    <div class="modal-content" style="align-content: center;flex-wrap: wrap;">
+		  <div class="modal-dialog modal-dialog-scrollable" style="width:400px; margin: 0; position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);">
+		    <div class="modal-content" style="align-content: center;flex-wrap: wrap; min-height: 300px;">
 		      <div class="modal-header" style="width:300px;">
 		        <h4 class="modal-title" style="font-weight: bold; color: #222f3e;">대화 상대</h4>
-		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		        <button type="button" class="btn-close btn-default" data-bs-dismiss="modal" aria-label="Close"></button>
 		      </div>
-		      <div class="modal-body" style="width:300px;">
+		      <div class="modal-body" style="width:300px; max-height: 400px; overflow-y: auto;">
 		        <div v-for="(member,index) in membersInRoomList" :key="index" style="margin-top:20px;position:relative;">
 		          <a :href="'${pageContext.request.contextPath}/member/'+member.memberNick" style="color: black; text-decoration: none;">
 			          <img v-if="member.attachmentNo > 0"  :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
@@ -486,7 +511,7 @@
 		          <br>
 		          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 		          <span style="position:absolute;right:0;top:10px;">
-		            <span class="modal-click-btn-negative" style="padding: 0.3rem 0.2rem;font-weight: 100;line-height: 1;font-size:0.8em; margin-right: 0.5em;"data-bs-dismiss="modal" aria-label="Close" @click="blockModalShow(member.memberNo)">
+		            <span class="modal-click-btn-negative" style="padding: 0.3rem 0.2rem;font-weight: 100;line-height: 1;font-size:0.8em; margin-right: 0.5em;"data-bs-dismiss="modal" aria-label="Close" @click="blockModalShow(member.memberNo, member.memberNick)">
 		              차단
 		            </span>
 		            <span class="modal-click-btn-neutral" style="padding: 0.3rem 0.2rem;font-weight: 100;line-height: 1;font-size:0.8em;"data-bs-dismiss="modal"  aria-label="Close" @click="showReportMenuModal(member.memberNo)">
@@ -505,7 +530,7 @@
 				<div class="modal-content" >
 					<div class="modal-header">
 						<h5 class="modal-title" style="font-weight:bold; text-align:center">신고</h5>
-						<button type="button" class="btn-close" @click="hideReportMenuModal" aria-label="Close">
+						<button type="button" class="btn-close btn-default" @click="hideReportMenuModal" aria-label="Close">
 						<span aria-hidden="true"></span>
 						</button>
 					</div>
@@ -523,7 +548,7 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" @click="hideReportMenuModal">취소</button>
+						<button type="button" class="btn btn-secondary btn-default" @click="hideReportMenuModal">취소</button>
 					</div>
 				</div>
 			</div>
@@ -538,24 +563,25 @@
                     	<div class="row">
                     		<div class="col">
 			                    <h5 class="modal-title" style="text-align:center;">
-		                        ${memberDto.memberNick}님을 차단하시겠어요?
+		                        {{selectedMemberNick}}님을 차단하시겠어요?
 			                    </h5>
                     		</div>
                     	</div>
                     	<div class="row">
                     		<div class="col">
-		                        상대방은 Insider에서 회원님의 프로필, 게시물 및 스토리를 찾을 수 없게 됩니다. Insider은 회원님이 차단한 사실을 상대방에게 알리지 않습니다.                     
+		                        - 상대방은 Insider에서 회원님의 프로필, 게시물 및 스토리를 찾을 수 없게 됩니다. <br>
+		                        - Insider은 회원님이 차단한 사실을 상대방에게 알리지 않습니다. <br>
+		                        - 회원님의 채팅방 목록에서 상대방과의 채팅방이 삭제됩니다.                     
                     		</div>
                     	</div>
 	                     <div class="content" style="font-size:12px; text-align:center;">
 	                     </div>
                     </div>
-                     <div class="modal-header" style="display:flex; justify-content: center;" >
-                         <button type="button" class="btn" data-bs-dismiss="modal" style="color:red;">취소</button>
-                    </div>
-                   
-                    <div class="modal-header" style="display:flex; justify-content: center;">
+                    <div class="modal-header" style="display:flex; justify-content: center; color:red;cursor: pointer;">
                           <a @click="blockUser">차단</a>
+                    </div>
+                     <div class="modal-header" style="display:flex; justify-content: center;" >
+                         <button type="button" class="btn btn-default" data-bs-dismiss="modal" >취소</button>
                     </div>
                    
                 </div>      
@@ -568,14 +594,14 @@
 				<div class="modal-content">
 					<div class="modal-header" style="display:flex; justify-content: center; flex-direction: column;">
 						<h5 class="modal-title" style="text-align:center;">
-						${memberDto.memberNick}님을 차단했습니다.
+						{{selectedMemberNick}}님을 차단했습니다.
 						</h5>
 						<div class="content" style="font-size:12px; text-align:center;">
 							<p style="font-size:12px; color:gray;">상대방의 프로필에서 언제든지 차단을 해제할 수 있습니다.</p>                    
 						</div>
 					</div>
 					<div class="model-header" style="text-align:center;">
-						<button type="button" class="btn" data-bs-dismiss="modal" style="color:red;">닫기</button>   
+						<button type="button" class="btn btn-default" data-bs-dismiss="modal" style="color:red;">닫기</button>   
 					</div>
 				</div>
 			</div>
@@ -602,6 +628,7 @@
                     memberNo:"${sessionScope.memberNo}",
                     socket:null,//웹소켓 연결 객체
                     dmMemberList:[],//팔로워 회원 목록
+                    dmInviteMemberList:[],
 
                     //modal 제어
                     createRoomModal:null, 
@@ -611,8 +638,11 @@
                     //차단한 회원을 제외한 전체 회원 검색
                     searchDmList:[],
                     keyword:"",
+                    searchInviteDmList:[],
+                    keywordInvite: "",
                     
                     dmRoomList: [], //채팅방 목록
+                    dmInviteRoomList:[],
                     isRoomJoin:false,
                     
                     //채팅방 참가자 시간 정보 리스트
@@ -644,6 +674,7 @@
    					/*----------------------신고----------------------*/
    					//추가 메뉴 모달 및 신고 모달
    					reportMenuModal:null,
+   					selectedMemberNick: "", // 선택한 회원의 닉네임을 저장할 변수
    					//신고 메뉴 리스트
    					reportContentList:[],
    					blockModal : null,
@@ -725,7 +756,7 @@
 				            const data = {
 				                    type: 7, 
 				                    attachmentNo: resp.data.attachmentNo,
-				                    content: "이미지 메세지"
+				                    content: "사진을 보냈습니다."
 				            }
 				            this.socket.send(JSON.stringify(data));
 				            fileInput.value = null;
@@ -739,6 +770,7 @@
                     if(this.createRoomModal == null) return;
                     this.selectedMembers = []; 
                     this.dmMemberList = [];
+                    this.fetchUsersByRoomNo();
                     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
                     checkboxes.forEach(checkbox => (checkbox.checked = false));
                     this.createRoomModal.show();
@@ -748,7 +780,7 @@
                 hideCreateRoomModal(){
                     if(this.createRoomModal == null) return;
                     this.createRoomModal.hide();
-                  //모달창 스크롤바를 사용할 때, 페이지 스크롤바 사용 불가능
+                    //모달창 스크롤바를 사용할 때, 페이지 스크롤바 사용 불가능
                     document.body.style.overflow = "unset";
                 },
 				showExitModal(){
@@ -762,7 +794,8 @@
 				showInviteModal(){
                     if(this.inviteModal == null) return;
                     this.selectedMembers = []; 
-                    this.dmMemberList = [];
+                    this.dmInviteMemberList = [];
+                    this.fetchUsersByRoomNo();
                     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
                     checkboxes.forEach(checkbox => (checkbox.checked = false));
                     this.inviteModal.show();
@@ -825,11 +858,11 @@
             		const room = new URLSearchParams(location.search).get("room");
                     const data = { type:2, room:room };
                     this.socket.send(JSON.stringify(data));
-                    this.roomNo = room; //vue에 반환
                     console.log("서버에 연결되었습니다.");
             	},
             	closeHandler(){
             		console.log("서버와의 연결이 종료되었습니다.");
+            		this.roomNo = null;
             	},
             	errorHandler(){
             		console.log("연결 중 오류가 발생했습니다.");
@@ -933,8 +966,10 @@
             	   const url = "${pageContext.request.contextPath}/rest/dmMemberList";
             	    try {
             	      const resp = await axios.get(url);
+            	      const memberNosInRoom = this.membersInRoomList.map(member => member.memberNo);
+				      const filteredMembers = resp.data.filter(member => !memberNosInRoom.includes(member.memberNo));
             	      this.dmMemberList.splice(0);
-	                  this.dmMemberList.push(...resp.data);
+	                  this.dmMemberList.push(...filteredMembers);
             	    } 
             	    catch (error) {
             	      console.error(error);
@@ -946,11 +981,41 @@
 				    try {
 				        const resp = await axios.get(url, {
 				            params: {
-				                keyword: this.keyword
+				                keyword: this.keyword,
+				                roomNo: this.roomNo
 				            }
 				        });
 				        this.searchDmList.splice(0);
 	                    this.searchDmList.push(...resp.data);
+				    } catch (error) {
+				        console.error(error);
+				    }
+				},						
+               //초대 - 팔로우 회원 목록
+               async InviteFollowerList() {
+            	   const url = "${pageContext.request.contextPath}/rest/dmInviteMemberList";
+            	    try {
+            	      const resp = await axios.get(url);
+            	      const memberNosInRoom = this.membersInRoomList.map(member => member.memberNo);
+				      const filteredMembers = resp.data.filter(member => !memberNosInRoom.includes(member.memberNo));
+            	      this.dmInviteMemberList.splice(0);
+	                  this.dmInviteMemberList.push(...filteredMembers);
+            	    } 
+            	    catch (error) {
+            	      console.error(error);
+            	    }
+            	},
+                //초대 - 차단한 회원을 제외한 전체 회원 검색
+				async InviteDmSearch() {
+				    const url = "${pageContext.request.contextPath}/rest/dmInviteMemberSearch";
+				    try {
+				        const resp = await axios.get(url, {
+				            params: {
+				            	keyword: this.keywordInvite,
+				            }
+				        });
+				        this.searchInviteDmList.splice(0);
+	                    this.searchInviteDmList.push(...resp.data);
 				    } catch (error) {
 				        console.error(error);
 				    }
@@ -1220,7 +1285,7 @@
 				},
 				//변경된 채팅방 이름 삭제
 				async deleteRoomRename() {
-				    const deleteUrl = `${pageContext.request.contextPath}/rest/deleteRoomRename`;
+				    const deleteUrl = "${pageContext.request.contextPath}/rest/deleteRoomRename";
 				    try {
 				        await axios.delete(deleteUrl, {params:{roomNo:this.roomNo}});
 				    } catch (error) {
@@ -1265,6 +1330,7 @@
 					//채팅방 입장을 위한 채팅방 번호 전달
 					roomNo = roomMenu;
 					this.openHandler(roomNo);
+					this.roomNo = roomNo;
 				},
                 /*----------------------신고----------------------*/
                 //신고 모달 show, hide
@@ -1302,9 +1368,10 @@
         				this.blockResultModalShow();
         			}
         		},
-                blockModalShow(blockMemberNo){
+                blockModalShow(blockMemberNo, memberNick){
                     if(this.blockModal == null) return;
                     this.blockMemberNo=blockMemberNo;
+                    this.selectedMemberNick = memberNick;
                     this.blockModal.show();      
                 },
                 blockModalHide(){
@@ -1331,6 +1398,14 @@
         			}
         			this.chooseDmSearch();
         		}, 200),
+				//초대 검색        		
+        	    keywordInvite:_.throttle(function(){ 
+        	        if(this.keywordInvite=="") {
+        	            this.searchInviteDmList = [];
+        	            return;
+        	        }
+        	        this.InviteDmSearch();
+        	    }, 200),
         		//메세지 읽음 표시
         		/* userTimeList:{
         			deep:true,
@@ -1362,6 +1437,10 @@
             	roomNameLen(){
                     return this.roomName.length;
                 },
+                //채팅창 input 값
+                isInputEmpty() {
+				    return this.text.trim() === "";
+				},
             },
             created(){
             	//웹소켓 연결 코드
@@ -1381,13 +1460,13 @@
 				this.membersInRoomModal = new bootstrap.Modal(this.$refs.membersInRoomModal);
 				
 				//검색창 초기화
-			    $('#memberListModal').on('hidden.bs.modal', () => {
+			    $('#memberListModal').off('hidden.bs.modal').on('hidden.bs.modal', () => {
 			    	this.keyword = '';
 			        this.searchDmList = [];
 			    });
-			    $('#inviteModal').on('hidden.bs.modal', () => {
-			    	this.keyword = '';
-			        this.searchDmList = [];
+			    $('#inviteModal').off('hidden.bs.modal').on('hidden.bs.modal', () => {
+			        this.keywordInvite = '';
+			        this.searchInviteDmList = [];
 			    });
 				//쿼리 초기화 및 변화 감지
 				this.initializePageFromQuery();

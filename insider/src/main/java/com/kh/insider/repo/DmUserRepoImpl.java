@@ -73,5 +73,10 @@ public class DmUserRepoImpl implements DmUserRepo {
 		sqlSession.update("dmUser.updateUnReadDm", dmUserDto);
 	}
 
+	@Override
+	public List<Integer> getEnteredRoomNo(long memberNo) {
+		return sqlSession.selectList("dmUser.getEnteredRoomNo", memberNo);
+	}
+
 	
 }
