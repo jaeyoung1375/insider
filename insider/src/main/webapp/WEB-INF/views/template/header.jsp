@@ -224,6 +224,7 @@
 	 .nav-link {
         display: inline-block;
     }
+    
 </style>
 
 <!--  <script type="text/javascript">
