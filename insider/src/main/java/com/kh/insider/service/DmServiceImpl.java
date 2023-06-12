@@ -102,7 +102,7 @@ public class DmServiceImpl implements DmService {
 
 	    // 채팅방에 참여자가 남아있는지 확인
 	    boolean isEmpty = dmUserRepo.findMembersByRoom(roomNo).isEmpty();
-	    log.debug("isEmpty: " + isEmpty);
+	    //log.debug("isEmpty: " + isEmpty);
 	    
 	    //채팅방에 회원이 남아있지 않으면 방 제거(DB)
 	    if (isEmpty) {
@@ -124,7 +124,7 @@ public class DmServiceImpl implements DmService {
 		
 		if (isWaitingRoom) return;
 		//참여자 등록(DB)
-		log.debug("{}님이 {}방으로 참여하였습니다.", user.getMemberNo(), roomNo);
+		//log.debug("{}님이 {}방으로 참여하였습니다.", user.getMemberNo(), roomNo);
   }
 	
 	//사용자 방에서 퇴장
@@ -135,7 +135,7 @@ public class DmServiceImpl implements DmService {
 		dmRoomVO.leave(user);
 		
 		//참여자 제거(DB)
-		log.debug("{}님이 {}방에서 퇴장하였습니다.", user.getMemberNo(), roomNo);
+		//log.debug("{}님이 {}방에서 퇴장하였습니다.", user.getMemberNo(), roomNo);
 	}
 	
 	//채팅방에 메세지를 전송하는 기능(broadcast)
@@ -257,7 +257,7 @@ public class DmServiceImpl implements DmService {
 		//if(user.isMember() == false) return;
 		//메세지 수신
 		ChannelReceiveVO receiveVO = mapper.readValue(message.getPayload(), ChannelReceiveVO.class);
-		log.debug("receiveVO = {}", receiveVO);
+		//log.debug("receiveVO = {}", receiveVO);
 		
 		//채팅메세지인 경우
 		if(receiveVO.getType() == WebSocketConstant.CHAT) {
@@ -354,7 +354,7 @@ public class DmServiceImpl implements DmService {
 			this.deleteMessage(user, messageNo);
 		}
 	    //회원 퇴장 메세지
-	    else if (receiveVO.getType() == WebSocketConstant.LEAVE) {
+/*	    else if (receiveVO.getType() == WebSocketConstant.LEAVE) {
 	        int roomNo = this.findUser(user);
 	        if (roomNo == -1) return;
 	        
@@ -363,6 +363,7 @@ public class DmServiceImpl implements DmService {
 	        
 	        this.exit(user, roomNo);
 	    }
+	    */
 		// 읽지 않은 메시지 수
 //	    else if (receiveVO.getType() == WebSocketConstant.NEW_MESSAGE) {
 //	    	int roomNo = this.findUser(user);
@@ -438,7 +439,7 @@ public class DmServiceImpl implements DmService {
 	        
 	        dmUserRepo.enter(userDto);
 	        
-	        log.debug("DB등록 {}님이 {}방으로 참여하였습니다.", memberNo, roomNo);
+	        //log.debug("DB등록 {}님이 {}방으로 참여하였습니다.", memberNo, roomNo);
 	    }
 	        
         // 일대일 채팅방일 경우, dm_privacy_room 테이블에도 저장
@@ -449,7 +450,7 @@ public class DmServiceImpl implements DmService {
             dmPrivacyRoomDto.setRoomNo(roomNo);
             
             dmPrivacyRoomRepo.createPrivacy(dmPrivacyRoomDto);
-            log.debug("일대일 채팅방 DB 등록 {}님이 {}방으로 참여되었습니다.", memberList.get(0), roomNo);
+           //log.debug("일대일 채팅방 DB 등록 {}님이 {}방으로 참여되었습니다.", memberList.get(0), roomNo);
         }
         else {
 			return;
@@ -461,7 +462,7 @@ public class DmServiceImpl implements DmService {
 		int roomNo = dmRoomVO.getRoomNo();
 		List<Long> memberList = dmRoomVO.getMemberList();
 		
-		log.debug("확인용 초대 멤버 {}", memberList.size());
+		//log.debug("확인용 초대 멤버 {}", memberList.size());
 	    for (Long memberNo : memberList) {
 	        DmUserDto dmUserDto = new DmUserDto();
 	        dmUserDto.setRoomNo(roomNo);
@@ -475,7 +476,7 @@ public class DmServiceImpl implements DmService {
 	        userDto.setMemberNo(memberNo);
 	        dmUserRepo.enter(dmUserDto);
 	        
-	        log.debug("회원 초대 DB등록 {}님이 {}방으로 참여하였습니다.", memberNo, roomNo);
+	       // log.debug("회원 초대 DB등록 {}님이 {}방으로 참여하였습니다.", memberNo, roomNo);
 	    }
 	    //이 시점에서 채팅방 목록 정보를 보내줘야됨
 		//방 참가자들에게 새 메세지 왔다고 알림 전송
@@ -497,7 +498,7 @@ public class DmServiceImpl implements DmService {
 	    dmPrivacyRoomDto.setRoomNo(roomNo);
 	    dmPrivacyRoomRepo.leaveRoom(dmPrivacyRoomDto);
 	    
-		log.debug("DB삭제 {}님이 {}방에서 퇴장하였습니다.", user.getMemberNo(), roomNo);
+		//log.debug("DB삭제 {}님이 {}방에서 퇴장하였습니다.", user.getMemberNo(), roomNo);
 		//이 시점에서 채팅방 목록 정보를 보내줘야됨
 		this.broadcastRoom(roomNo, 6);
 	}
@@ -571,7 +572,7 @@ public class DmServiceImpl implements DmService {
 		}
 		//대기실 객체 반환
 		DmRoomVO waitingRoom = rooms.get(WebSocketConstant.WAITING_ROOM_NO);
-		System.out.println("대기실 전체 인원 : " + waitingRoom.size());
+		//System.out.println("대기실 전체 인원 : " + waitingRoom.size());
 		//새롭게 반환받을 DmUserVO set 생성
 		Set<DmUserVO> dmUsersForMsg = new CopyOnWriteArraySet<>();
 
@@ -582,7 +583,7 @@ public class DmServiceImpl implements DmService {
 				dmUsersForMsg.add(userVO);
 			}
 		}
-		System.out.println("대기실에 있는 인원 : " + dmUsersWaiting.size());
+		//System.out.println("대기실에 있는 인원 : " + dmUsersWaiting.size());
 		//이벤트 메세지 객체 생성
 		Map<String, Integer> msg = Map.of("messageType", messageType);
 		String json = mapper.writeValueAsString(msg);
