@@ -206,6 +206,7 @@
 
       <div id="app" class="container-fluid" style="width:1300px;">
             <div class="row">
+            
                 <!-- 본인 여부에 따른 프로필 변경  -->
             <div class="col-4 text-center">
                <c:choose>
