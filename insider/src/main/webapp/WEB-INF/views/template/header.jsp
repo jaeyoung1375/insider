@@ -367,7 +367,7 @@
 		            	</div>
 		        	</div>
 				</c:if> --%>
-				<div class="dropdown" :class="{'show':sideMenu}">
+<%-- 				<div class="dropdown" :class="{'show':sideMenu}">
 					<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @click="showSideMenu()">
 						<i class="fa-solid fa-bars"></i>
 					</button>
@@ -380,7 +380,7 @@
 						</c:if>
 						<a class="dropdown-item" href="${pageContext.request.contextPath}/member/logout">로그아웃</a>
 					</div>
-				</div>
+				</div> --%>
 			</aside>
 			
 			
