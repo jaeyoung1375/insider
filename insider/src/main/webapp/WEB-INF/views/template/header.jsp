@@ -576,11 +576,10 @@
 	        memberNick : "${socialUser.memberNick}",
 	        loginMemberNo:"${sessionScope.memberNo}", // 로그인한 세션 값
 	        
-          //dm 읽지 않은 메세지 수
+          //dm 읽지 않은 메세지 확인
           hasUnreadMessages: false,
-          //dm 채팅방 번호
-          roomNo: [],
-          unreadMessage: [],
+          //dm 읽지 않은 메세지 수
+          unreadMessages: null,
           
 	      	//상세보기 및 댓글
 			detailView:false,
@@ -920,24 +919,20 @@
 	    	
 	    	//dm 읽지 않은 메세지 수 알림
 			async unreadMessageCount() {
-				  try {
-				    const memberNo = this.loginMemberNo;
-				    const roomNoUrl = "${pageContext.request.contextPath}/rest/notice/enteredRoomNo";
-				    const roomNoResp = await axios.get(roomNoUrl);
-				    const roomNoList = roomNoResp.data;
-				    
-				    const unreadDmCountUrl = "${pageContext.request.contextPath}/rest/notice/unreadMessageCount";
-				    const unreadMessageList = await Promise.all(roomNoList.map(async (roomNo) => {
-				      const unreadMessageResp = await axios.get(unreadDmCountUrl, { params: { roomNo, memberNo } });
-				      return unreadMessageResp.data;
-				    }));
-			
-				    const hasUnreadMessages = unreadMessageList.some(count => count > 0);
-				    this.hasUnreadMessages = hasUnreadMessages;
-				  } catch (error) {
-				    this.hasUnreadMessages = false;
-				  }
+				try {
+					const dmUrl = "${pageContext.request.contextPath}/rest/notice/isChat";
+					const resp = await axios.get(dmUrl);
+					this.unreadMessages = resp.data;
+					if(this.unreadMessages > 0) {
+						this.hasUnreadMessages = true;
+					}
+					else {
+						this.hasUnreadMessages = false;
+					}
+				} catch (error) {
+				}
 			},
+
 
 	      toggleModal() {
     		if (!this.showModal) {
