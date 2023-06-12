@@ -13,4 +13,5 @@ public class BoardListVO {
 	private BoardWithNickDto boardWithNickDto;
 	private List<BoardAttachmentDto> boardAttachmentList;
 	private List<BoardTagDto> boardTagList;
+	private boolean check;
 }

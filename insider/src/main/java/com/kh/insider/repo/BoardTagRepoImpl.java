@@ -27,4 +27,9 @@ public class BoardTagRepoImpl implements BoardTagRepo{
 		return sqlSession.selectList("boardTag.selectList", boardNo);
 	}
 
+	@Override
+	public List<BoardTagDto> selectWithout(int boardNo) {
+		return sqlSession.selectList("boardTag.selectWithout", boardNo);
+	}
+
 }
