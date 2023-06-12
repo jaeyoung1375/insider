@@ -240,8 +240,8 @@
 					<!-- 채팅방 이름 -->
 					<div class="card col-8" style="border-radius:0;border-left:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
 						<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo">
-							<div v-if="roomNo != null">
-								<div v-if="this.roomNo === room.roomNo">
+							<div v-if="roomMenu != null">
+								<div v-if="roomMenu == room.roomNo">
 									<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"
 										width="38" height="38" class="profile rounded-circle" style="position:absolute; top:0.75em; left:1.3em;" >
 					          		<img v-else src="${pageContext.request.contextPath}/static/image/user.jpg"width="38" height="38" class="profile rounded-circle" style="position:absolute; top:0.75em; left:1.3em;">

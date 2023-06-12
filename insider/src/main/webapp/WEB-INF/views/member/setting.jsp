@@ -694,7 +694,7 @@
 					return contextPath+"/rest/attachment/download/"+this.member.attachmentNo;
 				}
 				else{
-					return "https://via.placeholder.com/100x100?text=profile";
+					return contextPath+"/static/image/user.jpg";
 				}
 			},
 			mapLevel(){
