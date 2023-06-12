@@ -1,6 +1,7 @@
 package com.kh.insider.rest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import com.kh.insider.repo.DmRoomRepo;
 import com.kh.insider.repo.DmRoomUserProfileRepo;
 import com.kh.insider.repo.DmUserRepo;
 import com.kh.insider.service.DmServiceImpl;
+import com.kh.insider.vo.DmMemberInfoVO;
 import com.kh.insider.vo.DmMessageNickVO;
 import com.kh.insider.vo.DmRoomVO;
 import com.kh.insider.vo.DmUserVO;
@@ -130,7 +132,6 @@ public class DmRestController {
 		return dmMemberInfoRepo.dmMemberList(memberNo);
 	}	
 	
-	
 	//채팅방 생성
 	@PostMapping("/createChatRoom")
 	public DmRoomVO createRoom(HttpSession session) {
@@ -219,7 +220,7 @@ public class DmRestController {
     
     //특정 회원이 특정 채팅방에서 읽지 않은 메세지 수
     @GetMapping("/unreadMessageCount")
-    public List<DmUserDto> unreadDmCount(HttpSession session, @RequestParam int roomNo) {
+    public long unreadDmCount(HttpSession session, @RequestParam int roomNo) {
     	long memberNo = (Long) session.getAttribute("memberNo");
     	return dmServiceImpl.unreadMessageNum(memberNo, roomNo);
     }
@@ -244,6 +245,43 @@ public class DmRestController {
         return dmPrivacyRoomRepo.findRoomByMembers(inviterNo, inviteeNo);
     }
     
+//방목록 통합
+    @GetMapping("/loadDmRoomList")
+    public DmMemberInfoVO loadDmRoomList(HttpSession session){
+    	//필요 객체 생성
+    	DmMemberInfoVO dmMemberInfoVO = new DmMemberInfoVO();
+    	DmUserDto dmUserDto = new DmUserDto();
+    	long memberNo = (Long) session.getAttribute("memberNo");
+    	dmUserDto.setMemberNo(memberNo);
+    	//총 회원수, 읽지 않은 메세지 수 리스트 생성
+    	List<Integer> count = new ArrayList<>();
+    	List<Long> unreadCount = new ArrayList<>();
+    	
+    	//dm 방 목록 반환
+    	List<DmMemberInfoDto> dmRoomList = dmMemberInfoRepo.dmMemberList(memberNo);
+    	
+    	//배열 돌면서 채핑방에 참여한 총 회원수, 읽지 않은 메세지 수, 메세지 수 수정 수행
+    	for(DmMemberInfoDto dmRoom: dmRoomList) {
+    		
+    		int roomNo = dmRoom.getRoomNo();
+    		dmUserDto.setRoomNo(roomNo);
+    		
+    		//총 회원수
+    		int countNum = dmServiceImpl.countUsersInRoom(roomNo);
+    		count.add(countNum);
+    		//읽지 않은 메세지 수
+    		long unreadCountNum = dmServiceImpl.unreadMessageNum(memberNo, roomNo);
+    		unreadCount.add(unreadCountNum);
+    		
+    		//읽지 않은 메세지 수 업데이트
+    		dmUserDto.setUnreadMessage(unreadCountNum);
+    		dmServiceImpl.updateUnReadDm(dmUserDto);
+    	}
+    	dmMemberInfoVO.setDmRoomList(dmRoomList);
+    	dmMemberInfoVO.setCount(count);
+    	dmMemberInfoVO.setUnreadCount(unreadCount);
+    	return dmMemberInfoVO;
+    }
     // 로그인한 회원이 차단한 회원 목록 - 채팅방 생성 차단
     @GetMapping("/blockList/{memberNo}")
     public List<BlockWithProfileDto> getBlockList(@PathVariable long memberNo) {
