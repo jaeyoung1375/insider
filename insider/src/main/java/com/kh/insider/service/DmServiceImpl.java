@@ -547,7 +547,7 @@ public class DmServiceImpl implements DmService {
 	}
 	
 	//특정 회원이 특정 채팅방에서 읽지 않은 메세지 수
-   public List<DmUserDto> unreadMessageNum(long memberNo, int roomNo) {
+   public long unreadMessageNum(long memberNo, int roomNo) {
         return dmUserRepo.getUnreadMessageNum(memberNo, roomNo);
     }
    

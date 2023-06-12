@@ -642,6 +642,8 @@
                     keywordInvite: "",
                     
                     dmRoomList: [], //채팅방 목록
+                    dmRoomListCopy:[],
+                    count:[],
                     dmInviteRoomList:[],
                     isRoomJoin:false,
                     
@@ -879,7 +881,8 @@
             		else{
 	                    // 읽지 않은 메세지 수 테스트2
 						if (message.messageType === 6) { // 새로운 메시지 수
-							this.fetchDmRoomList();
+							//this.fetchDmRoomList();
+							this.loadDmRoomList();
 						}
 						else if(message.messageType==8){ //좋아요
 							const index = this.messageList.findIndex(obj => obj.messageNo == message.messageNo);
@@ -1033,21 +1036,30 @@
 				        const countResp = await axios.get(countUrl, { params: { roomNo: item.roomNo } });
 				        const count = countResp.data;
 				        	//채팅방 이름이 변경 되었고, 변경한 사람이 로그인한 회원 본인일 경우
-				            if (item.roomRename != null || item.memberNo === this.memberNo) {
-				                item.roomName = item.roomRename;
-				            } else {
-				                item.roomName = item.memberNick;
-				                
-				                //채팅방 이름이 변경되지 않았고, 그룹 채팅일 경우
-				                if (item.roomType === 0) {
-							        item.roomName = item.memberNick + " 외 " + (count - 1) + "명";
-				                }
-				            }
 				        });
 				        this.unreadDmCount();
 				    } catch (error) {
 				        console.error(error);
 				    }
+				},
+				//방이름 통합검색
+				async loadDmRoomList(){
+					const resp = await axios.get(contextPath+"/rest/loadDmRoomList");
+					this.dmRoomListCopy = [...resp.data.dmRoomList];
+					this.unreadMessage=[...resp.data.unreadCount];
+					for(let i=0; i<this.dmRoomListCopy.length; i++){
+				            if (this.dmRoomListCopy[i].roomRename != null || this.dmRoomListCopy[i].memberNo === this.memberNo) {
+				            	this.dmRoomListCopy[i].roomName = this.dmRoomListCopy[i].roomRename;
+				            } else {
+				            	this.dmRoomListCopy[i].roomName = this.dmRoomListCopy[i].memberNick;
+				                
+				                //채팅방 이름이 변경되지 않았고, 그룹 채팅일 경우
+				                if (this.dmRoomListCopy[i].roomType === 0) {
+				                	this.dmRoomListCopy[i].roomName = this.dmRoomListCopy[i].memberNick + " 외 " + (this.count[i] - 1) + "명";
+				                }
+				            }
+					}
+					this.dmRoomList=_.cloneDeep(this.dmRoomListCopy);
 				},
 				//채팅방에 참여한 회원 목록
 				async fetchUsersByRoomNo() {
@@ -1086,7 +1098,8 @@
 				            };
 				            await axios.put(updateRoomUrl, updateRoomData);
 				        }
-				        await this.fetchDmRoomList(); //채팅방 목록 불러오기
+				        //await this.fetchDmRoomList(); //채팅방 목록 불러오기
+				        this.loadDmRoomList();
 				        window.location.href = "${pageContext.request.contextPath}/dm/channel?room=" + roomNo;
 				        console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
 				    } catch (error) {
@@ -1164,7 +1177,8 @@
 				        
 				        console.log("회원이 퇴장 하였습니다.");
 				        window.location.href = "${pageContext.request.contextPath}/dm/channel";
-        				await this.fetchDmRoomList(); // 채팅방 목록 불러오기
+        				//await this.fetchDmRoomList(); // 채팅방 목록 불러오기
+				        this.loadDmRoomList();
         				this.roomNo=null;
 				    } catch (error) {
 				        console.error("회원 퇴장에서 오류가 발생하였습니다.", error);
@@ -1201,7 +1215,8 @@
 				            console.log("채팅방 이름이 성공적으로 추가되었습니다.");
 				        }
 				
-				        await this.fetchDmRoomList();
+				        //await this.fetchDmRoomList();
+				        this.loadDmRoomList();
 				    } catch (error) {
 				        console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
 				    }
@@ -1212,7 +1227,8 @@
 				        this.changeRoomName()
 				            .then(() => {
 				                this.hideRoomNameModal();
-				                this.fetchDmRoomList();
+				                //this.fetchDmRoomList();
+				                this.loadDmRoomList();
 				            })
 				            .catch(error => {
 				                console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
@@ -1255,7 +1271,7 @@
 							};
 							const resp = await axios.get(countUrl, { params: data });
 							//수정
-							const unreadMessage = resp.data[0];
+							const unreadMessage = resp.data;
 							this.unreadMessage.push(unreadMessage); //vue에 반환
 							const updateData = {
 									roomNo: roomNo,
@@ -1278,7 +1294,8 @@
 							unreadMessage: 0
 						};
 						await axios.put(updateUrl, data);
-						this.fetchDmRoomList();
+						//this.fetchDmRoomList();
+						this.loadDmRoomList();
 				    } catch (error) {
 				        console.error("읽지 않은 메세지 수 수정 오류", error);
 				    }
@@ -1448,7 +1465,8 @@
             	//메시지 불러오기
                 this.loadMessage();
             	//로그인한 회원의 채팅방 목록
-            	this.fetchDmRoomList();
+            	//this.fetchDmRoomList();
+            	this.loadDmRoomList();
             },
 			mounted(){
 				//Bootstrap modal 인스턴스를 초기화하고 저장
