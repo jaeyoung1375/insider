@@ -37,6 +37,7 @@ public class DmMemberListRepoImpl implements DmMemberListRepo{
 		return sqlSession.selectList("dmMemberList.InvitechooseDm", memberNo);
 	}
 
+/*
 	@Override
 	public List<DmMemberListDto> dmInviteMemberSearch(long memberNo, int roomNo, String keyword) {
 		Map<String, Object> param = new HashMap<String, Object>();
@@ -45,5 +46,6 @@ public class DmMemberListRepoImpl implements DmMemberListRepo{
 		param.put("roomNo", roomNo);
 		return sqlSession.selectList("dmMemberList.dmInviteMemberSearch", param);
 	}
+*/	
 	
 }
