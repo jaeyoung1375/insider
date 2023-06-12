@@ -128,6 +128,7 @@
 	
 	
 	
+	
 
 /* 차단 관련 css */
 .report-content:hover{
@@ -320,7 +321,7 @@ display:none;
                             <h4 v-if="board.boardWithNickDto.boardLikeValid == 0" class="mt-1"><b @click="showLikeListModal(board.boardWithNickDto.boardNo)" style="cursor: pointer;">좋아요 {{boardLikeCount[index]}}개</b></h4>
                             <h4 v-else class="mt-1"><b @click="showLikeListModal(board.boardWithNickDto.boardNo)" style="cursor: pointer;">좋아요 여러개</b></h4>
                             <h4><a class="btn btn-default" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a></h4>
-                            <p style="height: 20px;overflow: hidden; width: 400px;white-space: nowrap;text-overflow: ellipsis;margin-bottom:5px;">
+                            <p style="height: 23px;overflow: hidden; width: 400px;white-space: nowrap;text-overflow: ellipsis;margin-bottom:5px;">
                             	<span class="textHide">
                             		{{board.boardWithNickDto.boardContent}}
                             		<br v-if="boardList[index].boardTagList.length > 0"><br v-if="boardList[index].boardTagList.length > 0">
@@ -496,7 +497,7 @@ display:none;
 							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="45" height="45" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
 							<img v-else src="${pageContext.request.contextPath}/static/image/user.jpg" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px" width="45" height="45">
 							
-							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; margin-left: 3.5px; font-weight: bold;">{{replyList[index].memberNick}}</p>
+							<p  style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; margin-left: 3.5px; font-weight: bold;">{{replyList[index].memberNick}}</p>
 												
 						</a>
 						<p style="padding-left:3.5em; margin-bottom:1px; font-size:0.9em; margin-left: 3.5px;">{{replyList[index].replyContent}}</p>
@@ -1686,7 +1687,7 @@ Vue.createApp({
     },
     updated(){
     	$(".textHide").each(function(){
-    		if($(this).width()>400||$(this).height()>21){
+    		if($(this).width()>400||$(this).height()>24){
         		$(this).parent("p").next("h6").addClass("moreText");
     		}
     	});
