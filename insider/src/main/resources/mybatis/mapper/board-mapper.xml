@@ -245,7 +245,7 @@
 		select * from board_attachment where board_no = #{boardNo}
 	</select>
 	<select id="boardListTreeSelectTag" resultType="boardTagDto">
-		select * from board_tag where board_no=#{boardNo} order by board_tag_no asc
+		select * from board_tag_set where board_no=#{boardNo} and tag_available = 1 order by board_tag_no asc
 	</select>
 	
 	<!-- 계층형 조회 메인 구문 팔로우, 차단 구현 (전체 기간) -->

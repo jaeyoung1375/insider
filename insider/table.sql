@@ -105,6 +105,11 @@ board_no REFERENCES board(board_no)
 );
 CREATE SEQUENCE board_tag_seq;
 
+-- board_tag_set view 생성
+create or replace view board_tag_set as
+select b.*, t.tag_available from board_tag b
+inner join tag t on b.tag_name = t.tag_name;
+
 CREATE TABLE tag_follow(
 tag_name REFERENCES tag(tag_name),
 member_no REFERENCES member(MEMBER_no) on delete cascade,

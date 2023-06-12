@@ -11,4 +11,7 @@ public interface BoardTagRepo {
 	void delete(int boardNo);
 	//boardNo로 태그 리스트 반환
 	List<BoardTagDto> selectList(int boardNo);
+	//boardNo로 태그 리스트 반환(금지 태그 제외)
+	List<BoardTagDto> selectWithout(int boardNo);
+	
 }
