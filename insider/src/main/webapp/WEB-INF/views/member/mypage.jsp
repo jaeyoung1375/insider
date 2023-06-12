@@ -1998,7 +1998,7 @@
            		});
            		
            	 for (const board of resp.data) {
-             	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+             	this.isLiked.push(board.check);
              	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
                }
            		
@@ -2785,7 +2785,7 @@
         			const resp = await axios.get("/rest/member/bookmarkMyPost");	
         			
         			for(const board of resp.data){
-        				this.isLiked2.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+                    	this.isLiked2.push(board.check);
         				this.boardLikeCount2.push(board.boardWithNickDto.boardLike);
         			}
         			

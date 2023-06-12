@@ -641,7 +641,7 @@
 				this.loading=true;
 				const resp = await axios.get(contextPath+"/rest/board/list/"+this.page);
 				for (const board of resp.data) {
-	            	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+	            	this.isLiked.push(board.check);
 	            	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
 	              }
 				this.boardList.push(...resp.data);
@@ -657,7 +657,7 @@
 				this.additionalLoading=true;
 				const resp = await axios.get(contextPath+"/rest/board/additionalList/"+this.additionalPage);
 				for (const board of resp.data) {
-	            	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+	            	this.isLiked.push(board.check);
 	            	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
 	              }
 				this.boardList.push(...resp.data);
