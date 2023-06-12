@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.insider.dto.BoardLikeDto;
 import com.kh.insider.dto.TagDto;
 import com.kh.insider.dto.TagFollowDto;
+import com.kh.insider.repo.BoardLikeRepo;
 import com.kh.insider.repo.BoardRepo;
 import com.kh.insider.repo.TagFollowRepo;
 import com.kh.insider.repo.TagRepo;
@@ -38,6 +40,8 @@ public class TagRestController {
 	private TagFollowRepo tagFollowRepo;
 	@Autowired
 	private ForbiddenService forbiddenService;
+	@Autowired
+	private BoardLikeRepo boardLikeRepo;
 	
 	
 	@GetMapping("/list/{tagName}")
@@ -47,7 +51,17 @@ public class TagRestController {
 		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVO(memberNo, page);
 		boardSearchVO.setBoardCount(15);
 		boardSearchVO.setTagName(tagName);
-		return forbiddenService.changeForbiddenWords(boardRepo.selectListWithTag(boardSearchVO));
+		
+		List<BoardListVO> boardList = boardRepo.selectListWithTag(boardSearchVO);
+		//좋아요 체크
+		BoardLikeDto boardLikeDto = new BoardLikeDto();
+		for(BoardListVO board:boardList) {
+			boardLikeDto.setMemberNo(memberNo);
+			boardLikeDto.setBoardNo(board.getBoardWithNickDto().getBoardNo());
+			board.setCheck(boardLikeRepo.check(boardLikeDto));
+		}
+		
+		return forbiddenService.changeForbiddenWords(boardList);
 	}
 	@GetMapping("/{tagName}")
 	public Map<String, Integer> getHomeData(HttpSession session, @PathVariable String tagName){

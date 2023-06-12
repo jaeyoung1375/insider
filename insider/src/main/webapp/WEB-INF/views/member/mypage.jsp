@@ -2000,7 +2000,7 @@
            		});
            		
            	 for (const board of resp.data) {
-             	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+             	this.isLiked.push(board.check);
              	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
                }
            		
@@ -2346,11 +2346,13 @@
              async replyDelete(index,index2) {
              	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList[index].replyNo);
              	this.replyLoad(index2);
+             	this.hideAdditionalMenuModal();
              },
              //댓글 삭제(북마크)
              async replyDelete2(index,index2) {
              	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList[index].replyNo);
              	this.replyLoad2(index2);
+             	this.hideAdditionalMenuModal();
              },
              
            
@@ -2785,7 +2787,7 @@
         			const resp = await axios.get("/rest/member/bookmarkMyPost");	
         			
         			for(const board of resp.data){
-        				this.isLiked2.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+                    	this.isLiked2.push(board.check);
         				this.boardLikeCount2.push(board.boardWithNickDto.boardLike);
         			}
         			

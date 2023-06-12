@@ -245,7 +245,8 @@ display:none;
 	
 	<div v-if="followCount == 0 && tagFollowCount == 0" class="container" style="margin-top: 20px; max-width: 1000px">
 		<div class="text-center">
-			<h2>아직 팔로우가 없습니다.</h2>
+			<img class="mt-3" src="${pageContext.request.contextPath}/static/image/follow.png">
+			<h2 class="mt-4">아직 팔로우가 없습니다.</h2>
 			<h3>새 친구를 만들어보세요!</h3>
 		</div>
 	</div>
@@ -713,12 +714,16 @@ display:none;
 				</div>
 				
 				<div class="modal-body p-0" v-else>
-					<div class="row p-2 mt-2" >
-						<div class="col text-center">
-							<h2 class="mt-1">아직 좋아요가 없습니다</h2><br>
-							<h3>첫 번째 좋아요를 눌러주세요</h3>
+					<div class="row p-1 mt-2" >
+						<div class="col text-center mb-1">
+							<h5 class="mt-1 text-center justify-content-center">아직 좋아요가 없습니다</h5>
 						</div>
 	 			 	</div>		
+					<div class="row p-1 mt-1">
+						<div class="col text-center mb-2 ">	
+							<h6>첫 번째 좋아요를 눌러주세요</h6>
+						</div>
+					</div>	
 				</div>
 					
 				
@@ -934,7 +939,8 @@ Vue.createApp({
            
             
             for (const board of resp.data) {
-            	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+            	//this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+            	this.isLiked.push(board.check);
             	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
               }
 
@@ -1208,6 +1214,7 @@ Vue.createApp({
         async replyDelete(index,index2) {
         	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList[index].replyNo);
         	this.replyLoad(index2);
+        	this.hideAdditionalMenuModal();
         },
         
         //대댓글

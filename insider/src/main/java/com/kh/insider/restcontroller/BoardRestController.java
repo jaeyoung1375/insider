@@ -76,8 +76,15 @@ public class BoardRestController {
 		boardSearchVO.setLoginMemberNo(memberNo);
 		boardSearchVO.setBoardCount(2);
 		
+		
 		//금지어 정규표현식 검사 후 반환
 		List<BoardListVO> boardList = boardRepo.selectListWithFollowNew(boardSearchVO);
+		BoardLikeDto boardLikeDto = new BoardLikeDto();
+		for(BoardListVO board:boardList) {
+			boardLikeDto.setMemberNo(memberNo);
+			boardLikeDto.setBoardNo(board.getBoardWithNickDto().getBoardNo());
+			board.setCheck(boardLikeRepo.check(boardLikeDto));
+		}
 		return forbiddenService.changeForbiddenWords(boardList);
 		//return boardRepo.selectListWithFollow(boardSearchVO);
 	}
@@ -93,6 +100,12 @@ public class BoardRestController {
 		
 		//금지어 정규표현식 검사 후 반환
 		List<BoardListVO> boardList =boardRepo.selectListWithFollowOld(boardSearchVO);
+		BoardLikeDto boardLikeDto = new BoardLikeDto();
+		for(BoardListVO board:boardList) {
+			boardLikeDto.setMemberNo(memberNo);
+			boardLikeDto.setBoardNo(board.getBoardWithNickDto().getBoardNo());
+			board.setCheck(boardLikeRepo.check(boardLikeDto));
+		}
 		return forbiddenService.changeForbiddenWords(boardList);
 		//return boardRepo.selectListWithFollow(boardSearchVO);
 	}
@@ -105,7 +118,16 @@ public class BoardRestController {
 		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVOWithDistance(memberNo, page);
 		boardSearchVO.setBoardCount(15);
 		
-		return forbiddenService.changeForbiddenWords(boardRepo.selectListWithoutFollow(boardSearchVO));
+		List<BoardListVO> boardList = boardRepo.selectListWithoutFollow(boardSearchVO);
+		//좋아요 체크
+		BoardLikeDto boardLikeDto = new BoardLikeDto();
+		for(BoardListVO board:boardList) {
+			boardLikeDto.setMemberNo(memberNo);
+			boardLikeDto.setBoardNo(board.getBoardWithNickDto().getBoardNo());
+			board.setCheck(boardLikeRepo.check(boardLikeDto));
+		}
+		
+		return forbiddenService.changeForbiddenWords(boardList);
 	}
 	@GetMapping("/additionalList/{page}")
 	public List<BoardListVO> additionalBoardList(@PathVariable int page, HttpSession session){
@@ -114,7 +136,16 @@ public class BoardRestController {
 		BoardSearchVO boardSearchVO = boardSearchService.getBoardSearchVOWithDistance(memberNo, page);
 		boardSearchVO.setBoardCount(15);
 		
-		return forbiddenService.changeForbiddenWords(boardRepo.selectListWithoutFollowOutDistance(boardSearchVO));
+		List<BoardListVO> boardList = boardRepo.selectListWithoutFollowOutDistance(boardSearchVO);
+		//좋아요 체크
+		BoardLikeDto boardLikeDto = new BoardLikeDto();
+		for(BoardListVO board:boardList) {
+			boardLikeDto.setMemberNo(memberNo);
+			boardLikeDto.setBoardNo(board.getBoardWithNickDto().getBoardNo());
+			board.setCheck(boardLikeRepo.check(boardLikeDto));
+		}
+		
+		return forbiddenService.changeForbiddenWords(boardList);
 	}
 	//좋아요
 	@PostMapping("/like")
