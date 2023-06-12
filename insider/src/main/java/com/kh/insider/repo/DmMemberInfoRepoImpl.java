@@ -30,4 +30,10 @@ public class DmMemberInfoRepoImpl implements DmMemberInfoRepo{
         return sqlSession.selectList("dmMemberInfo.findUsersByRoomNo", params);
 	}
 
+	//특정 회원이 특정 채팅방에서 읽지 않은 메세지 수(본인이 전송한 메세지는 제외)
+	@Override
+	public Integer getUnreadMessages(Long memberNo) {
+		return sqlSession.selectOne("dmMemberInfo.getUnreadMessages", memberNo);
+	}
+
 }
