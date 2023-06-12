@@ -6,7 +6,7 @@
     
 <mapper namespace="dmMemberList">
 
-	<!-- 팔로워 회원 목록 + 나를 차단한 사람, 내가 차단한 사람, 일대일 채팅방 참여 회원 제외 + memberNick + attachmentNo -->
+	<!-- 팔로우 회원 목록 + 나를 차단한 사람, 내가 차단한 사람, 일대일 채팅방 참여 회원 제외 + memberNick + attachmentNo -->
 	<select id="chooseDm" resultType="DmMemberListDto">
         SELECT * 
 		FROM (
@@ -66,8 +66,62 @@
 		        (dpr.inviter_no = #{memberNo} AND dpr.invitee_no = m.member_no) OR
 		        (dpr.inviter_no = m.member_no AND dpr.invitee_no = #{memberNo})
 		    )
+		    UNION
+		    SELECT du.member_no
+		    FROM dm_user du
+		    WHERE du.room_no = #{roomNo} AND du.member_no = m.member_no
 		)
 		AND <![CDATA[(INSTR(m.member_nick, #{keyword}) > 0 OR INSTR(m.member_name, #{keyword}) > 0)]]>
+	</select>
+	
+	
+	<!-- 초대 : 팔로우 회원 목록 + 나를 차단한 사람, 내가 차단한 사람, + memberNick + attachmentNo -->
+	<select id="InvitechooseDm" resultType="DmMemberListDto">
+        SELECT * 
+		FROM (
+		    SELECT * 
+		    FROM (
+		        SELECT m.member_no, m.member_nick, m.member_name, mp.attachment_no 
+		        FROM follow f
+		        INNER JOIN member m ON f.follow_follower = m.member_no
+		        LEFT OUTER JOIN member_profile mp ON mp.member_no = m.member_no
+		        WHERE f.member_no = #{memberNo}
+		        AND NOT EXISTS (
+		            SELECT 1
+		            FROM block b
+		            WHERE b.block_no = #{memberNo} AND b.member_no = m.member_no
+		        )
+		        AND NOT EXISTS (
+		            SELECT 1
+		            FROM block b
+		            WHERE b.member_no = #{memberNo} AND b.block_no = m.member_no
+		        )
+		    )
+		    ORDER BY dbms_random.value
+		)
+		<![CDATA[WHERE rownum <= 10]]>
+	</select>
+	
+	<!-- 초대 : 나를 차단한 사람, 내가 차단한 사람을 제외한 모든 회원 조회 + memberNick + attachmentNo -->
+	<select id="dmInviteMemberSearch" resultType="DmMemberListDto">
+		SELECT m.member_no, m.member_nick, m.member_name, mp.attachment_no 
+		FROM member m
+		LEFT OUTER JOIN member_profile mp ON m.member_no = mp.member_no
+		WHERE m.member_no != #{memberNo} 
+		AND m.member_no NOT IN (
+		    SELECT b.member_no
+		    FROM block b
+		    WHERE b.block_no = #{memberNo}
+		    UNION
+		    SELECT b.block_no
+		    FROM block b
+		    WHERE b.member_no = #{memberNo}
+		    UNION
+		    SELECT du.member_no
+		    FROM dm_user du
+		    WHERE du.room_no = #{roomNo} AND du.member_no = m.member_no
+		)
+		AND <![CDATA[(INSTR(m.member_nick, #{keywordInvite}) > 0 OR INSTR(m.member_name, #{keywordInvite}) > 0)]]>
 	</select>
     
 </mapper>

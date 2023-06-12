@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.insider.dto.BlockWithProfileDto;
 import com.kh.insider.dto.DmMemberInfoDto;
 import com.kh.insider.dto.DmMemberListDto;
 import com.kh.insider.dto.DmRoomDto;
 import com.kh.insider.dto.DmRoomRenameDto;
 import com.kh.insider.dto.DmUserDto;
+import com.kh.insider.repo.BlockRepo;
 import com.kh.insider.repo.DmMemberInfoRepo;
 import com.kh.insider.repo.DmMemberListRepo;
 import com.kh.insider.repo.DmMessageNickRepo;
@@ -64,6 +66,9 @@ public class DmRestController {
 	@Autowired
 	private DmPrivacyRoomRepo dmPrivacyRoomRepo;
 	
+	@Autowired
+	private BlockRepo blockRepo;
+	
 
 	//메세지 리스트
 	@GetMapping("/message/{roomNo}")
@@ -97,9 +102,27 @@ public class DmRestController {
 	@GetMapping("/dmMemberSearch")
 	public List<DmMemberListDto> dmMemberSearch(
 				HttpSession session,
+				@RequestParam int roomNo,
 				@RequestParam String keyword){
 		long memberNo = (Long) session.getAttribute("memberNo");
-		return dmMemberListRepo.dmMemberSearch(memberNo, keyword);
+		return dmMemberListRepo.dmMemberSearch(memberNo, roomNo, keyword);
+	}
+	
+	//초대 : 팔로워 회원 목록
+	@GetMapping("/dmInviteMemberList")
+	public List<DmMemberListDto> followInviteMemberList(HttpSession session) {
+		long memberNo = (Long) session.getAttribute("memberNo");
+		return dmMemberListRepo.InvitechooseDm(memberNo);
+	}
+	
+	//초대 : 차단한 회원을 제외한 전체 회원 목록
+	@GetMapping("/dmInviteMemberSearch")
+	public List<DmMemberListDto> dmInviteMemberSearch(
+			HttpSession session,
+			@RequestParam int roomNo,
+			@RequestParam String keyword){
+		long memberNo = (Long) session.getAttribute("memberNo");
+		return dmMemberListRepo.dmInviteMemberSearch(memberNo, roomNo, keyword);
 	}
 	
 	//로그인 회원이 참여중인 채팅방 목록
@@ -122,7 +145,7 @@ public class DmRestController {
 	    dmRoomVO.setRoomName(memberNick);
 		return dmRoomVO;
 	}
-	
+
 	//회원 입장
 	@PostMapping("/enterUsers")
 	public void enterUsersInRoom(@RequestBody DmRoomVO dmRoomVO) {
@@ -259,4 +282,16 @@ public class DmRestController {
     	dmMemberInfoVO.setUnreadCount(unreadCount);
     	return dmMemberInfoVO;
     }
+    // 로그인한 회원이 차단한 회원 목록 - 채팅방 생성 차단
+    @GetMapping("/blockList/{memberNo}")
+    public List<BlockWithProfileDto> getBlockList(@PathVariable long memberNo) {
+        return blockRepo.getBlockList(memberNo);
+    }
+
+    // 로그인한 회원이 차단당한 회원 목록 - 채팅방 생성 차단
+    @GetMapping("/blockedList/{memberNo}")
+    public List<BlockWithProfileDto> getBlockedList(@PathVariable long memberNo) {
+        return blockRepo.getBlockedList(memberNo);
+    }
+    
 }
