@@ -225,7 +225,7 @@
     }
 </style>
 
-<!--  <script type="text/javascript">
+<%--  <script type="text/javascript">
   document.addEventListener('DOMContentLoaded', function() {
 
     const darkModeEnabled = localStorage.getItem('darkmode') === 'on';
@@ -248,7 +248,7 @@
       }
     });
   });
-</script> -->
+</script> --%>
 
 
 <body>
