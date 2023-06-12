@@ -517,10 +517,6 @@ $(function(){
 </div>
 
 
-
-
-
-
 <!------------------------------------------------------------------------------------->
 
 
@@ -578,57 +574,54 @@ $(function(){
     		  this.uploadImageIndex = this.files.length;
     		},
 
-    	 
     		imageUpload() {
-    			  for (let i = 0; i < this.$refs.files.files.length; i++) {
-    			    const file = this.$refs.files.files[i];
-    			    const fileSizeInMB = file.size / (1024 * 1024); // mb로 계산
+  			  for (let i = 0; i < this.$refs.files.files.length; i++) {
+  			    const file = this.$refs.files.files[i];
+  			    const fileSizeInMB = file.size / (1024 * 1024); // mb로 계산
+  			    if (fileSizeInMB > 5) {
+  			      alert('첨부파일 용량은 5MB를 넘을 수 없습니다.'); 
+  			      return; // 업로드 중지
+  			    }
+  			    const preview = URL.createObjectURL(file);
+  			    const number = this.files.length + i;
+  			    this.files = [
+  			      ...this.files,
+  			      {
+  			        file,
+  			        preview,
+  			        number
+  			      }
+  			    ];
+  			  }
+  			  this.uploadImageIndex = this.files.length;
+  			},
+  			
+  			imageAddUpload() {
+  			  const selectedFiles = this.$refs.files2.files;
 
-    			    if (fileSizeInMB > 5) {
-    			      alert('첨부파일 용량은 5MB를 넘을 수 없습니다.'); 
-    			      return; // 업로드 중지
-    			    }
+  			  for (let i = 0; i < selectedFiles.length && this.files.length < 5; i++) {
+  			    const file = selectedFiles[i];
+  			    const fileSizeInMB = file.size / (1024 * 1024);
 
-    			    const preview = URL.createObjectURL(file);
-    			    const number = this.files.length + i;
+  			    if (fileSizeInMB > 5) {
+  			      alert('첨부파일 용량은 5MB를 넘을 수 없습니다.');
+  			      return;
+  			    }
 
-    			    this.files = [
-    			      ...this.files,
-    			      {
-    			        file,
-    			        preview,
-    			        number
-    			      }
-    			    ];
-    			  }
-    			  this.uploadImageIndex = this.files.length;
-    			},
+  			    this.files = [
+  			      ...this.files,
+  			      {
+  			        file,
+  			        preview: URL.createObjectURL(file),
+  			        number: this.files.length + i
+  			      }
+  			    ];
+  			  }
 
-    			imageAddUpload() {
-    			  let num = -1;
-    			  for (let i = 0; i < this.$refs.files2.files.length; i++) {
-    			    const file = this.$refs.files2.files[i];
-    			    const fileSizeInMB = file.size / (1024 * 1024); // mb로 계산
+  			  this.uploadImageIndex = this.files.length;
+  			},
 
-    			    if (fileSizeInMB > 5) {
-    			   		alert('첨부파일 용량은 5MB를 넘을 수 없습니다.'); 
-    			      return; // 업로드 중지
-    			    }
 
-    			    this.files = [
-    			      ...this.files,
-    			      {
-    			        file: file,
-    			        preview: URL.createObjectURL(file),
-    			        number: i + this.uploadImageIndex
-    			      }
-    			    ];
-    			    num = i;
-    			  }
-    			  this.uploadImageIndex = this.uploadImageIndex + num + 1;
-    			},
-
-      
     	fileDeleteButton(e){
     		const name = e.target.getAttribute('name');
     		this.files = this.files.filter(data => data.number != Number(name));
