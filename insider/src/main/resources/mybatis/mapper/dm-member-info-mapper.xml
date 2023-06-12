@@ -57,4 +57,24 @@
 		) WHERE rn = 1
 	</select>
 	
+	<!-- dm 읽지 않은 메세지 수 알림  -->
+	<select id="getUnreadMessages" resultType="Integer">
+	    SELECT 
+	        SUM(
+	            (SELECT COUNT(*)
+	            FROM dm_message
+	            WHERE dm_message.room_no = dm_user.room_no
+	                AND message_send_time > dm_user.read_dm_time
+	                AND message_sender != dm_user.member_no
+	                AND message_sender NOT IN (
+	                    SELECT block_no FROM block WHERE member_no = #{memberNo}
+	                )
+	            )
+	        ) AS total_unread_messages
+	    FROM 
+	        dm_user
+	    WHERE 
+	        member_no = #{memberNo}
+	</select>
+	
 </mapper>
