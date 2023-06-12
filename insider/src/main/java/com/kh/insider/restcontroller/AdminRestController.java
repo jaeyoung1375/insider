@@ -180,8 +180,8 @@ public class AdminRestController {
 		searchVO.setColumn("member_nick");
 		return searchRepo.selectStatsList(searchVO);
 	}
-	@DeleteMapping("/board")
-	public void deleteBoard(@ModelAttribute ReportResultDto reportResultDto, HttpSession session) {
+	@PutMapping("/board")
+	public void deleteBoard(@RequestBody ReportResultDto reportResultDto, HttpSession session) {
 		int memberLevel = (int)session.getAttribute("memberLevel");
 		if(memberLevel==0) return;
 		//태그를 지움

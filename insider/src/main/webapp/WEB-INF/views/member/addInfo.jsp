@@ -251,7 +251,6 @@
 	                	
 	                	
 	                  const parts = this.memberBirth.split('/'); // '/'로 분리된 연도, 월, 일
-						console.log(parts);
 	                  if (parts.length === 3) {
 	                    const year = parts[0];
 	                    const month = parts[1].padStart(2, '0'); // 월을 2자리로 맞추고 부족한 부분은 0으로 채움

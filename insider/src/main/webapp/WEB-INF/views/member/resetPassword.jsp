@@ -132,12 +132,11 @@
                 	          memberPassword: this.password,
                 	        });
                 		
-                		window.location.href="/";
+                		window.location.href="/member/login";
                 		
                 	
                 		
                 	}catch(error){
-                		console.log("error : "+error);
                 	}				
    					
                 },
