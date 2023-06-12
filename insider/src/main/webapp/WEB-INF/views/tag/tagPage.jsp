@@ -616,8 +616,6 @@
 	        	  //세팅값 불러오기
 	        	  const response = await axios.get(contextPath+"/rest/member/setting/" + memberNo);
 	        	  const set = response.data.settingAllowReply;
-	        	  //console.log(set);
-	        	  //console.log(memberNo, loginNo);       	  
 	        	  
 	        	  const requestData = {
 	        	    replyOrigin: boardNo,
@@ -650,7 +648,6 @@
 	        	  else if(set == 2){
 	        		  await this.loadFollower(memberNo);
 	              	  if(loginNo == memberNo) this.followerList.push(loginNo); 
-	        		  //console.log(this.followerList);
 	        		  if(this.followerList.includes(loginNo)){
 	        			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
 	              	      this.replyLoad(index);
@@ -786,7 +783,6 @@
 			    }
 			  }
 			
-			  console.log("북마크: " + this.bookmarkCheck.map(item => item.boardNo));
 			},
 			
 			bookmarkChecked(boardNo){
@@ -796,7 +792,6 @@
 			async bookmarkList(){
 				const resp = await axios.get("/rest/bookmark/selectOne");
 				this.bookmarkCheck.push(...resp.data);
-				console.log("북마크 리스트 : "+this.bookmarkCheck.map(item => item.boardNo));
 			},
 			
 			/*---------북마크 종료 ----------------- */	    

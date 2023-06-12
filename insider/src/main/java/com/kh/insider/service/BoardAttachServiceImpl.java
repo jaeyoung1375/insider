@@ -41,17 +41,18 @@ public class BoardAttachServiceImpl implements BoardAttachService{
 //		BoardDto newDto = boardRepo.insert(boardDto);
 		boardRepo.insert(boardDto);
 		if (boardAttachment != null) {
-		for(MultipartFile file : boardAttachment) {
-			int attachmentNo = attachmentRepo.save(file);
-			//동영상 파일 여부 입력을 위한 코드 추가
-			AttachmentDto attachmentDto = attachmentRepo.selectOne(attachmentNo);
-			boardAttachmentRepo.insert(BoardAttachmentDto.builder()
-					.boardNo(boardDto.getBoardNo())
-					.attachmentNo(attachmentNo)
-					.attachmentType(attachmentDto.getAttachmentType())
-					.build());
+			for(MultipartFile file : boardAttachment) {
+				if(file.getOriginalFilename()==null || file.getOriginalFilename().length()==0)continue;
+				System.out.println(file.getOriginalFilename());
+				int attachmentNo = attachmentRepo.save(file);
+				//동영상 파일 여부 입력을 위한 코드 추가
+				AttachmentDto attachmentDto = attachmentRepo.selectOne(attachmentNo);
+				boardAttachmentRepo.insert(BoardAttachmentDto.builder()
+						.boardNo(boardDto.getBoardNo())
+						.attachmentNo(attachmentNo)
+						.attachmentType(attachmentDto.getAttachmentType())
+						.build());
 			}
-		log.debug("사진 갯수:{}", boardAttachment.size());
 		}
 	}
 	

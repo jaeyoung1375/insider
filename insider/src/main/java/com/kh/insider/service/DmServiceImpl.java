@@ -280,8 +280,13 @@ public class DmServiceImpl implements DmService {
 			msg.setMessageType(MessageType);
 			msg.setRoomNo(roomNo);
 			//프로필 사진 번호 입력
-			int attachmentNo = memberProfileRepo.selectAttachNo(user.getMemberNo());
-			msg.setProfileNo(attachmentNo);
+			Integer attachmentNo = memberProfileRepo.selectAttachNo(user.getMemberNo());
+			if (attachmentNo == null) {
+				msg.setProfileNo(0);
+			}else {
+				msg.setProfileNo(attachmentNo);
+				
+			}
 			
 			//JSON 변환
 			String json = mapper.writeValueAsString(msg);

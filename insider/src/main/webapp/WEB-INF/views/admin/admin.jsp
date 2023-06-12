@@ -900,7 +900,7 @@
 					</div>
 				</div>
 				<hr>
-				<div class="row mt-4">
+<%-- 				<div class="row mt-4">
 					<div class="col">
 						<h4 class="m-0">방문자 수 통계</h4>
 					</div>
@@ -933,8 +933,8 @@
 						</div>
 						<canvas ref="loginChart"></canvas>
 					</div>
-				</div>
-				<hr>
+				</div> 
+				<hr>--%>
 				<!-- 가입자 수 퉁계 -->
 				
 				<div class="row mt-4">
@@ -2567,10 +2567,8 @@
 					this.socket.send(JSON.stringify(joinData))
 				};
 				this.socket.onclose= ()=>{
-					console.log("연결종료")
 				};
 				this.socket.onerror= ()=>{
-					console.log("연결종료")
 				};
 				//메세지를 수신하면 수신된 메세지로 태그를 만들어서 추가
 				this.socket.onmessage=(e)=>{
@@ -3067,7 +3065,6 @@
 				this.changeModal("");
 			},
 			async insertReportSuspension(days, contents){
-				console.log("실행")
 				let data={
 					memberNo:this.reportList[this.reportSuspensionIndex[0]].reportMemberNo,
 					memberSuspensionDays:this.reportSuspensionContent[0],
@@ -3124,7 +3121,7 @@
 			//게시물 관리에서 삭제 기능
 			async boardDelete(boardNo){
 				const data={reportTableNo:boardNo, reportTable:'board', reportResult:2};
-				const resp = await axios.delete(contextPath+"/rest/admin/board", data);
+				const resp = await axios.put(contextPath+"/rest/admin/board", data);
 				this.reportDetailData.reportResult=2;
 				this.hideBoardViewModal();
 				this.loadBoardList();
