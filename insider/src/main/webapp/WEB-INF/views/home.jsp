@@ -353,7 +353,7 @@ display:none;
          
         
          
-          <div class="profile-preview" v-if="selectedItem === board" @mouseleave="profileLeave" style="border-radius:15px; margin-left:100px; margin-bottom:70px;">
+          <div class="profile-preview" v-if="selectedItem === board" @mouseleave="profileLeave" style="border-radius:15px; margin-bottom:70px;">
                   <!-- 프로필 미리보기 내용 -->
                    	<div style="display: flex; align-items: center;">
 						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' +board.boardWithNickDto.attachmentNo" width="75" height="75" style="border-radius: 50%;"> 
@@ -1632,6 +1632,7 @@ Vue.createApp({
            	sessionStorage.setItem("recommendFriendsList",JSON.stringify(this.recommendFriendsList));
            	console.log("친구 추천 목록 : " +this.recommendFriendsList.length);
             },
+            
    	
 		
     },
