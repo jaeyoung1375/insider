@@ -76,7 +76,7 @@ FROM member_with_profile
 WHERE (
     MEMBER_NO != #{memberNo}
     AND (
-        SQRT(POWER(MEMBER_LON - (SELECT MEMBER_LON FROM member WHERE MEMBER_NO = #{memberNo}), 2) + POWER(MEMBER_LAT - (SELECT MEMBER_LAT FROM member WHERE MEMBER_NO = #{memberNo}), 2)) * 111.319 <= 5
+        SQRT(POWER(MEMBER_LON - (SELECT MEMBER_LON FROM member WHERE MEMBER_NO = #{memberNo}), 2) + POWER(MEMBER_LAT - (SELECT MEMBER_LAT FROM member WHERE MEMBER_NO = #{memberNo}), 2)) * 111.319 <= #{settingDistance}
     )
     AND MEMBER_NO NOT IN (
         SELECT DISTINCT follow_follower

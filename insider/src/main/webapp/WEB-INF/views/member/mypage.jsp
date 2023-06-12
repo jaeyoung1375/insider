@@ -302,7 +302,7 @@
 			<div class="card-container" style="display:flex; margin-top:20px;" v-else>
 			<!-- 이전 페이지로 이동하는 버튼 -->
 				<div class="button-container" style="display: flex; justify-content: center; align-items: center;">
-					<i class="fa-solid fa-arrow-left"  @click="currentPage--" :class="{'hide' : currentPage === 0}" style="height:24px; weight:24px; margin-left:5px;"></i>
+					<i class="fa-sharp fa-solid fa-angle-left"  @click="currentPage--" :class="{'hide' : currentPage === 0}" style="height:24px; weight:24px; margin-left:5px; position:absolute; color:gray;"></i>
 				</div>
 
 			  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style="display:flex;">
@@ -328,8 +328,8 @@
 			  </div>
 		<div class="button-container" style="display: flex; justify-content: center; align-items: center;">
   		
-  			<i class="fa-sharp fa-solid fa-arrow-right" @click="currentPage++"  :class="{'hide':currentPage === paginatedRecommendFriends.length - 1}" 
-  			style="height: 24px; weight: 24px; margin-left:20px;"></i>
+  			<i class="fa-sharp fa-solid fa-angle-right" @click="currentPage++"  :class="{'hide':currentPage === paginatedRecommendFriends.length - 1}" 
+  			style="height: 24px; weight: 24px; margin-left:50px; position:absolute; color:gray;"></i>
 		</div>
 			</div>
 
@@ -466,11 +466,11 @@
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
                 <div class="carousel-indicators">
-                  <button v-for="(attach, index2) in myBoardList[detailIndex].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
+                  <button  v-if="myBoardList[detailIndex].boardAttachmentList.length > 1" v-for="(attach, index2) in myBoardList[detailIndex].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
                 </div>
                
                 <div class="carousel-inner">
-                  <div v-if="myBoardList[detailIndex].boardAttachmentList.length > 1" v-for="(attach, index2) in myBoardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
+                  <div v-for="(attach, index2) in myBoardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
                   	<video  style="width:700px; height:700px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+attach.imageURL" v-if="attach.video"
 							:autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto"></video> 
                    	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" style="width:700px; height:700px;" v-else> 

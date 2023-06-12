@@ -222,7 +222,7 @@ display:none;
 			<div class="d-flex justify-content-flex-start" style="margin-left:17px;">
 				<!-- 이전 버튼 -->
 				<div class="button-container" style="display: flex; justify-content: center; align-items: center;">
-					<i class="fa-solid fa-arrow-left"  @click="currentPage--" :class="{'hide' : currentPage === 0}" style="height:24px; weight:24px; margin-left:5px;"></i>
+					<i class="fa-sharp fa-solid fa-angle-left"  @click="currentPage--" :class="{'hide' : currentPage === 0}" style="height:24px; weight:24px; position:absolute; color:gray; margin-right:60px; margin-bottom:30px;"></i>
 				</div>
 		  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style=" padding-right: 25px">
 		  <a :href="'${pageContext.request.contextPath}/member/'+ item.memberNick">
@@ -233,9 +233,10 @@ display:none;
 		    </div>		    
 		  </div>
 		  		<!-- 다음 버튼 -->
-				<div class="button-container" style="display: flex; justify-content: center; align-items: center;"> 		
-  					<i class="fa-sharp fa-solid fa-arrow-right" @click="currentPage++"  :class="{'hide':currentPage === paginatedRecommendFriends.length - 1}" 
-  					style="height: 24px; weight: 24px; margin-left:20px;"></i>
+		  		
+				<div class="carousel slide" style="display: flex; justify-content: center; align-items: center;"> 		
+  					<i class="fa-sharp fa-solid fa-angle-right" @click="currentPage++"  :class="{'hide':currentPage === paginatedRecommendFriends.length - 1}" 
+  					style="height: 24px; weight: 24px; margin-left:20px; position:absolute; color:gray; margin-bottom:30px;"></i>
 				</div>
 		</div>
 	</div>

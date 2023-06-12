@@ -182,7 +182,8 @@ public class MemberRestController {
 	@GetMapping("/recommendFriendsList")
 	public List<MemberProfileDto> recommendFriendsList(HttpSession session){
 		long memberNo = (long)session.getAttribute("memberNo");
-		List<MemberProfileDto> recommendFriendsList = memberRepo.recommendFriends(memberNo);
+		SettingDto dto = settingRepo.selectOne(memberNo);
+		List<MemberProfileDto> recommendFriendsList = memberRepo.recommendFriends(memberNo,dto.getSettingDistance());
 		return recommendFriendsList;
 	}
 	
