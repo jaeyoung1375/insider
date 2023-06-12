@@ -302,7 +302,7 @@
 			<div class="card-container" style="display:flex; margin-top:20px;" v-else>
 			<!-- 이전 페이지로 이동하는 버튼 -->
 				<div class="button-container" style="display: flex; justify-content: center; align-items: center;">
-					<i class="fa-solid fa-arrow-left"  @click="currentPage--" :class="{'hide' : currentPage === 0}" style="height:24px; weight:24px; margin-left:5px;"></i>
+					<i class="fa-sharp fa-solid fa-angle-left"  @click="currentPage--" :class="{'hide' : currentPage === 0}" style="height:24px; weight:24px; margin-left:5px; position:absolute; color:gray;"></i>
 				</div>
 
 			  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style="display:flex;">
@@ -328,8 +328,8 @@
 			  </div>
 		<div class="button-container" style="display: flex; justify-content: center; align-items: center;">
   		
-  			<i class="fa-sharp fa-solid fa-arrow-right" @click="currentPage++"  :class="{'hide':currentPage === paginatedRecommendFriends.length - 1}" 
-  			style="height: 24px; weight: 24px; margin-left:20px;"></i>
+  			<i class="fa-sharp fa-solid fa-angle-right" @click="currentPage++"  :class="{'hide':currentPage === paginatedRecommendFriends.length - 1}" 
+  			style="height: 24px; weight: 24px; margin-left:50px; position:absolute; color:gray;"></i>
 		</div>
 			</div>
 
@@ -466,11 +466,11 @@
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
 			<div :id="'detailCarousel'+ detailIndex" class="carousel slide">
                 <div class="carousel-indicators">
-                  <button v-for="(attach, index2) in myBoardList[detailIndex].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
+                  <button  v-if="myBoardList[detailIndex].boardAttachmentList.length > 1" v-for="(attach, index2) in myBoardList[detailIndex].boardAttachmentList" :key="index2" type="button" :data-bs-target="'#detailCarousel'+ detailIndex" :data-bs-slide-to="index2" :class="{'active':index2==0}" :aria-current="index2==0?true:false" :aria-label="'Slide '+(index2+1)"></button>
                 </div>
                
                 <div class="carousel-inner">
-                  <div v-if="myBoardList[detailIndex].boardAttachmentList.length > 1" v-for="(attach, index2) in myBoardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
+                  <div v-for="(attach, index2) in myBoardList[detailIndex].boardAttachmentList" :key="index2" class="carousel-item" :class="{'active':index2==0}">
                   	<video  style="width:700px; height:700px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+attach.imageURL" v-if="attach.video"
 							:autoplay="MemberSetting.videoAuto" muted controls :loop="MemberSetting.videoAuto"></video> 
                    	<img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attach.attachmentNo" class="d-block" @dblclick="likePost(board.boardWithNickDto.boardNo,detailIndex)" style="width:700px; height:700px;" v-else> 
@@ -780,12 +780,12 @@
                     	<div class="row">
                     		<div class="col">
 			                    <h5 class="modal-title" style="text-align:center;">
-		                        ${memberDto.memberNick}님을 차단하시겠어요?
+		                        <span style="font-weight: bold;">${memberDto.memberNick}</span>님을 차단하시겠어요?
 			                    </h5>
                     		</div>
                     	</div>
                     	<div class="row">
-                    		<div class="col">
+                    		<div class="col" style="max-width:80%; margin: auto; margin-top : 15px;">
 		                        상대방은 Insider에서 회원님의 프로필, 게시물 및 스토리를 찾을 수 없게 됩니다. Insider은 회원님이 차단한 사실을 상대방에게 알리지 않습니다.                     
                     		</div>
                     	</div>
@@ -835,7 +835,7 @@
 	                 <div class="modal-body p-0">
 						<div class="row p-3">
 							<div class="col d-flex justify-content-start align-items-center">
-								<a href="/member/setting" class="nomal"><h5 style="margin:0; cursor:default">설정 및 개인정보</h5></a>
+								<a class="nomal"><h5 style="margin:0; cursor:default">설정 및 개인정보</h5></a>
 							</div>
 						</div>
 						<hr class="m-0">
@@ -1689,6 +1689,7 @@
             const resp = await axios.post(contextPath+"/rest/attachment/upload/profile", formData);
             this.member.attachmentNo = resp.data;
          },
+         
          
          //팔로우
          async follow(followNo) {
@@ -2844,42 +2845,62 @@
         		        }
         		    }
         		},
-        		/*----------------------DM으로 이동 및 채팅방 생성----------------------*/
+        		/*----------------------DM으로 이동 및 채팅방 생성 + 차단----------------------*/
         		async moveToDmPage(inviteeNo){
-        		    try {
-        		    	//본인일 경우, 메인 채팅방으로 이동
-        		        if(this.DmMemberNo == inviteeNo) {
-        		        	window.location.href = contextPath + "/dm/channel";
-        		            return; 
-        		        }
-        		    	//두 회원이 참여한 채팅방 번호 조회
-        		        const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.DmMemberNo + "/" + inviteeNo);
-        		        let existingRoomNo = checkResp.data;
-        		        
-        		    	//기존의 일대일 채팅방이 없을 경우, 새 채팅방 생성
-        		        if (!existingRoomNo) {
-        		            const dmRoomVO = await axios.post(contextPath + "/rest/createChatRoom");
-        		            const roomNo = dmRoomVO.data.roomNo;
-        		
-        		            //채팅 유저 저장
-        		            const user = {
-        		                roomNo: roomNo,
-        		                memberList: [inviteeNo, this.DmMemberNo]
-        		            };
-        		            await axios.post(contextPath + "/rest/enterUsers", user);
-        		            console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
-        		            
-        		            //생성된 채팅방으로 이동
-        			        window.location.href = contextPath + "/dm/channel?room=" + roomNo;
-        			        }
-        			        //기존의 일대일 채팅방이 있을 경우, 기존 채팅방으로 이동
-        			        else {
-        			        	window.location.href = contextPath + "/dm/channel?room=" + existingRoomNo;
-        			        }
-        		    } catch (error) {
-        		        console.error("방 생성, 입장, 초대 중 오류가 발생했습니다.", error);
-        		    }
-        		},
+				    try {
+				        // 로그인한 회원이 차단한 목록 조회
+				        const blockList = await axios.get(contextPath + "/rest/blockList/" + this.DmMemberNo);
+				        // 로그인한 회원이 차단당한 목록 조회
+				        const blockedList = await axios.get(contextPath + "/rest/blockedList/" + this.DmMemberNo);
+				        
+				        // 본인이거나 로그인한 회원이 차단한 사람인 경우 메인 채팅방으로 이동
+				        if(this.DmMemberNo == inviteeNo || blockList.data.find(blocked => blocked.blockNo == inviteeNo && blocked.memberNo == this.DmMemberNo)) {
+				            window.location.href = contextPath + "/dm/channel";
+				            return; 
+				        }
+				
+				        // 차단당한 목록에서 초대받은 사람이 로그인한 회원을 차단한 경우
+				        if(blockedList.data.find(blocked => blocked.memberNo == inviteeNo && blocked.blockNo == this.DmMemberNo)) {
+				            // 두 회원이 참여한 채팅방 번호 조회
+				            const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.DmMemberNo + "/" + inviteeNo);
+				            let existingRoomNo = checkResp.data;
+				            
+				            // 기존의 채팅방이 있을 경우 해당 채팅방으로 이동
+				            if(existingRoomNo){
+				                window.location.href = contextPath + "/dm/channel?room=" + existingRoomNo;
+				                return;
+				            }
+				            // 없다면 메인 채팅방으로 이동
+				            else {
+				                window.location.href = contextPath + "/dm/channel";
+				                return;
+				            }
+				        }
+				
+				        // 두 회원이 참여한 채팅방 번호 조회
+				        const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.DmMemberNo + "/" + inviteeNo);
+				        let existingRoomNo = checkResp.data;
+				        
+				        // 기존의 일대일 채팅방이 없을 경우, 새 채팅방 생성
+				        if (!existingRoomNo) {
+				            const dmRoomVO = await axios.post(contextPath + "/rest/createChatRoom");
+				            const roomNo = dmRoomVO.data.roomNo;
+				            // 채팅 유저 저장
+				            const user = {
+				                roomNo: roomNo,
+				                memberList: [inviteeNo, this.DmMemberNo]
+				            };
+				            await axios.post(contextPath + "/rest/enterUsers", user);
+				            // 생성된 채팅방으로 이동
+				        	window.location.href = contextPath + "/dm/channel?room=" + roomNo;
+				        }
+				        // 기존의 일대일 채팅방이 있을 경우, 기존 채팅방으로 이동
+				        else {
+				            window.location.href = contextPath + "/dm/channel?room=" + existingRoomNo;
+				        }
+				    } catch (error) {
+				    }
+				},
         		/*----------------------DM으로 이동 및 채팅방 생성----------------------*/
 
         		

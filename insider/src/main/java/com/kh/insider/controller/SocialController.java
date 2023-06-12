@@ -45,7 +45,7 @@ public class SocialController {
          String memberEmail = profile.kakao_account.getEmail();
          String memberPw = socialLoginService.EncryptCoskey(cosKey);
          MemberDto originalMember = memberRepo.findByEmail(profile.kakao_account.getEmail());
-         try {	
+  
         	 if(originalMember == null) {
         		 
                  System.out.println("회원가입을 진행합니다..");
@@ -68,9 +68,7 @@ public class SocialController {
                  return "redirect:/";
               }
         	 
-         }catch(Exception ex) {
-        	 return "redirect:/error/socialError";
-         }
+         
          
         
          // addInfo로 넘길 정보

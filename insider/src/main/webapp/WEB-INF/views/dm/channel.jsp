@@ -105,7 +105,7 @@
 	    padding: 0 0.5em;
 	}
 	.message-wrapper > .message > .message-content > .content-wrapper > .content-header {
-	    font-size: 0.90em;
+	    font-size: 0.85em;
 	    padding-right: 0.3em;
 	    padding-left: 0.3em;
 	    color: #3c6382;
@@ -119,7 +119,7 @@
 	}
 	.message-wrapper > .message > .message-content > .content-wrapper > .content-body > .message-wrapper {
 	    background-color: rgba(239, 239, 239);
-	    font-size: 0.85em;
+	    font-size: 0.8em;
 	    border-radius: 1.5em;
 	    max-width: 500px;
 	    word-break: break-all;
@@ -158,7 +158,7 @@
 	
 	.message-wrapper > .message.my > .message-content > .content-wrapper > .content-header {
 	    text-align: right;
-	    padding-right: 0.9em;
+	    padding-right: 0.85em;
 	}
 	.message-wrapper > .message.my > .message-content > .content-wrapper > .content-body {
 	    flex-direction: row-reverse;
@@ -190,7 +190,7 @@
 	}
 	.dateShow {
 	    color:  gray;
-	    font-size: 0.78em;
+	    font-size: 0.73em;
 	    text-align: center;
 	    display: block;
 	}
@@ -226,14 +226,14 @@
 						</span>
 						<span v-else style="position:absolute; top:21px; right:0; margin-right:15px;">
 							<i class="fa-regular fa-pen-to-square fa-lg" style="margin-right: 15px; cursor:pointer;" @click="fetchFollowerList(); showCreateRoomModal();"></i>
-							<i class="fa-solid fa-user-plus fa-lg" style="cursor:pointer;" @click="fetchFollowerList();  showInviteModal();"></i>
+							<i class="fa-solid fa-user-plus fa-lg" style="cursor:pointer;" @click="InviteFollowerList();  showInviteModal();"></i>
 						</span>
 					</div>
 					
 					<!-- 채팅방 이름 -->
 					<div class="card col-8" style="border-radius:0;border-left:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
 						<div class="room" v-for="(room, index) in dmRoomList" :key="room.roomNo">
-							<div v-if="this.roomNo != null">
+							<div v-if="roomNo != null">
 								<div v-if="this.roomNo === room.roomNo">
 									<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"
 										width="45" height="45" class="profile rounded-circle" style="position:absolute; top:0.75em; left:1.3em;" >
@@ -293,7 +293,7 @@
 									</div>
 									<div class="message-content">
 						                <div class="profile-wrapper" v-if="!checkMyMessage(index)">
-						                	<img v-if="message.profileNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+message.profileNo"class="profile rounded-circle"v-if="!checkSameTime(index)">
+						                	<img v-if="message.profileNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+message.profileNo"class="profile rounded-circle"v-if="!checkSameTime(index)" style="width:40px; height:40px;">
 	                                		<img v-else src="https://via.placeholder.com/100x100?text=P" width="100%" v-if="!checkSameTime(index)">
 						                </div>
 						                <div class="content-wrapper">
@@ -309,7 +309,6 @@
 								                	<div class="time-wrapper" v-if="calculateDisplay(index)">{{timeFormat(message.time)}}</div>
 								                </div>
 							                	<i class="fa-solid fa-x fa-xs" @click="showDeleteMsgModal(index)" style="padding-bottom: 0.51em; padding-right: 0.6em; padding-left: 0.7em; color: #ced6e0; cursor:pointer;"></i>
-							                	<i class="fa-solid fa-trash fa-xs" style="padding-bottom: 0.51em; padding-right: 0.51em; padding-left: 0.51em; color: #ced6e0; cursor:pointer;"></i>
 							                	<i class="fa-solid fa-heart fa-xs" :class="{'fa-solid':memberLike[index]==1, 'fa-regular':memberLike[index]==0}" @click="dmLike(message.messageNo, index)"
 							                		style="padding-bottom: 0.51em; padding-right: 0.5em; padding-left: 0.5em; color: #c23616; cursor:pointer;"></i>
 							                </div>
@@ -393,11 +392,11 @@
 		      </div>
 		      <div class="modal-body" style="width:300px; max-height: 400px; overflow-y: auto;">
 		        <div style="margin-bottom:10px;">
-		          <input type="text" placeholder="검색" v-model="keyword" class="form-control me-sm-2" @input="keyword = $event.target.value">
+		          <input type="text" placeholder="검색" v-model="keywordInvite" class="form-control me-sm-2" @input="keywordInvite = $event.target.value">
 		        </div>
-		        <div v-if="searchDmList.length==0" >
-			        <div v-for="(member,index) in dmMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
-			          <img v-if="dmMemberList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
+		        <div v-if="searchInviteDmList.length==0" >
+			        <div v-for="(member,index) in dmInviteMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
+			          <img v-if="dmInviteMemberList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
 			          <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
 			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
@@ -407,9 +406,9 @@
 			          </span>
 			        </div>
 		        </div>
-		        <div v-if="searchDmList.length>0">
-			        <div v-for="(member,index) in searchDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
-			          <img v-if="searchDmList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
+		        <div v-if="searchInviteDmList.length>0">
+			        <div v-for="(member,index) in searchInviteDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
+			          <img v-if="searchInviteDmList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
 			          <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
 			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
@@ -570,7 +569,9 @@
                     	</div>
                     	<div class="row">
                     		<div class="col">
-		                        상대방은 Insider에서 회원님의 프로필, 게시물 및 스토리를 찾을 수 없게 됩니다. Insider은 회원님이 차단한 사실을 상대방에게 알리지 않습니다.                     
+		                        - 상대방은 Insider에서 회원님의 프로필, 게시물 및 스토리를 찾을 수 없게 됩니다. <br>
+		                        - Insider은 회원님이 차단한 사실을 상대방에게 알리지 않습니다. <br>
+		                        - 회원님의 채팅방 목록에서 상대방과의 채팅방이 삭제됩니다.                     
                     		</div>
                     	</div>
 	                     <div class="content" style="font-size:12px; text-align:center;">
@@ -627,6 +628,7 @@
                     memberNo:"${sessionScope.memberNo}",
                     socket:null,//웹소켓 연결 객체
                     dmMemberList:[],//팔로워 회원 목록
+                    dmInviteMemberList:[],
 
                     //modal 제어
                     createRoomModal:null, 
@@ -636,8 +638,13 @@
                     //차단한 회원을 제외한 전체 회원 검색
                     searchDmList:[],
                     keyword:"",
+                    searchInviteDmList:[],
+                    keywordInvite: "",
                     
                     dmRoomList: [], //채팅방 목록
+                    dmRoomListCopy:[],
+                    count:[],
+                    dmInviteRoomList:[],
                     isRoomJoin:false,
                     
                     //채팅방 참가자 시간 정보 리스트
@@ -765,6 +772,7 @@
                     if(this.createRoomModal == null) return;
                     this.selectedMembers = []; 
                     this.dmMemberList = [];
+                    this.fetchUsersByRoomNo();
                     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
                     checkboxes.forEach(checkbox => (checkbox.checked = false));
                     this.createRoomModal.show();
@@ -788,7 +796,8 @@
 				showInviteModal(){
                     if(this.inviteModal == null) return;
                     this.selectedMembers = []; 
-                    this.dmMemberList = [];
+                    this.dmInviteMemberList = [];
+                    this.fetchUsersByRoomNo();
                     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
                     checkboxes.forEach(checkbox => (checkbox.checked = false));
                     this.inviteModal.show();
@@ -872,7 +881,8 @@
             		else{
 	                    // 읽지 않은 메세지 수 테스트2
 						if (message.messageType === 6) { // 새로운 메시지 수
-							this.fetchDmRoomList();
+							//this.fetchDmRoomList();
+							this.loadDmRoomList();
 						}
 						else if(message.messageType==8){ //좋아요
 							const index = this.messageList.findIndex(obj => obj.messageNo == message.messageNo);
@@ -959,8 +969,10 @@
             	   const url = "${pageContext.request.contextPath}/rest/dmMemberList";
             	    try {
             	      const resp = await axios.get(url);
+            	      const memberNosInRoom = this.membersInRoomList.map(member => member.memberNo);
+				      const filteredMembers = resp.data.filter(member => !memberNosInRoom.includes(member.memberNo));
             	      this.dmMemberList.splice(0);
-	                  this.dmMemberList.push(...resp.data);
+	                  this.dmMemberList.push(...filteredMembers);
             	    } 
             	    catch (error) {
             	      console.error(error);
@@ -972,11 +984,41 @@
 				    try {
 				        const resp = await axios.get(url, {
 				            params: {
-				                keyword: this.keyword
+				                keyword: this.keyword,
+				                roomNo: this.roomNo
 				            }
 				        });
 				        this.searchDmList.splice(0);
 	                    this.searchDmList.push(...resp.data);
+				    } catch (error) {
+				        console.error(error);
+				    }
+				},						
+               //초대 - 팔로우 회원 목록
+               async InviteFollowerList() {
+            	   const url = "${pageContext.request.contextPath}/rest/dmInviteMemberList";
+            	    try {
+            	      const resp = await axios.get(url);
+            	      const memberNosInRoom = this.membersInRoomList.map(member => member.memberNo);
+				      const filteredMembers = resp.data.filter(member => !memberNosInRoom.includes(member.memberNo));
+            	      this.dmInviteMemberList.splice(0);
+	                  this.dmInviteMemberList.push(...filteredMembers);
+            	    } 
+            	    catch (error) {
+            	      console.error(error);
+            	    }
+            	},
+                //초대 - 차단한 회원을 제외한 전체 회원 검색
+				async InviteDmSearch() {
+				    const url = "${pageContext.request.contextPath}/rest/dmInviteMemberSearch";
+				    try {
+				        const resp = await axios.get(url, {
+				            params: {
+				            	keyword: this.keywordInvite,
+				            }
+				        });
+				        this.searchInviteDmList.splice(0);
+	                    this.searchInviteDmList.push(...resp.data);
 				    } catch (error) {
 				        console.error(error);
 				    }
@@ -994,21 +1036,30 @@
 				        const countResp = await axios.get(countUrl, { params: { roomNo: item.roomNo } });
 				        const count = countResp.data;
 				        	//채팅방 이름이 변경 되었고, 변경한 사람이 로그인한 회원 본인일 경우
-				            if (item.roomRename != null || item.memberNo === this.memberNo) {
-				                item.roomName = item.roomRename;
-				            } else {
-				                item.roomName = item.memberNick;
-				                
-				                //채팅방 이름이 변경되지 않았고, 그룹 채팅일 경우
-				                if (item.roomType === 0) {
-							        item.roomName = item.memberNick + " 외 " + (count - 1) + "명";
-				                }
-				            }
 				        });
 				        this.unreadDmCount();
 				    } catch (error) {
 				        console.error(error);
 				    }
+				},
+				//방이름 통합검색
+				async loadDmRoomList(){
+					const resp = await axios.get(contextPath+"/rest/loadDmRoomList");
+					this.dmRoomListCopy = [...resp.data.dmRoomList];
+					this.unreadMessage=[...resp.data.unreadCount];
+					for(let i=0; i<this.dmRoomListCopy.length; i++){
+				            if (this.dmRoomListCopy[i].roomRename != null || this.dmRoomListCopy[i].memberNo === this.memberNo) {
+				            	this.dmRoomListCopy[i].roomName = this.dmRoomListCopy[i].roomRename;
+				            } else {
+				            	this.dmRoomListCopy[i].roomName = this.dmRoomListCopy[i].memberNick;
+				                
+				                //채팅방 이름이 변경되지 않았고, 그룹 채팅일 경우
+				                if (this.dmRoomListCopy[i].roomType === 0) {
+				                	this.dmRoomListCopy[i].roomName = this.dmRoomListCopy[i].memberNick + " 외 " + (this.count[i] - 1) + "명";
+				                }
+				            }
+					}
+					this.dmRoomList=_.cloneDeep(this.dmRoomListCopy);
 				},
 				//채팅방에 참여한 회원 목록
 				async fetchUsersByRoomNo() {
@@ -1047,7 +1098,8 @@
 				            };
 				            await axios.put(updateRoomUrl, updateRoomData);
 				        }
-				        await this.fetchDmRoomList(); //채팅방 목록 불러오기
+				        //await this.fetchDmRoomList(); //채팅방 목록 불러오기
+				        this.loadDmRoomList();
 				        window.location.href = "${pageContext.request.contextPath}/dm/channel?room=" + roomNo;
 				        console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
 				    } catch (error) {
@@ -1125,7 +1177,8 @@
 				        
 				        console.log("회원이 퇴장 하였습니다.");
 				        window.location.href = "${pageContext.request.contextPath}/dm/channel";
-        				await this.fetchDmRoomList(); // 채팅방 목록 불러오기
+        				//await this.fetchDmRoomList(); // 채팅방 목록 불러오기
+				        this.loadDmRoomList();
         				this.roomNo=null;
 				    } catch (error) {
 				        console.error("회원 퇴장에서 오류가 발생하였습니다.", error);
@@ -1162,7 +1215,8 @@
 				            console.log("채팅방 이름이 성공적으로 추가되었습니다.");
 				        }
 				
-				        await this.fetchDmRoomList();
+				        //await this.fetchDmRoomList();
+				        this.loadDmRoomList();
 				    } catch (error) {
 				        console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
 				    }
@@ -1173,7 +1227,8 @@
 				        this.changeRoomName()
 				            .then(() => {
 				                this.hideRoomNameModal();
-				                this.fetchDmRoomList();
+				                //this.fetchDmRoomList();
+				                this.loadDmRoomList();
 				            })
 				            .catch(error => {
 				                console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
@@ -1216,7 +1271,7 @@
 							};
 							const resp = await axios.get(countUrl, { params: data });
 							//수정
-							const unreadMessage = resp.data[0];
+							const unreadMessage = resp.data;
 							this.unreadMessage.push(unreadMessage); //vue에 반환
 							const updateData = {
 									roomNo: roomNo,
@@ -1239,14 +1294,15 @@
 							unreadMessage: 0
 						};
 						await axios.put(updateUrl, data);
-						this.fetchDmRoomList();
+						//this.fetchDmRoomList();
+						this.loadDmRoomList();
 				    } catch (error) {
 				        console.error("읽지 않은 메세지 수 수정 오류", error);
 				    }
 				},
 				//변경된 채팅방 이름 삭제
 				async deleteRoomRename() {
-				    const deleteUrl = `${pageContext.request.contextPath}/rest/deleteRoomRename`;
+				    const deleteUrl = "${pageContext.request.contextPath}/rest/deleteRoomRename";
 				    try {
 				        await axios.delete(deleteUrl, {params:{roomNo:this.roomNo}});
 				    } catch (error) {
@@ -1359,6 +1415,14 @@
         			}
         			this.chooseDmSearch();
         		}, 200),
+				//초대 검색        		
+        	    keywordInvite:_.throttle(function(){ 
+        	        if(this.keywordInvite=="") {
+        	            this.searchInviteDmList = [];
+        	            return;
+        	        }
+        	        this.InviteDmSearch();
+        	    }, 200),
         		//메세지 읽음 표시
         		/* userTimeList:{
         			deep:true,
@@ -1401,7 +1465,8 @@
             	//메시지 불러오기
                 this.loadMessage();
             	//로그인한 회원의 채팅방 목록
-            	this.fetchDmRoomList();
+            	//this.fetchDmRoomList();
+            	this.loadDmRoomList();
             },
 			mounted(){
 				//Bootstrap modal 인스턴스를 초기화하고 저장
@@ -1418,8 +1483,8 @@
 			        this.searchDmList = [];
 			    });
 			    $('#inviteModal').off('hidden.bs.modal').on('hidden.bs.modal', () => {
-			    	this.keyword = '';
-			        this.searchDmList = [];
+			        this.keywordInvite = '';
+			        this.searchInviteDmList = [];
 			    });
 				//쿼리 초기화 및 변화 감지
 				this.initializePageFromQuery();

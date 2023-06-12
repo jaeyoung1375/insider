@@ -24,7 +24,7 @@ public interface MemberRepo {
 	public void deleteMember(long memberNo);
 	
 	// 친구 추천목록 조회
-	public List<MemberProfileDto> recommendFriends(long memberNo);
+	public List<MemberProfileDto> recommendFriends(long memberNo, int settingDistance);
 	
 	// 특정회원 해시태그 리스트 조회
 	public List<TagFollowDto> hashtagList(long memberNo);
