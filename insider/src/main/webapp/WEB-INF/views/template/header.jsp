@@ -28,6 +28,9 @@
 	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 	<!-- SockJS라이브러리 의존성 추가  -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+	<!--favicon -->
+	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.ico">
+	<link rel="shortcut icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.ico">
 
 </head>
 <style>
@@ -94,11 +97,6 @@
           z-index: -1;
           transition: all 0.35s ease-in-out;
           background-color: #03a9f4;
-      }
-      #toggle-radio-dark:checked ~ .darkmode-bg{
-          border-radius: 15px 50px 50px 15px;
-          top: 5px;
-          left: 44px;
       }
       
 		.modal-window {
@@ -221,6 +219,10 @@
 		color:inherit;
 		cursor:pointer
 	}
+	
+	 .nav-link {
+        display: inline-block;
+    }
 </style>
 
 <!--  <script type="text/javascript">
@@ -295,10 +297,10 @@
 									          	{{ notification.memberNick }} 님이
 									          	</a>
 									          	<a class="nav-link" @click="loadBoard(notification.boardNo),detailViewOn(index)" style="cursor: pointer;">
-									          	<p v-if="notification.type == 1">게시글을 좋아요 하였습니다.</p>
-									          	<p v-if="notification.type == 2">게시글에 댓글을 달았습니다.</p>
-									          	<p v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</p>
-									          	<p v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</p>
+									          	<span v-if="notification.type == 1">게시글을 좋아요 하였습니다.</span>
+									          	<span v-if="notification.type == 2">게시글에 댓글을 달았습니다.</span>
+									          	<span v-if="notification.type == 3">회원님의 댓글을 좋아합니다.</span>
+									          	<span v-if="notification.type == 4">회원님의 댓글에 댓글을 달았습니다.</span>
 									          	</a>
 									          	<span v-if="notification.type == 5">팔로우하였습니다.</span>
 									          	<b>· {{dateCount(notification.boardTimeAuto)}}</b>
@@ -1105,10 +1107,12 @@
 	      this.loadNotifications(); // 컴포넌트가 마운트될 때 알림 데이터를 로드
 	      this.intervalId = setInterval(this.loadNotifications, 5000); // 5초마다 알림 데이터를 갱신
 	      this.likeListModal = new bootstrap.Modal(this.$refs.likeListModal);
-        this.unreadMessageCount(); //dm 알림
+          this.unreadMessageCount(); //dm 알림
 	    },
+	    
 	    beforeUnmount() {
 	      clearInterval(this.intervalId); //메모리 누수방지
-	   	}
+	   	},
+	   	
 	  }).mount("#aside");
 </script>
