@@ -200,6 +200,13 @@
 	.half-size {
 	    width: 27%;
 	}
+	.truncate{
+	  display: inline-block;
+	  max-width: 185px; /* Adjust the max-width value as needed */
+	  overflow: hidden;
+	  text-overflow: ellipsis;
+	  white-space: nowrap;
+	}
 </style>
 
 </head>
@@ -213,10 +220,10 @@
 					<!-- 로그인한 회원 프로필 -->
 					<div class="card col-3" style="width:290px;border-radius:0;padding-bottom:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
 						<div style="padding-left: 0.4em;">
-							<a href="${pageContext.request.contextPath}/member/login" style="color: black; text-decoration: none;">
+							<a href="${pageContext.request.contextPath}/member/${sessionScope.memberNick}" style="color: black; text-decoration: none;">
 							<img v-if="${attach!=0}" src="${pageContext.request.contextPath}/rest/attachment/download/${attach}" width="38" height="38" class="profile rounded-circle" style="position:absolute; top:0.75em" >
 							<img v-else src="${pageContext.request.contextPath}/static/image/user.jpg"width="38" height="38" class="profile rounded-circle" style="position:absolute; top:0.75em">
-								<span style="padding-left:3.7em; word-wrap:normal;">
+								<span class="truncate" style="padding-left:3.7em; word-wrap:normal;">
 										${sessionScope.memberNick}
 								</span>
 							</a>
@@ -228,7 +235,7 @@
 							<i class="fa-regular fa-pen-to-square fa-lg" style="margin-right: 15px; cursor:pointer;" @click="fetchFollowerList(); showCreateRoomModal();"></i>
 							<i class="fa-solid fa-user-plus fa-lg" style="cursor:pointer;" @click="InviteFollowerList();  showInviteModal();"></i>
 						</span>
-					</div>
+					</div>	  
 					
 					<!-- 채팅방 이름 -->
 					<div class="card col-8" style="border-radius:0;border-left:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
@@ -238,7 +245,7 @@
 									<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"
 										width="38" height="38" class="profile rounded-circle" style="position:absolute; top:0.75em; left:1.3em;" >
 					          		<img v-else src="${pageContext.request.contextPath}/static/image/user.jpg"width="38" height="38" class="profile rounded-circle" style="position:absolute; top:0.75em; left:1.3em;">
-									<span style="font-size:0.86em;padding-left:5em; word-wrap:normal;">{{room.roomName}}</span>
+									<span style="font-size:0.86em;padding-left:5em; word-wrap:normal; display: inline-block; max-width: 480px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{room.roomName}}</span>
 								</div>
 								<span style="position:absolute; top:21px; right:0; margin-right:19px;">
 									<i class="fa-solid fa-file-pen fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showRoomNameModal()"></i>
@@ -350,32 +357,34 @@
 		      </div>
 		      <div class="modal-body" style="width:300px; max-height: 400px; overflow-y: auto;">
 		        <div style="margin-bottom:10px;">
-		          <input type="text" placeholder="검색" v-model="keyword" class="form-control me-sm-2" @input="keyword = $event.target.value">
+		          <!-- <input type="text" placeholder="검색" v-model="keyword" class="form-control me-sm-2" @blur="chooseDmSearch"> -->
 		        </div>
 		        <div v-if="searchDmList.length==0" >
 			        <div v-for="(member,index) in dmMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
 			          <img v-if="member.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:45px; height:45px;">
 			          <img v-else src="${pageContext.request.contextPath}/static/image/user.jpg"class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:45px; height:45px;">
-			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <span class="truncate" style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
-			          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+			          <span class="truncate"  style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
 			          	<input type="checkbox" v-model="selectedMembers" :value="member.memberNo" style="transform: scale(1.2); margin-right:1em;">
 			          </span>
 			        </div>
 		        </div>
+		        <!-- 
 		        <div v-if="searchDmList.length>0">
 			        <div v-for="(member,index) in searchDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
 			          <img v-if="member.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
 					  <img v-else src="${pageContext.request.contextPath}/static/image/user.jpg"class="profile rounded-circle"style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
-			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <span class="truncate"  style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
-			          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+			          <span class="truncate"  style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
 					  	<input type="checkbox" v-model="selectedMembers" :value="member.memberNo" style="transform: scale(1.2); margin-right:1em;">
 			          </span>
 			        </div>
 		      	</div>
+		      	-->
 		      </div>
 		      <div class="modal-footer" style="width:300px;">
 		      	<button class="btn btn-outline-primary btn-default" @click="createRoomAndInvite" :disabled="selectedMembers.length === 0"
@@ -395,32 +404,36 @@
 		      </div>
 		      <div class="modal-body" style="width:300px; max-height: 400px; overflow-y: auto;">
 		        <div style="margin-bottom:10px;">
+		          <!-- 
 		          <input type="text" placeholder="검색" v-model="keywordInvite" class="form-control me-sm-2" @input="keywordInvite = $event.target.value">
+		           -->
 		        </div>
 		        <div v-if="searchInviteDmList.length==0" >
 			        <div v-for="(member,index) in dmInviteMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
 			          <img v-if="member.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
 			          <img v-else src="${pageContext.request.contextPath}/static/image/user.jpg"class="profile rounded-circle"style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
-			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <span class="truncate"  style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
-			          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+			          <span class="truncate"  style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
 			          	<input type="checkbox" v-model="selectedMembers" :value="member.memberNo" style="transform: scale(1.2); margin-right:1em;">
 			          </span>
 			        </div>
 		        </div>
+		        <!-- 
 		        <div v-if="searchInviteDmList.length>0">
 			        <div v-for="(member,index) in searchInviteDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
 			          <img v-if="member.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
 			          <img v-else src="${pageContext.request.contextPath}/static/image/user.jpg"class="profile rounded-circle"style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
-			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <span class="truncate"  style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
-			          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+			          <span class="truncate"  style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 			          <span style="position:absolute;right:0;top:10px;">
 			          	<input type="checkbox" v-model="selectedMembers" :value="member.memberNo" style="transform: scale(1.2); margin-right:1em;">
 			          </span>
 			        </div>
 		      	</div>
+		      	 -->
 		      </div>
 		      <div class="modal-footer" style="width:300px;">
 		      	<button class="btn btn-outline-danger btn-default" @click="inviteRoom" :disabled="selectedMembers.length === 0"
@@ -509,10 +522,10 @@
 		          <a :href="'${pageContext.request.contextPath}/member/'+member.memberNick" style="color: black; text-decoration: none;">
 			          <img v-if="member.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
 				      <img v-else src="${pageContext.request.contextPath}/static/image/user.jpg"class="profile rounded-circle"style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
-			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
+			          <span class="truncate"  style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 		          </a>
 		          <br>
-		          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
+		          <span class="truncate"  style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
 		          <span style="position:absolute;right:0;top:10px;">
 		            <span class="modal-click-btn-negative" style="padding: 0.3rem 0.2rem;font-weight: 100;line-height: 1;font-size:0.8em; margin-right: 0.5em;"data-bs-dismiss="modal" aria-label="Close" @click="blockModalShow(member.memberNo, member.memberNick)">
 		              차단
@@ -718,7 +731,7 @@
         				this.setUnreadCountOnMessage();
             	    } 
             	    catch (err) {
-            	        console.error("메세지를 불러올 수 없습니다.");
+            	        //console.error("메세지를 불러올 수 없습니다.");
             	    }
             	},
             	// 메세지 리스트 불러오는 함수
@@ -767,7 +780,7 @@
 				            fileInput.value = null;
 				        }
 				    } catch (error) {
-				        console.error("이미지 메세지 업로드 실패", error);
+				        //console.error("이미지 메세지 업로드 실패", error);
 				    }
 				},
 				//모달창
@@ -863,14 +876,14 @@
             		const room = new URLSearchParams(location.search).get("room");
                     const data = { type:2, room:room };
                     this.socket.send(JSON.stringify(data));
-                    console.log("서버에 연결되었습니다.");
+                    //console.log("서버에 연결되었습니다.");
             	},
             	closeHandler(){
-            		console.log("서버와의 연결이 종료되었습니다.");
+            		//console.log("서버와의 연결이 종료되었습니다.");
             		this.roomNo = null;
             	},
             	errorHandler(){
-            		console.log("연결 중 오류가 발생했습니다.");
+            		//console.log("연결 중 오류가 발생했습니다.");
             	},
             	messageHandler(e){
             		const message = JSON.parse(e.data);
@@ -983,6 +996,7 @@
             	},
                 //차단한 회원을 제외한 전체 회원 검색
 				async chooseDmSearch() {
+            		if(this.keyword=='') return;
 				    const url = "${pageContext.request.contextPath}/rest/dmMemberSearch";
 				    try {
 				        const resp = await axios.get(url, {
@@ -1104,9 +1118,9 @@
 				        //await this.fetchDmRoomList(); //채팅방 목록 불러오기
 				        this.loadDmRoomList();
 				        window.location.href = "${pageContext.request.contextPath}/dm/channel?room=" + roomNo;
-				        console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
+				        //console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
 				    } catch (error) {
-				        console.error("방 생성, 입장, 초대 중 오류가 발생했습니다.", error);
+				        //console.error("방 생성, 입장, 초대 중 오류가 발생했습니다.", error);
 				    }
 				},
 				//회원 초대
@@ -1120,7 +1134,7 @@
 								memberList: this.selectedMembers
 						}
 						await axios.post(inviteUrl, data);
-					    console.log("초대가 성공적으로 수행되었습니다.");
+					    //console.log("초대가 성공적으로 수행되었습니다.");
 					    
 					 	//회원 초대 후, 총 회원수 가져오기
 						const countResp = await axios.get(countUrl, {params: {roomNo: this.roomNo}});
@@ -1138,7 +1152,7 @@
 				            await axios.put(updateRoomUrl, updateRoomData);
 						}
 					} catch (error) {
-				        console.error("채팅 유저 초대 중 오류가 발생했습니다.", error);
+				        //console.error("채팅 유저 초대 중 오류가 발생했습니다.", error);
 				    }
 	            },
 	            //유저 초대 다중 선택
@@ -1178,13 +1192,13 @@
 					    };
 					    this.socket.send(JSON.stringify(message));
 				        
-				        console.log("회원이 퇴장 하였습니다.");
+				        //console.log("회원이 퇴장 하였습니다.");
 				        window.location.href = "${pageContext.request.contextPath}/dm/channel";
         				//await this.fetchDmRoomList(); // 채팅방 목록 불러오기
 				        this.loadDmRoomList();
         				this.roomNo=null;
 				    } catch (error) {
-				        console.error("회원 퇴장에서 오류가 발생하였습니다.", error);
+				       // console.error("회원 퇴장에서 오류가 발생하였습니다.", error);
 				    }
 				},
 				//알림 메세지 전송
@@ -1212,16 +1226,16 @@
 					    };
 				        if (resp.data === true) {
 				            await axios.put(renameUrl, data);
-				            console.log("채팅방 이름이 성공적으로 변경되었습니다.");
+				           // console.log("채팅방 이름이 성공적으로 변경되었습니다.");
 				        } else {
 				            await axios.post(insertUrl, data);
-				            console.log("채팅방 이름이 성공적으로 추가되었습니다.");
+				           // console.log("채팅방 이름이 성공적으로 추가되었습니다.");
 				        }
 				
 				        //await this.fetchDmRoomList();
 				        this.loadDmRoomList();
 				    } catch (error) {
-				        console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
+				       // console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
 				    }
 				},
 				//채팅방 이름 변경 확인 버튼
@@ -1234,7 +1248,7 @@
 				                this.loadDmRoomList();
 				            })
 				            .catch(error => {
-				                console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
+				                //console.error("채팅방 이름 변경 중 오류가 발생했습니다.", error);
 				            });
 				    }
 				},
@@ -1284,7 +1298,7 @@
 							await axios.put(updateUrl, updateData);
 						}
 				    } catch (error) {
-				        console.error("읽지 않은 메세지 수를 가져오지 못했습니다.", error);
+				        //console.error("읽지 않은 메세지 수를 가져오지 못했습니다.", error);
 				    }
 				},
 				//읽지 않은 메세지 수 수정
@@ -1300,7 +1314,7 @@
 						//this.fetchDmRoomList();
 						this.loadDmRoomList();
 				    } catch (error) {
-				        console.error("읽지 않은 메세지 수 수정 오류", error);
+				        //console.error("읽지 않은 메세지 수 수정 오류", error);
 				    }
 				},
 				//변경된 채팅방 이름 삭제
@@ -1309,7 +1323,7 @@
 				    try {
 				        await axios.delete(deleteUrl, {params:{roomNo:this.roomNo}});
 				    } catch (error) {
-				        console.error("읽지 않은 메세지 수 수정 오류", error);
+				        //console.error("읽지 않은 메세지 수 수정 오류", error);
 				    }
 				},
 				//좋아요 눌렀을 때
@@ -1411,21 +1425,22 @@
             },
             watch:{
             	//검색
-            	keyword:_.throttle(function(){
+            	keyword:_.debounce(function(){
         			if(this.keyword=="") {
         				this.searchDmList = [];
         				return;
         			}
         			this.chooseDmSearch();
-        		}, 200),
+        		}, 300), 
 				//초대 검색        		
-        	    keywordInvite:_.throttle(function(){ 
+ /*       	    keywordInvite:_.debounce(function(){ 
         	        if(this.keywordInvite=="") {
         	            this.searchInviteDmList = [];
         	            return;
         	        }
         	        this.InviteDmSearch();
         	    }, 200),
+*/
         		//메세지 읽음 표시
         		/* userTimeList:{
         			deep:true,

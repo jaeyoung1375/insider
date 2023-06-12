@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.insider.dto.BlockDto;
 import com.kh.insider.dto.BlockWithProfileDto;
 import com.kh.insider.dto.DmMemberInfoDto;
 import com.kh.insider.dto.DmMemberListDto;
@@ -97,7 +98,6 @@ public class DmRestController {
     	long memberNo = (Long) session.getAttribute("memberNo");
         return dmMemberListRepo.chooseDm(memberNo);
     }
-    
     //차단한 회원을 제외한 전체 회원 목록
 	@GetMapping("/dmMemberSearch")
 	public List<DmMemberListDto> dmMemberSearch(
@@ -107,14 +107,14 @@ public class DmRestController {
 		long memberNo = (Long) session.getAttribute("memberNo");
 		return dmMemberListRepo.dmMemberSearch(memberNo, roomNo, keyword);
 	}
-	
+
 	//초대 : 팔로워 회원 목록
 	@GetMapping("/dmInviteMemberList")
 	public List<DmMemberListDto> followInviteMemberList(HttpSession session) {
 		long memberNo = (Long) session.getAttribute("memberNo");
 		return dmMemberListRepo.InvitechooseDm(memberNo);
 	}
-	
+/*	
 	//초대 : 차단한 회원을 제외한 전체 회원 목록
 	@GetMapping("/dmInviteMemberSearch")
 	public List<DmMemberListDto> dmInviteMemberSearch(
@@ -124,7 +124,7 @@ public class DmRestController {
 		long memberNo = (Long) session.getAttribute("memberNo");
 		return dmMemberListRepo.dmInviteMemberSearch(memberNo, roomNo, keyword);
 	}
-	
+*/		
 	//로그인 회원이 참여중인 채팅방 목록
 	@GetMapping("/dmRoomList")
 	public List<DmMemberInfoDto> findRoomsById (HttpSession session){
