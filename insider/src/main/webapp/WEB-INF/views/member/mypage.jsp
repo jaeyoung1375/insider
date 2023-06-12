@@ -210,12 +210,12 @@
             <div class="col-4 text-center">
                <c:choose>
                <c:when test="${isOwner}">
-                <img style="border-radius: 70%;" :src="profileUrl"
-             width = "150" height="150" @click="openFileInput" class="image-margin">
-             <input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*" style="display: none;">
+                <img style="border-radius: 70%;" :src="profileUrl" width = "150" height="150" @click="openFileInput" class="image-margin">
+             		<input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*" style="display: none;">
                 </c:when>       
                 <c:otherwise> 
-                  <img style="border-radius: 70%;" width="150" height="150" :src="profileUrl" class="image-margin">
+                  <img style="border-radius: 70%;" width="150" height="150" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attachmentNo" class="image-margin" v-if="attachmentNo > 0">
+                  <img src="https://via.placeholder.com/45x45?text=profile"  width="150" height="150" style="border-radius: 70%;" class="image-margin" v-else>
                 </c:otherwise>
                 </c:choose>           
             </div>
@@ -327,7 +327,6 @@
 			    </div>
 			  </div>
 		<div class="button-container" style="display: flex; justify-content: center; align-items: center;">
-  		
   			<i class="fa-sharp fa-solid fa-angle-right" @click="currentPage++"  :class="{'hide':currentPage === paginatedRecommendFriends.length - 1}" 
   			style="height: 24px; weight: 24px; margin-left:50px; position:absolute; color:gray;"></i>
 		</div>
@@ -949,7 +948,8 @@
                     </div>
           </div><!-- 팔로워 미리보기 끝 -->
 						  <div style="display: flex; align-items: center;">
-						   <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover(item)" style="border-radius:50%;">
+						   <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover(item)" style="border-radius:50%;" v-if="item.attachmentNo > 0">
+          					<img src="https://via.placeholder.com/100x100?text=profile" width="60" height="60" style="border-radius:50%;" v-else>
 						   		<div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
   						 	<a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
   						 	<p class="modalName">{{item.memberName}}</p>
@@ -991,7 +991,8 @@
       		
         <div v-for="item in myFollowList" :key="item.attachmentNo">
       		 	<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
-          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover2(item)" style="border-radius:50%;">
+          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover2(item)" style="border-radius:50%;" v-if="item.attachmentNo > 0 ">
+          			<img src="https://via.placeholder.com/100x100?text=profile" width="60" height="60" v-else style="border-radius:50%;">
 						   <div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
           					<p class="modalName">{{item.memberName}}</p>

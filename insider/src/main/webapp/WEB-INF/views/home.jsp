@@ -226,7 +226,8 @@ display:none;
 				</div>
 		  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style=" padding-right: 25px">
 		  <a :href="'${pageContext.request.contextPath}/member/'+ item.memberNick">
-		    <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="65" height="65" style="border-radius:50%;">
+		    <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="65" height="65" style="border-radius:50%;" v-if="item.attachmentNo > 0">
+		    <img src="https://via.placeholder.com/100x100?text=profile" width="65" height="65" style="border-radius:50%;" v-else>
 		  </a>
 		    <div class="recommend-nickname d-flex justify-content-center" style="min-width:120%;">
 		      <p style="width:50px; font-size:11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ item.memberNick }}</p>
