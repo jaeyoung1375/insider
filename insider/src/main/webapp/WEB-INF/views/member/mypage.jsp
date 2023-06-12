@@ -2343,11 +2343,13 @@
              async replyDelete(index,index2) {
              	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList[index].replyNo);
              	this.replyLoad(index2);
+             	this.hideAdditionalMenuModal();
              },
              //댓글 삭제(북마크)
              async replyDelete2(index,index2) {
              	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList[index].replyNo);
              	this.replyLoad2(index2);
+             	this.hideAdditionalMenuModal();
              },
              
            

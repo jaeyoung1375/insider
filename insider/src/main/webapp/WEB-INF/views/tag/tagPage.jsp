@@ -697,6 +697,7 @@
 	        async replyDelete(index,index2) {
 	        	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList[index].replyNo);
 	        	this.replyLoad(index2);
+	        	this.hideAdditionalMenuModal();
 	        },
 	        
 	        //대댓글
