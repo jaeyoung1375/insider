@@ -75,14 +75,28 @@
 	}
 	
 	.file-preview-container {
-    height: 100%;
-    display: flex;
-    flex-wrap: wrap;
- 	}
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	  height: 470px;
+	  margin: 0 auto;
+	}
   
 	.file-preview-wrapper {
-    padding: 10px;
-    position: relative;
+	  position: relative;
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	  width: 200px;
+	  height: 250px;
+	  overflow: hidden;
+	  margin: 0 10px;
+	}
+	
+	.file-preview-wrapper > img {
+	  width: 100%;
+	  height: 100%;
+	  object-fit: cover;
 	}
         
   .file-close-button {
@@ -116,13 +130,6 @@
     padding-bottom: 30px;
     text-align: center;
 	}
-	
-	.file-preview-wrapper>img {
-     position: relative;
-     width: 200px;
-     height: 250px;
-     z-index: 10;
- 	}
  	
  	.nickname{
  		font-weight: bold;
@@ -156,26 +163,28 @@
 	  max-width: 100%;
 	} 	
 	
-	.file-preview-container {
-	  display: flex;
-	  justify-content: center;
-	  align-items: center;
-	  height: 100%;
-	}
-
-	.file-preview-wrapper {
-	  width: 200px;
-	  height: 100%;
-	  overflow: hidden;
-	  margin: 0 10px;
-	}
-	
 	.preview-image,
 	.preview-video {
 	  width: 100%;
 	  height: 100%;
 	  object-fit: cover;
+	  display: block;
+	  object-fit: cover;
 	}
+	
+	#summernote {
+        border: none !important;
+        resize: none !important;
+        box-shadow: none !important;
+    }
+    
+    .note-resizebar {
+        display: none !important;
+    }
+    
+    .note-statusbar {
+    	display: none !important;
+    }
 	
 </style>
 
