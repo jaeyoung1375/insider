@@ -47,7 +47,6 @@ public class AttachmentRepoImpl implements AttachmentRepo{
 		String fileName = String.valueOf(attachmentNo);
 		File target = new File(directory, fileName);
 		attach.transferTo(target);
-		
 		sqlSession.insert("attachment.insert", AttachmentDto.builder()
 				.attachmentNo(attachmentNo)
 				.attachmentName(attach.getOriginalFilename())
