@@ -340,7 +340,7 @@ $(function(){
                     <h1 class="card-title" ><i class="fa-regular fa-images"></i></h1>
                     <p class="card-text fs-5">사진을 선택하세요.</p>
                     <label for="upload" class="input-upload">업로드</label>
-                    <input type="file" name="boardAttachment" accept="image/*, video/*" id="upload" ref="files" @change="imageUpload" style="display:none;">
+                    <input type="file" name="boardAttachment" accept="image/*, video/*" id="upload" ref="files" @change="imageUpload" style="display:none;" multiple>
                     <p style="margin-top: 20px;">* 이미지는 최대 5개까지 선택 가능합니다.</p>
                     <p style="margin-top: 20px;">* 이미지는 개당 최대 5MB를 넘을 수 없습니다.</p>
                   </div>
@@ -365,25 +365,25 @@ $(function(){
                        <label for="upload2" class="input-uploadPlus">
                          <i class="fa-solid fa-plus fa-3x"></i>
                        </label>
-                       <input type="file" name="boardAttachment" accept="image/*, video/*" id="upload2" ref="files2" @change="imageAddUpload(2)" style="display:none;"/>
+                       <input type="file" name="boardAttachment" accept="image/*, video/*" id="upload2" ref="files2" @change="imageAddUpload(2)" style="display:none;" multiple/>
                      </div>
                      <div class="image-box" v-show="files.length==2">
                        <label for="upload3" class="input-uploadPlus">
                          <i class="fa-solid fa-plus fa-3x"></i>
                        </label>
-                       <input type="file" name="boardAttachment" accept="image/*, video/*" id="upload3" ref="files3" @change="imageAddUpload(3)" style="display:none;"/>
+                       <input type="file" name="boardAttachment" accept="image/*, video/*" id="upload3" ref="files3" @change="imageAddUpload(3)" style="display:none;" multiple/>
                      </div>
                      <div class="image-box" v-show="files.length==3">
                        <label for="upload4" class="input-uploadPlus">
                          <i class="fa-solid fa-plus fa-3x"></i>
                        </label>
-                       <input type="file" name="boardAttachment" accept="image/*, video/*" id="upload4" ref="files4" @change="imageAddUpload(4)" style="display:none;"/>
+                       <input type="file" name="boardAttachment" accept="image/*, video/*" id="upload4" ref="files4" @change="imageAddUpload(4)" style="display:none;" multiple/>
                      </div>
                      <div class="image-box" v-show="files.length==4">
                        <label for="upload5" class="input-uploadPlus">
                          <i class="fa-solid fa-plus fa-3x"></i>
                        </label>
-                       <input type="file" name="boardAttachment" accept="image/*, video/*" id="upload5" ref="files5" @change="imageAddUpload(5)" style="display:none;"/>
+                       <input type="file" name="boardAttachment" accept="image/*, video/*" id="upload5" ref="files5" @change="imageAddUpload(5)" style="display:none;" multiple/>
                      </div>
                    </div>
                  </div>
