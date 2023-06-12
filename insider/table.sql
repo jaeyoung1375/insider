@@ -195,10 +195,11 @@ FROM SEARCH s LEFT OUTER JOIN MEMBER_WITH_PROFILE m ON s.search_MEMBER_NO =m.MEM
 LEFT OUTER JOIN tag t ON s.search_tag_name=t.tag_name;
 
 --추천 검색어 리스트 반환
+SELECT * FROM tag;
 CREATE OR REPLACE VIEW search_complex as
 SELECT member_name AS name, member_nick AS nick, member_follow AS follow, member_no AS member_no, attachment_no AS ATTACHMENT_NO
 FROM MEMBER_with_profile UNION ALL SELECT tag_name AS name, NULL AS nick, tag_follow AS follow, NULL AS member_no, NULL AS attachment_no
-FROM tag;
+FROM tag WHERE tag_available=1;
 
 --리포트 결과 테이블 생성
 CREATE TABLE report_result(

@@ -327,8 +327,8 @@
 						
 						<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
 							<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="color:black;text-decoration:none; position:relative;">
-								<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="45" height="45" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
-								<img v-else src="https://via.placeholder.com/45x45?text=profile" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
+								<img class="rounded-circle" v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="45" height="45" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
+								<img class="rounded-circle" v-else src="${pageContext.request.contextPath}/static/image/user.jpg" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
 								
 							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; margin-left: 3.5px; font-weight: bold;">{{replyList[index].memberNick}}</p>
 													
@@ -408,8 +408,8 @@
 					<div class="row p-2 mt-2"  v-for="(like,index) in likeList" :key="index">
 						<div class="col d-flex">
 							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick">
-								<img v-if="like.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ like.attachmentNo" width="50" height="50" style="border-radius: 70%;">
-								<img v-else src="https://via.placeholder.com/50x50?text=profile" style="border-radius: 70%; ">
+								<img class="rounded-circle" v-if="like.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ like.attachmentNo" width="50" height="50" style="border-radius: 70%;">
+								<img class="rounded-circle" v-else src="${pageContext.request.contextPath}/static/image/user.jpg" style="border-radius: 70%; ">
 							</a>
 							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick" style="color:black;text-decoration:none; position:relative;">
 								<h6 style="margin: 14px 0 0 10px;">{{like.memberNick}}</h6>
@@ -609,7 +609,7 @@
 	    		        return contextPath + "/rest/attachment/download/" + board.boardWithNickDto.attachmentNo;
 	    		      }
 	    		      else {
-	    		        return "https://via.placeholder.com/100x100?text=profile";
+	    		        return contextPath + "/static/image/user.jpg";
 	    		      }
 	    		    };
 	    		  },
@@ -1008,16 +1008,16 @@
 	        },
 			
 	        /*----------------------DM으로 이동 및 채팅방 생성----------------------*/
-			async moveToDmPage(memberNo){
+			async moveToDmPage(wantMemberNo){
 			    try {
 			        //본인일 경우, 메인 채팅방으로 이동
-			        if(this.loginMemberNo == memberNo) {
+			        if(this.loginMemberNo == wantMemberNo) {
 			            window.location.href = contextPath + "/dm/channel";
 			            return; 
 			        }
 			    	
 			    	//두 회원이 참여한 채팅방 번호 조회
-			        const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.loginMemberNo + "/" + memberNo);
+			        const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.loginMemberNo + "/" + wantMemberNo);
 			        let existingRoomNo = checkResp.data;
 			        //console.log("checkResp : ", checkResp);
 			        //console.log("existingRoomNo : ", existingRoomNo);
@@ -1032,7 +1032,7 @@
 			            //채팅 유저 저장
 			            const user = {
 			                roomNo: roomNo,
-			                memberList: [memberNo, this.loginMemberNo]
+			                memberList: [wantMemberNo, this.loginMemberNo]
 			            };
 			            await axios.post(contextPath + "/rest/enterUsers", user);
 			            //console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
