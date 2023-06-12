@@ -216,7 +216,7 @@
                 </c:when>       
                 <c:otherwise> 
                   <img style="border-radius: 70%;" width="150" height="150" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attachmentNo" class="image-margin" v-if="attachmentNo > 0">
-                  <img src="https://via.placeholder.com/45x45?text=profile"  width="150" height="150" style="border-radius: 70%;" class="image-margin" v-else>
+                  <img src="${pageContext.request.contextPath}/static/image/user.jpg"  width="150" height="150" style="border-radius: 70%;" class="image-margin" v-else>
                 </c:otherwise>
                 </c:choose>           
             </div>
@@ -950,7 +950,7 @@
           </div><!-- 팔로워 미리보기 끝 -->
 						  <div style="display: flex; align-items: center;">
 						   <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover(item)" style="border-radius:50%;" v-if="item.attachmentNo > 0">
-          					<img src="https://via.placeholder.com/100x100?text=profile" width="60" height="60" style="border-radius:50%;" v-else>
+          					<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" style="border-radius:50%;" v-else>
 						   		<div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
   						 	<a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
   						 	<p class="modalName">{{item.memberName}}</p>
@@ -993,7 +993,7 @@
         <div v-for="item in myFollowList" :key="item.attachmentNo">
       		 	<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
           			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover2(item)" style="border-radius:50%;" v-if="item.attachmentNo > 0 ">
-          			<img src="https://via.placeholder.com/100x100?text=profile" width="60" height="60" v-else style="border-radius:50%;">
+          			<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" v-else style="border-radius:50%;">
 						   <div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
           					<p class="modalName">{{item.memberName}}</p>
@@ -1087,7 +1087,8 @@
 					<!-- 해시태그 목록이 있을 때 -->
       		  		<div v-for="item in hashtagList" key="item.memberNo" v-else>
 					<div  style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll">
-          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60"style="border-radius:50%;">
+          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60"style="border-radius:50%;" v-if="item.attachmentNo > 0">
+          			<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" style="border-radius:50%;" v-else>
 						   <div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/tag/' + item.tagName" style="margin-left:5px;">{{'#' + item.tagName }}</a>
           					<p class="modalName" style="margin-left:5px;">게시물 {{item.tagCount}}</p>
