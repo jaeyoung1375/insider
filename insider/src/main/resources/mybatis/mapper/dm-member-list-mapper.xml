@@ -38,7 +38,7 @@
 		            )
 		        )
 		    )
-		    ORDER BY dbms_random.value
+		    ORDER BY member_no
 		)
 		<![CDATA[WHERE rownum <= 10]]>
 	</select>
@@ -97,12 +97,13 @@
 		            WHERE b.member_no = #{memberNo} AND b.block_no = m.member_no
 		        )
 		    )
-		    ORDER BY dbms_random.value
+		    ORDER BY member_no
 		)
 		<![CDATA[WHERE rownum <= 10]]>
 	</select>
 	
 	<!-- 초대 : 나를 차단한 사람, 내가 차단한 사람을 제외한 모든 회원 조회 + memberNick + attachmentNo -->
+<!-- 
 	<select id="dmInviteMemberSearch" resultType="DmMemberListDto">
 		SELECT m.member_no, m.member_nick, m.member_name, mp.attachment_no 
 		FROM member m
@@ -123,5 +124,6 @@
 		)
 		AND <![CDATA[(INSTR(m.member_nick, #{keywordInvite}) > 0 OR INSTR(m.member_name, #{keywordInvite}) > 0)]]>
 	</select>
+ -->
     
 </mapper>
