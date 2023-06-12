@@ -1421,27 +1421,46 @@ Vue.createApp({
 		},
 		/*----------------------태그, 닉네임 클릭 시 검색기록 넣고 이동----------------------*/
 
-		/*----------------------DM으로 이동 및 채팅방 생성----------------------*/
+		/*----------------------DM으로 이동 및 채팅방 생성 + 차단----------------------*/
 		async moveToDmPage(memberNo){
 		    try {
-		        //본인일 경우, 메인 채팅방으로 이동
-		        if(this.loginMemberNo == memberNo) {
+		        // 로그인한 회원이 차단한 목록 조회
+		        const blockList = await axios.get(contextPath + "/rest/blockList/" + this.loginMemberNo);
+		        // 로그인한 회원이 차단당한 목록 조회
+		        const blockedList = await axios.get(contextPath + "/rest/blockedList/" + this.loginMemberNo);
+		        
+		        // 본인이거나 로그인한 회원이 차단한 사람인 경우 메인 채팅방으로 이동
+		        if(this.loginMemberNo == memberNo || blockList.data.find(blocked => blocked.blockNo == memberNo && blocked.memberNo == this.loginMemberNo)) {
 		            window.location.href = contextPath + "/dm/channel";
 		            return; 
+		        }
+		
+		        // 차단당한 목록에서 초대받은 사람이 로그인한 회원을 차단한 경우
+		        if(blockedList.data.find(blocked => blocked.memberNo == memberNo && blocked.blockNo == this.loginMemberNo)) {
+		            // 두 회원이 참여한 채팅방 번호 조회
+		            const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.loginMemberNo + "/" + memberNo);
+		            let existingRoomNo = checkResp.data;
+		            
+		            // 기존의 채팅방이 있을 경우 해당 채팅방으로 이동
+		            if(existingRoomNo){
+		                window.location.href = contextPath + "/dm/channel?room=" + existingRoomNo;
+		                return;
+		            }
+		            // 없다면 메인 채팅방으로 이동
+		            else {
+		                window.location.href = contextPath + "/dm/channel";
+		                return;
+		            }
 		        }
 		    	
 		    	//두 회원이 참여한 채팅방 번호 조회
 		        const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.loginMemberNo + "/" + memberNo);
 		        let existingRoomNo = checkResp.data;
-		        console.log("checkResp : ", checkResp);
-		        console.log("existingRoomNo : ", existingRoomNo);
 		        
 		    	//기존의 일대일 채팅방이 없을 경우, 새 채팅방 생성
 		        if (!existingRoomNo) {
 		            const dmRoomVO = await axios.post(contextPath + "/rest/createChatRoom");
 		            const roomNo = dmRoomVO.data.roomNo;
-		            console.log("새 채팅방 번호 : ", roomNo);
-		            console.log("dmRoomVO.data", dmRoomVO.data);
 		
 		            //채팅 유저 저장
 		            const user = {
@@ -1449,17 +1468,14 @@ Vue.createApp({
 		                memberList: [memberNo, this.loginMemberNo]
 		            };
 		            await axios.post(contextPath + "/rest/enterUsers", user);
-		            console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
-		            
-		        //생성된 채팅방으로 이동
-		        window.location.href = contextPath + "/dm/channel?room=" + roomNo;
+			        //생성된 채팅방으로 이동
+			        window.location.href = contextPath + "/dm/channel?room=" + roomNo;
 		        }
 		        //기존의 일대일 채팅방이 있을 경우, 기존 채팅방으로 이동
 		        else {
 		        	window.location.href = contextPath + "/dm/channel?room=" + existingRoomNo;
 		        }
 		    } catch (error) {
-		        console.error("방 생성, 입장, 초대 중 오류가 발생했습니다.", error);
 		    }
 		},
 		/*----------------------DM으로 이동 및 채팅방 생성----------------------*/

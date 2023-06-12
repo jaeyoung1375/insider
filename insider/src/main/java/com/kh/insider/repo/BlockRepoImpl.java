@@ -44,4 +44,9 @@ public class BlockRepoImpl implements BlockRepo{
 		return sqlSession.selectList("block.getBlockList", memberNo);
 	}
 
+	@Override
+	public List<BlockWithProfileDto> getBlockedList(long memberNo) {
+		return sqlSession.selectList("block.getBlockedList", memberNo);
+	}
+
 }
