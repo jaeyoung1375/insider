@@ -226,8 +226,8 @@ display:none;
 				</div>
 		  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style=" padding-right: 25px">
 		  <a :href="'${pageContext.request.contextPath}/member/'+ item.memberNick">
-		    <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="65" height="65" style="border-radius:50%;" v-if="item.attachmentNo > 0">
-		    <img src="${pageContext.request.contextPath}/static/image/user.jpg" width="65" height="65" style="border-radius:50%;" v-else>
+		    <img v-if="item.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="65" height="65" style="border-radius:50%;">
+		    <img v-else src="${pageContext.request.contextPath}/static/image/user.jpg" width="65" height="65" style="border-radius:50%;">
 		  </a>
 		    <div class="recommend-nickname d-flex justify-content-center" style="min-width:120%;">
 		      <p style="width:50px; font-size:11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ item.memberNick }}</p>
@@ -263,7 +263,7 @@ display:none;
                             <div class="d-flex">
 
                                 <div class="p-2"><a style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><img class="profile rounded-circle" :src="profileUrl(index)" style="object-fit: cover; " @mouseover="profileHover(board)"></a></div>
-                                <div class="p-2" style="margin-top: 8px;"><h4><a class="btn btn-none" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a><b style="color: gray;">  · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
+                                <div class="p-2" style="margin-top: 8px;"><h4><a class="btn btn-default" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a><b style="color: gray;">  · {{dateCount(board.boardWithNickDto.boardTimeAuto)}}</b></h4></div>
 
                                 <div v-if="followCheckIfNew(index)" @click="follow(board.boardWithNickDto.memberNo)" class="p-2 me-5" style="margin-top: 8px;"><h4><b style="font-size: 15px; color:blue; cursor: pointer;">팔로우</b></h4></div>
                                  <div v-else class="p-2 me-5" style="margin-top: 8px;"><h4><b></b></h4></div> 
@@ -319,7 +319,7 @@ display:none;
                         <div class="p-1">
                             <h4 v-if="board.boardWithNickDto.boardLikeValid == 0" class="mt-1"><b @click="showLikeListModal(board.boardWithNickDto.boardNo)" style="cursor: pointer;">좋아요 {{boardLikeCount[index]}}개</b></h4>
                             <h4 v-else class="mt-1"><b @click="showLikeListModal(board.boardWithNickDto.boardNo)" style="cursor: pointer;">좋아요 여러개</b></h4>
-                            <h4><a class="btn btn-none" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a></h4>
+                            <h4><a class="btn btn-default" style="padding: 0 0 0 0" @click="moveToMemberPage(board.boardWithNickDto.memberNo, board.boardWithNickDto.memberNick)"><b>{{board.boardWithNickDto.memberNick}}</b></a></h4>
                             <p style="height: 20px;overflow: hidden; width: 400px;white-space: nowrap;text-overflow: ellipsis;margin-bottom:5px;">
                             	<span class="textHide">
                             		{{board.boardWithNickDto.boardContent}}
@@ -356,7 +356,8 @@ display:none;
           <div class="profile-preview" v-if="selectedItem === board" @mouseleave="profileLeave" style="border-radius:15px; margin-bottom:70px;">
                   <!-- 프로필 미리보기 내용 -->
                    	<div style="display: flex; align-items: center;">
-						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' +board.boardWithNickDto.attachmentNo" width="75" height="75" style="border-radius: 50%;"> 
+						  <img v-if="board.boardWithNickDto.attachmentNo>0" :src="'${pageContext.request.contextPath}/rest/attachment/download/' +board.boardWithNickDto.attachmentNo" width="75" height="75" style="border-radius: 50%;">
+						  <img v-else src="${pageContext.request.contextPath}/static/image/user.jpg" width="75" height="75" style="border-radius: 50%;"> 
 						  <div>
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + board.boardWithNickDto.memberNick" style="margin-left:20px;">{{ board.boardWithNickDto.memberNick }}</a>
 						  </div>
@@ -399,7 +400,7 @@ display:none;
 					        <!-- 게시물 정보 출력 -->
 					         	<video  style="width:127px; height:150px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+post.boardAttachmentList[0].imageURL"
 							:autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto" v-if="post.boardAttachmentList[0].video"></video>
-					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.boardAttachmentList[0].attachmentNo" width="127" height="150" style="margin-right:3px;" v-else>
+					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.boardAttachmentList[0].attachmentNo" width="127" height="150" style="margin-right:3px; object-fit:cover" v-else>
 						
 					      </div>
 					    </template>
@@ -444,7 +445,7 @@ display:none;
 <div v-if="detailView" class="container-fluid fullscreen" @click="closeDetail">
 	
 	<div class="p-4 mt-2 ms-4 d-flex justify-content-end">
-		<h2 class="btn btn-none" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
+		<h2 class="btn btn-default" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
 	</div>
 	<div class="row fullscreen-container" @click.stop >
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
@@ -479,7 +480,7 @@ display:none;
         	<div class="card bg-light" style="border-radius:0; max-height: 700px">
            		<div class="card-header">
 	           		<img class="profile" :src="profileUrl(detailIndex)">
-           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardList[detailIndex].boardWithNickDto.memberNick"><b>{{boardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
+           			<a class="btn btn-default" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardList[detailIndex].boardWithNickDto.memberNick"><b>{{boardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
            		</div>
 				
 				<div class="card-body card-scroll" ref="scrollContainer"  style="height:490px; padding-top: 0px; padding-left:0; padding-right: 0; padding-bottom: 0px!important; position: relative;">
@@ -493,7 +494,7 @@ display:none;
 					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
 						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="color:black; text-decoration:none; position:relative;">
 							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="45" height="45" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
-							<img v-else src="https://via.placeholder.com/45x45?text=profile" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
+							<img v-else src="${pageContext.request.contextPath}/static/image/user.jpg" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px" width="45" height="45">
 							
 							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; margin-left: 3.5px; font-weight: bold;">{{replyList[index].memberNick}}</p>
 												
@@ -704,7 +705,7 @@ display:none;
 						<div  class="col d-flex">
 							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick">
 								<img v-if="like.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ like.attachmentNo" width="50" height="50" style="border-radius: 70%;">
-								<img v-else src="https://via.placeholder.com/50x50?text=profile" style="border-radius: 70%; ">
+								<img v-else src="${pageContext.request.contextPath}/static/image/user.jpg" style="border-radius: 70%; " width="50" height="50">
 							</a>
 							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick" style="color:black;text-decoration:none; position:relative;">
 								<h6 style="margin: 14px 0 0 10px;">{{like.memberNick}}</h6>
@@ -838,7 +839,7 @@ Vue.createApp({
     		        return contextPath + "/rest/attachment/download/" + board.boardWithNickDto.attachmentNo;
     		      }
     		      else {
-    		        return "https://via.placeholder.com/100x100?text=profile";
+    		        return contextPath + "/static/image/user.jpg";
     		      }
     		    };
     		  },
@@ -906,7 +907,7 @@ Vue.createApp({
             //console.log(resp.data[0].boardLike);
             
             for (const board of resp.data) {
-            	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+            	this.isLiked.push(board.check);
             	//console.log(this.isLiked);
             	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
             	//this.followCheck(board.boardWithNickDto.memberNo);
@@ -1268,7 +1269,7 @@ Vue.createApp({
 	         	  }
 	         	  //console.log("+만들기");
 	     	  }
-	     	  console.log(arrayIndex);
+	     	  //console.log(arrayIndex);
 	        },
          
          //대댓글 숨기기 보기 상태변경
@@ -1502,7 +1503,7 @@ Vue.createApp({
 		    }
 		  }
 		
-		  console.log("북마크: " + this.bookmarkCheck.map(item => item.boardNo));
+		  //console.log("북마크: " + this.bookmarkCheck.map(item => item.boardNo));
 		},
 		
 		bookmarkChecked(boardNo){
@@ -1512,7 +1513,7 @@ Vue.createApp({
 		async bookmarkList(){
 			const resp = await axios.get("/rest/bookmark/selectOne");
 			this.bookmarkCheck.push(...resp.data);
-			console.log("북마크 리스트 : "+this.bookmarkCheck.map(item => item.boardNo));
+			//console.log("북마크 리스트 : "+this.bookmarkCheck.map(item => item.boardNo));
 		},
 		
 		/*---------북마크 종료 ----------------- */
@@ -1610,16 +1611,16 @@ Vue.createApp({
 			      }
 			      
 
-			      console.log("언팔로우 성공");
+			      //console.log("언팔로우 성공");
 			      
 			
 			    } else {
 			      // 언팔로우 실패 처리
-			      console.log("언팔로우 실패");
+			      //console.log("언팔로우 실패");
 			    }
 			  } catch (error) {
 			    // 요청 실패 처리
-			    console.error("언팔로우 요청 실패", error);
+			    //console.error("언팔로우 요청 실패", error);
 			  }
 			},
 			
@@ -1630,7 +1631,7 @@ Vue.createApp({
            	
            	// sessionStorage에 친구 추천목록 저장
            	sessionStorage.setItem("recommendFriendsList",JSON.stringify(this.recommendFriendsList));
-           	console.log("친구 추천 목록 : " +this.recommendFriendsList.length);
+           	//console.log("친구 추천 목록 : " +this.recommendFriendsList.length);
             },
             
    	
@@ -1641,11 +1642,11 @@ Vue.createApp({
        percent(){
             if(this.percent >= 80 && !this.newListFinish) {
                 this.loadNewList();
-                console.log("로드new");
+                //console.log("로드new");
             }
             else if(this.oldListStart && this.percent >= 80){
                	this.loadOldList();            	
-                console.log("로드old");
+                //console.log("로드old");
             }
        },
        

@@ -51,6 +51,7 @@
  .carousel-inner img {
         width: 470px;
         height: 480px;
+        background-color: white;
     }
 
   .card-scroll{
@@ -465,7 +466,7 @@
 
 <div v-if="detailView" class="container-fluid fullscreen" @click="closeDetail">
 <div class="p-4 mt-2 ms-4 d-flex justify-content-end">
-		<h2 class="btn btn-none" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
+		<h2 class="btn btn-default" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
 	</div>
 	<div class="row fullscreen-container" @click.stop>
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
@@ -500,7 +501,7 @@
        				<div class="row">
            				<div class='col-10'>
 			           		<img class="profile" :src="profileUrl">
-		           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+myBoardList[detailIndex].boardWithNickDto.memberNick"><b>{{myBoardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
+		           			<a class="btn btn-default" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+myBoardList[detailIndex].boardWithNickDto.memberNick"><b>{{myBoardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
            				</div>
            				<div class="col d-flex justify-content-center align-items-center">
            					<i class="fa-solid fa-ellipsis modal-click-btn-neutral" style="display:flex; flex-direction: row-reverse; font-size:1.2em" @click="showAdditionalMenuModal(myBoardList[detailIndex].boardWithNickDto.boardNo, myBoardList[detailIndex].boardWithNickDto.memberNo, 'board')"></i>
@@ -586,7 +587,7 @@
 <!-- ---------------------------------게시물 상세보기 모달(북마크)-------------------------- -->
 <div v-if="detailView2" class="container-fluid fullscreen" @click="closeDetail2">
 <div class="p-4 mt-2 ms-4 d-flex justify-content-end">
-		<h2 class="btn btn-none" @click="closeDetail2" style="font-size: 30px; color:#FFFFFF;">X</h2>
+		<h2 class="btn btn-default" @click="closeDetail2" style="font-size: 30px; color:#FFFFFF;">X</h2>
 	</div>
 	<div class="row fullscreen-container" @click.stop>
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
@@ -620,7 +621,7 @@
            		    <div class="row">
            				<div class='col-10'>
 			           		<img class="profile" :src="'${pageContext.request.contextPath}'+bookmarkMyPostList[detailIndex2].boardWithNickDto.imageURL">
-		           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick"><b>{{bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick}}</b></a>
+		           			<a class="btn btn-default" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick"><b>{{bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick}}</b></a>
            				</div>
            				<div class="col d-flex justify-content-center align-items-center">
            					<i class="fa-solid fa-ellipsis modal-click-btn-neutral" style="display:flex; flex-direction: row-reverse; font-size:1.2em" @click="showAdditionalMenuModal(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo, bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNo, 'board')"></i>
