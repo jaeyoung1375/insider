@@ -214,9 +214,9 @@
 					<div class="card col-3" style="width:290px;border-radius:0;padding-bottom:0;align-content: center;flex-wrap: wrap;flex-direction: row;">
 						<div style="padding-left: 0.4em;">
 							<a href="${pageContext.request.contextPath}/member/login" style="color: black; text-decoration: none;">
-							<img v-if="${attach!=0}" src="${pageContext.request.contextPath}/rest/attachment/download/${attach}" width="45" height="45" class="profile rounded-circle" style="position:absolute; top:0.75em" >
-							<img v-else src="https://via.placeholder.com/45x45?text=P" style="border-radius: 50%; position:absolute; margin-top:0em;">
-								<span style="padding-left:3.5em; word-wrap:normal;">
+							<img v-if="${attach!=0}" src="${pageContext.request.contextPath}/rest/attachment/download/${attach}" width="38" height="38" class="profile rounded-circle" style="position:absolute; top:0.75em" >
+							<img v-else src="${pageContext.request.contextPath}/static/image/user.jpg"width="38" height="38" class="profile rounded-circle" style="position:absolute; top:0.75em">
+								<span style="padding-left:3.7em; word-wrap:normal;">
 										${sessionScope.memberNick}
 								</span>
 							</a>
@@ -236,9 +236,9 @@
 							<div v-if="roomNo != null">
 								<div v-if="this.roomNo === room.roomNo">
 									<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"
-										width="45" height="45" class="profile rounded-circle" style="position:absolute; top:0.75em; left:1.3em;" >
-					          		<img v-else src="https://via.placeholder.com/34x34?text=P" style="border-radius: 50%; position:absolute; margin-top:0em;">
-									<span style="font-size:0.86em;padding-left:4.7em; word-wrap:normal;">{{room.roomName}}</span>
+										width="38" height="38" class="profile rounded-circle" style="position:absolute; top:0.75em; left:1.3em;" >
+					          		<img v-else src="${pageContext.request.contextPath}/static/image/user.jpg"width="38" height="38" class="profile rounded-circle" style="position:absolute; top:0.75em; left:1.3em;">
+									<span style="font-size:0.86em;padding-left:5em; word-wrap:normal;">{{room.roomName}}</span>
 								</div>
 								<span style="position:absolute; top:21px; right:0; margin-right:19px;">
 									<i class="fa-solid fa-file-pen fa-xl" style="margin-right: 15px; cursor:pointer; color: #b2bec3" @click="showRoomNameModal()"></i>
@@ -259,7 +259,8 @@
 							    <div style="position:relative; height: 2.4em; display: flex; align-items: center;" @click="changeRoomMenu(room.roomNo)">
 							    	<img v-if="room.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+room.attachmentNo"class="profile rounded-circle" style="position:absolute; 
 								    	width:34px; height:34px; margin-top:0em;cursor:pointer;">
-				          			<img v-else src="https://via.placeholder.com/34x34?text=P" style="border-radius: 50%; position:absolute; margin-top:0em;">
+				          			<img v-else src="${pageContext.request.contextPath}/static/image/user.jpg"class="profile rounded-circle" style="position:absolute; 
+								    	width:34px; height:34px; margin-top:0em;cursor:pointer;">
 								    <span style="font-size:0.86em;padding-left:3.2em; word-wrap:normal;">
 									     {{ room.roomName.length > 11 ? room.roomName.slice(0, 11) + '...' : room.roomName }}
 			   						</span>
@@ -294,7 +295,7 @@
 									<div class="message-content">
 						                <div class="profile-wrapper" v-if="!checkMyMessage(index)">
 						                	<img v-if="message.profileNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+message.profileNo"class="profile rounded-circle"v-if="!checkSameTime(index)" style="width:40px; height:40px;">
-	                                		<img v-else src="https://via.placeholder.com/100x100?text=P" width="100%" v-if="!checkSameTime(index)">
+	                                		<img v-else src="${pageContext.request.contextPath}/static/image/user.jpg"class="profile rounded-circle" v-if="!checkSameTime(index)"style="width:40px; height:40px;">
 						                </div>
 						                <div class="content-wrapper">
 							                <div class="content-header" v-if="!checkSameTime(index)">
@@ -353,7 +354,8 @@
 		        </div>
 		        <div v-if="searchDmList.length==0" >
 			        <div v-for="(member,index) in dmMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
-			          <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:45px; height:45px;">
+			          <img v-if="member.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:45px; height:45px;">
+			          <img v-else src="${pageContext.request.contextPath}/static/image/user.jpg"class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:45px; height:45px;">
 			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
 			          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
@@ -364,7 +366,8 @@
 		        </div>
 		        <div v-if="searchDmList.length>0">
 			        <div v-for="(member,index) in searchDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
-			          <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
+			          <img v-if="member.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
+					  <img v-else src="${pageContext.request.contextPath}/static/image/user.jpg"class="profile rounded-circle"style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
 			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
 			          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
@@ -396,8 +399,8 @@
 		        </div>
 		        <div v-if="searchInviteDmList.length==0" >
 			        <div v-for="(member,index) in dmInviteMemberList" :key="member.memberNo" style="margin-top:20px;position:relative;">
-			          <img v-if="dmInviteMemberList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
-			          <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
+			          <img v-if="member.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
+			          <img v-else src="${pageContext.request.contextPath}/static/image/user.jpg"class="profile rounded-circle"style="object-fit:cover; position:absolute; top:0.3em; width:40px; height:40px;">
 			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
 			          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
@@ -408,8 +411,8 @@
 		        </div>
 		        <div v-if="searchInviteDmList.length>0">
 			        <div v-for="(member,index) in searchInviteDmList" :key="member.memberNo"style="margin-top:20px;position:relative;">
-			          <img v-if="searchInviteDmList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
-			          <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
+			          <img v-if="member.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo" class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
+			          <img v-else src="${pageContext.request.contextPath}/static/image/user.jpg"class="profile rounded-circle"style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
 			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 			          <br>
 			          <span style="padding-left:4.4em; padding-bottom: 1.5m; font-size:0.75em;color:#7f8c8d;">{{member.memberName}}</span>
@@ -504,8 +507,8 @@
 		      <div class="modal-body" style="width:300px; max-height: 400px; overflow-y: auto;">
 		        <div v-for="(member,index) in membersInRoomList" :key="index" style="margin-top:20px;position:relative;">
 		          <a :href="'${pageContext.request.contextPath}/member/'+member.memberNick" style="color: black; text-decoration: none;">
-			          <img v-if="member.attachmentNo > 0"  :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
-				      <img v-else src="https://via.placeholder.com/42x42?text=profile"style="border-radius: 50%; position:absolute; top:0.3em;">
+			          <img v-if="member.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+member.attachmentNo"class="profile rounded-circle" style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
+				      <img v-else src="${pageContext.request.contextPath}/static/image/user.jpg"class="profile rounded-circle"style="object-fit:cover;position:absolute; top:0.3em; width:40px; height:40px;">
 			          <span style="padding-left:3.5em;font-size:0.9em;">{{member.memberNick}}</span>
 		          </a>
 		          <br>
