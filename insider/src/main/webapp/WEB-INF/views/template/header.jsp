@@ -274,7 +274,7 @@
 								<div class="col p-0 m-2">
 									<a class="" href="${pageContext.request.contextPath}/search" style="color:inherit"><i class="fa-regular fa-solid fa-magnifying-glass header-menu-option" style="font-size:40px;margin-top:2px"></i></a>
 								</div>
-								<!-- 알림 --> 
+							<!-- 알림 --> 
 								<div class="col p-0 m-2" style="position:relative;">
 								  <div>
 									  <a class="notice" @click="toggleModal" style="color:inherit">
