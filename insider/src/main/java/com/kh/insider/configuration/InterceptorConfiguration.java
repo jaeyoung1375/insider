@@ -19,24 +19,27 @@ public class InterceptorConfiguration implements WebMvcConfigurer {
 		
 		//1. MemberNonLoginInterceptor
 		registry.addInterceptor(memberNonLoginInterceptor)
-				.addPathPatterns(
-						"/**"
-						)
-				.excludePathPatterns(
-						"/member/login/**",
-						"/member/logout",
-						"/member/join/**",
-						"/member/addInfo",
-						"/member/auth/**",
-						"/member/emailCheck",
-						"/member/nickCheck",
-						"/member/sendMail",
-						"/member/passwordChange",
-						"/member/suspension",
-						"/static/**"
-						);
+		.addPathPatterns(
+				"/**"
+				)
+		.excludePathPatterns(
+				"/member/login/**",
+				"/member/logout",
+				"/member/join/**",
+				"/member/addInfo",
+				"/member/auth/**",
+				"/member/emailCheck",
+				"/member/nickCheck",
+				"/member/sendMail",
+				"/member/passwordChange",
+				"/member/suspension",
+				"/static/**"
+				);
+
+
 		//Admin 인터셉터
 		registry.addInterceptor(adminInterceptor)
 				.addPathPatterns("/admin/**","/rest/admin/**");
 	}
 }
+

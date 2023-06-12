@@ -122,7 +122,6 @@ public class MemberController {
    @GetMapping("/logout")
    public String logout(HttpSession session) {
       session.removeAttribute("memberNo");
-      session.removeAttribute("socialUser");
       session.removeAttribute("memberLevel");
       session.removeAttribute("memberNick");
       session.removeAttribute("access_token");

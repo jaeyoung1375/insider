@@ -25,7 +25,6 @@ public class AdminInterceptor implements HandlerInterceptor {
 		}
 		else {
 			request.getSession().removeAttribute("memberNo");
-			request.getSession().removeAttribute("socialUser");
 			request.getSession().removeAttribute("memberLevel");
 			request.getSession().removeAttribute("memberNick");
 			response.sendRedirect(request.getContextPath()+"/member/login");
