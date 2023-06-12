@@ -130,7 +130,7 @@
 	    
 	   		<!-- 1단계 -->
 	            <div class="text-center mb-3">         	
-			         	<a href="/" class="logo"><img src="/static/image/logo.png" width="50" height="50" class="me-3">insider</a>
+			         	<a href="/" class="logo"><img src="/static/image/insider2.png" style="width:200px; height:80px;" ></a>
 	                </div>
 	        <div :class="{hide:stepOneHidden}">
 	            <div class="row form-floating mb-3"> 
@@ -317,7 +317,6 @@
 	                	
 	                	
 	                  const parts = this.memberBirth.split('/'); // '/'로 분리된 연도, 월, 일
-						console.log(parts);
 	                  if (parts.length === 3) {
 	                    const year = parts[0];
 	                    const month = parts[1].padStart(2, '0'); // 월을 2자리로 맞추고 부족한 부분은 0으로 채움
@@ -545,7 +544,6 @@
 	                },
 	                
 	                emailVerifyCode(){
-	                	console.log(this.num);
 	                	if(this.num != this.emailCode){
 	                		this.showEmailCodeWarning = true;
 	                	}else{

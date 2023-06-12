@@ -484,7 +484,7 @@
 				this.loading=true;
 				const resp = await axios.get(contextPath+"/rest/tag/list/"+this.tagName+"?page="+this.page);
 				for(const board of resp.data) {
-	            	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+	            	this.isLiked.push(board.check);
 	            	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
 				}
 				this.boardList.push(...resp.data);
@@ -616,8 +616,6 @@
 	        	  //세팅값 불러오기
 	        	  const response = await axios.get(contextPath+"/rest/member/setting/" + memberNo);
 	        	  const set = response.data.settingAllowReply;
-	        	  //console.log(set);
-	        	  //console.log(memberNo, loginNo);       	  
 	        	  
 	        	  const requestData = {
 	        	    replyOrigin: boardNo,
@@ -650,7 +648,6 @@
 	        	  else if(set == 2){
 	        		  await this.loadFollower(memberNo);
 	              	  if(loginNo == memberNo) this.followerList.push(loginNo); 
-	        		  //console.log(this.followerList);
 	        		  if(this.followerList.includes(loginNo)){
 	        			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
 	              	      this.replyLoad(index);
@@ -697,6 +694,7 @@
 	        async replyDelete(index,index2) {
 	        	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList[index].replyNo);
 	        	this.replyLoad(index2);
+	        	this.hideAdditionalMenuModal();
 	        },
 	        
 	        //대댓글
@@ -785,7 +783,6 @@
 			    }
 			  }
 			
-			  console.log("북마크: " + this.bookmarkCheck.map(item => item.boardNo));
 			},
 			
 			bookmarkChecked(boardNo){
@@ -795,7 +792,6 @@
 			async bookmarkList(){
 				const resp = await axios.get("/rest/bookmark/selectOne");
 				this.bookmarkCheck.push(...resp.data);
-				console.log("북마크 리스트 : "+this.bookmarkCheck.map(item => item.boardNo));
 			},
 			
 			/*---------북마크 종료 ----------------- */	    

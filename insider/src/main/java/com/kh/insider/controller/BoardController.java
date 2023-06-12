@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.kh.insider.configuration.FileUploadProperties;
 import com.kh.insider.dto.BoardAttachmentDto;
@@ -294,7 +296,9 @@ public class BoardController {
     
 	//게시글 삭제하기
 	@GetMapping("/delete")
-	public String delete(@RequestParam int boardNo, HttpSession session) {
+	public String delete(@RequestParam int boardNo, HttpSession session, HttpServletRequest request) {
+		//이전페이지 저장
+		String previousPage = request.getHeader("referer");
 		//본인인지 확인
 		long memberNo = (long)session.getAttribute("memberNo");
 		BoardWithNickDto boardDto = boardRepo.selectOne(boardNo);
@@ -305,12 +309,15 @@ public class BoardController {
 			//리포트가 있으면 찾아서 상태 변경해줌
 			reportService.manageDeleted("board", boardNo);
 		}
-		return "redirect:/";
+		return "redirect:" + previousPage;
 	}
 	
 	//게시물 수정
 	@GetMapping("/edit")
-	public String edit(@RequestParam int boardNo, Model model, HttpSession session) {
+	public String edit(@RequestParam int boardNo, Model model, HttpSession session, HttpServletRequest request) {
+		//이전페이지 저장
+		String previousPage = request.getHeader("referer");
+		session.setAttribute("previousPage", previousPage);
 		//본인인지 확인
 		long memberNo = (long)session.getAttribute("memberNo");
 		BoardWithNickDto boardDto = boardRepo.selectOne(boardNo);
@@ -351,6 +358,9 @@ public class BoardController {
 			@ModelAttribute BoardDto boardDto,
 			@ModelAttribute TagDto tagDto,
 			@ModelAttribute BoardTagDto boardTagDto, HttpSession session) {
+		//이전페이지 저장
+		String previousPage = (String) session.getAttribute("previousPage");
+		session.removeAttribute("previousPage");
 		//본인인지 확인
 		long memberNo = (long)session.getAttribute("memberNo");
 		BoardWithNickDto boardNewDto = boardRepo.selectOne(boardDto.getBoardNo());
@@ -390,7 +400,7 @@ public class BoardController {
 			}
 			
 		}
-		return "redirect:/";
+		return "redirect:" + previousPage;
 	}
     
     

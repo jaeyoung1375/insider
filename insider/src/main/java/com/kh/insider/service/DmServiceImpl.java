@@ -615,6 +615,6 @@ public class DmServiceImpl implements DmService {
    public void deleteRename(int roomNo, long memberNo) {
        dmRoomRenameRepo.deleteRename(roomNo, memberNo);
    }
-
+   
 	   
 }

@@ -1064,6 +1064,7 @@
 					const resp = await axios.get(contextPath+"/rest/loadDmRoomList");
 					this.dmRoomListCopy = [...resp.data.dmRoomList];
 					this.unreadMessage=[...resp.data.unreadCount];
+					this.count=[...resp.data.count];
 					for(let i=0; i<this.dmRoomListCopy.length; i++){
 				            if (this.dmRoomListCopy[i].roomRename != null || this.dmRoomListCopy[i].memberNo === this.memberNo) {
 				            	this.dmRoomListCopy[i].roomName = this.dmRoomListCopy[i].roomRename;

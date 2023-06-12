@@ -50,7 +50,4 @@
 			delete board_attachment where board_no=#{boardNo}
 		</delete>
 		
-		
-		
-   
    </mapper>

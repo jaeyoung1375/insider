@@ -51,6 +51,7 @@
  .carousel-inner img {
         width: 470px;
         height: 480px;
+        background-color: white;
     }
 
   .card-scroll{
@@ -197,6 +198,13 @@
 	margin-left:260px;
 	margin-top:30px;
 }
+.truncate{
+display: inline-block;
+  max-width: 150px; /* Adjust the max-width value as needed */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 
 
@@ -206,23 +214,25 @@
 
       <div id="app" class="container-fluid" style="width:1300px;">
             <div class="row">
+            
                 <!-- 본인 여부에 따른 프로필 변경  -->
             <div class="col-4 text-center">
                <c:choose>
                <c:when test="${isOwner}">
-                <img style="border-radius: 70%;" :src="profileUrl"
-             width = "150" height="150" @click="openFileInput" class="image-margin">
-             <input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*" style="display: none;">
+                <img :src="profileUrl" width = "150" height="150" @click="openFileInput" class="image-margin rounded-circle">
+             		<input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*" style="display: none;">
                 </c:when>       
                 <c:otherwise> 
-                  <img style="border-radius: 70%;" width="150" height="150" :src="profileUrl" class="image-margin">
+                  <img width="150" height="150" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+attachmentNo" class="image-margin rounded-circle" v-if="attachmentNo > 0">
+                  <img src="${pageContext.request.contextPath}/static/image/user.jpg"  width="150" height="150" class="image-margin rounded-circle" v-else>
                 </c:otherwise>
                 </c:choose>           
             </div>
             <div class="col-4" style=" width:40%; margin-left:70px;">   
                <div class="col-7" style="display:flex;">
                   <div class="col-6" style="width:60%;">
-                  <a href="#" class="btn btn-default" @click="showModal" style="font-size:20px;">${memberDto.memberNick}</a>    
+                  <a href="#" class="btn btn-default" @click="showModal" style="font-size:20px;">
+                  <span class="truncate">${memberDto.memberNick}</span></a>    
            </div>
               <c:choose>
               <c:when test="${isOwner}"> <!-- 본인 프로필 이라면 -->
@@ -273,12 +283,16 @@
                      </div>
                   </div>   
                </div>
-               <div class="row mt-4">
-                  <span style="font-size:12px;">
-                  <h5>${memberDto.memberName}</h5>
-             		${memberDto.memberMsg}     
-               </span>
-               </div>
+      <div class="row mt-4">
+		  <p style="margin-left: 15px; font-size: 20px;">${memberDto.memberName}</p>
+		  <div style="width: 500px; overflow: hidden; white-space: pre-wrap;">
+		    <p style="font-size:12px;">${memberDto.memberMsg}</p>
+		  </div>
+	</div>
+
+
+
+
                
             </div>
             </div>
@@ -287,7 +301,7 @@
             <div  style="display: flex; flex-direction: column; width: 830px; height:280px; background-color: white; border:1px solid gray; margin: 0 auto; margin-top:12px; border:none;" v-if="recommendFriends">
         		<div class="recommend-id" style="display:flex; justify-content: space-between;">
         			<span style="color:gray; font-weight: bold;">추천계정</span>
-        			<a class="" style="text-decoration: none; font-weight: bold;" @click="recommendFriendsAllListModalShow">모두 보기</a>
+        			<a class="" style="text-decoration: none; font-weight: bold; cursor:pointer;" @click="recommendFriendsAllListModalShow">모두 보기</a>
         		</div>  
         	<div v-if="recommendFriendsList.length === 0">
         		<div class="text-center">
@@ -306,14 +320,15 @@
 				</div>
 
 			  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style="display:flex;">
-			    <div class="card" style="width: 170px; height: 185px; margin-left: 30px;">
+			    <div class="card" style="width: 170px; height: 185px; margin-left: 30px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);">
 			      <div class="ms-auto" style="margin-right:8px;">
 			      	<span @click="deleteRecommendFriend(item.memberNo)">x</span>
 			      </div>
 			      <div class="profile d-flex justify-content-center align-items-start" style="text-align: center; margin-left:60px;">
-					  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="54" height="54" style="border-radius:50%;">
+					  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="54" height="54"  v-if="item.attachmentNo > 0" class="rounded-circle">
+					  <img src="${pageContext.request.contextPath}/static/image/user.jpg" width="54" height="54" class="rounded-circle" v-else>
 				  </div>
-			      <div class="recommend-nickname d-flex justify-content-center align-items-start">
+			      <div class="recommend-nickname d-flex justify-content-center align-items-start" style="margin-top:10px;">
 			        {{ item.memberNick }}
 			      </div>
 			      <div class="recommend-name d-flex justify-content-center align-items-start">
@@ -321,13 +336,12 @@
 			      </div>
 			      <div class="recommend-name d-flex justify-content-center align-items-start">
 			      <!-- 다음 페이지로 이동하는 버튼 -->
-			        <button class="btn btn-primary" style="width: 65%; margin-top:8px;" @click="follow(item.memberNo)" v-show="followCheckIf(item.memberNo)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로우</button>
-			        <button class="btn btn-secondary" style="width: 65%; margin-top:8px;" @click="unFollow(item.memberNo)" v-show="!followCheckIf(item.memberNo)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로잉</button>
+			        <button class="btn btn-primary" style="width: 65%;" @click="follow(item.memberNo)" v-show="followCheckIf(item.memberNo)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로우</button>
+			        <button class="btn btn-secondary" style="width: 65%;" @click="unFollow(item.memberNo)" v-show="!followCheckIf(item.memberNo)" :class="{'hide' : item.followFollower == ${memberNo}}">팔로잉</button>
 			      </div>
 			    </div>
 			  </div>
 		<div class="button-container" style="display: flex; justify-content: center; align-items: center;">
-  		
   			<i class="fa-sharp fa-solid fa-angle-right" @click="currentPage++"  :class="{'hide':currentPage === paginatedRecommendFriends.length - 1}" 
   			style="height: 24px; weight: 24px; margin-left:50px; position:absolute; color:gray;"></i>
 		</div>
@@ -460,7 +474,7 @@
 
 <div v-if="detailView" class="container-fluid fullscreen" @click="closeDetail">
 <div class="p-4 mt-2 ms-4 d-flex justify-content-end">
-		<h2 class="btn btn-none" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
+		<h2 class="btn btn-default" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
 	</div>
 	<div class="row fullscreen-container" @click.stop>
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
@@ -495,7 +509,7 @@
        				<div class="row">
            				<div class='col-10'>
 			           		<img class="profile" :src="profileUrl">
-		           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+myBoardList[detailIndex].boardWithNickDto.memberNick"><b>{{myBoardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
+		           			<a class="btn btn-default" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+myBoardList[detailIndex].boardWithNickDto.memberNick"><b>{{myBoardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
            				</div>
            				<div class="col d-flex justify-content-center align-items-center">
            					<i class="fa-solid fa-ellipsis modal-click-btn-neutral" style="display:flex; flex-direction: row-reverse; font-size:1.2em" @click="showAdditionalMenuModal(myBoardList[detailIndex].boardWithNickDto.boardNo, myBoardList[detailIndex].boardWithNickDto.memberNo, 'board')"></i>
@@ -581,7 +595,7 @@
 <!-- ---------------------------------게시물 상세보기 모달(북마크)-------------------------- -->
 <div v-if="detailView2" class="container-fluid fullscreen" @click="closeDetail2">
 <div class="p-4 mt-2 ms-4 d-flex justify-content-end">
-		<h2 class="btn btn-none" @click="closeDetail2" style="font-size: 30px; color:#FFFFFF;">X</h2>
+		<h2 class="btn btn-default" @click="closeDetail2" style="font-size: 30px; color:#FFFFFF;">X</h2>
 	</div>
 	<div class="row fullscreen-container" @click.stop>
 		<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
@@ -615,7 +629,7 @@
            		    <div class="row">
            				<div class='col-10'>
 			           		<img class="profile" :src="'${pageContext.request.contextPath}'+bookmarkMyPostList[detailIndex2].boardWithNickDto.imageURL">
-		           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick"><b>{{bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick}}</b></a>
+		           			<a class="btn btn-default" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick"><b>{{bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNick}}</b></a>
            				</div>
            				<div class="col d-flex justify-content-center align-items-center">
            					<i class="fa-solid fa-ellipsis modal-click-btn-neutral" style="display:flex; flex-direction: row-reverse; font-size:1.2em" @click="showAdditionalMenuModal(bookmarkMyPostList[detailIndex2].boardWithNickDto.boardNo, bookmarkMyPostList[detailIndex2].boardWithNickDto.memberNo, 'board')"></i>
@@ -707,7 +721,7 @@
                 		<div class="modal-content">
                    		 	<div class="modal-header" style="display:flex; justify-content: center;">
                         		<h5 class="modal-title" style="text-align:center;">
-                            <img style="border-radius: 70%;" :src="profileUrl" width = "150" height="150">
+                            <img :src="profileUrl" width = "150" height="150" class="rounded-circle">
                       			<div class="nickname">${memberDto.memberNick}</div>   
                    			<div class="content" style="text-align:left;">
                       				<p style="font-size: 12px; color:gray;">신뢰할 수 있는 커뮤니티를 유지하기 위해 Insider 계정에 대한 정보가 표시됩니다</p>
@@ -872,7 +886,7 @@
                             data-bs-backdrop="static"
                             ref="followerModal" @click.self="followerModalHide">	
             <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
-                   <div class="modal-content" style="max-width:400px; min-height:400px; max-height:400px;">
+                   <div class="modal-content" style="max-width:400px; min-height:400px; max-height:400px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);">
                        <div class="modal-header text-center" style="display:flex; justify-content: center; height:50px;">
 							<h5 class="modal-title">팔로워</h5>
                        </div>
@@ -882,10 +896,12 @@
                   <!-- 프로필 미리보기 내용 -->
   					<div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave" style="border-radius:15px; margin-left:550px; margin-top:-40px;">
                   <div style="display: flex; align-items: center;">
-						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" style="border-radius: 50%;"> 
+						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" class="rounded-circle"> 
 						  <div style="margin-left:20px;">
-						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
-						    <p class="modalName">{{ item.memberName }}</p>
+						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">
+						    <span class="truncate">{{ item.memberNick }}</span></a>
+						    <p class="modalName">
+						    <span class="truncate">{{ item.memberName }}</span></p>
 						  </div>
 					</div>
                     <hr>
@@ -949,7 +965,8 @@
                     </div>
           </div><!-- 팔로워 미리보기 끝 -->
 						  <div style="display: flex; align-items: center;">
-						   <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover(item)" style="border-radius:50%;">
+						   <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover(item)" style="border-radius:50%;" v-if="item.attachmentNo > 0">
+          					<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" style="border-radius:50%;" v-else>
 						   		<div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
   						 	<a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
   						 	<p class="modalName">{{item.memberName}}</p>
@@ -991,10 +1008,13 @@
       		
         <div v-for="item in myFollowList" :key="item.attachmentNo">
       		 	<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
-          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover2(item)" style="border-radius:50%;">
+          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover2(item)" v-if="item.attachmentNo > 0 " class="rounded-circle">
+          			<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" v-else class="rounded-circle">
 						   <div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
-						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
-          					<p class="modalName">{{item.memberName}}</p>
+						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">
+						    <span class="truncate">{{ item.memberNick }}</span></a>
+          					<p class="modalName">
+          					<span class="truncate">{{item.memberName}}</span></p>
 						  </div>
           <button class="float-end btn btn-primary" @click="follow(item.followFollower)" v-show="followCheckIf(item.followFollower)" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto; ">팔로우</button>
           <button class="float-end btn btn-secondary unfollow-button" @click="unFollow(item.followFollower)" v-show="!followCheckIf(item.followFollower) && !${isOwner}" :class="{'hide' : item.followFollower == ${memberNo}}" style="margin-left:auto;">팔로잉</button>
@@ -1003,7 +1023,7 @@
             <div class="profile-preview" v-if="selectedItem === item" @mouseleave="profileLeave" style="border-radius:15px; margin-left:550px; margin-top:-40px;">
                   <!-- 프로필 미리보기 내용 -->
                    	<div style="display: flex; align-items: center;">
-						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" style="border-radius: 50%;"> 
+						  <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="75" height="75" class="rounded-circle"> 
 						  <div style="margin-left:20px;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
 						    <p class="modalName">{{ item.memberName }}</p>
@@ -1085,7 +1105,8 @@
 					<!-- 해시태그 목록이 있을 때 -->
       		  		<div v-for="item in hashtagList" key="item.memberNo" v-else>
 					<div  style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll">
-          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60"style="border-radius:50%;">
+          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" v-if="item.attachmentNo > 0" class="rounded-circle">
+          			<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" class="rounded-circle"  v-else >
 						   <div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/tag/' + item.tagName" style="margin-left:5px;">{{'#' + item.tagName }}</a>
           					<p class="modalName" style="margin-left:5px;">게시물 {{item.tagCount}}</p>
@@ -1117,7 +1138,8 @@
         <div v-for="item in recommendFriendsList" :key="item.attachmentNo">
      
           	<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
-          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60"  style="border-radius:50%;">
+          			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" v-if="item.attachmentNo > 0" class="rounded-circle">
+          			<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" v-else class="rounded-circle">
 						   <div style="display: flex; flex-direction: column; justify-content: flex-start;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
           					<p class="modalName">{{item.memberName}}</p>
@@ -1129,7 +1151,7 @@
           
         </div>
       </div>
-     
+        <button type="button" class="btn btn-default" data-bs-dismiss="modal" style="color:red;">취소</button>
     </div>
   </div>
 </div> 
@@ -1662,14 +1684,14 @@
               Object.assign(this.member, resp.data);
            },
            
+           
            //회원 환경 설정 로드
            async loadMemberSetting(){
    			const resp = await axios.get(contextPath+"/rest/member/setting");
    				this.MemberSetting.watchLike=resp.data.watchLike;
                this.MemberSetting.watchDistance=resp.data.settingDistance;
                this.MemberSetting.videoAuto=resp.data.videoAuto;
-   		},
-              
+   		},     
              //프로필 사진 변경 누르면 실행
             openFileInput() {
               this.$refs.fileInput.click();
@@ -1687,10 +1709,11 @@
          //파일 저장 비동기 처리
          async uploadProfile(formData){
             const resp = await axios.post(contextPath+"/rest/attachment/upload/profile", formData);
-            this.member.attachmentNo = resp.data;
+            this.attachmentNo = resp.data;
+           
          },
-         
-         
+    
+    
          //팔로우
          async follow(followNo) {
         	 
@@ -1719,7 +1742,6 @@
 		
 		    if (response.data) {
 		      // 언팔로우 성공 처리
-		      console.log("언팔로우 성공");
 		      this.totalFollowerCount();
 		      this.totalFollowCount();
 		      this.followerListPaging();
@@ -1728,16 +1750,12 @@
 		      if (index !== -1) {
 		        this.followCheckList.splice(index, 1);
 		      }
-		      console.log("index : "+index);
-		      console.log("list 후: "+this.followCheckList);
 		      
 		    } else {
 		      // 언팔로우 실패 처리
-		      console.log("언팔로우 실패");
 		    }
 		  } catch (error) {
 		    // 요청 실패 처리
-		    console.error("언팔로우 요청 실패", error);
 		  }
 		},
 			// 팔로워 되있는 사람 -> 팔로우 삭제 (본인 프로필 일때)
@@ -1759,8 +1777,6 @@
 			        this.myFollowerList.splice(followerIndex, 1);
 			      }
 			      
-			      console.log("언팔로우 성공");
-			      console.log("this.myFollowerList: ", this.myFollowerList);
 			    
 			      this.totalFollowerCount();
 			      this.totalFollowCount();
@@ -1768,11 +1784,9 @@
 			      this.followListPaging();
 			    } else {
 			      // 언팔로우 실패 처리
-			      console.log("언팔로우 실패");
 			    }
 			  } catch (error) {
 			    // 요청 실패 처리
-			    console.error("언팔로우 요청 실패", error);
 			  }
 			},
 
@@ -1797,7 +1811,6 @@
 			      }
 			      
 
-			      console.log("언팔로우 성공");
 			      this.totalFollowCount();
 			      this.totalFollowerCount();
 			      this.followListPaging();
@@ -1805,11 +1818,9 @@
 			
 			    } else {
 			      // 언팔로우 실패 처리
-			      console.log("언팔로우 실패");
 			    }
 			  } catch (error) {
 			    // 요청 실패 처리
-			    console.error("언팔로우 요청 실패", error);
 			  }
 			},
 						
@@ -1998,7 +2009,7 @@
            		});
            		
            	 for (const board of resp.data) {
-             	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+             	this.isLiked.push(board.check);
              	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
                }
            		
@@ -2009,7 +2020,6 @@
            		
            		if(resp.data < 5) this.finish = true;
            	
-           		console.log(this.myBoardList);
            		
            		this.loading = false;
            		
@@ -2074,7 +2084,6 @@
            	
             async profileHover2(item) {           		
              	  this.selectedItem = item; // 선택한 항목의 정보 저장
-             	  console.log("item : "+item.followFollower);
              	  
              	  // settingHide 불러오기 위해서 선언
              	const resp = await axios.get("/rest/member/setting/"+item.followFollower);
@@ -2146,7 +2155,6 @@
             async memberSetting(){
              	const resp = await axios.get("/rest/member/setting/" +this.memberNo);
              	this.settingHide = resp.data.settingHide; 
-             	console.log("settingHide :"+this.settingHide);
              },
              
              //댓글 조회
@@ -2191,8 +2199,6 @@
              	  //세팅값 불러오기
              	  const response = await axios.get(contextPath+"/rest/member/setting/" + memberNo);
              	  const set = response.data.settingAllowReply;
-             	  //console.log(set);
-             	  //console.log(memberNo, loginNo);       	  
              	  
              	  const requestData = {
              	    replyOrigin: boardNo,
@@ -2224,7 +2230,6 @@
              	  else if(set == 2){
              		  await this.loadFollower(memberNo);
                    	  if(loginNo == memberNo) this.followerList.push(loginNo); 
-             		  //console.log(this.followerList);
              		  if(this.followerList.includes(loginNo)){
              			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
                    	      this.replyLoad(index);
@@ -2260,8 +2265,6 @@
             	  //세팅값 불러오기
             	  const response = await axios.get(contextPath+"/rest/member/setting/" + memberNo);
             	  const set = response.data.settingAllowReply;
-            	  console.log(set);
-            	  console.log(memberNo, loginNo);       	  
             	  
             	  const requestData = {
             	    replyOrigin: boardNo,
@@ -2280,7 +2283,6 @@
             		  //게시물 작성자 팔로우 로드
             		  await this.loadFollow(memberNo);
                   	  if(loginNo == memberNo) this.followList.push(loginNo); 
-            		  console.log(this.followList);
                   	  if(this.followList.includes(loginNo)){
             			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
                   	      this.replyLoad2(index);
@@ -2294,7 +2296,6 @@
             	  else if(set == 2){
             		  await this.loadFollower(memberNo);
                   	  if(loginNo == memberNo) this.followerList.push(loginNo); 
-            		  //console.log(this.followerList);
             		  if(this.followerList.includes(loginNo)){
             			  const response = await axios.post("${pageContext.request.contextPath}/rest/reply/", requestData);
                   	      this.replyLoad2(index);
@@ -2344,11 +2345,13 @@
              async replyDelete(index,index2) {
              	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList[index].replyNo);
              	this.replyLoad(index2);
+             	this.hideAdditionalMenuModal();
              },
              //댓글 삭제(북마크)
              async replyDelete2(index,index2) {
              	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList[index].replyNo);
              	this.replyLoad2(index2);
+             	this.hideAdditionalMenuModal();
              },
              
            
@@ -2373,11 +2376,9 @@
            		const arrayIndex = [];
            	 	const tmp = index+1;
            	  	if(index!=this.replyList.length){
-           		  	//console.log(replyNo);
                	  	while(true){
                		  	if(this.replyList[tmp]==null) break;
                		  	if(this.replyList[tmp].replyParent==replyNo){
-     	         			  //console.log(tmp);
      	         			  arrayIndex.push(tmp);
      	         			  tmp++;
      	         		  }
@@ -2388,14 +2389,12 @@
      	             	  for(var i = 0; i<arrayIndex.length; i++){
      	             		  this.replyList[arrayIndex[i]].replyParent = -1;
      	             	  }
-     	             	 //console.log("-1만들기");
      	             	 return;
      	         	  }
      	         	  
      	         	  while(true){
      	         		  if(this.replyList[tmp]==null) break;
      	         		  if(this.replyList[tmp].replyParent==-1){
-     	         			  //console.log(tmp);
      	         			  arrayIndex.push(tmp);
      	         			  tmp++;
      	         		  }else if(this.replyList[tmp]==null||this.replyList[tmp].replyParent==0) break;
@@ -2404,9 +2403,7 @@
      	         	  for(var i = 0; i<arrayIndex.length; i++){
      	         		  this.replyList[arrayIndex[i]].replyParent = replyNo;
      	         	  }
-     	         	  //console.log("+만들기");
      	     	  }
-     	     	  console.log(arrayIndex);
      	        },
               
               //대댓글 숨기기 보기 상태변경
@@ -2581,7 +2578,6 @@
             	
             	// sessionStorage에 친구 추천목록 저장
             	sessionStorage.setItem("recommendFriendsList",JSON.stringify(this.recommendFriendsList));
-            	console.log("친구 추천 목록 : " +this.recommendFriendsList.length);
              },
              
             deleteRecommendFriend(idToDelete){
@@ -2599,7 +2595,6 @@
             	    
             	    // 수정된 목록을 다시 sessionStorage에 저장
             	    sessionStorage.setItem("recommendFriendsList", JSON.stringify(recommendFriendsList));
-           	    	console.log(sessionStorage.getItem("recommendFriendsList"));
            	    	
            	     this.recommendFriendsList = recommendFriendsList;
             	  }
@@ -2625,7 +2620,6 @@
            		  try {
            		    const resp = await axios.post("/rest/follow/tagUnFollow/" + tagName);
            		    if (resp.data) {
-           		      console.log("언팔로우 성공");
 
            		      // Remove unfollowed tagName from hashtagList
            		      const index = this.hashtagFollowCheckList.findIndex(item => item.tagName === tagName);
@@ -2635,7 +2629,6 @@
 
            		      this.hashtagFollowCheck();
            		    } else {
-           		      console.log("언팔로우 실패");
            		    }
            		  } catch (error) {
            		    console.error(error);
@@ -2646,14 +2639,12 @@
      			  const resp = await axios.post("/rest/follow/tagFollow/" + tagName);
      			  if (resp.data) {
      				
-     			    console.log("팔로우 성공");
      			    
      			    this.hashtagFollowCheck();
 
      			    // Add followed tagName to hashtagList
      			    
      			  } else {
-     			    console.log("팔로우 실패");
      			  }
      			},
      			
@@ -2783,7 +2774,7 @@
         			const resp = await axios.get("/rest/member/bookmarkMyPost");	
         			
         			for(const board of resp.data){
-        				this.isLiked2.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+                    	this.isLiked2.push(board.check);
         				this.boardLikeCount2.push(board.boardWithNickDto.boardLike);
         			}
         			
@@ -2791,7 +2782,6 @@
         			
         			this.bookmarkMyPostList.push(...resp.data);
         			
-        			console.log("bookmarkMyPostList : "+this.bookmarkMyPostList);
         		},
         		//북마크
         		async bookmarkInsert(boardNo) {
@@ -2805,7 +2795,6 @@
         		      this.bookmarkCheck.splice(index, 1);
         		    }
         		  }
-        		  console.log("북마크: " + this.bookmarkCheck.map(item => item.boardNo));
         		},
         		
         		bookmarkChecked(boardNo){
@@ -2815,7 +2804,6 @@
         		async bookmarkList(){
         			const resp = await axios.get("/rest/bookmark/selectOne");
         			this.bookmarkCheck.push(...resp.data);
-        			console.log("북마크 리스트 : "+this.bookmarkCheck.map(item => item.boardNo));
         		},
         		
         		
@@ -2906,7 +2894,7 @@
         		
       		},
    		
-      created() {
+       created() {
     	  // 데이터 불러오는 영역
     	  this.loadMember();
     	  this.totalFollowCount();
@@ -2935,9 +2923,7 @@
     			this.boardList();
     		}
     	},
-    	
-    	
-   	
+
       },
       mounted(){   
 			this.checkOwnerShip();

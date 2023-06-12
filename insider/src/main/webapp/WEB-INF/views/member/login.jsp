@@ -33,7 +33,7 @@ GoogleLoginProperties googleProperties = context.getBean(GoogleLoginProperties.c
               <div class="container col-lg-3 card p-5 mt-5" style="display:flex; justify-content: center" id="app">
               <div>
                <div class="text-center mb-3">            
-                  <a href="/" class="logo"><img src="/static/image/logo.png" style="width:50px; height:50px;" >insider</a>
+                  <a href="/" class="logo"><img src="/static/image/insider2.png" style="width:200px; height:80px;" ></a>
                 </div>
             <form action="login" method="post" @submit="isEmpty" >
                 <div class="mb-3 row">

@@ -12,4 +12,8 @@
 	<select id="selectList" resultType="boardTagDto">
 		select * from board_tag where board_no=#{boardNo} order by board_tag_no asc
 	</select>
+	
+	<select id="selectWithout" resultType="boardTagDto">
+		select * from board_tag_set where board_no=#{boardNo} and tag_available = 1 order by board_tag_no asc
+	</select>
 </mapper>

@@ -111,6 +111,7 @@
     width: 470px;
     height: 480px;
     object-fit: cover;
+    background-color: white;
 }
 
 .like {
@@ -272,7 +273,7 @@
 	<div v-if="detailView" class="container-fluid fullscreen" @click="closeDetail">
 	
 		<div class="p-4 mt-2 ms-4 d-flex justify-content-end">
-			<h2 class="btn btn-none" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
+			<h2 class="btn btn-default" @click="closeDetail()" style="font-size: 30px; color:#FFFFFF;">X</h2>
 		</div>
 		<div class="row fullscreen-container" @click.stop >
 			<div class="col-7 offset-1" style="padding-right: 0;padding-left: 0;">
@@ -308,7 +309,7 @@
 	           			<div class="row">
 	           				<div class='col-10'>
 				           		<img class="profile" :src="profileUrl(detailIndex)">
-			           			<a class="btn btn-none" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardList[detailIndex].boardWithNickDto.memberNick"><b>{{boardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
+			           			<a class="btn btn-default" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardList[detailIndex].boardWithNickDto.memberNick"><b>{{boardList[detailIndex].boardWithNickDto.memberNick}}</b></a>
 	           				</div>
 	           				<div class="col d-flex justify-content-center align-items-center">
 	           					<i class="fa-solid fa-ellipsis modal-click-btn-neutral" style="display:flex; flex-direction: row-reverse; font-size:1.2em" @click="showAdditionalMenuModal(boardList[detailIndex].boardWithNickDto.boardNo, boardList[detailIndex].boardWithNickDto.memberNo, 'board')"></i>
@@ -641,7 +642,7 @@
 				this.loading=true;
 				const resp = await axios.get(contextPath+"/rest/board/list/"+this.page);
 				for (const board of resp.data) {
-	            	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+	            	this.isLiked.push(board.check);
 	            	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
 	              }
 				this.boardList.push(...resp.data);
@@ -657,7 +658,7 @@
 				this.additionalLoading=true;
 				const resp = await axios.get(contextPath+"/rest/board/additionalList/"+this.additionalPage);
 				for (const board of resp.data) {
-	            	this.isLiked.push(await this.likeChecked(board.boardWithNickDto.boardNo));
+	            	this.isLiked.push(board.check);
 	            	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
 	              }
 				this.boardList.push(...resp.data);
@@ -880,6 +881,7 @@
 	        async replyDelete(index,index2) {
 	        	const resp = await axios.delete("${pageContext.request.contextPath}/rest/reply/"+ this.replyList[index].replyNo);
 	        	this.replyLoad(index2);
+	        	this.hideAdditionalMenuModal();
 	        },
 	        
 	        //대댓글
@@ -1017,15 +1019,15 @@
 			    	//두 회원이 참여한 채팅방 번호 조회
 			        const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.loginMemberNo + "/" + memberNo);
 			        let existingRoomNo = checkResp.data;
-			        console.log("checkResp : ", checkResp);
-			        console.log("existingRoomNo : ", existingRoomNo);
+			        //console.log("checkResp : ", checkResp);
+			        //console.log("existingRoomNo : ", existingRoomNo);
 			        
 			    	//기존의 일대일 채팅방이 없을 경우, 새 채팅방 생성
 			        if (!existingRoomNo) {
 			            const dmRoomVO = await axios.post(contextPath + "/rest/createChatRoom");
 			            const roomNo = dmRoomVO.data.roomNo;
-			            console.log("새 채팅방 번호 : ", roomNo);
-			            console.log("dmRoomVO.data", dmRoomVO.data);
+			            //console.log("새 채팅방 번호 : ", roomNo);
+			            //console.log("dmRoomVO.data", dmRoomVO.data);
 			
 			            //채팅 유저 저장
 			            const user = {
@@ -1033,7 +1035,7 @@
 			                memberList: [memberNo, this.loginMemberNo]
 			            };
 			            await axios.post(contextPath + "/rest/enterUsers", user);
-			            console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
+			            //console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
 			            
 			        //생성된 채팅방으로 이동
 			        window.location.href = contextPath + "/dm/channel?room=" + roomNo;
@@ -1061,7 +1063,7 @@
 			    }
 			  }
 			
-			  console.log("북마크: " + this.bookmarkCheck.map(item => item.boardNo));
+			  //console.log("북마크: " + this.bookmarkCheck.map(item => item.boardNo));
 			},
 			
 			bookmarkChecked(boardNo){
@@ -1071,7 +1073,7 @@
 			async bookmarkList(){
 				const resp = await axios.get("/rest/bookmark/selectOne");
 				this.bookmarkCheck.push(...resp.data);
-				console.log("북마크 리스트 : "+this.bookmarkCheck.map(item => item.boardNo));
+				//console.log("북마크 리스트 : "+this.bookmarkCheck.map(item => item.boardNo));
 			},
 			
 			/*---------북마크 종료 ----------------- */
