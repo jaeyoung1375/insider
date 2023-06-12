@@ -227,8 +227,8 @@ display:none;
 				</div>
 		  <div v-for="(item, itemIndex) in displayedItems" :key="itemIndex" style=" padding-right: 25px">
 		  <a :href="'${pageContext.request.contextPath}/member/'+ item.memberNick">
-		    <img v-if="item.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="65" height="65" style="border-radius:50%;">
-		    <img v-else src="${pageContext.request.contextPath}/static/image/user.jpg" width="65" height="65" style="border-radius:50%;">
+		    <img v-if="item.attachmentNo > 0" class="rounded-circle" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+item.attachmentNo" width="65" height="65" style="border-radius:50%;">
+		    <img v-else class="rounded-circle" src="${pageContext.request.contextPath}/static/image/user.jpg" width="65" height="65" style="border-radius:50%;">
 		  </a>
 		    <div class="recommend-nickname d-flex justify-content-center" style="min-width:120%;">
 		      <p style="width:50px; font-size:11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ item.memberNick }}</p>
@@ -357,8 +357,8 @@ display:none;
           <div class="profile-preview" v-if="selectedItem === board" @mouseleave="profileLeave" style="border-radius:15px; margin-bottom:70px;">
                   <!-- 프로필 미리보기 내용 -->
                    	<div style="display: flex; align-items: center;">
-						  <img v-if="board.boardWithNickDto.attachmentNo>0" :src="'${pageContext.request.contextPath}/rest/attachment/download/' +board.boardWithNickDto.attachmentNo" width="75" height="75" style="border-radius: 50%;">
-						  <img v-else src="${pageContext.request.contextPath}/static/image/user.jpg" width="75" height="75" style="border-radius: 50%;"> 
+						  <img class="rounded-circle" v-if="board.boardWithNickDto.attachmentNo>0" :src="'${pageContext.request.contextPath}/rest/attachment/download/' +board.boardWithNickDto.attachmentNo" width="75" height="75" style="border-radius: 50%;">
+						  <img class="rounded-circle" v-else src="${pageContext.request.contextPath}/static/image/user.jpg" width="75" height="75" style="border-radius: 50%;"> 
 						  <div>
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + board.boardWithNickDto.memberNick" style="margin-left:20px;">{{ board.boardWithNickDto.memberNick }}</a>
 						  </div>

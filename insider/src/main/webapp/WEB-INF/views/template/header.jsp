@@ -424,7 +424,7 @@
         <div class="col-4" style="padding-left: 0;">
         	<div class="card in-header bg-light" style="border-radius:0; max-height: 700px">
            		<div class="card-header in-header">
-	           		<img class="profile" :src="profileUrl(detailIndex)">
+	           		<img class="profile rounded-circle" :src="profileUrl(detailIndex)">
            			<a class="btn btn-default" style="padding: 0 0 0 0; margin-left: 0.5em;" :href="'${pageContext.request.contextPath}/member/'+boardData[0].boardWithNickDto.memberNick"><b>{{boardData[0].boardWithNickDto.memberNick}}</b></a>
            		</div>
 				
@@ -438,8 +438,8 @@
 					
 					<div v-if="replyList.length > 0" v-for="(reply,index) in replyList" :key="index" class="card-text in-header" :class="{'childReply':reply.replyParent!=0}" style="position: relative;">
 						<a :href="'${pageContext.request.contextPath}/member/'+ replyList[index].memberNick" style="color:black; text-decoration:none; position:relative;">
-							<img v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="45" height="45" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
-							<img v-else src="https://via.placeholder.com/45x45?text=profile" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
+							<img class="rounded-circle" v-if="replyList[index].attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ replyList[index].attachmentNo" width="45" height="45" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
+							<img class="rounded-circle" v-else src="${pageContext.request.contextPath}/static/image/user.jpg" style="border-radius: 70%;position:absolute; margin-top:9px; margin-left: 4px">
 							
 							<p style="padding-left: 3.5em; margin-bottom: 1px; font-size: 0.9em; margin-left: 3.5px; font-weight: bold;">{{replyList[index].memberNick}}</p>
 												
@@ -531,8 +531,8 @@
 					<div class="row p-2 mt-2"  v-for="(like,index) in likeList" :key="index">
 						<div  class="col d-flex">
 							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick">
-								<img v-if="like.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ like.attachmentNo" width="50" height="50" style="border-radius: 70%;">
-								<img v-else src="https://via.placeholder.com/50x50?text=profile" style="border-radius: 70%; ">
+								<img class="rounded-circle" v-if="like.attachmentNo > 0" :src="'${pageContext.request.contextPath}/rest/attachment/download/'+ like.attachmentNo" width="50" height="50" style="border-radius: 70%;">
+								<img class="rounded-circle"  v-else src="${pageContext.request.contextPath}/static/image/user.jpg" style="border-radius: 70%; ">
 							</a>
 							<a :href="'${pageContext.request.contextPath}/member/'+ like.memberNick" style="color:black;text-decoration:none; position:relative;">
 								<h6 style="margin: 14px 0 0 10px;">{{like.memberNick}}</h6>
@@ -624,7 +624,7 @@
 	    		        return contextPath + "/rest/attachment/download/" + board.boardWithNickDto.attachmentNo;
 	    		      }
 	    		      else {
-	    		        return "https://via.placeholder.com/100x100?text=profile";
+	    		        return contextPath+"/static/image/user.jpg";
 	    		      }
 	    		    };
 	    		  },
