@@ -1433,7 +1433,7 @@ Vue.createApp({
 		/*----------------------태그, 닉네임 클릭 시 검색기록 넣고 이동----------------------*/
 
 		/*----------------------DM으로 이동 및 채팅방 생성 + 차단----------------------*/
-		async moveToDmPage(memberNo){
+		async moveToDmPage(wantMemberNo){
 		    try {
 		        // 로그인한 회원이 차단한 목록 조회
 		        const blockList = await axios.get(contextPath + "/rest/blockList/" + this.loginMemberNo);
@@ -1441,15 +1441,15 @@ Vue.createApp({
 		        const blockedList = await axios.get(contextPath + "/rest/blockedList/" + this.loginMemberNo);
 		        
 		        // 본인이거나 로그인한 회원이 차단한 사람인 경우 메인 채팅방으로 이동
-		        if(this.loginMemberNo == memberNo || blockList.data.find(blocked => blocked.blockNo == memberNo && blocked.memberNo == this.loginMemberNo)) {
+		        if(this.loginMemberNo == wantMemberNo || blockList.data.find(blocked => blocked.blockNo == wantMemberNo && blocked.memberNo == this.loginMemberNo)) {
 		            window.location.href = contextPath + "/dm/channel";
 		            return; 
 		        }
 		
 		        // 차단당한 목록에서 초대받은 사람이 로그인한 회원을 차단한 경우
-		        if(blockedList.data.find(blocked => blocked.memberNo == memberNo && blocked.blockNo == this.loginMemberNo)) {
+		        if(blockedList.data.find(blocked => blocked.memberNo == wantMemberNo && blocked.blockNo == this.loginMemberNo)) {
 		            // 두 회원이 참여한 채팅방 번호 조회
-		            const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.loginMemberNo + "/" + memberNo);
+		            const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.loginMemberNo + "/" + wantMemberNo);
 		            let existingRoomNo = checkResp.data;
 		            
 		            // 기존의 채팅방이 있을 경우 해당 채팅방으로 이동
@@ -1465,7 +1465,7 @@ Vue.createApp({
 		        }
 		    	
 		    	//두 회원이 참여한 채팅방 번호 조회
-		        const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.loginMemberNo + "/" + memberNo);
+		        const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.loginMemberNo + "/" + wantMemberNo);
 		        let existingRoomNo = checkResp.data;
 		        
 		    	//기존의 일대일 채팅방이 없을 경우, 새 채팅방 생성
@@ -1476,7 +1476,7 @@ Vue.createApp({
 		            //채팅 유저 저장
 		            const user = {
 		                roomNo: roomNo,
-		                memberList: [memberNo, this.loginMemberNo]
+		                memberList: [wantMemberNo, this.loginMemberNo]
 		            };
 		            await axios.post(contextPath + "/rest/enterUsers", user);
 			        //생성된 채팅방으로 이동

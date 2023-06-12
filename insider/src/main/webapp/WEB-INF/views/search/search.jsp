@@ -1008,16 +1008,16 @@
 	        },
 			
 	        /*----------------------DM으로 이동 및 채팅방 생성----------------------*/
-			async moveToDmPage(memberNo){
+			async moveToDmPage(wantMemberNo){
 			    try {
 			        //본인일 경우, 메인 채팅방으로 이동
-			        if(this.loginMemberNo == memberNo) {
+			        if(this.loginMemberNo == wantMemberNo) {
 			            window.location.href = contextPath + "/dm/channel";
 			            return; 
 			        }
 			    	
 			    	//두 회원이 참여한 채팅방 번호 조회
-			        const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.loginMemberNo + "/" + memberNo);
+			        const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.loginMemberNo + "/" + wantMemberNo);
 			        let existingRoomNo = checkResp.data;
 			        //console.log("checkResp : ", checkResp);
 			        //console.log("existingRoomNo : ", existingRoomNo);
@@ -1032,7 +1032,7 @@
 			            //채팅 유저 저장
 			            const user = {
 			                roomNo: roomNo,
-			                memberList: [memberNo, this.loginMemberNo]
+			                memberList: [wantMemberNo, this.loginMemberNo]
 			            };
 			            await axios.post(contextPath + "/rest/enterUsers", user);
 			            //console.log("방 생성, 입장, 초대가 성공적으로 수행되었습니다.");
