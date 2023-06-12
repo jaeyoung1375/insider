@@ -37,6 +37,6 @@ public class InterceptorConfiguration implements WebMvcConfigurer {
 //						);
 		//Admin 인터셉터
 		registry.addInterceptor(adminInterceptor)
-				.addPathPatterns("/admin/**");
+				.addPathPatterns("/admin/**","/rest/admin/**");
 	}
 }
