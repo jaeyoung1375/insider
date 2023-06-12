@@ -966,7 +966,7 @@ display: inline-block;
           </div><!-- 팔로워 미리보기 끝 -->
 						  <div style="display: flex; align-items: center;">
 						   <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover(item)" style="border-radius:50%;" v-if="item.attachmentNo > 0">
-          					<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" style="border-radius:50%;" v-else>
+          					<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" style="border-radius:50%;" v-else @mouseover="profileHover(item)">
 						   		<div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
   						 	<a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
   						 	<p class="modalName">{{item.memberName}}</p>
@@ -1009,7 +1009,7 @@ display: inline-block;
         <div v-for="item in myFollowList" :key="item.attachmentNo">
       		 	<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
           			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover2(item)" v-if="item.attachmentNo > 0 " class="rounded-circle">
-          			<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" v-else class="rounded-circle">
+          			<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" v-else class="rounded-circle" @mouseover="profileHover2(item)">
 						   <div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">
 						    <span class="truncate">{{ item.memberNick }}</span></a>
