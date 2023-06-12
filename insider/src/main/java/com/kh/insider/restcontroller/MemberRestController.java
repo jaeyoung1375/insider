@@ -1,4 +1,4 @@
-package com.kh.insider.restcontroller;
+		package com.kh.insider.restcontroller;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -169,7 +169,9 @@ public class MemberRestController {
 	public List<BoardListVO> postList(@RequestParam long memberNo){
 		
 		List<BoardListVO> getTotalPost = boardRepo.getTotalMyPost(memberNo);
-		return forbiddenService.changeForbiddenWords(getTotalPost);
+//		return forbiddenService.changeForbiddenBoard(getTotalPost);
+		
+		return getTotalPost;
 	}
 	
 	@GetMapping("/bookmarkMyPost")
@@ -201,7 +203,8 @@ public class MemberRestController {
 	@GetMapping("/recommendFriendsList")
 	public List<MemberProfileDto> recommendFriendsList(HttpSession session){
 		long memberNo = (long)session.getAttribute("memberNo");
-		List<MemberProfileDto> recommendFriendsList = memberRepo.recommendFriends(memberNo);
+		SettingDto dto = settingRepo.selectOne(memberNo);
+		List<MemberProfileDto> recommendFriendsList = memberRepo.recommendFriends(memberNo,dto.getSettingDistance());
 		return recommendFriendsList;
 	}
 	

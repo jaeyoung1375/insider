@@ -109,8 +109,11 @@ public class MemberRepoImpl implements MemberRepo{
 
 	// 친구 추천목록 조회
 	@Override
-	public List<MemberProfileDto> recommendFriends(long memberNo) {
-		return sqlSession.selectList("member.recommendFriends",memberNo);
+	public List<MemberProfileDto> recommendFriends(long memberNo, int settingDistance) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("memberNo", memberNo);
+		params.put("settingDistance", settingDistance);
+		return sqlSession.selectList("member.recommendFriends",params);
 	}
 
 	@Override
