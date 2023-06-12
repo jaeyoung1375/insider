@@ -400,7 +400,7 @@ display:none;
 					        <!-- 게시물 정보 출력 -->
 					         	<video  style="width:127px; height:150px; object-fit:cover" class="d-block" :src="'${pageContext.request.contextPath}'+post.boardAttachmentList[0].imageURL"
 							:autoplay="memberSetting.videoAuto" muted controls :loop="memberSetting.videoAuto" v-if="post.boardAttachmentList[0].video"></video>
-					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.boardAttachmentList[0].attachmentNo" width="127" height="150" style="margin-right:3px;" v-else>
+					        <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + post.boardAttachmentList[0].attachmentNo" width="127" height="150" style="margin-right:3px; object-fit:cover" v-else>
 						
 					      </div>
 					    </template>
