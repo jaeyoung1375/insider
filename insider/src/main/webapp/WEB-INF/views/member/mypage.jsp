@@ -2068,6 +2068,7 @@ display: inline-block;
            	  const settingHide = resp.data.settingHide;
            	 
            	  
+           	  
            	  Promise.all([
            		 this.getTotalFollowCount(item.memberNo), // 팔로우 수 가져오기
               	 this.getTotalFollowerCount(item.memberNo), // 팔로워 수 가져오기
