@@ -1522,10 +1522,11 @@ Vue.createApp({
 		// 호버
 		 async profileHover(item) {           		
            	  this.selectedItem = item; // 선택
-           	  console.log("item : "+item.boardAttachmentList);
+           	  //console.log("item : "+item.boardAttachmentList);
         	  // settingHide 불러오기 위해서 선언
+
              	const resp = await axios.get(contextPath+"/rest/member/setting/"+item.boardWithNickDto.memberNo);
-             	  const settingHide = resp.data.settingHide;
+             	const settingHide = resp.data.settingHide;
            	  
         	  Promise.all([
             	 this.getTotalFollowCount(item.boardWithNickDto.memberNo), // 팔로우 수 가져오기
@@ -1582,7 +1583,11 @@ Vue.createApp({
    	},
 
    	async boardList2(memberNo) {
+<<<<<<< HEAD
+   	  const resp = await axios.get(contextPath + "/rest/member/postList",{
+=======
    	  const resp = await axios.get(contextPath+"/rest/member/postList",{
+>>>>>>> refs/remotes/origin/main
    	    params: {
    	      memberNo: memberNo
    	    }
@@ -1627,7 +1632,11 @@ Vue.createApp({
 			
 			 // 친구 추천목록 조회
             async recommendList(){
+<<<<<<< HEAD
+           	const resp = await axios.get(contextPath + "/rest/member/recommendFriendsList");
+=======
            	const resp = await axios.get(contextPath+"/rest/member/recommendFriendsList");
+>>>>>>> refs/remotes/origin/main
            	this.recommendFriendsList.push(...resp.data);
            	
            	// sessionStorage에 친구 추천목록 저장
