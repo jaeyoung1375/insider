@@ -1522,9 +1522,9 @@ Vue.createApp({
 		// 호버
 		 async profileHover(item) {           		
            	  this.selectedItem = item; // 선택
-           	  console.log("item : "+item.boardAttachmentList);
+           	  //console.log("item : "+item.boardAttachmentList);
         	  // settingHide 불러오기 위해서 선언
-             	const resp = await axios.get("/rest/member/setting/"+item.boardWithNickDto.memberNo);
+             	const resp = await axios.get(contextPath + "/rest/member/setting/"+item.boardWithNickDto.memberNo);
              	  const settingHide = resp.data.settingHide;
            	  
         	  Promise.all([
@@ -1582,7 +1582,7 @@ Vue.createApp({
    	},
 
    	async boardList2(memberNo) {
-   	  const resp = await axios.get("/rest/member/postList",{
+   	  const resp = await axios.get(contextPath + "/rest/member/postList",{
    	    params: {
    	      memberNo: memberNo
    	    }
@@ -1627,7 +1627,7 @@ Vue.createApp({
 			
 			 // 친구 추천목록 조회
             async recommendList(){
-           	const resp = await axios.get("/rest/member/recommendFriendsList");
+           	const resp = await axios.get(contextPath + "/rest/member/recommendFriendsList");
            	this.recommendFriendsList.push(...resp.data);
            	
            	// sessionStorage에 친구 추천목록 저장
