@@ -1915,7 +1915,7 @@ display: inline-block;
 		  this.followLoading = true;
 		  
 		  try {
-		    const resp = await axios.get(contextPath"/rest/member/followListPaging/" + this.followPage, {
+		    const resp = await axios.get(contextPath+"/rest/member/followListPaging/" + this.followPage, {
 		      params: {
 		        memberNo: this.memberNo
 		      }
@@ -2872,6 +2872,7 @@ display: inline-block;
 				                return;
 				            }
 				        }
+				        
 				
 				        // 두 회원이 참여한 채팅방 번호 조회
 				        const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.DmMemberNo + "/" + inviteeNo);
