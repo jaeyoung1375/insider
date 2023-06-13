@@ -1915,7 +1915,7 @@ display: inline-block;
 		  this.followLoading = true;
 		  
 		  try {
-		    const resp = await axios.get(contextPath"/rest/member/followListPaging/" + this.followPage, {
+		    const resp = await axios.get(contextPath+"/rest/member/followListPaging/" + this.followPage, {
 		      params: {
 		        memberNo: this.memberNo
 		      }
@@ -2067,6 +2067,7 @@ display: inline-block;
            	const resp = await axios.get(contextPath+"/rest/member/setting/"+item.memberNo);
            	  const settingHide = resp.data.settingHide;
            	 
+           	  
            	  
            	  Promise.all([
            		 this.getTotalFollowCount(item.memberNo), // 팔로우 수 가져오기
@@ -2872,6 +2873,7 @@ display: inline-block;
 				                return;
 				            }
 				        }
+				        
 				
 				        // 두 회원이 참여한 채팅방 번호 조회
 				        const checkResp = await axios.post(contextPath + "/rest/findPrivacyRoom/" + this.DmMemberNo + "/" + inviteeNo);
