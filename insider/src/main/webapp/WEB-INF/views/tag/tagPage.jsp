@@ -772,7 +772,7 @@
 			
 			//북마크
 			async bookmarkInsert(boardNo) {
-			  const resp = await axios.post("/rest/bookmark/" + boardNo);
+			  const resp = await axios.post(contextPath+"/rest/bookmark/" + boardNo);
 			
 			  if (resp.data === true) {
 			    this.bookmarkCheck.push({ boardNo });
@@ -790,7 +790,7 @@
 				},
 			
 			async bookmarkList(){
-				const resp = await axios.get("/rest/bookmark/selectOne");
+				const resp = await axios.get(contextPath+"/rest/bookmark/selectOne");
 				this.bookmarkCheck.push(...resp.data);
 			},
 			
