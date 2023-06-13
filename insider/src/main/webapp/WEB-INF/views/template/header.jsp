@@ -29,8 +29,8 @@
 	<!-- SockJS라이브러리 의존성 추가  -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
 	<!--favicon -->
-	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.ico">
-	<link rel="shortcut icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.ico">
+	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.png">
 
 </head>
 <style>
