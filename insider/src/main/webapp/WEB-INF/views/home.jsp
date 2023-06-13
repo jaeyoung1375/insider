@@ -1583,11 +1583,7 @@ Vue.createApp({
    	},
 
    	async boardList2(memberNo) {
-<<<<<<< HEAD
-   	  const resp = await axios.get(contextPath + "/rest/member/postList",{
-=======
    	  const resp = await axios.get(contextPath+"/rest/member/postList",{
->>>>>>> refs/remotes/origin/main
    	    params: {
    	      memberNo: memberNo
    	    }
@@ -1632,11 +1628,7 @@ Vue.createApp({
 			
 			 // 친구 추천목록 조회
             async recommendList(){
-<<<<<<< HEAD
-           	const resp = await axios.get(contextPath + "/rest/member/recommendFriendsList");
-=======
            	const resp = await axios.get(contextPath+"/rest/member/recommendFriendsList");
->>>>>>> refs/remotes/origin/main
            	this.recommendFriendsList.push(...resp.data);
            	
            	// sessionStorage에 친구 추천목록 저장
