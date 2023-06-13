@@ -17,7 +17,7 @@
 	<!-- BootStrap CDN -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 	<!-- commons.css -->
-	<link rel="stylesheet" type="text/css" href="/static/css/commons.css" />
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/commons.css" />
 	<!-- font-awesome cdn -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
 	<!-- vue, axios, lodash cdn -->
@@ -29,8 +29,8 @@
 	<!-- SockJS라이브러리 의존성 추가  -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
 	<!--favicon -->
-	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.ico">
-	<link rel="shortcut icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.ico">
+	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.png">
 
 </head>
 <style>

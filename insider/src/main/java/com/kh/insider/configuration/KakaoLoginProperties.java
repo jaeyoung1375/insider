@@ -10,6 +10,7 @@ import lombok.Data;
 @ConfigurationProperties(prefix = "kakao")
 public class KakaoLoginProperties {
 	private String clientId;
+	
 	private String grantType;
 	private String redirectUri;
 }

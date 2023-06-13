@@ -152,7 +152,7 @@
    	                			secret : this.num,
    	                			email : this.email
    	                		};
-   	                		axios.post("/member/checkCert",certDto)
+   	                		axios.post("${pageContext.request.contextPath}/member/checkCert",certDto)
    	                		.then(response => {
    	                			if(response.data === 'Y'){
    	                				window.location.href= this.getResetPasswordUrl();
@@ -173,7 +173,7 @@
    	                 window.crypto.getRandomValues(tokenArray);
    	                 const token = Array.from(tokenArray, byte => byte.toString(16).padStart(2, '0')).join('');
    	 
-   	              const resetPasswordUrl = '/member/resetPassword?token=' + encodeURIComponent(token) + '&email=' + encodeURIComponent(this.encryptedEmail);
+   	              const resetPasswordUrl = '${pageContext.request.contextPath}/member/resetPassword?token=' + encodeURIComponent(token) + '&email=' + encodeURIComponent(this.encryptedEmail);
    	              // 토큰과 이메일을 매개변수로 사용하여 비밀번호 재설정 URL 생성
 
    	              return resetPasswordUrl;
