@@ -58,11 +58,6 @@ http://khds-c.iptime.org:18085/kakao/login&response_type=code&prompt=login">
                 <img src="/static/image/social/kakao_login.png">
             </a>
             </div>
-             <div class="row mb-3">
-            <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=<%=googleProperties.getClient_id()%>&redirect_uri=<%=googleProperties.getRedirect_uri()%>&response_type=code&scope=email%20profile%20openid&access_type=offline&prompt=login">
-                <img src="/static/image/social/google_login.png">
-            </a>
-            </div>
              <div class="row text-center">
                    <a class="mt-5" href="/member/passwordSearch">비밀번호를 잊으셨나요?</a>
                 </div>         
