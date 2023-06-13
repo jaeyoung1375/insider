@@ -17,7 +17,7 @@
 	<!-- BootStrap CDN -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 	<!-- commons.css -->
-	<link rel="stylesheet" type="text/css" href="/static/css/commons.css" />
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/commons.css" />
 	<!-- font-awesome cdn -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
 	<!-- vue, axios, lodash cdn -->
@@ -1066,13 +1066,13 @@
 				}
 			},
 			async getGpsFromMember(){
-				const resp = await axios.get("/rest/member/");
+				const resp = await axios.get(contextPath+"/rest/member/");
 				memberGpsLat = resp.data.memberLat;
 				memberGpsLon = resp.data.memberLon;
 			},
 			async setGpsToMember(){
 				const data = {memberLon : memberGpsLon, memberLat:memberGpsLat}
-				const resp = await axios.put("/rest/member/", data);
+				const resp = await axios.put(contextPath+"/rest/member/", data);
 			},
 			/* GPS 끝 */
 	    },
