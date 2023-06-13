@@ -14,6 +14,10 @@
 	 <!-- 다음 우편 API 사용을 위한 CDN -->
 	<script src="https://cdn.jsdelivr.net/gh/hiphop5782/daum-post-api@latest/find-address.min.js"></script>
 	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+	
+	<!--favicon -->
+	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.png">
   <style>
         .map {
             width:100%;
