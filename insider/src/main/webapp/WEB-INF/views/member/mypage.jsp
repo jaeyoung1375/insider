@@ -206,6 +206,14 @@ display: inline-block;
   white-space: nowrap;
 }
 
+.truncate2{
+display: inline-block;
+  max-width: 100px; /* Adjust the max-width value as needed */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 
 
 
@@ -329,10 +337,10 @@ display: inline-block;
 					  <img src="${pageContext.request.contextPath}/static/image/user.jpg" width="54" height="54" class="rounded-circle" v-else>
 				  </div>
 			      <div class="recommend-nickname d-flex justify-content-center align-items-start" style="margin-top:10px;">
-			        {{ item.memberNick }}
+			        <span class="truncate2">{{ item.memberNick }}</span>
 			      </div>
 			      <div class="recommend-name d-flex justify-content-center align-items-start">
-			        <span style="margin-top:5px;">{{ item.memberName }}</span>
+			        <span style="margin-top:5px;" class="truncate2">{{ item.memberName }}</span>
 			      </div>
 			      <div class="recommend-name d-flex justify-content-center align-items-start">
 			      <!-- 다음 페이지로 이동하는 버튼 -->
@@ -966,9 +974,9 @@ display: inline-block;
           </div><!-- 팔로워 미리보기 끝 -->
 						  <div style="display: flex; align-items: center;">
 						   <img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover(item)" style="border-radius:50%;" v-if="item.attachmentNo > 0">
-          					<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" style="border-radius:50%;" v-else>
+          					<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" style="border-radius:50%;" v-else @mouseover="profileHover(item)">
 						   		<div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
-  						 	<a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
+  						 	<a class="modalNickName truncate" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
   						 	<p class="modalName">{{item.memberName}}</p>
   						 		</div>
   						
@@ -989,7 +997,7 @@ display: inline-block;
                             data-bs-backdrop="static"
                             ref="followModal" @click.self="followModalHide">
              <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
-    <div class="modal-content" style="max-width:400px; min-height:200px; max-height:400px;">
+    <div class="modal-content" style="max-width:400px; min-height:200px; max-height:400px;">	
       <div class="modal-header text-center" style="display:flex; justify-content: center; height:50px;">
         <h5 class="modal-title" >팔로잉</h5>
       </div>
@@ -1009,7 +1017,7 @@ display: inline-block;
         <div v-for="item in myFollowList" :key="item.attachmentNo">
       		 	<div style="display: flex; align-items: center; max-width:400px; over-flow:scroll; max-height:100px;" @scroll="handleScroll" >
           			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" @mouseover="profileHover2(item)" v-if="item.attachmentNo > 0 " class="rounded-circle">
-          			<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" v-else class="rounded-circle">
+          			<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" v-else class="rounded-circle" @mouseover="profileHover2(item)">
 						   <div style="display: flex; flex-direction: column; justify-content: flex-start; margin-left:20px;">
 						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">
 						    <span class="truncate">{{ item.memberNick }}</span></a>
@@ -1141,7 +1149,7 @@ display: inline-block;
           			<img :src="'${pageContext.request.contextPath}/rest/attachment/download/' + item.attachmentNo" width="60" height="60" v-if="item.attachmentNo > 0" class="rounded-circle">
           			<img src="${pageContext.request.contextPath}/static/image/user.jpg" width="60" height="60" v-else class="rounded-circle">
 						   <div style="display: flex; flex-direction: column; justify-content: flex-start;">
-						    <a class="modalNickName" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
+						    <a class="modalNickName truncate" :href="'${pageContext.request.contextPath}/member/' + item.memberNick">{{ item.memberNick }}</a>
           					<p class="modalName">{{item.memberName}}</p>
 						  </div>
 						  
@@ -1167,7 +1175,7 @@ display: inline-block;
       </div>
      	<div class="modal-body" style="background-color: #f2f2f2;">
      		<div class="d-flex justify-content-center">
-     		<a class="navbar-brand"><img src="${pageContext.request.contextPath}/static/image/logo.png" width="50" height="50"></a>    	
+     		<a class="navbar-brand"><img src="${pageContext.request.contextPath}/static/image/insider2.png" width="150" height="60"></a>    	
      		</div>
      		<div class="d-flex justify-content-center" style="margin-top:8px;">
      			<h4>회원탈퇴 전 확인하세요!</h4>    			

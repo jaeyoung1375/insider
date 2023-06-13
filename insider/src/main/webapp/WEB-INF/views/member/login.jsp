@@ -54,13 +54,8 @@ GoogleLoginProperties googleProperties = context.getBean(GoogleLoginProperties.c
                <div style="display:flex; justify-content: space-between; flex-direction: column; align-items: center;" >
                 <div class="row mb-3">
             <a href="https://kauth.kakao.com/oauth/authorize?client_id=<%=kakaoProperties.getClientId()%>&redirect_uri=	
-<%=kakaoProperties.getRedirectUri()%>&response_type=code&prompt=login">
+http://khds-c.iptime.org:18085/kakao/login&response_type=code&prompt=login">
                 <img src="/static/image/social/kakao_login.png">
-            </a>
-            </div>
-             <div class="row mb-3">
-            <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=<%=googleProperties.getClient_id()%>&redirect_uri=<%=googleProperties.getRedirect_uri()%>&response_type=code&scope=email%20profile%20openid&access_type=offline&prompt=login">
-                <img src="/static/image/social/google_login.png">
             </a>
             </div>
              <div class="row text-center">
