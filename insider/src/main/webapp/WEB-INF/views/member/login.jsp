@@ -66,13 +66,13 @@ GoogleLoginProperties googleProperties = context.getBean(GoogleLoginProperties.c
              <div class="row text-center">
                    <a class="mt-5" href="/member/passwordSearch">비밀번호를 잊으셨나요?</a>
                 </div>         
-         <!--  
+         <%--  
             <div class="row mb-3">
             <a href="https://www.facebook.com/v2.11/dialog/oauth?
 client_id=1721778684918582&
 redirect_uri=https://localhost:8080/member/facebook/auth&scope=public_profile,email&prompt=login"><img src="/static/image/social/facebook_login.png" width="183" height="45" ></a>
             </div>
-            -->
+            --%>
             </div>
            </div>
         </div>
@@ -81,10 +81,6 @@ redirect_uri=https://localhost:8080/member/facebook/auth&scope=public_profile,em
               계정이 없으신가요?
               <a href="join">가입하기</a>
            </div>
-        </div>
-
-        <div>
-           소셜유저 : ${sessionScope.socialUser}, 멤버 : ${sessionScope.member} , 세션번호 : ${sessionScope.memberNo}         
         </div>
 
 
