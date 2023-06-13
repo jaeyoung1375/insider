@@ -9,6 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     	<!-- font-awesome cdn -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
+	<!--favicon -->
+	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.png">
   </head>
   <body>
     <div class="container-fluid mt-4 w-60" style="position: absolute; left: 50%; top: 50%; width: 1200px; height: 700px; transform: translate(-50%, -50%);">

@@ -474,14 +474,17 @@
 	<select id="selectListTagBoard" resultMap="boardListVO">
 		<bind name="blockExist" value="blockDtoList!=null and blockDtoList.size()>0"></bind>
 		<include refid="topNheader"></include>
-		select * from board_with_nick 
-			where board_no in (SELECT board_no FROM board_tag WHERE tag_name=#{tagName})
+		select * from board_with_nick
+			where board_no in (SELECT board_no FROM board_tag WHERE tag_name=#{tagName} and tag_name not in(select tag_name from tag where tag_available=0))
 		 	<if test="blockExist">
  				and member_no not in
  				<foreach collection="blockDtoList" open="(" close=")" item="blockDto" separator=",">
  					#{blockDto.blockNo}
  				</foreach>
  			</if>
+ 			<if test="1==1">
+	 			and member_no in(select member_no from setting where setting_hide=0)
+	 		</if>
 		order by board_no desc
 		<include refid="topNfooter"></include>	
 	</select>
@@ -489,13 +492,16 @@
 	<select id="selectListTagBoardCount" resultType="int">
 		<bind name="blockExist" value="blockDtoList!=null and blockDtoList.size()>0"></bind>
 		select count(*) from board_with_nick 
-			where board_no in (SELECT board_no FROM board_tag WHERE tag_name=#{tagName})
+			where board_no in (SELECT board_no FROM board_tag WHERE tag_name=#{tagName} and tag_name not in(select tag_name from tag where tag_available=0))
 		 	<if test="blockExist">
  				and member_no not in
  				<foreach collection="blockDtoList" open="(" close=")" item="blockDto" separator=",">
  					#{blockDto.blockNo}
  				</foreach>
  			</if>
+ 			<if test="1==1">
+	 			and member_no in(select member_no from setting where setting_hide=0)
+	 		</if>
 	</select>
 
 	<!-- 신고수 추가 기능 -->

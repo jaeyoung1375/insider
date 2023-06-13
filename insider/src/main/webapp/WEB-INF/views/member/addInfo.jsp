@@ -1,11 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!-- jquery cdn -->
-<link rel="stylesheet" href="/static/css/commons.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/commons.css">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 		<!-- font-awesome cdn -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
-	<link rel="stylesheet" href="/static/css/member/join.css">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/member/join.css">
 	  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 	    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 	 <!-- jquery cdn -->
@@ -14,6 +14,10 @@
 	 <!-- 다음 우편 API 사용을 위한 CDN -->
 	<script src="https://cdn.jsdelivr.net/gh/hiphop5782/daum-post-api@latest/find-address.min.js"></script>
 	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+	
+	<!--favicon -->
+	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.png">
   <style>
         .map {
             width:100%;

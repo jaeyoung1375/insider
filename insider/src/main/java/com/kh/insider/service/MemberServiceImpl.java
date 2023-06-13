@@ -60,6 +60,8 @@ public class MemberServiceImpl implements MemberService{
            helper.setTo(email);
            helper.setSubject("Insider 회원가입 인증번호 입니다");
 
+           
+           
            ClassPathResource resource = new ClassPathResource("templates/email1.jsp");
 
            Scanner sc = null;

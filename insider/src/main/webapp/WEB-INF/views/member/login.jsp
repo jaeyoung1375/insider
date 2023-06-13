@@ -16,10 +16,13 @@ GoogleLoginProperties googleProperties = context.getBean(GoogleLoginProperties.c
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Insider</title>
 <link rel="stylesheet" href="/static/css/commons.css">
 <!-- BootStrap CDN -->
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+   <!--favicon -->
+	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.png">
    <style>
    .logo{
       font-size: 50px;
@@ -33,7 +36,7 @@ GoogleLoginProperties googleProperties = context.getBean(GoogleLoginProperties.c
               <div class="container col-lg-3 card p-5 mt-5" style="display:flex; justify-content: center" id="app">
               <div>
                <div class="text-center mb-3">            
-                  <a href="/" class="logo"><img src="/static/image/insider2.png" style="width:200px; height:80px;" ></a>
+                  <a href="${pageContext.request.contextPath}/" class="logo"><img src="${pageContext.request.contextPath}/static/image/insider2.png" style="width:200px; height:80px;" ></a>
                 </div>
             <form action="login" method="post" @submit="isEmpty" >
                 <div class="mb-3 row">
@@ -55,24 +58,24 @@ GoogleLoginProperties googleProperties = context.getBean(GoogleLoginProperties.c
                 <div class="row mb-3">
             <a href="https://kauth.kakao.com/oauth/authorize?client_id=<%=kakaoProperties.getClientId()%>&redirect_uri=	
 <%=kakaoProperties.getRedirectUri()%>&response_type=code&prompt=login">
-                <img src="/static/image/social/kakao_login.png">
+                <img src="${pageContext.request.contextPath}/static/image/social/kakao_login.png">
             </a>
             </div>
-             <div class="row mb-3">
+           <%--   <div class="row mb-3">
             <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=<%=googleProperties.getClient_id()%>&redirect_uri=<%=googleProperties.getRedirect_uri()%>&response_type=code&scope=email%20profile%20openid&access_type=offline&prompt=login">
                 <img src="/static/image/social/google_login.png">
             </a>
-            </div>
+            </div> --%>
              <div class="row text-center">
-                   <a class="mt-5" href="/member/passwordSearch">비밀번호를 잊으셨나요?</a>
+                   <a class="mt-5" href="${pageContext.request.contextPath}/member/passwordSearch">비밀번호를 잊으셨나요?</a>
                 </div>         
-         <!--  
+         <%--  
             <div class="row mb-3">
             <a href="https://www.facebook.com/v2.11/dialog/oauth?
 client_id=1721778684918582&
 redirect_uri=https://localhost:8080/member/facebook/auth&scope=public_profile,email&prompt=login"><img src="/static/image/social/facebook_login.png" width="183" height="45" ></a>
             </div>
-            -->
+            --%>
             </div>
            </div>
         </div>
@@ -81,10 +84,6 @@ redirect_uri=https://localhost:8080/member/facebook/auth&scope=public_profile,em
               계정이 없으신가요?
               <a href="join">가입하기</a>
            </div>
-        </div>
-
-        <div>
-           소셜유저 : ${sessionScope.socialUser}, 멤버 : ${sessionScope.member} , 세션번호 : ${sessionScope.memberNo}         
         </div>
 
 
