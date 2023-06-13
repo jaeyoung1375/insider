@@ -36,7 +36,7 @@ GoogleLoginProperties googleProperties = context.getBean(GoogleLoginProperties.c
               <div class="container col-lg-3 card p-5 mt-5" style="display:flex; justify-content: center" id="app">
               <div>
                <div class="text-center mb-3">            
-                  <a href="/" class="logo"><img src="/static/image/insider2.png" style="width:200px; height:80px;" ></a>
+                  <a href="${pageContext.request.contextPath}/" class="logo"><img src="${pageContext.request.contextPath}/static/image/insider2.png" style="width:200px; height:80px;" ></a>
                 </div>
             <form action="login" method="post" @submit="isEmpty" >
                 <div class="mb-3 row">
@@ -58,7 +58,7 @@ GoogleLoginProperties googleProperties = context.getBean(GoogleLoginProperties.c
                 <div class="row mb-3">
             <a href="https://kauth.kakao.com/oauth/authorize?client_id=<%=kakaoProperties.getClientId()%>&redirect_uri=	
 <%=kakaoProperties.getRedirectUri()%>&response_type=code&prompt=login">
-                <img src="/static/image/social/kakao_login.png">
+                <img src="${pageContext.request.contextPath}/static/image/social/kakao_login.png">
             </a>
             </div>
            <%--   <div class="row mb-3">
@@ -67,7 +67,7 @@ GoogleLoginProperties googleProperties = context.getBean(GoogleLoginProperties.c
             </a>
             </div> --%>
              <div class="row text-center">
-                   <a class="mt-5" href="/member/passwordSearch">비밀번호를 잊으셨나요?</a>
+                   <a class="mt-5" href="${pageContext.request.contextPath}/member/passwordSearch">비밀번호를 잊으셨나요?</a>
                 </div>         
          <%--  
             <div class="row mb-3">

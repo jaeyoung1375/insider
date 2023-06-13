@@ -1493,7 +1493,7 @@ Vue.createApp({
 		
 		//북마크
 		async bookmarkInsert(boardNo) {
-		  const resp = await axios.post("/rest/bookmark/" + boardNo);
+		  const resp = await axios.post(contextPath+"/rest/bookmark/" + boardNo);
 		
 		  if (resp.data === true) {
 		    this.bookmarkCheck.push({ boardNo });
@@ -1512,7 +1512,7 @@ Vue.createApp({
 			},
 		
 		async bookmarkList(){
-			const resp = await axios.get("/rest/bookmark/selectOne");
+			const resp = await axios.get(contextPath+"/rest/bookmark/selectOne");
 			this.bookmarkCheck.push(...resp.data);
 			//console.log("북마크 리스트 : "+this.bookmarkCheck.map(item => item.boardNo));
 		},
@@ -1524,7 +1524,7 @@ Vue.createApp({
            	  this.selectedItem = item; // 선택
            	  console.log("item : "+item.boardAttachmentList);
         	  // settingHide 불러오기 위해서 선언
-             	const resp = await axios.get("/rest/member/setting/"+item.boardWithNickDto.memberNo);
+             	const resp = await axios.get(contextPath+"/rest/member/setting/"+item.boardWithNickDto.memberNo);
              	  const settingHide = resp.data.settingHide;
            	  
         	  Promise.all([
@@ -1553,7 +1553,7 @@ Vue.createApp({
      	// 호버시 팔로우 총 개수
        	async getTotalFollowCount(memberNo) {
        
-       	      const resp = await axios.get("/member/totalFollowCount", {
+       	      const resp = await axios.get(contextPath+"/member/totalFollowCount", {
        	        params: {
        	        	memberNo: memberNo
        	        }
@@ -1563,7 +1563,7 @@ Vue.createApp({
      // 호버시 팔로워 총 개수
        	async getTotalFollowerCount(memberNo) {
        
-       	      const resp = await axios.get("/member/totalFollowerCount", {
+       	      const resp = await axios.get(contextPath+"/member/totalFollowerCount", {
        	        params: {
        	        	memberNo: memberNo
        	        }
@@ -1573,7 +1573,7 @@ Vue.createApp({
     	// 호버시 게시물 총 개수
    		async getTotalPostCount(memberNo) {
    
-   	      const resp = await axios.get("/member/totalPostCount", {
+   	      const resp = await axios.get(contextPath+"/member/totalPostCount", {
    	        params: {
    	        	memberNo: memberNo
    	        }
@@ -1582,7 +1582,7 @@ Vue.createApp({
    	},
 
    	async boardList2(memberNo) {
-   	  const resp = await axios.get("/rest/member/postList",{
+   	  const resp = await axios.get(contextPath+"/rest/member/postList",{
    	    params: {
    	      memberNo: memberNo
    	    }
@@ -1597,7 +1597,7 @@ Vue.createApp({
     //팔로우 되있는사람 -> 팔로우 삭제
 	 async unFollow(memberNo) {
 			  try {
-			    const response = await axios.post("/rest/follow/unFollow", null, {
+			    const response = await axios.post(contextPath+"/rest/follow/unFollow", null, {
 			      params: {
 			        followFollower: memberNo
 			      }
@@ -1627,7 +1627,7 @@ Vue.createApp({
 			
 			 // 친구 추천목록 조회
             async recommendList(){
-           	const resp = await axios.get("/rest/member/recommendFriendsList");
+           	const resp = await axios.get(contextPath+"/rest/member/recommendFriendsList");
            	this.recommendFriendsList.push(...resp.data);
            	
            	// sessionStorage에 친구 추천목록 저장

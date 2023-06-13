@@ -127,12 +127,12 @@
                 	
                 	
                 	 try {
-                	        const response = await axios.post('/member/passwordChange', {
+                	        const response = await axios.post('${pageContext.request.contextPath}/member/passwordChange', {
                 	          memberEmail: this.email,
                 	          memberPassword: this.password,
                 	        });
                 		
-                		window.location.href="/member/login";
+                		window.location.href="${pageContext.request.contextPath}/member/login";
                 		
                 	
                 		
