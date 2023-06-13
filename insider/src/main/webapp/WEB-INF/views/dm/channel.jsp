@@ -991,7 +991,7 @@
 	                  this.dmMemberList.push(...filteredMembers);
             	    } 
             	    catch (error) {
-            	      console.error(error);
+            	      //console.error(error);
             	    }
             	},
                 //차단한 회원을 제외한 전체 회원 검색
@@ -1008,7 +1008,7 @@
 				        this.searchDmList.splice(0);
 	                    this.searchDmList.push(...resp.data);
 				    } catch (error) {
-				        console.error(error);
+				        //console.error(error);
 				    }
 				},						
                //초대 - 팔로우 회원 목록
@@ -1022,7 +1022,7 @@
 	                  this.dmInviteMemberList.push(...filteredMembers);
             	    } 
             	    catch (error) {
-            	      console.error(error);
+            	      //console.error(error);
             	    }
             	},
                 //초대 - 차단한 회원을 제외한 전체 회원 검색
@@ -1037,7 +1037,7 @@
 				        this.searchInviteDmList.splice(0);
 	                    this.searchInviteDmList.push(...resp.data);
 				    } catch (error) {
-				        console.error(error);
+				        //console.error(error);
 				    }
 				},			
 				//로그인한 회원의 채팅방 목록
@@ -1056,7 +1056,7 @@
 				        });
 				        this.unreadDmCount();
 				    } catch (error) {
-				        console.error(error);
+				        //console.error(error);
 				    }
 				},
 				//방이름 통합검색
@@ -1088,7 +1088,7 @@
 						this.membersInRoomList.splice(0);
 						this.membersInRoomList.push(...resp.data);
 					} catch (error) {
-						console.error(error);
+						//console.error(error);
 					}
 				},
 				//채팅방 생성 및 입장, 초대
