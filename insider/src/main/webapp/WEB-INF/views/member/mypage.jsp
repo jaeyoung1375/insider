@@ -989,7 +989,7 @@ display: inline-block;
                             data-bs-backdrop="static"
                             ref="followModal" @click.self="followModalHide">
              <div class="modal-dialog d-flex justify-content-center align-items-center" role="document" style="height:80%">
-    <div class="modal-content" style="max-width:400px; min-height:200px; max-height:400px;">
+    <div class="modal-content" style="max-width:400px; min-height:200px; max-height:400px;">	
       <div class="modal-header text-center" style="display:flex; justify-content: center; height:50px;">
         <h5 class="modal-title" >팔로잉</h5>
       </div>
