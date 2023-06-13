@@ -5,14 +5,14 @@
 	<head>
 	<meta charset="UTF-8">
 	<title>Insider</title>
-	<link rel="stylesheet" href="/static/css/commons.css">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/commons.css">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 	<!--favicon -->
 	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.png">
 	<link rel="shortcut icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.png">
 		<!-- font-awesome cdn -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
-	<link rel="stylesheet" href="/static/css/member/join.css">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/member/join.css">
 	  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 	    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 	 <!-- jquery cdn -->
@@ -133,7 +133,7 @@
 	    
 	   		<!-- 1단계 -->
 	            <div class="text-center mb-3">         	
-			         	<a href="/" class="logo"><img src="/static/image/insider2.png" style="width:200px; height:80px;" ></a>
+			         	<a href="${pageContext.request.contextPath}/" class="logo"><img src="${pageContext.request.contextPath}/static/image/insider2.png" style="width:200px; height:80px;" ></a>
 	                </div>
 	        <div :class="{hide:stepOneHidden}">
 	            <div class="row form-floating mb-3"> 
@@ -471,7 +471,7 @@
    	                			secret : this.emailCode,
    	                			email : this.email
    	                		};
-	                      axios.post("/member/checkCert",certDto);
+	                      axios.post("${pageContext.request.contextPath}/member/checkCert",certDto);
 	                       this.stepOneHidden = true;	
 	                       this.$refs.joinForm.submit();
  	                		
