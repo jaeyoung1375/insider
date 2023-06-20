@@ -4,11 +4,14 @@ package com.kh.insider.repo;
 import java.io.File;
 import java.io.IOException;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.insider.configuration.FileUploadProperties;
 import com.kh.insider.dto.AttachmentDto;
 
 @Repository
@@ -16,6 +19,8 @@ public class AttachmentRepoImpl implements AttachmentRepo{
 	
 	@Autowired
 	private SqlSession sqlSession;
+	@Autowired
+	private FileUploadProperties fileUploadProperties;
 	
 	@Override
 	public int sequence() {
@@ -34,11 +39,13 @@ public class AttachmentRepoImpl implements AttachmentRepo{
 	}
 	
 	//저장 위치
-		private File directory = new File("D:/upload");
-		public AttachmentRepoImpl() {
+		private File directory;
+		
+		@PostConstruct
+		public void init() {
+			directory = new File(fileUploadProperties.getPath());
 			directory.mkdirs();
 		}
-
 	@Override
 	public int save(MultipartFile attach) throws IllegalStateException, IOException {
 		
