@@ -66,7 +66,6 @@ public class AttachmentController {
 //		AttachmentDto attachmentDto = attachmentRepo.selectOne(fileName);
 
 		//파일 찾기
-		File dir = new File("D:/upload");
 		File target = new File(dir, String.valueOf(fileName));
 		if(!target.exists()) return ResponseEntity.notFound().build();
 		
