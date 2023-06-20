@@ -1764,7 +1764,7 @@
 	<!-- ---------------------------------게시물 미리보기 모달 끝-------------------------- -->
 	<!-- ---------------------------------금지어 관리 모달-------------------------- -->
 	<div v-if="forbiddenModal" class="fullscreen container-fluid">
-		<div class="row fullscreen-container">
+		<div class="row fullscreen-container" style="min-height:810px">
 			<div class="row p-3 m-0">
 				<div class="col-10">
 					<h5 class="modal-title">금지어 관리</h5>
@@ -1778,7 +1778,7 @@
 			<hr>
 			<div class="row m-0 p-0 mb-2">
 				<div class="col-3 d-flex align-items-center justify-content-center">
-					<div class="row">
+					<div class="row"  style="height:600px">
 						<div class="col">
 							<div class="row m-0 p-0">
 								<div class="col d-flex justify-content-center align-items-center" @click="moveScroll('a')" style="cursor:pointer; padding:0.4em">
