@@ -43,7 +43,6 @@ public class BoardAttachServiceImpl implements BoardAttachService{
 		if (boardAttachment != null) {
 			for(MultipartFile file : boardAttachment) {
 				if(file.getOriginalFilename()==null || file.getOriginalFilename().length()==0)continue;
-				System.out.println(file.getOriginalFilename());
 				int attachmentNo = attachmentRepo.save(file);
 				//동영상 파일 여부 입력을 위한 코드 추가
 				AttachmentDto attachmentDto = attachmentRepo.selectOne(attachmentNo);
