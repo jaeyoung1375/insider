@@ -321,8 +321,8 @@
 							                		style="padding-bottom: 0.51em; padding-right: 0.5em; padding-left: 0.5em; color: #c23616; cursor:pointer;"></i>
 							                </div>
 							                <div v-if="likeCount[index]" class="content-footer">
-							                   <div class=heart><i class="fa-solid fa-heart fa-xs"style="color: #c23616;"></i></div>
-							             	   <div class=heart-number>{{likeCount[index]}}</div>
+							                   <div class="heart"><i class="fa-heart fa-xs"style="color: #c23616;" :class="{'fa-solid':memberLike[index]==1, 'fa-regular':memberLike[index]==0}"></i></div>
+							             	   <div class="heart-number">{{likeCount[index]}}</div>
 							                </div>
 							            </div>
 							    	</div>
@@ -1329,7 +1329,7 @@
 				},
 				//좋아요 눌렀을 때
 				async dmLike(messageNo, index){
-					const data = { type:8, messageNo:messageNo, memberNo:memberNo, room:this.roomNo };
+					const data = { type:8, messageNo:messageNo, memberNo:memberNo, room:this.roomMenu };
                     this.socket.send(JSON.stringify(data));
                     if(this.memberLike[index]==0) this.memberLike[index]=1;
                     else this.memberLike[index]=0;
