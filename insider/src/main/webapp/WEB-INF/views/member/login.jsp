@@ -17,7 +17,7 @@ GoogleLoginProperties googleProperties = context.getBean(GoogleLoginProperties.c
 <head>
 <meta charset="UTF-8">
 <title>Insider</title>
-<link rel="stylesheet" href="/static/css/commons.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/commons.css">
 <!-- BootStrap CDN -->
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
    <!--favicon -->
