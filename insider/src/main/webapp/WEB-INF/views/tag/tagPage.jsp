@@ -118,7 +118,8 @@
 <div class="container-fluid mt-4" id="app" style="width:70%; max-width:1300px; min-width:900px">
 	<div class="row">
 		<div class="col-4 text-center">
-			<img class="rounded-circle profile-image-box" :src="'${pageContext.request.contextPath}'+mainImage" width = "150" height="150">
+			<img v-if="mainImage.length>0" class="rounded-circle profile-image-box" :src="'${pageContext.request.contextPath}'+mainImage" width = "150" height="150">
+			<img v-else src="${pageContext.request.contextPath}/static/image/user.jpg" width = "150" height="150" class="rounded-circle profile-image-box">
 		</div>
 		<div class="col-8">
 			<div class="row">
@@ -488,7 +489,9 @@
 	            	this.boardLikeCount.push(board.boardWithNickDto.boardLike);
 				}
 				this.boardList.push(...resp.data);
-				this.mainImage=this.boardList[0].boardAttachmentList[0].imageURL
+				if(this.boardList.length>0){
+					this.mainImage=this.boardList[0].boardAttachmentList[0].imageURL
+				}
 				this.page++;
 				if(resp.data.length<10){//데이터가 10개 미만이면 불러오는걸 막음
 					this.finish==true;
