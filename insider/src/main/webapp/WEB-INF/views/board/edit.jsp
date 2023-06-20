@@ -248,7 +248,7 @@ $(document).ready(function() {
 		const text = confirm("게시물을 수정을 그만하시겠어요?\n지금 나가면 수정 내용이 저장되지 않습니다.");
 		
 		if(text){
-			location.replace("/")
+			location.replace(contextPath+"/")
 		}
 		else{
 			location.reload();
